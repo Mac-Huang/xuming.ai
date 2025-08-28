@@ -1,6 +1,16 @@
 // Blog posts data - simple and clean
 const blogPosts = [
   {
+    id: 'cs107-stanford',
+    title: 'CS 107: My Favorite Course at Stanford',
+    date: 'August 15, 2025',
+    category: 'education',
+    excerpt: 'My experience earning an A+ (99/100) in CS 107 at Stanford. From heap allocators to security vulnerabilities, this course transformed how I think about computer systems.',
+    url: 'blog/posts/cs107-stanford-summer.html',
+    readTime: '8 min'
+  },
+  
+  {
     id: 'new-chapter-madison',
     title: 'A New Chapter in Madison',
     date: 'January 16, 2025',
@@ -58,6 +68,7 @@ function getRecentPosts(limit = 5) {
 // Blog categories
 const blogCategories = [
   { label: 'All Posts', value: 'all' },
+  { label: 'Education', value: 'education' },
   { label: 'Life Updates', value: 'life' },
   { label: 'Career', value: 'career' },
   { label: 'Sports', value: 'sports' }

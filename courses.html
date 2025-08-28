@@ -44,15 +44,42 @@
     }
     
     .code-block {
-      background: #f4f4f4;
-      border: 1px solid #ddd;
-      border-radius: 3px;
-      padding: 15px;
+      background: #282c34;
+      border: 1px solid #3e4451;
+      border-radius: 6px;
+      padding: 20px;
       margin: 20px 0;
       overflow-x: auto;
-      font-family: 'Courier New', monospace;
-      font-size: 13px;
-      line-height: 1.4;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #abb2bf;
+      white-space: pre;
+    }
+    
+    .code-block .keyword {
+      color: #c678dd;
+    }
+    
+    .code-block .type {
+      color: #e06c75;
+    }
+    
+    .code-block .function {
+      color: #61afef;
+    }
+    
+    .code-block .string {
+      color: #98c379;
+    }
+    
+    .code-block .comment {
+      color: #5c6370;
+      font-style: italic;
+    }
+    
+    .code-block .number {
+      color: #d19a66;
     }
     
     .semester-header {
@@ -96,6 +123,52 @@
             <a href="bot.html">Ask Me</a>
           </p>
           
+          <!-- Summer 2025 - Stanford -->
+          <div class="semester-header">
+            <h2 style="margin:0; font-size:20px;">Summer 2025</h2>
+            <p style="margin:5px 0 0 0;"><strong>Institution:</strong> Stanford University</p>
+          </div>
+          
+          <div class="course-content">
+            <!-- CS 107 -->
+            <h3>CS 107: Computer Organization and Systems</h3>
+            <p><strong>Instructor:</strong> Adam Keppler and Ola Olukotun | <strong>TA:</strong> Ben Yan</p>
+            <p><strong>Grade:</strong> A+ (99/100)</p>
+            
+            <h4>Course Description</h4>
+            <p>A comprehensive systems programming course covering the fundamentals of computer organization, including data representation, machine-level programming, memory management, and security vulnerabilities.</p>
+            
+            <h4>Key Projects</h4>
+            <ul>
+              <li><strong>Assignment 6 - Heap Allocator:</strong> Implemented both implicit and explicit free-list heap allocators with advanced features including coalescing and footer optimization
+                <br><a href="demos/heap-allocator.html" style="color:#1772d0;">→ Interactive Heap Allocator Visualization</a></li>
+              <li><strong>Assignment 5 - Banking on Security:</strong> Explored buffer overflow vulnerabilities and security exploits in a controlled virtual bank environment</li>
+              <li>Discovered and responsibly disclosed real vulnerabilities in Stanford's AFS system</li>
+            </ul>
+            
+            <h4>Key Learnings</h4>
+            <ul>
+              <li>Low-level C programming and memory management</li>
+              <li>x86-64 assembly and machine architecture</li>
+              <li>Debugging with GDB and Valgrind</li>
+              <li>Security vulnerabilities and responsible disclosure</li>
+              <li>Performance optimization and cache efficiency</li>
+            </ul>
+            
+            <h4>Reflection</h4>
+            <p>
+              CS 107 was my favorite course of Summer 2025 at Stanford. The combination of theoretical knowledge and hands-on implementation gave me a deep understanding of how computers work at the lowest levels. The heap allocator assignment was particularly rewarding—I completed all challenge functions and created a bidirectional free list implementation that significantly improved allocation efficiency.
+            </p>
+            <p>
+              The security assignment inspired me to explore real-world vulnerabilities, leading to my discovery of issues in Stanford's AFS system. Working with the teaching team on responsible disclosure was an invaluable learning experience.
+            </p>
+            <p>
+              <a href="blog/posts/cs107-stanford-summer.html" style="color:#1772d0;">→ Read my detailed CS 107 blog post</a>
+            </p>
+          </div>
+          
+          <hr>
+          
           <!-- Spring 2025 Semester -->
           <div class="semester-header">
             <h2 style="margin:0; font-size:20px;">Spring 2025 Semester</h2>
@@ -119,31 +192,29 @@
               <li>Gained confidence in collaborative learning environments</li>
             </ul>
             
-            <div class="code-block">
-public class Student {
-    private String name;
-    private int age;
-    private double gpa;
+            <div class="code-block"><span class="keyword">public class</span> <span class="type">Student</span> {
+    <span class="keyword">private</span> <span class="type">String</span> name;
+    <span class="keyword">private</span> <span class="type">int</span> age;
+    <span class="keyword">private</span> <span class="type">double</span> gpa;
 
-    public Student(String name, int age) {
-        this.name = name;
-        this.age = age;
-        this.gpa = 0.0;
+    <span class="keyword">public</span> <span class="function">Student</span>(<span class="type">String</span> name, <span class="type">int</span> age) {
+        <span class="keyword">this</span>.name = name;
+        <span class="keyword">this</span>.age = age;
+        <span class="keyword">this</span>.gpa = <span class="number">0.0</span>;
     }
 
-    public void updateGPA(double newGPA) {
-        if (newGPA >= 0.0 && newGPA <= 4.0) {
-            this.gpa = newGPA;
+    <span class="keyword">public void</span> <span class="function">updateGPA</span>(<span class="type">double</span> newGPA) {
+        <span class="keyword">if</span> (newGPA >= <span class="number">0.0</span> && newGPA <= <span class="number">4.0</span>) {
+            <span class="keyword">this</span>.gpa = newGPA;
         }
     }
 
-    public String getStatus() {
-        if (gpa >= 3.5) return "Dean's List";
-        if (gpa >= 2.0) return "Good Standing";
-        return "Academic Warning";
+    <span class="keyword">public</span> <span class="type">String</span> <span class="function">getStatus</span>() {
+        <span class="keyword">if</span> (gpa >= <span class="number">3.5</span>) <span class="keyword">return</span> <span class="string">"Dean's List"</span>;
+        <span class="keyword">if</span> (gpa >= <span class="number">2.0</span>) <span class="keyword">return</span> <span class="string">"Good Standing"</span>;
+        <span class="keyword">return</span> <span class="string">"Academic Warning"</span>;
     }
-}
-            </div>
+}</div>
             
             <h4>Reflection</h4>
             <p>
@@ -176,8 +247,7 @@ public class Student {
               <li>Computer architecture fundamentals</li>
             </ul>
             
-            <div class="code-block">
-;************************************
+            <div class="code-block"><span class="comment">;************************************
 ; Multiples two numbers AxB
 ;
 ; Parameters
@@ -185,29 +255,28 @@ public class Student {
 ;   R1 - B 
 ;Returns 
 ;   R0 - AxB
-;************************************
-MULT
-        ST R2, MULT_R2
-        AND R2, R2, #0
+;************************************</span>
+<span class="function">MULT</span>
+        <span class="keyword">ST</span> R2, MULT_R2
+        <span class="keyword">AND</span> R2, R2, <span class="number">#0</span>
 
-        ADD R1, R1, #0
-        BRp MULT_LOOP
-        AND R0, R0, #0
-        BR END_SUB
+        <span class="keyword">ADD</span> R1, R1, <span class="number">#0</span>
+        <span class="keyword">BRp</span> MULT_LOOP
+        <span class="keyword">AND</span> R0, R0, <span class="number">#0</span>
+        <span class="keyword">BR</span> END_SUB
 
-MULT_LOOP
-        ADD R2, R2, R0
-        ADD R1, R1, #-1
-        BRp MULT_LOOP
+<span class="function">MULT_LOOP</span>
+        <span class="keyword">ADD</span> R2, R2, R0
+        <span class="keyword">ADD</span> R1, R1, <span class="number">#-1</span>
+        <span class="keyword">BRp</span> MULT_LOOP
 
-        ADD R0, R2, #0
-        LD R2, MULT_R2
-END_SUB
-    RET
+        <span class="keyword">ADD</span> R0, R2, <span class="number">#0</span>
+        <span class="keyword">LD</span> R2, MULT_R2
+<span class="function">END_SUB</span>
+    <span class="keyword">RET</span>
 
-MULT_R2 .BLKW 1
-    .END
-            </div>
+MULT_R2 <span class="keyword">.BLKW</span> <span class="number">1</span>
+    <span class="keyword">.END</span></div>
             
             <h4>Reflection</h4>
             <p>

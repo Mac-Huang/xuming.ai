@@ -4,7 +4,7 @@ const publications = [
   {
     id: 'linuxguard-2025',
     title: 'LinuxGuard: AI-Powered Kernel Security Analysis',
-    authors: '<strong>Xuming Huang</strong>, Remzi Arpaci-Dusseau, Vinay Banakar',
+    authors: '<strong>Xuming Huang</strong> (advised by Remzi Arpaci-Dusseau, Vinay Banakar)',
     venue: 'Ongoing Research Project',
     year: 2025,
     image: 'images/papers/linuxguard.jpg',
@@ -34,13 +34,29 @@ const publications = [
   },
   
   {
+    id: 'cifar10-classification-2024',
+    title: 'Image Classification Algorithm Analysis: A Comparative Study of Traditional ML and Deep Learning Approaches',
+    authors: '<strong>Xuming Huang</strong> (supervised by Prof. Dunlu Peng)',
+    venue: 'Shanghai Research Project',
+    year: 2024,
+	image: 'images/papers/ResMacNet.jpg',
+    paper_url: null,
+    code_url: 'https://github.com/Mac-Huang/CIFAR10-Image-Classification',
+    project_url: null,
+    bibtex: null,
+    selected: false,
+    category: 'research',
+    abstract: 'Comprehensive analysis comparing traditional ML methods with CNN architectures on CIFAR-10 dataset. Implemented custom architectures achieving 81.3% accuracy. Developed 2-stage inference using ResMacNet, achieving 13% improvement over baseline.'
+  },
+  
+  {
     id: 'multispectral-unet-2024',
     title: 'Multispectral U-Net Segmentation Research',
-    authors: '<strong>Xuming Huang</strong>, Prof. Xin [Last Name]',
+    authors: '<strong>Xuming Huang</strong>, Prof. Xin Hu',
     venue: 'Research Project',
     year: 2024,
     image: 'images/papers/unet.jpg',
-    paper_url: null,
+    paper_url: 'https://arxiv.org/abs/2506.05972',
     code_url: null,
     project_url: null,
     bibtex: null,

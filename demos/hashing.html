@@ -1,0 +1,1791 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Hash Function & Collision Analysis - Xuming Huang</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../stylesheet.css">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .control-panel {
+      background: #f9f9f9;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    
+    .control-group {
+      display: inline-block;
+      margin: 0 15px 15px 0;
+    }
+    
+    .control-group label {
+      font-weight: bold;
+      margin-right: 8px;
+    }
+    
+    .control-panel select, .control-panel input, .control-panel button {
+      padding: 8px 12px;
+      font-size: 14px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-family: 'EB Garamond', Georgia, serif;
+    }
+    
+    .control-panel button {
+      background: #1772d0;
+      color: white;
+      cursor: pointer;
+      margin: 0 5px;
+    }
+    
+    .control-panel button:hover {
+      background: #1455a3;
+    }
+    
+    .visualization-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .visualization-panel {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      min-height: 400px;
+    }
+    
+    .visualization-panel h3 {
+      margin-top: 0;
+      color: #333;
+      font-size: 18px;
+      border-bottom: 2px solid #1772d0;
+      padding-bottom: 10px;
+    }
+    
+    /* Hash Table Visualization */
+    .hash-table {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+      gap: 8px;
+      margin-top: 20px;
+    }
+    
+    .hash-slot {
+      border: 2px solid #ddd;
+      padding: 10px;
+      text-align: center;
+      min-height: 60px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-family: 'Courier New', monospace;
+      position: relative;
+      background: white;
+      transition: all 0.3s ease;
+    }
+    
+    .hash-slot.empty {
+      background: #f5f5f5;
+      color: #999;
+    }
+    
+    .hash-slot.occupied {
+      background: #e3f2fd;
+      border-color: #1772d0;
+    }
+    
+    .hash-slot.collision {
+      background: #ffebee;
+      border-color: #ff6b6b;
+    }
+    
+    .hash-slot.probing {
+      background: #fff3e0;
+      border-color: #ffd93d;
+      animation: pulse 0.5s;
+    }
+    
+    .hash-slot.current {
+      background: #51cf66;
+      border-color: #37a14a;
+      transform: scale(1.1);
+    }
+    
+    .slot-index {
+      position: absolute;
+      top: 2px;
+      left: 4px;
+      font-size: 10px;
+      color: #666;
+      font-weight: bold;
+    }
+    
+    .chain-list {
+      margin-top: 5px;
+      font-size: 11px;
+      max-height: 100px;
+      overflow-y: auto;
+    }
+    
+    .chain-item {
+      background: #e8f5e9;
+      padding: 2px 4px;
+      margin: 2px 0;
+      border-radius: 2px;
+      word-break: break-all;
+    }
+    
+    /* Statistics Panel */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-top: 20px;
+    }
+    
+    .stat-item {
+      background: #fafafa;
+      padding: 12px;
+      border-radius: 4px;
+      border-left: 3px solid #1772d0;
+    }
+    
+    .stat-label {
+      font-size: 12px;
+      color: #666;
+      text-transform: uppercase;
+    }
+    
+    .stat-value {
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+      margin-top: 5px;
+    }
+    
+    /* Distribution Chart */
+    #distribution-chart {
+      margin-top: 20px;
+    }
+    
+    .bar {
+      fill: #1772d0;
+      transition: fill 0.3s;
+    }
+    
+    .bar:hover {
+      fill: #1455a3;
+    }
+    
+    .axis {
+      font-size: 12px;
+    }
+    
+    .axis-label {
+      font-size: 14px;
+      font-weight: bold;
+    }
+    
+    /* Bloom Filter Visualization */
+    .bloom-filter {
+      display: grid;
+      grid-template-columns: repeat(32, 1fr);
+      gap: 2px;
+      margin-top: 20px;
+    }
+    
+    .bloom-bit {
+      width: 20px;
+      height: 20px;
+      background: #f5f5f5;
+      border: 1px solid #ddd;
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+    
+    .bloom-bit.set {
+      background: #1772d0;
+      border-color: #1455a3;
+    }
+    
+    .bloom-bit.checking {
+      background: #ffd93d;
+      animation: pulse 0.5s;
+    }
+    
+    /* Consistent Hash Ring */
+    #hash-ring {
+      margin-top: 20px;
+    }
+    
+    .ring-node {
+      fill: #1772d0;
+      stroke: white;
+      stroke-width: 2;
+      cursor: pointer;
+    }
+    
+    .ring-node:hover {
+      fill: #1455a3;
+    }
+    
+    .virtual-node {
+      fill: #90caf9;
+      opacity: 0.5;
+    }
+    
+    .key-position {
+      fill: #ff6b6b;
+      stroke: white;
+      stroke-width: 2;
+    }
+    
+    /* Animations */
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+    
+    @keyframes highlight {
+      0% { background: white; }
+      50% { background: #ffd93d; }
+      100% { background: white; }
+    }
+    
+    /* Input Panel */
+    .input-panel {
+      background: #f0f0f0;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+    
+    .input-panel input[type="text"] {
+      width: 200px;
+      padding: 8px;
+      font-size: 14px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin: 0 10px;
+    }
+    
+    .hash-result {
+      display: inline-block;
+      padding: 8px 12px;
+      background: #e3f2fd;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      margin-left: 10px;
+    }
+    
+    /* Info boxes */
+    .info-box {
+      background: #fffde7;
+      border-left: 4px solid #ffd93d;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+    
+    .algorithm-description {
+      background: #f5f5f5;
+      padding: 15px;
+      border-radius: 4px;
+      margin-top: 15px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    
+    /* Tabs */
+    .tabs {
+      display: flex;
+      border-bottom: 2px solid #ddd;
+      margin-bottom: 20px;
+    }
+    
+    .tab {
+      padding: 10px 20px;
+      cursor: pointer;
+      background: #f5f5f5;
+      border: 1px solid #ddd;
+      border-bottom: none;
+      margin-right: 5px;
+      border-radius: 4px 4px 0 0;
+      transition: all 0.3s;
+    }
+    
+    .tab.active {
+      background: white;
+      border-color: #1772d0;
+      border-bottom: 2px solid white;
+      margin-bottom: -2px;
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+  <table style="width:100%;max-width:1200px;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+    <tbody>
+      <tr>
+        <td style="padding:20px;">
+          <p><a href="../projects.html">← Back to Projects</a></p>
+          
+          <heading>Hash Function & Collision Analysis</heading>
+          <p>Interactive visualization of hash functions, collision resolution strategies, and advanced hashing applications. Explore how different hash functions distribute data and handle collisions.</p>
+          
+          <!-- Tabs for different demonstrations -->
+          <div class="tabs">
+            <div class="tab active" onclick="switchTab('basic')">Basic Hashing</div>
+            <div class="tab" onclick="switchTab('collision')">Collision Resolution</div>
+            <div class="tab" onclick="switchTab('bloom')">Bloom Filter</div>
+            <div class="tab" onclick="switchTab('consistent')">Consistent Hashing</div>
+            <div class="tab" onclick="switchTab('analysis')">Analysis</div>
+          </div>
+          
+          <!-- Basic Hashing Tab -->
+          <div id="basic-tab" class="tab-content active">
+            <div class="control-panel">
+              <div class="control-group">
+                <label>Hash Function:</label>
+                <select id="hash-function">
+                  <option value="division">Division Method</option>
+                  <option value="multiplication">Multiplication Method</option>
+                  <option value="universal">Universal Hashing</option>
+                  <option value="crypto">Cryptographic (Simulated)</option>
+                  <option value="custom">Custom (Polynomial)</option>
+                </select>
+              </div>
+              
+              <div class="control-group">
+                <label>Table Size:</label>
+                <select id="table-size">
+                  <option value="8">8</option>
+                  <option value="16" selected>16</option>
+                  <option value="32">32</option>
+                  <option value="64">64</option>
+                </select>
+              </div>
+              
+              <button onclick="hashViz.reset()">Reset</button>
+              <button onclick="hashViz.generateRandomData()">Random Data</button>
+              <button onclick="hashViz.benchmark()">Benchmark</button>
+            </div>
+            
+            <div class="input-panel">
+              <label>Input Key:</label>
+              <input type="text" id="input-key" placeholder="Enter a key..." value="hello">
+              <button onclick="hashViz.hashKey()">Hash</button>
+              <span class="hash-result" id="hash-result">Hash: -</span>
+            </div>
+            
+            <div class="visualization-container">
+              <div class="visualization-panel">
+                <h3>Hash Table Visualization</h3>
+                <div id="hash-table" class="hash-table"></div>
+              </div>
+              
+              <div class="visualization-panel">
+                <h3>Statistics</h3>
+                <div class="stats-grid">
+                  <div class="stat-item">
+                    <div class="stat-label">Load Factor</div>
+                    <div class="stat-value" id="load-factor">0%</div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="stat-label">Collisions</div>
+                    <div class="stat-value" id="collision-count">0</div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="stat-label">Max Chain</div>
+                    <div class="stat-value" id="max-chain">0</div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="stat-label">Uniformity</div>
+                    <div class="stat-value" id="uniformity">-</div>
+                  </div>
+                </div>
+                
+                <div class="algorithm-description" id="hash-description">
+                  <strong>Division Method:</strong> The simplest hash function that uses modulo operation (key % table_size). 
+                  Fast to compute but can have poor distribution if table size is not chosen carefully (preferably prime).
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Collision Resolution Tab -->
+          <div id="collision-tab" class="tab-content">
+            <div class="control-panel">
+              <div class="control-group">
+                <label>Resolution Strategy:</label>
+                <select id="collision-strategy">
+                  <option value="chaining">Separate Chaining</option>
+                  <option value="linear">Linear Probing</option>
+                  <option value="quadratic">Quadratic Probing</option>
+                  <option value="double">Double Hashing</option>
+                  <option value="cuckoo">Cuckoo Hashing</option>
+                </select>
+              </div>
+              
+              <button onclick="collisionViz.reset()">Reset</button>
+              <button onclick="collisionViz.demo()">Run Demo</button>
+              <button onclick="collisionViz.step()">Step</button>
+            </div>
+            
+            <div class="visualization-container">
+              <div class="visualization-panel" style="grid-column: span 2;">
+                <h3>Collision Resolution Visualization</h3>
+                <div id="collision-table" class="hash-table"></div>
+                <div id="probe-sequence" style="margin-top: 20px; font-family: monospace;"></div>
+              </div>
+            </div>
+            
+            <div class="info-box">
+              <strong>Current Strategy:</strong> <span id="strategy-name">Separate Chaining</span><br>
+              <span id="strategy-description">
+                Links colliding elements in a chain at each table position. Simple to implement but requires additional memory for pointers.
+              </span>
+            </div>
+          </div>
+          
+          <!-- Bloom Filter Tab -->
+          <div id="bloom-tab" class="tab-content">
+            <div class="control-panel">
+              <div class="control-group">
+                <label>Filter Size:</label>
+                <input type="number" id="bloom-size" value="256" min="64" max="1024">
+              </div>
+              
+              <div class="control-group">
+                <label>Hash Functions:</label>
+                <input type="number" id="bloom-hashes" value="3" min="1" max="10">
+              </div>
+              
+              <button onclick="bloomViz.reset()">Reset</button>
+              <button onclick="bloomViz.addRandom()">Add Random</button>
+              <button onclick="bloomViz.testFalsePositive()">Test FP Rate</button>
+            </div>
+            
+            <div class="input-panel">
+              <label>Item:</label>
+              <input type="text" id="bloom-input" placeholder="Enter item..." value="apple">
+              <button onclick="bloomViz.add()">Add</button>
+              <button onclick="bloomViz.check()">Check</button>
+              <span class="hash-result" id="bloom-result">Result: -</span>
+            </div>
+            
+            <div class="visualization-container">
+              <div class="visualization-panel">
+                <h3>Bloom Filter Bit Array</h3>
+                <div id="bloom-filter" class="bloom-filter"></div>
+              </div>
+              
+              <div class="visualization-panel">
+                <h3>Performance Metrics</h3>
+                <div class="stats-grid">
+                  <div class="stat-item">
+                    <div class="stat-label">Items Added</div>
+                    <div class="stat-value" id="bloom-items">0</div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="stat-label">Bits Set</div>
+                    <div class="stat-value" id="bloom-bits">0</div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="stat-label">Fill Rate</div>
+                    <div class="stat-value" id="bloom-fill">0%</div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="stat-label">FP Rate</div>
+                    <div class="stat-value" id="bloom-fp">0%</div>
+                  </div>
+                </div>
+                
+                <canvas id="bloom-chart" width="400" height="200" style="margin-top: 20px;"></canvas>
+              </div>
+            </div>
+            
+            <div class="info-box">
+              <strong>Bloom Filter:</strong> A space-efficient probabilistic data structure that tests whether an element is a member of a set. 
+              False positive matches are possible, but false negatives are not. The more elements added, the higher the false positive rate.
+            </div>
+          </div>
+          
+          <!-- Consistent Hashing Tab -->
+          <div id="consistent-tab" class="tab-content">
+            <div class="control-panel">
+              <div class="control-group">
+                <label>Virtual Nodes:</label>
+                <input type="number" id="virtual-nodes" value="50" min="1" max="200">
+              </div>
+              
+              <button onclick="consistentViz.addNode()">Add Node</button>
+              <button onclick="consistentViz.removeNode()">Remove Node</button>
+              <button onclick="consistentViz.reset()">Reset</button>
+              <button onclick="consistentViz.simulate()">Simulate Load</button>
+            </div>
+            
+            <div class="visualization-container">
+              <div class="visualization-panel" style="grid-column: span 2;">
+                <h3>Consistent Hash Ring</h3>
+                <svg id="hash-ring" width="800" height="400"></svg>
+                <div id="ring-stats" style="margin-top: 20px;"></div>
+              </div>
+            </div>
+            
+            <div class="info-box">
+              <strong>Consistent Hashing:</strong> Used in distributed systems to minimize reorganization when nodes are added or removed. 
+              Each node is mapped to multiple points on the ring (virtual nodes) for better load distribution.
+            </div>
+          </div>
+          
+          <!-- Analysis Tab -->
+          <div id="analysis-tab" class="tab-content">
+            <div class="control-panel">
+              <div class="control-group">
+                <label>Analysis Type:</label>
+                <select id="analysis-type">
+                  <option value="distribution">Distribution Analysis</option>
+                  <option value="avalanche">Avalanche Effect</option>
+                  <option value="collision-rate">Collision Rate</option>
+                  <option value="performance">Performance Comparison</option>
+                </select>
+              </div>
+              
+              <button onclick="analysisViz.run()">Run Analysis</button>
+              <button onclick="analysisViz.export()">Export Data</button>
+            </div>
+            
+            <div class="visualization-container">
+              <div class="visualization-panel" style="grid-column: span 2;">
+                <h3>Analysis Results</h3>
+                <svg id="analysis-chart" width="900" height="400"></svg>
+                <div id="analysis-details" style="margin-top: 20px;"></div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Educational Content -->
+          <div style="margin-top: 40px;">
+            <heading>About Hash Functions</heading>
+            <p>
+              Hash functions are fundamental to computer science, enabling efficient data storage and retrieval. 
+              A good hash function distributes keys uniformly across the hash table, minimizing collisions while being fast to compute.
+            </p>
+            
+            <heading>Key Concepts</heading>
+            <ul>
+              <li><strong>Load Factor:</strong> The ratio of filled slots to total slots in the hash table</li>
+              <li><strong>Collision:</strong> When two different keys hash to the same index</li>
+              <li><strong>Clustering:</strong> The tendency of collisions to group together in certain resolution strategies</li>
+              <li><strong>Universal Hashing:</strong> A randomized scheme that guarantees good average-case performance</li>
+              <li><strong>Perfect Hashing:</strong> A hash function with no collisions for a known set of keys</li>
+            </ul>
+            
+            <heading>Applications</heading>
+            <ul>
+              <li><strong>Hash Tables:</strong> Fast key-value storage with O(1) average access time</li>
+              <li><strong>Bloom Filters:</strong> Space-efficient probabilistic data structures for set membership</li>
+              <li><strong>Consistent Hashing:</strong> Distributed caching and load balancing</li>
+              <li><strong>Cryptographic Hashing:</strong> Data integrity, password storage, and digital signatures</li>
+              <li><strong>Similarity Detection:</strong> MinHash for finding similar documents</li>
+            </ul>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <script>
+    // Main Hash Visualizer Class
+    class HashVisualizer {
+      constructor() {
+        this.tableSize = 16;
+        this.hashTable = [];
+        this.keys = [];
+        this.collisions = 0;
+        this.hashFunction = 'division';
+        this.initializeTable();
+      }
+      
+      initializeTable() {
+        this.hashTable = new Array(this.tableSize).fill(null).map(() => []);
+        this.renderTable();
+      }
+      
+      // Hash Functions
+      divisionHash(key) {
+        const num = this.stringToNumber(key);
+        return num % this.tableSize;
+      }
+      
+      multiplicationHash(key) {
+        const A = 0.6180339887; // Golden ratio
+        const num = this.stringToNumber(key);
+        return Math.floor(this.tableSize * ((num * A) % 1));
+      }
+      
+      universalHash(key) {
+        const p = 2147483659;
+        const a = 1234567;
+        const b = 987654;
+        const num = this.stringToNumber(key);
+        return ((a * num + b) % p) % this.tableSize;
+      }
+      
+      cryptoHash(key) {
+        let hash = 5381;
+        for (let i = 0; i < key.length; i++) {
+          hash = ((hash << 5) + hash) + key.charCodeAt(i);
+          hash = hash & hash;
+        }
+        hash ^= hash >> 16;
+        hash *= 0x85ebca6b;
+        hash ^= hash >> 13;
+        return Math.abs(hash) % this.tableSize;
+      }
+      
+      customHash(key) {
+        // Polynomial rolling hash
+        const p = 31;
+        const m = 1e9 + 9;
+        let hash = 0;
+        let p_pow = 1;
+        
+        for (let i = 0; i < key.length; i++) {
+          hash = (hash + key.charCodeAt(i) * p_pow) % m;
+          p_pow = (p_pow * p) % m;
+        }
+        return hash % this.tableSize;
+      }
+      
+      stringToNumber(str) {
+        let num = 0;
+        for (let i = 0; i < str.length; i++) {
+          num = num * 31 + str.charCodeAt(i);
+        }
+        return Math.abs(num);
+      }
+      
+      computeHash(key) {
+        switch(this.hashFunction) {
+          case 'division': return this.divisionHash(key);
+          case 'multiplication': return this.multiplicationHash(key);
+          case 'universal': return this.universalHash(key);
+          case 'crypto': return this.cryptoHash(key);
+          case 'custom': return this.customHash(key);
+          default: return this.divisionHash(key);
+        }
+      }
+      
+      hashKey() {
+        const input = document.getElementById('input-key').value;
+        if (!input) return;
+        
+        const hash = this.computeHash(input);
+        document.getElementById('hash-result').textContent = `Hash: ${hash}`;
+        
+        // Highlight the slot
+        this.highlightSlot(hash);
+        
+        // Add to table
+        if (!this.hashTable[hash].includes(input)) {
+          if (this.hashTable[hash].length > 0) {
+            this.collisions++;
+          }
+          this.hashTable[hash].push(input);
+          this.keys.push(input);
+          this.renderTable();
+          this.updateStats();
+        }
+      }
+      
+      highlightSlot(index) {
+        const slots = document.querySelectorAll('.hash-slot');
+        slots.forEach(slot => slot.classList.remove('current'));
+        if (slots[index]) {
+          slots[index].classList.add('current');
+          setTimeout(() => slots[index].classList.remove('current'), 1000);
+        }
+      }
+      
+      renderTable() {
+        const container = document.getElementById('hash-table');
+        container.innerHTML = '';
+        
+        for (let i = 0; i < this.tableSize; i++) {
+          const slot = document.createElement('div');
+          slot.className = 'hash-slot';
+          
+          const index = document.createElement('div');
+          index.className = 'slot-index';
+          index.textContent = i;
+          slot.appendChild(index);
+          
+          if (this.hashTable[i].length === 0) {
+            slot.classList.add('empty');
+            slot.innerHTML += 'Empty';
+          } else {
+            slot.classList.add('occupied');
+            if (this.hashTable[i].length > 1) {
+              slot.classList.add('collision');
+            }
+            
+            const chain = document.createElement('div');
+            chain.className = 'chain-list';
+            this.hashTable[i].forEach(item => {
+              const chainItem = document.createElement('div');
+              chainItem.className = 'chain-item';
+              chainItem.textContent = item;
+              chain.appendChild(chainItem);
+            });
+            slot.appendChild(chain);
+          }
+          
+          container.appendChild(slot);
+        }
+      }
+      
+      updateStats() {
+        const occupied = this.hashTable.filter(slot => slot.length > 0).length;
+        const loadFactor = ((occupied / this.tableSize) * 100).toFixed(1);
+        const maxChain = Math.max(...this.hashTable.map(slot => slot.length));
+        
+        document.getElementById('load-factor').textContent = loadFactor + '%';
+        document.getElementById('collision-count').textContent = this.collisions;
+        document.getElementById('max-chain').textContent = maxChain;
+        
+        // Calculate uniformity (chi-square test)
+        const expected = this.keys.length / this.tableSize;
+        let chiSquare = 0;
+        this.hashTable.forEach(slot => {
+          chiSquare += Math.pow(slot.length - expected, 2) / expected;
+        });
+        const uniformity = chiSquare < this.tableSize ? 'Good' : 'Poor';
+        document.getElementById('uniformity').textContent = uniformity;
+      }
+      
+      reset() {
+        this.keys = [];
+        this.collisions = 0;
+        this.hashFunction = document.getElementById('hash-function').value;
+        this.tableSize = parseInt(document.getElementById('table-size').value);
+        this.initializeTable();
+        this.updateStats();
+        this.updateDescription();
+      }
+      
+      generateRandomData() {
+        this.reset();
+        const words = ['apple', 'banana', 'cherry', 'date', 'elderberry', 'fig', 'grape', 'honeydew',
+                      'kiwi', 'lemon', 'mango', 'nectarine', 'orange', 'papaya', 'quince', 'raspberry',
+                      'strawberry', 'tangerine', 'ugli', 'vanilla', 'watermelon', 'xigua', 'yuzu', 'zucchini'];
+        
+        const numItems = Math.min(words.length, Math.floor(this.tableSize * 0.75));
+        for (let i = 0; i < numItems; i++) {
+          const key = words[i];
+          const hash = this.computeHash(key);
+          
+          if (this.hashTable[hash].length > 0) {
+            this.collisions++;
+          }
+          this.hashTable[hash].push(key);
+          this.keys.push(key);
+        }
+        
+        this.renderTable();
+        this.updateStats();
+      }
+      
+      benchmark() {
+        const results = [];
+        const functions = ['division', 'multiplication', 'universal', 'crypto', 'custom'];
+        const testSize = 1000;
+        
+        functions.forEach(func => {
+          this.hashFunction = func;
+          this.reset();
+          
+          const start = performance.now();
+          let collisions = 0;
+          const distribution = new Array(this.tableSize).fill(0);
+          
+          for (let i = 0; i < testSize; i++) {
+            const key = 'key' + i;
+            const hash = this.computeHash(key);
+            distribution[hash]++;
+            if (distribution[hash] > 1) collisions++;
+          }
+          
+          const end = performance.now();
+          const time = end - start;
+          
+          // Calculate standard deviation
+          const mean = testSize / this.tableSize;
+          const variance = distribution.reduce((sum, count) => 
+            sum + Math.pow(count - mean, 2), 0) / this.tableSize;
+          const stdDev = Math.sqrt(variance);
+          
+          results.push({
+            function: func,
+            time: time.toFixed(2),
+            collisions: collisions,
+            stdDev: stdDev.toFixed(2)
+          });
+        });
+        
+        this.displayBenchmarkResults(results);
+      }
+      
+      displayBenchmarkResults(results) {
+        let html = '<h4>Benchmark Results (1000 keys)</h4><table style="width:100%; font-size:12px;">';
+        html += '<tr><th>Function</th><th>Time (ms)</th><th>Collisions</th><th>Std Dev</th></tr>';
+        
+        results.forEach(r => {
+          html += `<tr><td>${r.function}</td><td>${r.time}</td><td>${r.collisions}</td><td>${r.stdDev}</td></tr>`;
+        });
+        
+        html += '</table>';
+        document.getElementById('hash-description').innerHTML = html;
+      }
+      
+      updateDescription() {
+        const descriptions = {
+          'division': '<strong>Division Method:</strong> Uses modulo operation (key % table_size). Fast but can have poor distribution if table size is not prime.',
+          'multiplication': '<strong>Multiplication Method:</strong> Uses golden ratio multiplication. Better distribution than division method.',
+          'universal': '<strong>Universal Hashing:</strong> Uses randomized hash function family. Guarantees good average-case performance.',
+          'crypto': '<strong>Cryptographic Hash:</strong> Simulated crypto hash with good avalanche effect. Slower but excellent distribution.',
+          'custom': '<strong>Polynomial Hash:</strong> Rolling hash using polynomial computation. Good for string keys.'
+        };
+        
+        document.getElementById('hash-description').innerHTML = 
+          descriptions[this.hashFunction] || descriptions['division'];
+      }
+    }
+    
+    // Collision Resolution Visualizer
+    class CollisionVisualizer {
+      constructor() {
+        this.tableSize = 16;
+        this.table = new Array(this.tableSize).fill(null);
+        this.strategy = 'chaining';
+        this.probeSequence = [];
+      }
+      
+      reset() {
+        this.table = new Array(this.tableSize).fill(null);
+        this.probeSequence = [];
+        this.strategy = document.getElementById('collision-strategy').value;
+        this.renderCollisionTable();
+        this.updateStrategyDescription();
+      }
+      
+      demo() {
+        this.reset();
+        const keys = ['apple', 'banana', 'cherry', 'date', 'elderberry'];
+        this.insertSequence(keys);
+      }
+      
+      async insertSequence(keys) {
+        for (const key of keys) {
+          await this.insertWithVisualization(key);
+          await this.sleep(1000);
+        }
+      }
+      
+      async insertWithVisualization(key) {
+        const hash = this.simpleHash(key);
+        this.probeSequence = [];
+        
+        switch(this.strategy) {
+          case 'chaining':
+            await this.chainingInsert(key, hash);
+            break;
+          case 'linear':
+            await this.linearProbing(key, hash);
+            break;
+          case 'quadratic':
+            await this.quadraticProbing(key, hash);
+            break;
+          case 'double':
+            await this.doubleHashing(key, hash);
+            break;
+        }
+        
+        this.displayProbeSequence();
+      }
+      
+      simpleHash(key) {
+        let hash = 0;
+        for (let i = 0; i < key.length; i++) {
+          hash = (hash * 31 + key.charCodeAt(i)) % this.tableSize;
+        }
+        return hash;
+      }
+      
+      async chainingInsert(key, hash) {
+        if (!this.table[hash]) {
+          this.table[hash] = [];
+        }
+        this.table[hash].push(key);
+        this.probeSequence.push(hash);
+        this.renderCollisionTable();
+      }
+      
+      async linearProbing(key, hash) {
+        let index = hash;
+        let probes = 0;
+        
+        while (this.table[index] !== null && probes < this.tableSize) {
+          this.probeSequence.push(index);
+          await this.highlightProbe(index);
+          index = (index + 1) % this.tableSize;
+          probes++;
+        }
+        
+        if (probes < this.tableSize) {
+          this.table[index] = key;
+          this.probeSequence.push(index);
+        }
+        
+        this.renderCollisionTable();
+      }
+      
+      async quadraticProbing(key, hash) {
+        let index = hash;
+        let i = 0;
+        
+        while (this.table[index] !== null && i < this.tableSize) {
+          this.probeSequence.push(index);
+          await this.highlightProbe(index);
+          i++;
+          index = (hash + i * i) % this.tableSize;
+        }
+        
+        if (i < this.tableSize) {
+          this.table[index] = key;
+          this.probeSequence.push(index);
+        }
+        
+        this.renderCollisionTable();
+      }
+      
+      async doubleHashing(key, hash) {
+        const hash2 = this.secondHash(key);
+        let index = hash;
+        let i = 0;
+        
+        while (this.table[index] !== null && i < this.tableSize) {
+          this.probeSequence.push(index);
+          await this.highlightProbe(index);
+          i++;
+          index = (hash + i * hash2) % this.tableSize;
+        }
+        
+        if (i < this.tableSize) {
+          this.table[index] = key;
+          this.probeSequence.push(index);
+        }
+        
+        this.renderCollisionTable();
+      }
+      
+      secondHash(key) {
+        let hash = 0;
+        for (let i = 0; i < key.length; i++) {
+          hash = hash * 37 + key.charCodeAt(i);
+        }
+        return (hash % (this.tableSize - 1)) + 1;
+      }
+      
+      async highlightProbe(index) {
+        const slots = document.querySelectorAll('#collision-table .hash-slot');
+        if (slots[index]) {
+          slots[index].classList.add('probing');
+          await this.sleep(500);
+          slots[index].classList.remove('probing');
+        }
+      }
+      
+      renderCollisionTable() {
+        const container = document.getElementById('collision-table');
+        container.innerHTML = '';
+        
+        for (let i = 0; i < this.tableSize; i++) {
+          const slot = document.createElement('div');
+          slot.className = 'hash-slot';
+          
+          const index = document.createElement('div');
+          index.className = 'slot-index';
+          index.textContent = i;
+          slot.appendChild(index);
+          
+          if (this.table[i] === null) {
+            slot.classList.add('empty');
+            slot.innerHTML += 'Empty';
+          } else if (Array.isArray(this.table[i])) {
+            // Chaining
+            slot.classList.add('occupied');
+            if (this.table[i].length > 1) {
+              slot.classList.add('collision');
+            }
+            const chain = document.createElement('div');
+            chain.className = 'chain-list';
+            this.table[i].forEach(item => {
+              const chainItem = document.createElement('div');
+              chainItem.className = 'chain-item';
+              chainItem.textContent = item;
+              chain.appendChild(chainItem);
+            });
+            slot.appendChild(chain);
+          } else {
+            // Single item
+            slot.classList.add('occupied');
+            slot.innerHTML += this.table[i];
+          }
+          
+          container.appendChild(slot);
+        }
+      }
+      
+      displayProbeSequence() {
+        const container = document.getElementById('probe-sequence');
+        if (this.probeSequence.length > 0) {
+          container.innerHTML = '<strong>Probe Sequence:</strong> ' + 
+            this.probeSequence.join(' → ');
+        }
+      }
+      
+      updateStrategyDescription() {
+        const descriptions = {
+          'chaining': 'Links colliding elements in a chain at each table position.',
+          'linear': 'Probes consecutive slots when a collision occurs: (hash + i) % size',
+          'quadratic': 'Probes using quadratic function: (hash + i²) % size',
+          'double': 'Uses second hash function for probing: (hash1 + i * hash2) % size'
+        };
+        
+        document.getElementById('strategy-name').textContent = 
+          document.getElementById('collision-strategy').options[
+            document.getElementById('collision-strategy').selectedIndex
+          ].text;
+        document.getElementById('strategy-description').textContent = 
+          descriptions[this.strategy] || '';
+      }
+      
+      sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
+      
+      step() {
+        // Implement step-by-step execution
+        alert('Step-by-step execution coming soon!');
+      }
+    }
+    
+    // Bloom Filter Visualizer
+    class BloomFilterVisualizer {
+      constructor() {
+        this.size = 256;
+        this.hashCount = 3;
+        this.bitArray = new Array(this.size).fill(0);
+        this.items = new Set();
+      }
+      
+      reset() {
+        this.size = parseInt(document.getElementById('bloom-size').value);
+        this.hashCount = parseInt(document.getElementById('bloom-hashes').value);
+        this.bitArray = new Array(this.size).fill(0);
+        this.items = new Set();
+        this.renderBloomFilter();
+        this.updateBloomStats();
+      }
+      
+      hash(str, seed) {
+        let hash = seed;
+        for (let i = 0; i < str.length; i++) {
+          hash = ((hash << 5) - hash) + str.charCodeAt(i);
+          hash = hash & hash;
+        }
+        return Math.abs(hash) % this.size;
+      }
+      
+      add() {
+        const item = document.getElementById('bloom-input').value;
+        if (!item) return;
+        
+        const indices = [];
+        for (let i = 0; i < this.hashCount; i++) {
+          const index = this.hash(item, i);
+          indices.push(index);
+          this.bitArray[index] = 1;
+        }
+        
+        this.items.add(item);
+        this.highlightBits(indices, 'set');
+        this.renderBloomFilter();
+        this.updateBloomStats();
+        
+        document.getElementById('bloom-result').textContent = `Added: ${item}`;
+      }
+      
+      check() {
+        const item = document.getElementById('bloom-input').value;
+        if (!item) return;
+        
+        const indices = [];
+        let found = true;
+        
+        for (let i = 0; i < this.hashCount; i++) {
+          const index = this.hash(item, i);
+          indices.push(index);
+          if (this.bitArray[index] === 0) {
+            found = false;
+          }
+        }
+        
+        this.highlightBits(indices, 'checking');
+        
+        const actuallyExists = this.items.has(item);
+        let result;
+        if (found && actuallyExists) {
+          result = 'Probably exists (True Positive)';
+        } else if (found && !actuallyExists) {
+          result = 'Probably exists (False Positive!)';
+        } else {
+          result = 'Definitely not in set';
+        }
+        
+        document.getElementById('bloom-result').textContent = result;
+      }
+      
+      highlightBits(indices, type) {
+        const bits = document.querySelectorAll('.bloom-bit');
+        indices.forEach(index => {
+          if (bits[index]) {
+            bits[index].classList.add(type);
+            setTimeout(() => bits[index].classList.remove(type), 1000);
+          }
+        });
+      }
+      
+      renderBloomFilter() {
+        const container = document.getElementById('bloom-filter');
+        container.innerHTML = '';
+        
+        // Show first 256 bits for visualization
+        const displaySize = Math.min(this.size, 256);
+        for (let i = 0; i < displaySize; i++) {
+          const bit = document.createElement('div');
+          bit.className = 'bloom-bit';
+          if (this.bitArray[i] === 1) {
+            bit.classList.add('set');
+          }
+          bit.title = `Bit ${i}`;
+          container.appendChild(bit);
+        }
+      }
+      
+      updateBloomStats() {
+        const bitsSet = this.bitArray.filter(bit => bit === 1).length;
+        const fillRate = ((bitsSet / this.size) * 100).toFixed(1);
+        const fpRate = this.calculateFalsePositiveRate();
+        
+        document.getElementById('bloom-items').textContent = this.items.size;
+        document.getElementById('bloom-bits').textContent = bitsSet;
+        document.getElementById('bloom-fill').textContent = fillRate + '%';
+        document.getElementById('bloom-fp').textContent = (fpRate * 100).toFixed(2) + '%';
+        
+        this.drawFPChart();
+      }
+      
+      calculateFalsePositiveRate() {
+        const k = this.hashCount;
+        const m = this.size;
+        const n = this.items.size;
+        
+        return Math.pow(1 - Math.exp(-k * n / m), k);
+      }
+      
+      drawFPChart() {
+        const canvas = document.getElementById('bloom-chart');
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Draw axes
+        ctx.strokeStyle = '#333';
+        ctx.beginPath();
+        ctx.moveTo(40, 10);
+        ctx.lineTo(40, 160);
+        ctx.lineTo(380, 160);
+        ctx.stroke();
+        
+        // Draw FP rate curve
+        ctx.strokeStyle = '#1772d0';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        
+        for (let n = 0; n <= this.size * 2; n += 10) {
+          const fp = Math.pow(1 - Math.exp(-this.hashCount * n / this.size), this.hashCount);
+          const x = 40 + (n / (this.size * 2)) * 340;
+          const y = 160 - fp * 150;
+          
+          if (n === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
+        }
+        ctx.stroke();
+        
+        // Current position
+        const currentFP = this.calculateFalsePositiveRate();
+        const currentX = 40 + (this.items.size / (this.size * 2)) * 340;
+        const currentY = 160 - currentFP * 150;
+        
+        ctx.fillStyle = '#ff6b6b';
+        ctx.beginPath();
+        ctx.arc(currentX, currentY, 5, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Labels
+        ctx.fillStyle = '#333';
+        ctx.font = '12px sans-serif';
+        ctx.fillText('0', 35, 170);
+        ctx.fillText('Items', 200, 180);
+        ctx.fillText('FP Rate', 5, 85);
+        ctx.fillText('1.0', 20, 15);
+      }
+      
+      addRandom() {
+        const words = ['alpha', 'beta', 'gamma', 'delta', 'epsilon', 'zeta', 'eta', 'theta'];
+        const randomWord = words[Math.floor(Math.random() * words.length)] + Math.random();
+        document.getElementById('bloom-input').value = randomWord;
+        this.add();
+      }
+      
+      testFalsePositive() {
+        let falsePositives = 0;
+        const testSize = 1000;
+        
+        for (let i = 0; i < testSize; i++) {
+          const testItem = 'test' + Math.random();
+          
+          let found = true;
+          for (let j = 0; j < this.hashCount; j++) {
+            const index = this.hash(testItem, j);
+            if (this.bitArray[index] === 0) {
+              found = false;
+              break;
+            }
+          }
+          
+          if (found && !this.items.has(testItem)) {
+            falsePositives++;
+          }
+        }
+        
+        const measuredRate = (falsePositives / testSize * 100).toFixed(2);
+        const theoreticalRate = (this.calculateFalsePositiveRate() * 100).toFixed(2);
+        
+        alert(`Measured FP Rate: ${measuredRate}%\nTheoretical FP Rate: ${theoreticalRate}%`);
+      }
+    }
+    
+    // Consistent Hash Visualizer
+    class ConsistentHashVisualizer {
+      constructor() {
+        this.nodes = [];
+        this.virtualNodes = 50;
+        this.ring = new Map();
+        this.maxHash = Math.pow(2, 32);
+      }
+      
+      reset() {
+        this.nodes = [];
+        this.ring = new Map();
+        this.virtualNodes = parseInt(document.getElementById('virtual-nodes').value);
+        this.renderRing();
+      }
+      
+      hash(str) {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+          hash = ((hash << 5) - hash) + str.charCodeAt(i);
+          hash = hash & hash;
+        }
+        return Math.abs(hash);
+      }
+      
+      addNode() {
+        const nodeName = 'Node' + (this.nodes.length + 1);
+        this.nodes.push(nodeName);
+        
+        // Add virtual nodes
+        for (let i = 0; i < this.virtualNodes; i++) {
+          const virtualKey = `${nodeName}:${i}`;
+          const hash = this.hash(virtualKey);
+          this.ring.set(hash, nodeName);
+        }
+        
+        this.renderRing();
+        this.updateRingStats();
+      }
+      
+      removeNode() {
+        if (this.nodes.length === 0) return;
+        
+        const nodeName = this.nodes.pop();
+        
+        // Remove virtual nodes
+        const toRemove = [];
+        for (const [hash, node] of this.ring.entries()) {
+          if (node === nodeName) {
+            toRemove.push(hash);
+          }
+        }
+        toRemove.forEach(hash => this.ring.delete(hash));
+        
+        this.renderRing();
+        this.updateRingStats();
+      }
+      
+      renderRing() {
+        const svg = d3.select('#hash-ring');
+        svg.selectAll('*').remove();
+        
+        const width = 800;
+        const height = 400;
+        const centerX = width / 2;
+        const centerY = height / 2;
+        const radius = 150;
+        
+        // Draw ring
+        svg.append('circle')
+          .attr('cx', centerX)
+          .attr('cy', centerY)
+          .attr('r', radius)
+          .attr('fill', 'none')
+          .attr('stroke', '#ddd')
+          .attr('stroke-width', 2);
+        
+        // Color scale for nodes
+        const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+        
+        // Draw nodes
+        const sortedHashes = Array.from(this.ring.keys()).sort((a, b) => a - b);
+        
+        sortedHashes.forEach((hash, i) => {
+          const angle = (hash / this.maxHash) * Math.PI * 2 - Math.PI / 2;
+          const x = centerX + Math.cos(angle) * radius;
+          const y = centerY + Math.sin(angle) * radius;
+          
+          const node = this.ring.get(hash);
+          const isVirtual = node.includes(':');
+          
+          svg.append('circle')
+            .attr('class', isVirtual ? 'virtual-node' : 'ring-node')
+            .attr('cx', x)
+            .attr('cy', y)
+            .attr('r', isVirtual ? 3 : 6)
+            .attr('fill', colorScale(node.split(':')[0]))
+            .append('title')
+            .text(`${node} (${hash})`);
+        });
+        
+        // Draw legend
+        const legend = svg.append('g')
+          .attr('transform', 'translate(20, 20)');
+        
+        this.nodes.forEach((node, i) => {
+          legend.append('circle')
+            .attr('cx', 0)
+            .attr('cy', i * 25)
+            .attr('r', 6)
+            .attr('fill', colorScale(node));
+          
+          legend.append('text')
+            .attr('x', 15)
+            .attr('y', i * 25 + 5)
+            .text(node)
+            .style('font-size', '14px');
+        });
+      }
+      
+      updateRingStats() {
+        const stats = document.getElementById('ring-stats');
+        
+        if (this.nodes.length === 0) {
+          stats.innerHTML = 'No nodes in the ring';
+          return;
+        }
+        
+        // Calculate load distribution
+        const loads = new Map();
+        this.nodes.forEach(node => loads.set(node, 0));
+        
+        const sortedHashes = Array.from(this.ring.keys()).sort((a, b) => a - b);
+        
+        // Simulate key distribution
+        const numKeys = 1000;
+        for (let i = 0; i < numKeys; i++) {
+          const keyHash = this.hash('key' + i);
+          
+          // Find responsible node
+          let responsible = null;
+          for (const hash of sortedHashes) {
+            if (hash >= keyHash) {
+              responsible = this.ring.get(hash);
+              break;
+            }
+          }
+          
+          if (!responsible && sortedHashes.length > 0) {
+            responsible = this.ring.get(sortedHashes[0]);
+          }
+          
+          if (responsible) {
+            const node = responsible.split(':')[0];
+            loads.set(node, loads.get(node) + 1);
+          }
+        }
+        
+        // Display statistics
+        let html = '<strong>Load Distribution (1000 keys):</strong><br>';
+        for (const [node, load] of loads) {
+          const percentage = ((load / numKeys) * 100).toFixed(1);
+          html += `${node}: ${load} keys (${percentage}%)<br>`;
+        }
+        
+        // Calculate standard deviation
+        const values = Array.from(loads.values());
+        const mean = values.reduce((a, b) => a + b, 0) / values.length;
+        const variance = values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / values.length;
+        const stdDev = Math.sqrt(variance);
+        
+        html += `<br><strong>Standard Deviation:</strong> ${stdDev.toFixed(2)}`;
+        html += `<br><strong>Virtual Nodes per Physical Node:</strong> ${this.virtualNodes}`;
+        
+        stats.innerHTML = html;
+      }
+      
+      simulate() {
+        // Simulate adding/removing nodes and key redistribution
+        this.reset();
+        
+        const simulation = async () => {
+          // Add initial nodes
+          for (let i = 0; i < 3; i++) {
+            this.addNode();
+            await this.sleep(1000);
+          }
+          
+          // Add more nodes
+          for (let i = 0; i < 2; i++) {
+            this.addNode();
+            await this.sleep(1500);
+          }
+          
+          // Remove a node
+          this.removeNode();
+          await this.sleep(1500);
+        };
+        
+        simulation();
+      }
+      
+      sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
+    }
+    
+    // Analysis Visualizer
+    class AnalysisVisualizer {
+      constructor() {
+        this.analysisType = 'distribution';
+      }
+      
+      run() {
+        this.analysisType = document.getElementById('analysis-type').value;
+        
+        switch(this.analysisType) {
+          case 'distribution':
+            this.analyzeDistribution();
+            break;
+          case 'avalanche':
+            this.analyzeAvalanche();
+            break;
+          case 'collision-rate':
+            this.analyzeCollisionRate();
+            break;
+          case 'performance':
+            this.analyzePerformance();
+            break;
+        }
+      }
+      
+      analyzeDistribution() {
+        const functions = ['division', 'multiplication', 'universal', 'crypto'];
+        const tableSize = 32;
+        const numKeys = 1000;
+        
+        const data = [];
+        
+        functions.forEach(func => {
+          const distribution = new Array(tableSize).fill(0);
+          
+          for (let i = 0; i < numKeys; i++) {
+            const key = 'key' + i;
+            let hash;
+            
+            switch(func) {
+              case 'division':
+                hash = this.divisionHash(key, tableSize);
+                break;
+              case 'multiplication':
+                hash = this.multiplicationHash(key, tableSize);
+                break;
+              case 'universal':
+                hash = this.universalHash(key, tableSize);
+                break;
+              case 'crypto':
+                hash = this.cryptoHash(key, tableSize);
+                break;
+            }
+            
+            distribution[hash]++;
+          }
+          
+          data.push({
+            function: func,
+            distribution: distribution,
+            stdDev: this.calculateStdDev(distribution)
+          });
+        });
+        
+        this.drawDistributionComparison(data);
+      }
+      
+      divisionHash(key, size) {
+        let num = 0;
+        for (let i = 0; i < key.length; i++) {
+          num = num * 31 + key.charCodeAt(i);
+        }
+        return Math.abs(num) % size;
+      }
+      
+      multiplicationHash(key, size) {
+        const A = 0.6180339887;
+        let num = 0;
+        for (let i = 0; i < key.length; i++) {
+          num = num * 31 + key.charCodeAt(i);
+        }
+        return Math.floor(size * ((Math.abs(num) * A) % 1));
+      }
+      
+      universalHash(key, size) {
+        const p = 2147483659;
+        const a = 1234567;
+        const b = 987654;
+        let num = 0;
+        for (let i = 0; i < key.length; i++) {
+          num = num * 31 + key.charCodeAt(i);
+        }
+        return ((a * Math.abs(num) + b) % p) % size;
+      }
+      
+      cryptoHash(key, size) {
+        let hash = 5381;
+        for (let i = 0; i < key.length; i++) {
+          hash = ((hash << 5) + hash) + key.charCodeAt(i);
+          hash = hash & hash;
+        }
+        return Math.abs(hash) % size;
+      }
+      
+      calculateStdDev(distribution) {
+        const mean = distribution.reduce((a, b) => a + b, 0) / distribution.length;
+        const variance = distribution.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / distribution.length;
+        return Math.sqrt(variance);
+      }
+      
+      drawDistributionComparison(data) {
+        const svg = d3.select('#analysis-chart');
+        svg.selectAll('*').remove();
+        
+        const margin = {top: 20, right: 80, bottom: 50, left: 50};
+        const width = 900 - margin.left - margin.right;
+        const height = 400 - margin.top - margin.bottom;
+        
+        const g = svg.append('g')
+          .attr('transform', `translate(${margin.left},${margin.top})`);
+        
+        // Scales
+        const x = d3.scaleBand()
+          .domain(d3.range(32))
+          .range([0, width])
+          .padding(0.1);
+        
+        const y = d3.scaleLinear()
+          .domain([0, 60])
+          .range([height, 0]);
+        
+        const color = d3.scaleOrdinal()
+          .domain(data.map(d => d.function))
+          .range(['#1772d0', '#51cf66', '#ffd93d', '#ff6b6b']);
+        
+        // Draw bars for each function
+        data.forEach((funcData, funcIndex) => {
+          g.selectAll(`.bar-${funcIndex}`)
+            .data(funcData.distribution)
+            .enter().append('rect')
+            .attr('class', `bar-${funcIndex}`)
+            .attr('x', (d, i) => x(i) + (x.bandwidth() / 4) * funcIndex)
+            .attr('y', d => y(d))
+            .attr('width', x.bandwidth() / 4)
+            .attr('height', d => height - y(d))
+            .attr('fill', color(funcData.function))
+            .attr('opacity', 0.7);
+        });
+        
+        // Axes
+        g.append('g')
+          .attr('transform', `translate(0,${height})`)
+          .call(d3.axisBottom(x));
+        
+        g.append('g')
+          .call(d3.axisLeft(y));
+        
+        // Legend
+        const legend = g.append('g')
+          .attr('transform', `translate(${width - 100}, 20)`);
+        
+        data.forEach((d, i) => {
+          const legendRow = legend.append('g')
+            .attr('transform', `translate(0, ${i * 20})`);
+          
+          legendRow.append('rect')
+            .attr('width', 15)
+            .attr('height', 15)
+            .attr('fill', color(d.function));
+          
+          legendRow.append('text')
+            .attr('x', 20)
+            .attr('y', 12)
+            .text(`${d.function} (σ=${d.stdDev.toFixed(1)})`)
+            .style('font-size', '12px');
+        });
+        
+        // Title
+        g.append('text')
+          .attr('x', width / 2)
+          .attr('y', -5)
+          .attr('text-anchor', 'middle')
+          .text('Hash Distribution Comparison')
+          .style('font-weight', 'bold');
+      }
+      
+      analyzeAvalanche() {
+        // Implement avalanche effect analysis
+        const details = document.getElementById('analysis-details');
+        details.innerHTML = '<p>Avalanche Effect Analysis: Shows how small changes in input create large changes in hash output. Coming soon!</p>';
+      }
+      
+      analyzeCollisionRate() {
+        // Implement collision rate analysis
+        const details = document.getElementById('analysis-details');
+        details.innerHTML = '<p>Collision Rate Analysis: Measures collision frequency for different hash functions and load factors. Coming soon!</p>';
+      }
+      
+      analyzePerformance() {
+        // Implement performance comparison
+        const details = document.getElementById('analysis-details');
+        details.innerHTML = '<p>Performance Comparison: Benchmarks hash function speed and memory usage. Coming soon!</p>';
+      }
+      
+      export() {
+        alert('Export functionality coming soon!');
+      }
+    }
+    
+    // Initialize visualizers
+    const hashViz = new HashVisualizer();
+    const collisionViz = new CollisionVisualizer();
+    const bloomViz = new BloomFilterVisualizer();
+    const consistentViz = new ConsistentHashVisualizer();
+    const analysisViz = new AnalysisVisualizer();
+    
+    // Tab switching
+    function switchTab(tabName) {
+      // Hide all tabs
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // Remove active class from all tab buttons
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // Show selected tab
+      document.getElementById(tabName + '-tab').classList.add('active');
+      
+      // Set active tab button
+      event.target.classList.add('active');
+      
+      // Initialize tab if needed
+      switch(tabName) {
+        case 'basic':
+          hashViz.reset();
+          break;
+        case 'collision':
+          collisionViz.reset();
+          break;
+        case 'bloom':
+          bloomViz.reset();
+          break;
+        case 'consistent':
+          consistentViz.reset();
+          break;
+      }
+    }
+    
+    // Event listeners
+    document.getElementById('hash-function').addEventListener('change', () => {
+      hashViz.hashFunction = document.getElementById('hash-function').value;
+      hashViz.updateDescription();
+    });
+    
+    document.getElementById('table-size').addEventListener('change', () => {
+      hashViz.reset();
+    });
+    
+    document.getElementById('collision-strategy').addEventListener('change', () => {
+      collisionViz.reset();
+    });
+    
+    // Initialize on load
+    window.onload = function() {
+      hashViz.reset();
+      hashViz.generateRandomData();
+    };
+  </script>
+</body>
+</html>

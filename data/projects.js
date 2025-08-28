@@ -2,17 +2,6 @@
 const projects = [
   // Machine Learning Projects
   {
-    id: 'cifar10-classification',
-    title: 'CIFAR-10 Image Classification',
-    description: 'Deep learning project implementing various CNN architectures for CIFAR-10 image classification. Explores different models including ResNet, VGG, and custom architectures with data augmentation and optimization techniques.',
-    tech: 'PyTorch, Python, CNNs, Computer Vision',
-    thumbnail: 'images/projects/cifar10-thumb.jpg',
-    demo_url: null,
-    code_url: 'https://github.com/Mac-Huang/CIFAR10-Image-Classification',
-    featured: true
-  },
-  
-  {
     id: 'word2vec',
     title: 'Word2Vec Implementation',
     description: 'Implementation of Word2Vec models including Skip-gram and CBOW architectures for word embeddings. Includes training on custom corpora and visualization of learned embeddings.',
@@ -122,6 +111,39 @@ const projects = [
     demo_url: 'demos/graphs.html',
     code_url: 'https://github.com/mac-huang/graph-algorithms',
     featured: false
+  },
+  
+  {
+    id: 'hash-collision-analysis',
+    title: 'Hash Function & Collision Analysis',
+    description: 'Interactive visualization of hash functions, collision resolution strategies, and advanced applications like Bloom filters and consistent hashing. Explore distribution patterns, analyze collision rates, and understand how different hash functions perform.',
+    tech: 'JavaScript, D3.js, Canvas, Algorithms',
+    thumbnail: 'images/projects/hashing-thumb.jpg',
+    demo_url: 'demos/hashing.html',
+    code_url: 'https://github.com/mac-huang/hash-visualization',
+    featured: true
+  },
+  
+  {
+    id: 'tensor-operations',
+    title: 'Interactive Tensor Operations Visualizer',
+    description: 'Understand fundamental tensor operations in neural networks through interactive visualizations. Features matrix multiplication animation, 2D convolution demonstrations, tensor reshaping, broadcasting rules, and backpropagation visualization. Perfect for learning deep learning mathematics.',
+    tech: 'JavaScript, D3.js, Deep Learning, Linear Algebra',
+    thumbnail: 'images/projects/tensor-ops-thumb.jpg',
+    demo_url: 'demos/tensor-ops.html',
+    code_url: 'https://github.com/mac-huang/tensor-operations',
+    featured: true
+  },
+  
+  {
+    id: 'heap-allocator',
+    title: 'Heap Allocator Visualization',
+    description: 'Interactive visualization of heap memory allocation strategies from CS107. Compare implicit and explicit free-list implementations, observe block splitting and coalescing, understand fragmentation patterns, and explore memory management algorithms. Built to demonstrate concepts from my A+ Stanford CS107 course.',
+    tech: 'JavaScript, D3.js, Systems Programming, Memory Management',
+    thumbnail: 'images/projects/heap-allocator-thumb.jpg',
+    demo_url: 'demos/heap-allocator.html',
+    code_url: null,
+    featured: true
   },
   
   {

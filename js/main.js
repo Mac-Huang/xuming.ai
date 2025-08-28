@@ -259,27 +259,28 @@ function addFilterButtons() {
   const filterContainer = document.getElementById('publication-filters');
   if (!filterContainer) return;
   
-  const filters = [
-    { label: 'All', value: 'all' },
-    { label: 'Selected', value: 'selected' },
-    { label: 'Conference', value: 'conference' },
-    { label: 'Journal', value: 'journal' },
-    { label: 'Preprint', value: 'preprint' }
-  ];
+  // No filters needed - commented out for now
+  // const filters = [
+  //   { label: 'All', value: 'all' },
+  //   { label: 'Selected', value: 'selected' },
+  //   { label: 'Conference', value: 'conference' },
+  //   { label: 'Journal', value: 'journal' },
+  //   { label: 'Preprint', value: 'preprint' }
+  // ];
   
-  filters.forEach(filter => {
-    const btn = document.createElement('button');
-    btn.className = 'filter-btn';
-    btn.dataset.filter = filter.value;
-    btn.textContent = filter.label;
-    btn.onclick = () => filterPublications(filter.value);
-    
-    if (filter.value === currentFilter) {
-      btn.classList.add('active');
-    }
-    
-    filterContainer.appendChild(btn);
-  });
+  // filters.forEach(filter => {
+  //   const btn = document.createElement('button');
+  //   btn.className = 'filter-btn';
+  //   btn.dataset.filter = filter.value;
+  //   btn.textContent = filter.label;
+  //   btn.onclick = () => filterPublications(filter.value);
+  //   
+  //   if (filter.value === currentFilter) {
+  //     btn.classList.add('active');
+  //   }
+  //   
+  //   filterContainer.appendChild(btn);
+  // });
 }
 
 // Create a project row following Jon Barron's style

@@ -1,0 +1,1799 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Tensor Operations Visualizer - Xuming Huang</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../stylesheet.css">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .control-panel {
+      background: #f9f9f9;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    
+    .control-group {
+      display: inline-block;
+      margin-right: 20px;
+      margin-bottom: 10px;
+    }
+    
+    .control-group label {
+      font-weight: bold;
+      margin-right: 8px;
+    }
+    
+    .control-panel button {
+      padding: 8px 15px;
+      background: #1772d0;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 0 5px;
+      font-family: 'EB Garamond', Georgia, serif;
+      font-size: 14px;
+    }
+    
+    .control-panel button:hover {
+      background: #1455a3;
+    }
+    
+    .control-panel button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    
+    .control-panel select, .control-panel input {
+      padding: 6px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-family: 'EB Garamond', Georgia, serif;
+    }
+    
+    /* Tabs */
+    .tabs {
+      display: flex;
+      border-bottom: 2px solid #ddd;
+      margin-bottom: 20px;
+    }
+    
+    .tab {
+      padding: 10px 20px;
+      cursor: pointer;
+      background: #f5f5f5;
+      border: 1px solid #ddd;
+      border-bottom: none;
+      margin-right: 5px;
+      border-radius: 4px 4px 0 0;
+      transition: all 0.3s;
+    }
+    
+    .tab.active {
+      background: white;
+      border-color: #1772d0;
+      border-bottom: 2px solid white;
+      margin-bottom: -2px;
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    /* Visualization areas */
+    .visualization-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin: 20px 0;
+    }
+    
+    .visualization-panel {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      min-height: 400px;
+    }
+    
+    .visualization-panel.full-width {
+      grid-column: span 2;
+    }
+    
+    .panel-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #333;
+      border-bottom: 2px solid #1772d0;
+      padding-bottom: 8px;
+    }
+    
+    /* Matrix visualization */
+    .matrix {
+      display: inline-block;
+      margin: 10px;
+      position: relative;
+    }
+    
+    .matrix-bracket {
+      position: absolute;
+      width: 8px;
+      height: 100%;
+      border: 2px solid #333;
+    }
+    
+    .matrix-bracket.left {
+      left: -10px;
+      border-right: none;
+    }
+    
+    .matrix-bracket.right {
+      right: -10px;
+      border-left: none;
+    }
+    
+    .matrix-grid {
+      display: inline-block;
+      border-spacing: 5px;
+    }
+    
+    .matrix-cell {
+      width: 50px;
+      height: 50px;
+      border: 1px solid #ddd;
+      text-align: center;
+      line-height: 50px;
+      font-size: 16px;
+      font-family: 'Courier New', monospace;
+      background: white;
+      transition: all 0.3s ease;
+      display: inline-block;
+      margin: 2px;
+      border-radius: 4px;
+    }
+    
+    .matrix-cell.highlighted {
+      background: #ffd93d !important;
+      border-color: #ffa500;
+      transform: scale(1.1);
+      font-weight: bold;
+    }
+    
+    .matrix-cell.active-row {
+      background: #e3f2fd;
+    }
+    
+    .matrix-cell.active-col {
+      background: #e8f5e9;
+    }
+    
+    .matrix-cell.result {
+      background: #51cf66;
+      color: white;
+      font-weight: bold;
+    }
+    
+    /* Operation display */
+    .operation-display {
+      font-family: 'Courier New', monospace;
+      font-size: 18px;
+      text-align: center;
+      margin: 20px 0;
+      padding: 15px;
+      background: #f5f5f5;
+      border-radius: 8px;
+      min-height: 60px;
+    }
+    
+    .operation-step {
+      color: #1772d0;
+      font-weight: bold;
+    }
+    
+    /* Convolution visualization */
+    .conv-grid {
+      display: inline-block;
+      margin: 20px;
+    }
+    
+    .conv-cell {
+      width: 40px;
+      height: 40px;
+      border: 1px solid #ddd;
+      display: inline-block;
+      text-align: center;
+      line-height: 40px;
+      font-size: 14px;
+      margin: 1px;
+      transition: all 0.3s;
+    }
+    
+    .conv-cell.kernel-overlap {
+      background: rgba(255, 217, 61, 0.5);
+      border-color: #ffa500;
+    }
+    
+    .kernel-viz {
+      display: inline-block;
+      margin: 10px;
+      padding: 10px;
+      background: #f0f0f0;
+      border-radius: 8px;
+    }
+    
+    .kernel-cell {
+      width: 35px;
+      height: 35px;
+      border: 1px solid #999;
+      display: inline-block;
+      text-align: center;
+      line-height: 35px;
+      font-size: 12px;
+      margin: 1px;
+      background: white;
+      font-weight: bold;
+    }
+    
+    /* Tensor reshape visualization */
+    .tensor-shape {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 20px 0;
+    }
+    
+    .shape-transition {
+      margin: 0 20px;
+      font-size: 24px;
+      color: #1772d0;
+    }
+    
+    .tensor-3d {
+      perspective: 1000px;
+      display: inline-block;
+    }
+    
+    .tensor-3d-inner {
+      transform-style: preserve-3d;
+      transition: transform 0.6s;
+    }
+    
+    /* Broadcasting visualization */
+    .broadcast-grid {
+      display: grid;
+      gap: 20px;
+      margin: 20px 0;
+    }
+    
+    .broadcast-tensor {
+      padding: 15px;
+      background: #f9f9f9;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      transition: all 0.3s;
+    }
+    
+    .broadcast-tensor.compatible {
+      border-color: #51cf66;
+      background: #e8f5e9;
+    }
+    
+    .broadcast-tensor.incompatible {
+      border-color: #ff6b6b;
+      background: #ffebee;
+    }
+    
+    .dimension-label {
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 10px;
+    }
+    
+    /* Animation controls */
+    .animation-controls {
+      text-align: center;
+      margin: 20px 0;
+      padding: 15px;
+      background: #f5f5f5;
+      border-radius: 8px;
+    }
+    
+    .speed-control {
+      display: inline-block;
+      margin: 0 20px;
+    }
+    
+    .speed-control input {
+      width: 150px;
+      vertical-align: middle;
+    }
+    
+    .step-indicator {
+      display: inline-block;
+      padding: 8px 15px;
+      background: #e3f2fd;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      margin-left: 20px;
+    }
+    
+    /* Info boxes */
+    .info-box {
+      background: #fffde7;
+      border-left: 4px solid #ffd93d;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+    
+    .formula {
+      font-family: 'Courier New', monospace;
+      background: #f5f5f5;
+      padding: 10px;
+      border-radius: 4px;
+      margin: 10px 0;
+      text-align: center;
+      font-size: 14px;
+    }
+    
+    /* Color coding for values */
+    .value-negative {
+      background: linear-gradient(135deg, #4dabf7, #339af0);
+      color: white;
+    }
+    
+    .value-zero {
+      background: #f8f9fa;
+      color: #868e96;
+    }
+    
+    .value-positive {
+      background: linear-gradient(135deg, #ff8787, #ff6b6b);
+      color: white;
+    }
+    
+    /* Animations */
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    
+    @keyframes slide {
+      0% { opacity: 0; transform: translateX(-20px); }
+      100% { opacity: 1; transform: translateX(0); }
+    }
+    
+    .animated {
+      animation: pulse 0.5s ease-in-out;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .visualization-container {
+        grid-template-columns: 1fr;
+      }
+      
+      .matrix-cell {
+        width: 40px;
+        height: 40px;
+        line-height: 40px;
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <table style="width:100%;max-width:1200px;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+    <tbody>
+      <tr>
+        <td style="padding:20px;">
+          <p><a href="../projects.html">← Back to Projects</a></p>
+          
+          <heading>Interactive Tensor Operations Visualizer</heading>
+          <p>Understand fundamental tensor operations in neural networks through interactive visualizations. Perfect for learning deep learning mathematics.</p>
+          
+          <!-- Tabs -->
+          <div class="tabs">
+            <div class="tab active" onclick="switchTab('matmul')">Matrix Multiplication</div>
+            <div class="tab" onclick="switchTab('convolution')">Convolution</div>
+            <div class="tab" onclick="switchTab('reshape')">Tensor Reshaping</div>
+            <div class="tab" onclick="switchTab('broadcasting')">Broadcasting</div>
+            <div class="tab" onclick="switchTab('backprop')">Backpropagation</div>
+          </div>
+          
+          <!-- Matrix Multiplication Tab -->
+          <div id="matmul-tab" class="tab-content active">
+            <div class="control-panel">
+              <div class="control-group">
+                <label>Matrix A Size:</label>
+                <select id="matrixA-size">
+                  <option value="2x2">2×2</option>
+                  <option value="2x3">2×3</option>
+                  <option value="3x2">3×2</option>
+                  <option value="3x3" selected>3×3</option>
+                  <option value="4x4">4×4</option>
+                </select>
+              </div>
+              
+              <div class="control-group">
+                <label>Matrix B Size:</label>
+                <select id="matrixB-size">
+                  <option value="2x2">2×2</option>
+                  <option value="3x2">3×2</option>
+                  <option value="2x3">2×3</option>
+                  <option value="3x3" selected>3×3</option>
+                  <option value="4x4">4×4</option>
+                </select>
+              </div>
+              
+              <button onclick="tensorViz.randomizeMatrices()">Random Values</button>
+              <button onclick="tensorViz.identityMatrix()">Identity</button>
+              <button onclick="tensorViz.startMatMul()" id="matmul-start">Start Animation</button>
+              <button onclick="tensorViz.stepMatMul()">Step</button>
+              <button onclick="tensorViz.resetMatMul()">Reset</button>
+            </div>
+            
+            <div class="visualization-container">
+              <div class="visualization-panel">
+                <div class="panel-title">Input Matrices</div>
+                <div style="text-align: center;">
+                  <div id="matrixA" class="matrix"></div>
+                  <span style="font-size: 24px; margin: 0 20px;">×</span>
+                  <div id="matrixB" class="matrix"></div>
+                </div>
+                
+                <div class="operation-display" id="matmul-operation">
+                  Click "Start Animation" to begin
+                </div>
+              </div>
+              
+              <div class="visualization-panel">
+                <div class="panel-title">Result Matrix</div>
+                <div style="text-align: center;">
+                  <div id="matrixResult" class="matrix"></div>
+                </div>
+                
+                <div class="formula" id="matmul-formula">
+                  C[i,j] = Σ(A[i,k] × B[k,j]) for k = 0 to n
+                </div>
+              </div>
+            </div>
+            
+            <div class="animation-controls">
+              <div class="speed-control">
+                <label>Speed:</label>
+                <input type="range" id="matmul-speed" min="100" max="2000" value="800">
+                <span id="matmul-speed-value">800ms</span>
+              </div>
+              <div class="step-indicator">
+                Step: <span id="matmul-step">0</span> / <span id="matmul-total">0</span>
+              </div>
+            </div>
+            
+            <div class="info-box">
+              <strong>Matrix Multiplication:</strong> The foundation of neural network computations. Each element in the result matrix is computed by taking the dot product of a row from matrix A and a column from matrix B. This operation is used in every layer of a neural network for forward propagation.
+            </div>
+          </div>
+          
+          <!-- Convolution Tab -->
+          <div id="convolution-tab" class="tab-content">
+            <div class="control-panel">
+              <div class="control-group">
+                <label>Input Size:</label>
+                <select id="conv-input-size">
+                  <option value="5">5×5</option>
+                  <option value="7" selected>7×7</option>
+                  <option value="9">9×9</option>
+                </select>
+              </div>
+              
+              <div class="control-group">
+                <label>Kernel:</label>
+                <select id="conv-kernel">
+                  <option value="edge-h">Edge Detection (Horizontal)</option>
+                  <option value="edge-v">Edge Detection (Vertical)</option>
+                  <option value="blur">Gaussian Blur</option>
+                  <option value="sharpen">Sharpen</option>
+                  <option value="identity">Identity</option>
+                  <option value="custom">Custom</option>
+                </select>
+              </div>
+              
+              <div class="control-group">
+                <label>Stride:</label>
+                <select id="conv-stride">
+                  <option value="1" selected>1</option>
+                  <option value="2">2</option>
+                </select>
+              </div>
+              
+              <div class="control-group">
+                <label>Padding:</label>
+                <select id="conv-padding">
+                  <option value="valid" selected>Valid (No padding)</option>
+                  <option value="same">Same (Zero padding)</option>
+                </select>
+              </div>
+              
+              <button onclick="convViz.generateInput()">Random Input</button>
+              <button onclick="convViz.startConvolution()">Start Convolution</button>
+              <button onclick="convViz.stepConvolution()">Step</button>
+              <button onclick="convViz.reset()">Reset</button>
+            </div>
+            
+            <div class="visualization-container">
+              <div class="visualization-panel">
+                <div class="panel-title">Input & Kernel</div>
+                <div style="display: flex; justify-content: space-around; align-items: center;">
+                  <div>
+                    <h4 style="text-align: center;">Input</h4>
+                    <div id="conv-input" class="conv-grid"></div>
+                  </div>
+                  <div>
+                    <h4 style="text-align: center;">Kernel</h4>
+                    <div id="conv-kernel-viz" class="kernel-viz"></div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="visualization-panel">
+                <div class="panel-title">Output Feature Map</div>
+                <div style="text-align: center;">
+                  <div id="conv-output" class="conv-grid"></div>
+                  <div class="formula" style="margin-top: 20px;">
+                    Output[i,j] = Σ(Input[i+m, j+n] × Kernel[m,n])
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="info-box">
+              <strong>2D Convolution:</strong> The core operation in Convolutional Neural Networks (CNNs). A kernel (filter) slides across the input, computing dot products to produce feature maps. Different kernels detect different features like edges, corners, or textures.
+            </div>
+          </div>
+          
+          <!-- Tensor Reshaping Tab -->
+          <div id="reshape-tab" class="tab-content">
+            <div class="control-panel">
+              <div class="control-group">
+                <label>Operation:</label>
+                <select id="reshape-operation">
+                  <option value="reshape">Reshape</option>
+                  <option value="flatten">Flatten</option>
+                  <option value="transpose">Transpose</option>
+                  <option value="permute">Permute Dimensions</option>
+                  <option value="squeeze">Squeeze</option>
+                  <option value="unsqueeze">Unsqueeze</option>
+                </select>
+              </div>
+              
+              <div class="control-group">
+                <label>Input Shape:</label>
+                <input type="text" id="reshape-input" value="(2, 3, 4)" style="width: 100px;">
+              </div>
+              
+              <div class="control-group">
+                <label>Target Shape:</label>
+                <input type="text" id="reshape-target" value="(6, 4)" style="width: 100px;">
+              </div>
+              
+              <button onclick="reshapeViz.visualize()">Visualize</button>
+              <button onclick="reshapeViz.animate()">Animate Transition</button>
+              <button onclick="reshapeViz.reset()">Reset</button>
+            </div>
+            
+            <div class="visualization-panel full-width">
+              <div class="panel-title">Tensor Reshaping Visualization</div>
+              <div class="tensor-shape">
+                <div id="reshape-before"></div>
+                <div class="shape-transition">→</div>
+                <div id="reshape-after"></div>
+              </div>
+              
+              <div style="text-align: center; margin-top: 30px;">
+                <div id="reshape-explanation" style="padding: 15px; background: #f5f5f5; border-radius: 8px;">
+                  <strong>Memory Layout:</strong>
+                  <div id="memory-layout" style="margin-top: 10px; font-family: monospace;"></div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="info-box">
+              <strong>Tensor Reshaping:</strong> Essential operations for preparing data between neural network layers. Understanding how data is reorganized in memory helps debug dimension mismatches and optimize model architectures.
+            </div>
+          </div>
+          
+          <!-- Broadcasting Tab -->
+          <div id="broadcasting-tab" class="tab-content">
+            <div class="control-panel">
+              <div class="control-group">
+                <label>Tensor A Shape:</label>
+                <input type="text" id="broadcast-a" value="(3, 1)" style="width: 100px;">
+              </div>
+              
+              <div class="control-group">
+                <label>Tensor B Shape:</label>
+                <input type="text" id="broadcast-b" value="(1, 4)" style="width: 100px;">
+              </div>
+              
+              <div class="control-group">
+                <label>Operation:</label>
+                <select id="broadcast-op">
+                  <option value="add">Addition (+)</option>
+                  <option value="multiply">Multiplication (×)</option>
+                  <option value="subtract">Subtraction (-)</option>
+                  <option value="divide">Division (÷)</option>
+                </select>
+              </div>
+              
+              <button onclick="broadcastViz.check()">Check Compatibility</button>
+              <button onclick="broadcastViz.visualize()">Visualize Broadcasting</button>
+              <button onclick="broadcastViz.showExamples()">Common Examples</button>
+            </div>
+            
+            <div class="visualization-container">
+              <div class="visualization-panel">
+                <div class="panel-title">Broadcasting Rules</div>
+                <div id="broadcast-rules" style="padding: 15px;">
+                  <ol style="line-height: 1.8;">
+                    <li>Arrays with fewer dimensions are padded with ones on the left</li>
+                    <li>Dimensions with size 1 are stretched to match the other array</li>
+                    <li>Dimensions must be equal or one of them must be 1</li>
+                    <li>The result shape is the maximum along each dimension</li>
+                  </ol>
+                </div>
+                
+                <div id="broadcast-check-result" style="margin-top: 20px;"></div>
+              </div>
+              
+              <div class="visualization-panel">
+                <div class="panel-title">Visual Representation</div>
+                <div id="broadcast-visual" style="text-align: center; padding: 20px;">
+                  <div id="broadcast-tensor-a" class="broadcast-tensor"></div>
+                  <div style="font-size: 24px; margin: 20px 0;" id="broadcast-operator">+</div>
+                  <div id="broadcast-tensor-b" class="broadcast-tensor"></div>
+                  <div style="font-size: 24px; margin: 20px 0;">=</div>
+                  <div id="broadcast-result" class="broadcast-tensor"></div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="info-box">
+              <strong>Broadcasting:</strong> A powerful mechanism that allows NumPy/PyTorch to perform operations on arrays of different shapes. Understanding broadcasting prevents many shape-related errors and enables efficient vectorized operations.
+            </div>
+          </div>
+          
+          <!-- Backpropagation Tab -->
+          <div id="backprop-tab" class="tab-content">
+            <div class="control-panel">
+              <div class="control-group">
+                <label>Network:</label>
+                <select id="backprop-network">
+                  <option value="simple">Simple (2-3-1)</option>
+                  <option value="medium">Medium (3-4-2)</option>
+                  <option value="deep">Deep (2-4-4-1)</option>
+                </select>
+              </div>
+              
+              <div class="control-group">
+                <label>Activation:</label>
+                <select id="backprop-activation">
+                  <option value="sigmoid">Sigmoid</option>
+                  <option value="relu">ReLU</option>
+                  <option value="tanh">Tanh</option>
+                </select>
+              </div>
+              
+              <button onclick="backpropViz.forward()">Forward Pass</button>
+              <button onclick="backpropViz.backward()">Backward Pass</button>
+              <button onclick="backpropViz.step()">Step</button>
+              <button onclick="backpropViz.reset()">Reset</button>
+            </div>
+            
+            <div class="visualization-panel full-width">
+              <div class="panel-title">Backpropagation Visualization</div>
+              <svg id="backprop-network-viz" width="100%" height="400"></svg>
+              
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">
+                <div style="padding: 15px; background: #e3f2fd; border-radius: 8px;">
+                  <strong>Forward Pass:</strong>
+                  <div id="forward-calculation" style="font-family: monospace; margin-top: 10px;"></div>
+                </div>
+                <div style="padding: 15px; background: #ffebee; border-radius: 8px;">
+                  <strong>Backward Pass:</strong>
+                  <div id="backward-calculation" style="font-family: monospace; margin-top: 10px;"></div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="info-box">
+              <strong>Backpropagation:</strong> The algorithm for training neural networks by computing gradients using the chain rule. Watch how errors propagate backward through the network and update weights to minimize the loss function.
+            </div>
+          </div>
+          
+          <!-- Educational Content -->
+          <div style="margin-top: 40px;">
+            <heading>About Tensor Operations</heading>
+            <p>
+              Tensor operations are the mathematical foundation of deep learning. Every neural network computation, from simple linear layers to complex attention mechanisms, relies on these fundamental operations.
+            </p>
+            
+            <heading>Key Concepts</heading>
+            <ul>
+              <li><strong>Matrix Multiplication:</strong> The core operation for linear transformations in neural networks</li>
+              <li><strong>Convolution:</strong> Sliding window operations that enable CNNs to detect local patterns</li>
+              <li><strong>Broadcasting:</strong> Efficient element-wise operations on tensors of different shapes</li>
+              <li><strong>Reshaping:</strong> Changing tensor dimensions without altering the underlying data</li>
+              <li><strong>Backpropagation:</strong> Computing gradients to update network weights during training</li>
+            </ul>
+            
+            <heading>Common Applications</heading>
+            <ul>
+              <li><strong>Linear Layers:</strong> Y = XW + b (matrix multiplication with broadcasting)</li>
+              <li><strong>CNN Layers:</strong> Feature extraction through convolution operations</li>
+              <li><strong>Attention Mechanisms:</strong> Q×K^T for computing attention scores</li>
+              <li><strong>Batch Processing:</strong> Broadcasting for efficient batch operations</li>
+              <li><strong>Loss Computation:</strong> Reduction operations across batch dimensions</li>
+            </ul>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <script>
+    // Tensor Operations Visualizer
+    class TensorOperationsVisualizer {
+      constructor() {
+        this.matrixA = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
+        this.matrixB = [[9, 8, 7], [6, 5, 4], [3, 2, 1]];
+        this.matrixResult = [];
+        this.currentStep = 0;
+        this.animating = false;
+        this.speed = 800;
+        
+        this.init();
+      }
+      
+      init() {
+        this.renderMatrices();
+        this.setupEventListeners();
+      }
+      
+      renderMatrices() {
+        this.renderMatrix('matrixA', this.matrixA, 'A');
+        this.renderMatrix('matrixB', this.matrixB, 'B');
+        this.renderMatrix('matrixResult', this.matrixResult, 'C');
+      }
+      
+      renderMatrix(elementId, matrix, label) {
+        const container = document.getElementById(elementId);
+        container.innerHTML = '';
+        
+        // Create matrix visualization
+        const matrixDiv = document.createElement('div');
+        matrixDiv.style.display = 'inline-block';
+        matrixDiv.style.position = 'relative';
+        
+        // Add brackets
+        const leftBracket = document.createElement('div');
+        leftBracket.className = 'matrix-bracket left';
+        matrixDiv.appendChild(leftBracket);
+        
+        const rightBracket = document.createElement('div');
+        rightBracket.className = 'matrix-bracket right';
+        matrixDiv.appendChild(rightBracket);
+        
+        // Add matrix grid
+        const grid = document.createElement('div');
+        grid.className = 'matrix-grid';
+        
+        matrix.forEach((row, i) => {
+          const rowDiv = document.createElement('div');
+          row.forEach((val, j) => {
+            const cell = document.createElement('div');
+            cell.className = 'matrix-cell';
+            cell.id = `${elementId}-${i}-${j}`;
+            cell.textContent = val !== undefined ? val : '';
+            
+            // Color code based on value
+            if (val !== undefined) {
+              if (val < 0) cell.classList.add('value-negative');
+              else if (val === 0) cell.classList.add('value-zero');
+              else cell.classList.add('value-positive');
+            }
+            
+            rowDiv.appendChild(cell);
+          });
+          grid.appendChild(rowDiv);
+        });
+        
+        matrixDiv.appendChild(grid);
+        
+        // Add label
+        const labelDiv = document.createElement('div');
+        labelDiv.style.textAlign = 'center';
+        labelDiv.style.marginTop = '10px';
+        labelDiv.style.fontWeight = 'bold';
+        labelDiv.textContent = label;
+        
+        container.appendChild(matrixDiv);
+        container.appendChild(labelDiv);
+      }
+      
+      async startMatMul() {
+        if (this.animating) return;
+        
+        this.animating = true;
+        this.currentStep = 0;
+        
+        const rows = this.matrixA.length;
+        const cols = this.matrixB[0].length;
+        const inner = this.matrixA[0].length;
+        
+        // Initialize result matrix
+        this.matrixResult = Array(rows).fill().map(() => Array(cols).fill(0));
+        
+        // Calculate total steps
+        const totalSteps = rows * cols;
+        document.getElementById('matmul-total').textContent = totalSteps;
+        
+        // Animate matrix multiplication
+        for (let i = 0; i < rows; i++) {
+          for (let j = 0; j < cols; j++) {
+            if (!this.animating) break;
+            
+            await this.animateStep(i, j, inner);
+            this.currentStep++;
+            document.getElementById('matmul-step').textContent = this.currentStep;
+          }
+        }
+        
+        this.animating = false;
+      }
+      
+      async animateStep(row, col, inner) {
+        // Clear previous highlights
+        this.clearHighlights();
+        
+        // Highlight active row in matrix A
+        for (let k = 0; k < inner; k++) {
+          const cellA = document.getElementById(`matrixA-${row}-${k}`);
+          if (cellA) cellA.classList.add('active-row');
+        }
+        
+        // Highlight active column in matrix B
+        for (let k = 0; k < inner; k++) {
+          const cellB = document.getElementById(`matrixB-${k}-${col}`);
+          if (cellB) cellB.classList.add('active-col');
+        }
+        
+        // Calculate dot product with animation
+        let sum = 0;
+        let operationText = '';
+        
+        for (let k = 0; k < inner; k++) {
+          // Highlight current elements
+          const cellA = document.getElementById(`matrixA-${row}-${k}`);
+          const cellB = document.getElementById(`matrixB-${k}-${col}`);
+          
+          if (cellA) cellA.classList.add('highlighted');
+          if (cellB) cellB.classList.add('highlighted');
+          
+          const valA = this.matrixA[row][k];
+          const valB = this.matrixB[k][col];
+          const product = valA * valB;
+          sum += product;
+          
+          operationText = `A[${row},${k}] × B[${k},${col}] = ${valA} × ${valB} = ${product}`;
+          
+          if (k > 0) {
+            operationText += ` → Sum: ${sum}`;
+          }
+          
+          document.getElementById('matmul-operation').innerHTML = 
+            `<div class="operation-step">${operationText}</div>`;
+          
+          await this.sleep(this.speed / inner);
+          
+          if (cellA) cellA.classList.remove('highlighted');
+          if (cellB) cellB.classList.remove('highlighted');
+        }
+        
+        // Update result
+        this.matrixResult[row][col] = sum;
+        this.renderMatrix('matrixResult', this.matrixResult, 'C');
+        
+        // Highlight result cell
+        const resultCell = document.getElementById(`matrixResult-${row}-${col}`);
+        if (resultCell) {
+          resultCell.classList.add('result');
+          resultCell.classList.add('animated');
+        }
+        
+        document.getElementById('matmul-operation').innerHTML = 
+          `<div class="operation-step">C[${row},${col}] = ${sum}</div>`;
+        
+        await this.sleep(this.speed);
+      }
+      
+      clearHighlights() {
+        document.querySelectorAll('.matrix-cell').forEach(cell => {
+          cell.classList.remove('highlighted', 'active-row', 'active-col');
+        });
+      }
+      
+      randomizeMatrices() {
+        const sizeA = document.getElementById('matrixA-size').value.split('x');
+        const sizeB = document.getElementById('matrixB-size').value.split('x');
+        
+        const rowsA = parseInt(sizeA[0]);
+        const colsA = parseInt(sizeA[1]);
+        const rowsB = parseInt(sizeB[0]);
+        const colsB = parseInt(sizeB[1]);
+        
+        // Check compatibility
+        if (colsA !== rowsB) {
+          alert('Matrix dimensions incompatible! Columns of A must equal rows of B.');
+          return;
+        }
+        
+        // Generate random matrices
+        this.matrixA = Array(rowsA).fill().map(() => 
+          Array(colsA).fill().map(() => Math.floor(Math.random() * 10) - 5)
+        );
+        
+        this.matrixB = Array(rowsB).fill().map(() => 
+          Array(colsB).fill().map(() => Math.floor(Math.random() * 10) - 5)
+        );
+        
+        this.matrixResult = [];
+        this.renderMatrices();
+      }
+      
+      identityMatrix() {
+        const size = 3;
+        this.matrixA = Array(size).fill().map((_, i) => 
+          Array(size).fill().map((_, j) => i === j ? 1 : 0)
+        );
+        this.matrixB = Array(size).fill().map((_, i) => 
+          Array(size).fill().map((_, j) => i === j ? 1 : 0)
+        );
+        this.matrixResult = [];
+        this.renderMatrices();
+      }
+      
+      stepMatMul() {
+        // Implement step-by-step execution
+        if (!this.animating) {
+          this.startMatMul();
+        }
+      }
+      
+      resetMatMul() {
+        this.animating = false;
+        this.currentStep = 0;
+        this.matrixResult = [];
+        this.clearHighlights();
+        this.renderMatrices();
+        document.getElementById('matmul-operation').textContent = 'Click "Start Animation" to begin';
+        document.getElementById('matmul-step').textContent = '0';
+      }
+      
+      setupEventListeners() {
+        // Speed control
+        document.getElementById('matmul-speed').addEventListener('input', (e) => {
+          this.speed = parseInt(e.target.value);
+          document.getElementById('matmul-speed-value').textContent = this.speed + 'ms';
+        });
+        
+        // Matrix size changes
+        document.getElementById('matrixA-size').addEventListener('change', () => {
+          this.randomizeMatrices();
+        });
+        
+        document.getElementById('matrixB-size').addEventListener('change', () => {
+          this.randomizeMatrices();
+        });
+      }
+      
+      sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
+    }
+    
+    // Convolution Visualizer
+    class ConvolutionVisualizer {
+      constructor() {
+        this.inputSize = 7;
+        this.input = [];
+        this.output = [];
+        this.kernels = {
+          'edge-h': [[-1, -1, -1], [0, 0, 0], [1, 1, 1]],
+          'edge-v': [[-1, 0, 1], [-1, 0, 1], [-1, 0, 1]],
+          'blur': [[1/16, 2/16, 1/16], [2/16, 4/16, 2/16], [1/16, 2/16, 1/16]],
+          'sharpen': [[0, -1, 0], [-1, 5, -1], [0, -1, 0]],
+          'identity': [[0, 0, 0], [0, 1, 0], [0, 0, 0]],
+          'custom': [[1, 0, -1], [2, 0, -2], [1, 0, -1]]
+        };
+        this.currentKernel = this.kernels['edge-h'];
+        this.stride = 1;
+        this.padding = 'valid';
+        this.animating = false;
+        
+        this.init();
+      }
+      
+      init() {
+        this.generateInput();
+        this.renderKernel();
+        this.setupEventListeners();
+      }
+      
+      generateInput() {
+        this.inputSize = parseInt(document.getElementById('conv-input-size').value);
+        this.input = Array(this.inputSize).fill().map(() => 
+          Array(this.inputSize).fill().map(() => Math.floor(Math.random() * 10))
+        );
+        this.renderInput();
+      }
+      
+      renderInput() {
+        const container = document.getElementById('conv-input');
+        container.innerHTML = '';
+        
+        this.input.forEach((row, i) => {
+          const rowDiv = document.createElement('div');
+          row.forEach((val, j) => {
+            const cell = document.createElement('div');
+            cell.className = 'conv-cell';
+            cell.id = `conv-input-${i}-${j}`;
+            cell.textContent = val;
+            
+            // Color based on value
+            const intensity = val / 10;
+            cell.style.background = `rgba(23, 114, 208, ${intensity})`;
+            cell.style.color = intensity > 0.5 ? 'white' : 'black';
+            
+            rowDiv.appendChild(cell);
+          });
+          container.appendChild(rowDiv);
+        });
+      }
+      
+      renderKernel() {
+        const container = document.getElementById('conv-kernel-viz');
+        container.innerHTML = '';
+        
+        const grid = document.createElement('div');
+        
+        this.currentKernel.forEach((row, i) => {
+          const rowDiv = document.createElement('div');
+          row.forEach((val, j) => {
+            const cell = document.createElement('div');
+            cell.className = 'kernel-cell';
+            cell.textContent = val.toFixed(2);
+            
+            // Color based on value
+            if (val < 0) cell.style.background = '#e3f2fd';
+            else if (val > 0) cell.style.background = '#ffebee';
+            else cell.style.background = '#f5f5f5';
+            
+            rowDiv.appendChild(cell);
+          });
+          grid.appendChild(rowDiv);
+        });
+        
+        container.appendChild(grid);
+      }
+      
+      async startConvolution() {
+        if (this.animating) return;
+        
+        this.animating = true;
+        
+        const kernelSize = this.currentKernel.length;
+        const outputSize = this.padding === 'valid' 
+          ? Math.floor((this.inputSize - kernelSize) / this.stride) + 1
+          : this.inputSize;
+        
+        this.output = Array(outputSize).fill().map(() => Array(outputSize).fill(0));
+        
+        // Clear output display
+        this.renderOutput();
+        
+        // Animate convolution
+        for (let i = 0; i <= this.inputSize - kernelSize; i += this.stride) {
+          for (let j = 0; j <= this.inputSize - kernelSize; j += this.stride) {
+            if (!this.animating) break;
+            
+            await this.animateConvStep(i, j);
+          }
+        }
+        
+        this.animating = false;
+      }
+      
+      async animateConvStep(startRow, startCol) {
+        // Clear previous highlights
+        this.clearConvHighlights();
+        
+        const kernelSize = this.currentKernel.length;
+        let sum = 0;
+        
+        // Highlight and calculate
+        for (let ki = 0; ki < kernelSize; ki++) {
+          for (let kj = 0; kj < kernelSize; kj++) {
+            const inputCell = document.getElementById(`conv-input-${startRow + ki}-${startCol + kj}`);
+            if (inputCell) {
+              inputCell.classList.add('kernel-overlap');
+              
+              const inputVal = this.input[startRow + ki][startCol + kj];
+              const kernelVal = this.currentKernel[ki][kj];
+              sum += inputVal * kernelVal;
+            }
+          }
+        }
+        
+        // Update output
+        const outputRow = Math.floor(startRow / this.stride);
+        const outputCol = Math.floor(startCol / this.stride);
+        this.output[outputRow][outputCol] = Math.round(sum * 100) / 100;
+        
+        this.renderOutput();
+        
+        // Highlight output cell
+        const outputCell = document.getElementById(`conv-output-${outputRow}-${outputCol}`);
+        if (outputCell) {
+          outputCell.classList.add('animated');
+        }
+        
+        await this.sleep(500);
+      }
+      
+      renderOutput() {
+        const container = document.getElementById('conv-output');
+        container.innerHTML = '';
+        
+        this.output.forEach((row, i) => {
+          const rowDiv = document.createElement('div');
+          row.forEach((val, j) => {
+            const cell = document.createElement('div');
+            cell.className = 'conv-cell';
+            cell.id = `conv-output-${i}-${j}`;
+            cell.textContent = val.toFixed(1);
+            
+            // Color based on value
+            const normalized = Math.max(0, Math.min(1, (val + 10) / 20));
+            cell.style.background = `rgba(81, 207, 102, ${normalized})`;
+            cell.style.color = normalized > 0.5 ? 'white' : 'black';
+            
+            rowDiv.appendChild(cell);
+          });
+          container.appendChild(rowDiv);
+        });
+      }
+      
+      clearConvHighlights() {
+        document.querySelectorAll('.conv-cell').forEach(cell => {
+          cell.classList.remove('kernel-overlap');
+        });
+      }
+      
+      setupEventListeners() {
+        document.getElementById('conv-kernel').addEventListener('change', (e) => {
+          const kernelType = e.target.value;
+          if (kernelType !== 'custom') {
+            this.currentKernel = this.kernels[kernelType];
+            this.renderKernel();
+          }
+        });
+        
+        document.getElementById('conv-stride').addEventListener('change', (e) => {
+          this.stride = parseInt(e.target.value);
+        });
+        
+        document.getElementById('conv-padding').addEventListener('change', (e) => {
+          this.padding = e.target.value;
+        });
+      }
+      
+      stepConvolution() {
+        // Implement step-by-step
+        if (!this.animating) {
+          this.startConvolution();
+        }
+      }
+      
+      reset() {
+        this.animating = false;
+        this.output = [];
+        this.clearConvHighlights();
+        this.renderOutput();
+      }
+      
+      sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
+    }
+    
+    // Reshape Visualizer
+    class ReshapeVisualizer {
+      constructor() {
+        this.operation = 'reshape';
+        this.inputShape = [2, 3, 4];
+        this.targetShape = [6, 4];
+        
+        this.init();
+      }
+      
+      init() {
+        this.setupEventListeners();
+      }
+      
+      visualize() {
+        const inputStr = document.getElementById('reshape-input').value;
+        const targetStr = document.getElementById('reshape-target').value;
+        
+        // Parse shapes
+        this.inputShape = this.parseShape(inputStr);
+        this.targetShape = this.parseShape(targetStr);
+        
+        // Validate shapes
+        const inputSize = this.inputShape.reduce((a, b) => a * b, 1);
+        const targetSize = this.targetShape.reduce((a, b) => a * b, 1);
+        
+        if (inputSize !== targetSize) {
+          alert(`Size mismatch! Input size: ${inputSize}, Target size: ${targetSize}`);
+          return;
+        }
+        
+        this.renderShapes();
+        this.showMemoryLayout();
+      }
+      
+      parseShape(str) {
+        return str.replace(/[()]/g, '').split(',').map(s => parseInt(s.trim()));
+      }
+      
+      renderShapes() {
+        // Render input shape
+        const beforeDiv = document.getElementById('reshape-before');
+        beforeDiv.innerHTML = this.createShapeVisualization(this.inputShape, 'Input');
+        
+        // Render output shape
+        const afterDiv = document.getElementById('reshape-after');
+        afterDiv.innerHTML = this.createShapeVisualization(this.targetShape, 'Output');
+      }
+      
+      createShapeVisualization(shape, label) {
+        let html = `<div style="text-align: center;">`;
+        html += `<h4>${label}: (${shape.join(', ')})</h4>`;
+        
+        // Create visual representation
+        html += `<div style="display: inline-block; padding: 20px; background: #f5f5f5; border-radius: 8px;">`;
+        
+        if (shape.length === 1) {
+          // 1D tensor
+          html += this.create1DTensor(shape[0]);
+        } else if (shape.length === 2) {
+          // 2D tensor
+          html += this.create2DTensor(shape[0], shape[1]);
+        } else if (shape.length === 3) {
+          // 3D tensor
+          html += this.create3DTensor(shape[0], shape[1], shape[2]);
+        }
+        
+        html += `</div></div>`;
+        return html;
+      }
+      
+      create1DTensor(size) {
+        let html = '<div style="display: flex; gap: 2px;">';
+        for (let i = 0; i < Math.min(size, 10); i++) {
+          html += `<div style="width: 30px; height: 30px; background: #1772d0; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px;">${i}</div>`;
+        }
+        if (size > 10) html += '<div>...</div>';
+        html += '</div>';
+        return html;
+      }
+      
+      create2DTensor(rows, cols) {
+        let html = '<div>';
+        for (let i = 0; i < Math.min(rows, 5); i++) {
+          html += '<div style="display: flex; gap: 2px; margin: 2px 0;">';
+          for (let j = 0; j < Math.min(cols, 8); j++) {
+            const val = i * cols + j;
+            html += `<div style="width: 30px; height: 30px; background: #1772d0; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px;">${val}</div>`;
+          }
+          if (cols > 8) html += '<div>...</div>';
+          html += '</div>';
+        }
+        if (rows > 5) html += '<div>...</div>';
+        html += '</div>';
+        return html;
+      }
+      
+      create3DTensor(depth, rows, cols) {
+        let html = '<div style="display: flex; gap: 20px;">';
+        for (let d = 0; d < Math.min(depth, 3); d++) {
+          html += '<div style="opacity: ' + (1 - d * 0.2) + ';">';
+          html += this.create2DTensor(rows, cols);
+          html += '</div>';
+        }
+        if (depth > 3) html += '<div>...</div>';
+        html += '</div>';
+        return html;
+      }
+      
+      showMemoryLayout() {
+        const totalElements = this.inputShape.reduce((a, b) => a * b, 1);
+        const memoryDiv = document.getElementById('memory-layout');
+        
+        let layout = 'Elements in memory: [';
+        for (let i = 0; i < Math.min(totalElements, 20); i++) {
+          layout += i;
+          if (i < Math.min(totalElements - 1, 19)) layout += ', ';
+        }
+        if (totalElements > 20) layout += ', ...';
+        layout += ']';
+        
+        memoryDiv.textContent = layout;
+      }
+      
+      animate() {
+        this.visualize();
+        // Add animation classes
+        document.getElementById('reshape-before').classList.add('animated');
+        document.getElementById('reshape-after').classList.add('animated');
+      }
+      
+      reset() {
+        document.getElementById('reshape-before').innerHTML = '';
+        document.getElementById('reshape-after').innerHTML = '';
+        document.getElementById('memory-layout').textContent = '';
+      }
+      
+      setupEventListeners() {
+        document.getElementById('reshape-operation').addEventListener('change', (e) => {
+          this.operation = e.target.value;
+          
+          // Update target shape based on operation
+          switch(this.operation) {
+            case 'flatten':
+              document.getElementById('reshape-target').value = '(24,)';
+              break;
+            case 'transpose':
+              document.getElementById('reshape-target').value = '(4, 3, 2)';
+              break;
+            case 'squeeze':
+              document.getElementById('reshape-input').value = '(1, 3, 1, 4)';
+              document.getElementById('reshape-target').value = '(3, 4)';
+              break;
+          }
+        });
+      }
+    }
+    
+    // Broadcasting Visualizer
+    class BroadcastingVisualizer {
+      constructor() {
+        this.shapeA = [3, 1];
+        this.shapeB = [1, 4];
+        this.operation = 'add';
+        
+        this.init();
+      }
+      
+      init() {
+        this.setupEventListeners();
+      }
+      
+      check() {
+        const shapeAStr = document.getElementById('broadcast-a').value;
+        const shapeBStr = document.getElementById('broadcast-b').value;
+        
+        this.shapeA = this.parseShape(shapeAStr);
+        this.shapeB = this.parseShape(shapeBStr);
+        
+        const result = this.checkBroadcastability(this.shapeA, this.shapeB);
+        this.displayCheckResult(result);
+      }
+      
+      parseShape(str) {
+        return str.replace(/[()]/g, '').split(',').map(s => parseInt(s.trim()));
+      }
+      
+      checkBroadcastability(shapeA, shapeB) {
+        // Pad shorter shape with 1s on the left
+        const maxLength = Math.max(shapeA.length, shapeB.length);
+        const paddedA = Array(maxLength - shapeA.length).fill(1).concat(shapeA);
+        const paddedB = Array(maxLength - shapeB.length).fill(1).concat(shapeB);
+        
+        const resultShape = [];
+        let compatible = true;
+        const details = [];
+        
+        for (let i = 0; i < maxLength; i++) {
+          const dimA = paddedA[i];
+          const dimB = paddedB[i];
+          
+          if (dimA === dimB) {
+            resultShape.push(dimA);
+            details.push(`Dimension ${i}: ${dimA} == ${dimB} ✓`);
+          } else if (dimA === 1) {
+            resultShape.push(dimB);
+            details.push(`Dimension ${i}: ${dimA} broadcasts to ${dimB} ✓`);
+          } else if (dimB === 1) {
+            resultShape.push(dimA);
+            details.push(`Dimension ${i}: ${dimB} broadcasts to ${dimA} ✓`);
+          } else {
+            compatible = false;
+            details.push(`Dimension ${i}: ${dimA} != ${dimB} ✗ (incompatible)`);
+          }
+        }
+        
+        return {
+          compatible,
+          resultShape,
+          details,
+          paddedA,
+          paddedB
+        };
+      }
+      
+      displayCheckResult(result) {
+        const container = document.getElementById('broadcast-check-result');
+        
+        let html = '<div style="padding: 15px; border-radius: 8px; ';
+        html += result.compatible ? 'background: #e8f5e9; border: 2px solid #51cf66;">' : 'background: #ffebee; border: 2px solid #ff6b6b;">';
+        
+        html += '<h4>' + (result.compatible ? '✓ Compatible' : '✗ Incompatible') + '</h4>';
+        html += '<ul style="list-style: none; padding: 0;">';
+        result.details.forEach(detail => {
+          html += '<li style="margin: 5px 0;">' + detail + '</li>';
+        });
+        html += '</ul>';
+        
+        if (result.compatible) {
+          html += '<p><strong>Result shape:</strong> (' + result.resultShape.join(', ') + ')</p>';
+        }
+        
+        html += '</div>';
+        container.innerHTML = html;
+      }
+      
+      visualize() {
+        this.check();
+        
+        const result = this.checkBroadcastability(this.shapeA, this.shapeB);
+        if (!result.compatible) return;
+        
+        // Visualize tensors
+        this.visualizeTensor('broadcast-tensor-a', this.shapeA, 'A');
+        this.visualizeTensor('broadcast-tensor-b', this.shapeB, 'B');
+        this.visualizeTensor('broadcast-result', result.resultShape, 'Result');
+        
+        // Update operator
+        const operators = {
+          'add': '+',
+          'multiply': '×',
+          'subtract': '-',
+          'divide': '÷'
+        };
+        document.getElementById('broadcast-operator').textContent = operators[this.operation];
+      }
+      
+      visualizeTensor(elementId, shape, label) {
+        const container = document.getElementById(elementId);
+        container.className = 'broadcast-tensor compatible';
+        
+        let html = `<div class="dimension-label">Shape: (${shape.join(', ')})</div>`;
+        html += '<div style="padding: 10px;">';
+        
+        // Simple visualization for different shapes
+        if (shape.length === 1) {
+          html += this.createBroadcast1D(shape[0]);
+        } else if (shape.length === 2) {
+          html += this.createBroadcast2D(shape[0], shape[1]);
+        }
+        
+        html += '</div>';
+        container.innerHTML = html;
+      }
+      
+      createBroadcast1D(size) {
+        let html = '<div style="display: flex; gap: 3px; justify-content: center;">';
+        for (let i = 0; i < Math.min(size, 8); i++) {
+          html += `<div style="width: 40px; height: 40px; background: #1772d0; color: white; display: flex; align-items: center; justify-content: center; border-radius: 4px;">${i}</div>`;
+        }
+        if (size > 8) html += '<div>...</div>';
+        html += '</div>';
+        return html;
+      }
+      
+      createBroadcast2D(rows, cols) {
+        let html = '<div>';
+        for (let i = 0; i < Math.min(rows, 4); i++) {
+          html += '<div style="display: flex; gap: 3px; justify-content: center; margin: 3px 0;">';
+          for (let j = 0; j < Math.min(cols, 6); j++) {
+            html += `<div style="width: 35px; height: 35px; background: #1772d0; color: white; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-size: 12px;">${i},${j}</div>`;
+          }
+          if (cols > 6) html += '<div>...</div>';
+          html += '</div>';
+        }
+        if (rows > 4) html += '<div style="text-align: center;">...</div>';
+        html += '</div>';
+        return html;
+      }
+      
+      showExamples() {
+        const examples = [
+          { a: '(3, 1)', b: '(1, 4)', result: '(3, 4)' },
+          { a: '(5,)', b: '(5,)', result: '(5,)' },
+          { a: '(1,)', b: '(10,)', result: '(10,)' },
+          { a: '(2, 3)', b: '(3,)', result: '(2, 3)' },
+          { a: '(1, 4, 1)', b: '(3, 1, 5)', result: '(3, 4, 5)' }
+        ];
+        
+        let html = '<h4>Common Broadcasting Examples:</h4><ul>';
+        examples.forEach(ex => {
+          html += `<li>${ex.a} + ${ex.b} → ${ex.result}</li>`;
+        });
+        html += '</ul>';
+        
+        const container = document.getElementById('broadcast-visual');
+        container.innerHTML = html;
+      }
+      
+      setupEventListeners() {
+        document.getElementById('broadcast-op').addEventListener('change', (e) => {
+          this.operation = e.target.value;
+        });
+      }
+    }
+    
+    // Backpropagation Visualizer
+    class BackpropagationVisualizer {
+      constructor() {
+        this.network = 'simple';
+        this.activation = 'sigmoid';
+        this.layers = [];
+        this.weights = [];
+        this.gradients = [];
+        
+        this.init();
+      }
+      
+      init() {
+        this.buildNetwork();
+        this.renderNetwork();
+        this.setupEventListeners();
+      }
+      
+      buildNetwork() {
+        switch(this.network) {
+          case 'simple':
+            this.layers = [2, 3, 1];
+            break;
+          case 'medium':
+            this.layers = [3, 4, 2];
+            break;
+          case 'deep':
+            this.layers = [2, 4, 4, 1];
+            break;
+        }
+        
+        // Initialize random weights
+        this.weights = [];
+        for (let i = 0; i < this.layers.length - 1; i++) {
+          const w = Array(this.layers[i]).fill().map(() => 
+            Array(this.layers[i + 1]).fill().map(() => (Math.random() - 0.5) * 2)
+          );
+          this.weights.push(w);
+        }
+      }
+      
+      renderNetwork() {
+        const svg = d3.select('#backprop-network-viz');
+        svg.selectAll('*').remove();
+        
+        const width = 900;
+        const height = 400;
+        const layerSpacing = width / (this.layers.length + 1);
+        
+        // Draw connections
+        for (let l = 0; l < this.layers.length - 1; l++) {
+          for (let i = 0; i < this.layers[l]; i++) {
+            for (let j = 0; j < this.layers[l + 1]; j++) {
+              const x1 = (l + 1) * layerSpacing;
+              const y1 = (i + 1) * (height / (this.layers[l] + 1));
+              const x2 = (l + 2) * layerSpacing;
+              const y2 = (j + 1) * (height / (this.layers[l + 1] + 1));
+              
+              svg.append('line')
+                .attr('x1', x1)
+                .attr('y1', y1)
+                .attr('x2', x2)
+                .attr('y2', y2)
+                .attr('stroke', '#ddd')
+                .attr('stroke-width', 1)
+                .attr('class', `weight-${l}-${i}-${j}`);
+            }
+          }
+        }
+        
+        // Draw nodes
+        for (let l = 0; l < this.layers.length; l++) {
+          for (let n = 0; n < this.layers[l]; n++) {
+            const x = (l + 1) * layerSpacing;
+            const y = (n + 1) * (height / (this.layers[l] + 1));
+            
+            svg.append('circle')
+              .attr('cx', x)
+              .attr('cy', y)
+              .attr('r', 20)
+              .attr('fill', '#1772d0')
+              .attr('stroke', 'white')
+              .attr('stroke-width', 2)
+              .attr('class', `node-${l}-${n}`);
+            
+            svg.append('text')
+              .attr('x', x)
+              .attr('y', y + 5)
+              .attr('text-anchor', 'middle')
+              .attr('fill', 'white')
+              .attr('font-size', '12px')
+              .text(`${l},${n}`);
+          }
+        }
+        
+        // Layer labels
+        for (let l = 0; l < this.layers.length; l++) {
+          const x = (l + 1) * layerSpacing;
+          svg.append('text')
+            .attr('x', x)
+            .attr('y', 30)
+            .attr('text-anchor', 'middle')
+            .attr('font-weight', 'bold')
+            .text(l === 0 ? 'Input' : l === this.layers.length - 1 ? 'Output' : `Hidden ${l}`);
+        }
+      }
+      
+      async forward() {
+        // Animate forward pass
+        document.getElementById('forward-calculation').textContent = 'Computing forward pass...';
+        
+        for (let l = 0; l < this.layers.length - 1; l++) {
+          // Highlight current layer
+          for (let n = 0; n < this.layers[l]; n++) {
+            d3.select(`.node-${l}-${n}`).attr('fill', '#ffd93d');
+          }
+          
+          await this.sleep(500);
+          
+          // Show calculations
+          let calc = `Layer ${l} → ${l+1}:\n`;
+          calc += `Output = activation(Input × Weights + Bias)\n`;
+          document.getElementById('forward-calculation').textContent = calc;
+          
+          // Reset colors
+          for (let n = 0; n < this.layers[l]; n++) {
+            d3.select(`.node-${l}-${n}`).attr('fill', '#51cf66');
+          }
+        }
+      }
+      
+      async backward() {
+        // Animate backward pass
+        document.getElementById('backward-calculation').textContent = 'Computing gradients...';
+        
+        for (let l = this.layers.length - 1; l > 0; l--) {
+          // Highlight current layer
+          for (let n = 0; n < this.layers[l]; n++) {
+            d3.select(`.node-${l}-${n}`).attr('fill', '#ff6b6b');
+          }
+          
+          await this.sleep(500);
+          
+          // Show calculations
+          let calc = `Layer ${l} gradients:\n`;
+          calc += `∂L/∂W = ∂L/∂y × ∂y/∂W\n`;
+          calc += `Weight update: W = W - α × ∂L/∂W`;
+          document.getElementById('backward-calculation').textContent = calc;
+          
+          // Highlight connections
+          for (let i = 0; i < this.layers[l-1]; i++) {
+            for (let j = 0; j < this.layers[l]; j++) {
+              d3.select(`.weight-${l-1}-${i}-${j}`)
+                .attr('stroke', '#ff6b6b')
+                .attr('stroke-width', 2);
+            }
+          }
+          
+          await this.sleep(500);
+          
+          // Reset colors
+          for (let n = 0; n < this.layers[l]; n++) {
+            d3.select(`.node-${l}-${n}`).attr('fill', '#1772d0');
+          }
+        }
+      }
+      
+      step() {
+        // Step through forward or backward pass
+        alert('Step-by-step execution coming soon!');
+      }
+      
+      reset() {
+        this.buildNetwork();
+        this.renderNetwork();
+        document.getElementById('forward-calculation').textContent = '';
+        document.getElementById('backward-calculation').textContent = '';
+      }
+      
+      setupEventListeners() {
+        document.getElementById('backprop-network').addEventListener('change', (e) => {
+          this.network = e.target.value;
+          this.buildNetwork();
+          this.renderNetwork();
+        });
+        
+        document.getElementById('backprop-activation').addEventListener('change', (e) => {
+          this.activation = e.target.value;
+        });
+      }
+      
+      sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
+    }
+    
+    // Tab switching
+    function switchTab(tabName) {
+      // Hide all tabs
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // Remove active class from all tab buttons
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // Show selected tab
+      document.getElementById(tabName + '-tab').classList.add('active');
+      
+      // Set active tab button
+      event.target.classList.add('active');
+    }
+    
+    // Initialize visualizers
+    const tensorViz = new TensorOperationsVisualizer();
+    const convViz = new ConvolutionVisualizer();
+    const reshapeViz = new ReshapeVisualizer();
+    const broadcastViz = new BroadcastingVisualizer();
+    const backpropViz = new BackpropagationVisualizer();
+    
+    // Initialize on load
+    window.onload = function() {
+      tensorViz.randomizeMatrices();
+    };
+  </script>
+</body>
+</html>
