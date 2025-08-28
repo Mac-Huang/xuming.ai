@@ -1,0 +1,379 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Common Pitfalls in Distributed Training - Xuming Huang</title>
+  <meta name="author" content="Xuming Huang">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../../stylesheet.css">
+  <link rel="icon" type="image/png" href="../../images/favicon.png">
+  
+  <style>
+    /* Blog post specific styles */
+    .blog-content {
+      line-height: 1.8;
+    }
+    
+    .blog-content h2 {
+      margin-top: 30px;
+      margin-bottom: 15px;
+      font-size: 20px;
+      font-weight: 700;
+    }
+    
+    .blog-content h3 {
+      margin-top: 25px;
+      margin-bottom: 10px;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    
+    .blog-content pre {
+      background: #f5f5f5;
+      padding: 15px;
+      border-radius: 3px;
+      overflow-x: auto;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 14px;
+      line-height: 1.4;
+      margin: 20px 0;
+    }
+    
+    .blog-content code {
+      background: #f5f5f5;
+      padding: 2px 5px;
+      border-radius: 3px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 14px;
+    }
+    
+    .blog-content blockquote {
+      border-left: 3px solid #1772d0;
+      padding-left: 15px;
+      margin-left: 0;
+      color: #666;
+      font-style: italic;
+    }
+    
+    .blog-content ul, .blog-content ol {
+      margin: 15px 0;
+      padding-left: 30px;
+    }
+    
+    .blog-content li {
+      margin: 8px 0;
+    }
+    
+    .warning-box {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 3px;
+      padding: 15px;
+      margin: 20px 0;
+    }
+    
+    .tip-box {
+      background: #d4edda;
+      border: 1px solid #28a745;
+      border-radius: 3px;
+      padding: 15px;
+      margin: 20px 0;
+    }
+    
+    hr {
+      border: none;
+      border-top: 1px solid #ddd;
+      margin: 40px 0;
+    }
+  </style>
+</head>
+
+<body>
+  <table style="width:100%;max-width:650px;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+    <tbody>
+      <tr>
+        <td style="padding:20px">
+          
+          <p style="text-align:right;">
+            <a href="../../blog.html">← Back to Blog</a>
+          </p>
+          
+          <heading>Common Pitfalls in Distributed Training</heading>
+          <p><em>November 28, 2024 · 8 min read</em></p>
+          
+          <div class="blog-content">
+            <p>
+              After debugging countless distributed training runs and helping researchers scale their 
+              models, I've seen the same issues appear repeatedly. These bugs can waste weeks of compute 
+              time and cause endless frustration. Here are the most common pitfalls and how to avoid them.
+            </p>
+            
+            <h2>1. The Silent Gradient Overflow</h2>
+            
+            <p>
+              This is the most insidious bug. Your model trains normally for hours or days, then suddenly 
+              the loss explodes or becomes NaN. By the time you notice, you've wasted thousands of GPU hours.
+            </p>
+            
+            <h3>The Problem</h3>
+            
+            <pre><code># This looks innocent but can cause gradient overflow
+loss = criterion(outputs, targets)
+loss = loss * config.loss_scale  # Manual loss scaling
+loss.backward()
+
+# Gradients might overflow here!
+optimizer.step()</code></pre>
+            
+            <h3>The Solution</h3>
+            
+            <pre><code># Always check for gradient overflow
+loss.backward()
+
+# Check if gradients are finite
+grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+if not torch.isfinite(grad_norm):
+    print(f"Gradient overflow detected! Norm: {grad_norm}")
+    optimizer.zero_grad()  # Skip this step
+    continue
+    
+optimizer.step()</code></pre>
+            
+            <div class="tip-box">
+              <strong>Pro Tip:</strong> Always log gradient norms. A sudden spike often precedes NaN losses by 
+              several iterations, giving you time to intervene.
+            </div>
+            
+            <h2>2. The Batch Size Trap</h2>
+            
+            <p>
+              When scaling from single GPU to multi-GPU training, many people forget that the effective 
+              batch size changes, which affects the learning rate.
+            </p>
+            
+            <pre><code># Single GPU
+batch_size = 32
+learning_rate = 0.001
+
+# Scaled to 8 GPUs naively
+batch_size = 32  # Per GPU!
+learning_rate = 0.001  # WRONG! Effective batch size is now 256</code></pre>
+            
+            <p>
+              The linear scaling rule suggests scaling the learning rate linearly with batch size:
+            </p>
+            
+            <pre><code># Correct scaling
+num_gpus = 8
+base_lr = 0.001
+base_batch_size = 32
+
+effective_batch_size = base_batch_size * num_gpus
+scaled_lr = base_lr * (effective_batch_size / base_batch_size)
+
+# Or more commonly
+scaled_lr = base_lr * num_gpus</code></pre>
+            
+            <div class="warning-box">
+              <strong>Warning:</strong> The linear scaling rule breaks down for very large batch sizes 
+              (typically > 2048). You may need to use warmup and more sophisticated scaling.
+            </div>
+            
+            <h2>3. The Data Loading Bottleneck</h2>
+            
+            <p>
+              You've optimized your model to train at 1000 samples/second, but your training is running 
+              at 100 samples/second. The culprit? Data loading.
+            </p>
+            
+            <h3>Common Mistakes</h3>
+            
+            <ul>
+              <li>Using too few data loader workers</li>
+              <li>Performing heavy preprocessing in the training loop</li>
+              <li>Not using persistent workers</li>
+              <li>Loading data from slow network storage</li>
+            </ul>
+            
+            <h3>The Fix</h3>
+            
+            <pre><code>train_loader = DataLoader(
+    dataset,
+    batch_size=batch_size,
+    num_workers=4 * num_gpus,  # Rule of thumb: 4 workers per GPU
+    pin_memory=True,  # Faster GPU transfer
+    persistent_workers=True,  # Avoid worker startup overhead
+    prefetch_factor=2,  # Prefetch 2 batches per worker
+    shuffle=True,
+    drop_last=True  # Important for batch norm!
+)</code></pre>
+            
+            <h2>4. The Hanging Process Mystery</h2>
+            
+            <p>
+              Your distributed training hangs indefinitely. No error messages, no crashes, just... nothing.
+            </p>
+            
+            <h3>Common Causes</h3>
+            
+            <ol>
+              <li><strong>Mismatched collective operations:</strong> One rank calls <code>all_reduce</code> 
+                 while another doesn't</li>
+              <li><strong>Deadlock in data loading:</strong> One rank finishes its data while others continue</li>
+              <li><strong>NCCL timeout:</strong> Network issues cause communication to fail silently</li>
+            </ol>
+            
+            <h3>Debugging Strategy</h3>
+            
+            <pre><code># Add timeout to catch hangs early
+import os
+os.environ['NCCL_TIMEOUT_MS'] = '60000'  # 60 second timeout
+
+# Add barriers to identify where hanging occurs
+if rank == 0:
+    print("Before forward pass")
+dist.barrier()
+
+output = model(input)
+
+if rank == 0:
+    print("After forward pass")
+dist.barrier()
+
+# Use NCCL_DEBUG for more info
+os.environ['NCCL_DEBUG'] = 'INFO'</code></pre>
+            
+            <h2>5. The Random Seed Disaster</h2>
+            
+            <p>
+              Your model trains perfectly on one GPU but produces different results every time you run 
+              distributed training, even with the same seed.
+            </p>
+            
+            <pre><code># Proper distributed seeding
+def setup_seeds(rank, world_size):
+    # Base seed
+    seed = 42
+    
+    # Different seed per rank for data sampling
+    data_seed = seed + rank
+    torch.manual_seed(data_seed)
+    np.random.seed(data_seed)
+    
+    # Same seed for model initialization
+    torch.cuda.manual_seed_all(seed)
+    
+    # Ensure deterministic algorithms
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False</code></pre>
+            
+            <h2>6. The Memory Imbalance</h2>
+            
+            <p>
+              GPU 0 runs out of memory while others have plenty free. This usually happens because 
+              GPU 0 is storing extra things:
+            </p>
+            
+            <ul>
+              <li>The loss computation</li>
+              <li>Metrics calculation</li>
+              <li>Logging tensors</li>
+            </ul>
+            
+            <h3>Solution</h3>
+            
+            <pre><code># Distribute loss computation
+with model.no_sync():  # Don't sync until all micro-batches are done
+    for micro_batch in batch_chunks:
+        loss = criterion(model(micro_batch), targets)
+        (loss / num_chunks).backward()
+
+# Only sync on the last micro-batch
+loss = criterion(model(last_chunk), last_targets)
+(loss / num_chunks).backward()  # This triggers gradient sync</code></pre>
+            
+            <h2>7. The Checkpoint Corruption</h2>
+            
+            <p>
+              Multiple ranks trying to save checkpoints simultaneously can corrupt files:
+            </p>
+            
+            <pre><code># WRONG: All ranks save
+torch.save(model.state_dict(), 'checkpoint.pt')
+
+# RIGHT: Only rank 0 saves
+if rank == 0:
+    torch.save(model.state_dict(), 'checkpoint.pt')
+    
+# Don't forget to wait!
+dist.barrier()  # Ensure save completes before continuing</code></pre>
+            
+            <h2>Quick Debugging Checklist</h2>
+            
+            <p>When debugging distributed training issues, check these in order:</p>
+            
+            <ol>
+              <li>✓ All ranks have the same model architecture</li>
+              <li>✓ Learning rate is scaled appropriately</li>
+              <li>✓ Batch sizes are consistent across ranks</li>
+              <li>✓ Random seeds are set correctly</li>
+              <li>✓ Data loaders have the same number of batches</li>
+              <li>✓ Gradient clipping is applied before optimizer step</li>
+              <li>✓ Checkpointing is handled by a single rank</li>
+              <li>✓ NCCL environment variables are set</li>
+            </ol>
+            
+            <h2>Monitoring and Debugging Tools</h2>
+            
+            <pre><code># Essential environment variables
+export NCCL_DEBUG=INFO
+export NCCL_TIMEOUT_MS=60000
+export CUDA_LAUNCH_BLOCKING=1  # For better error messages
+
+# PyTorch distributed debugging
+import torch.distributed as dist
+
+def print_rank(msg):
+    if dist.get_rank() == 0:
+        print(f"[Rank 0]: {msg}")
+    dist.barrier()  # Synchronize after print
+
+# Monitor GPU memory
+print_rank(f"Memory allocated: {torch.cuda.memory_allocated() / 1e9:.2f} GB")
+print_rank(f"Memory cached: {torch.cuda.memory_reserved() / 1e9:.2f} GB")</code></pre>
+            
+            <h2>Conclusion</h2>
+            
+            <p>
+              Distributed training is complex, but most issues fall into these common patterns. The key 
+              is to add comprehensive logging, use proper error checking, and understand the fundamental 
+              differences between single-GPU and distributed training.
+            </p>
+            
+            <p>
+              Remember: every hour spent adding proper debugging and monitoring saves days of debugging 
+              mysterious failures. Trust me, I learned this the hard way after losing a week of compute 
+              to a single misplaced <code>barrier()</code> call.
+            </p>
+            
+            <div class="tip-box">
+              <strong>Final Tip:</strong> Always test your distributed code with 2 GPUs first. 
+              Most distributed bugs will manifest with just 2 ranks, and debugging is much faster 
+              than with 8 or more GPUs.
+            </div>
+          </div>
+          
+          <hr>
+          
+          <p style="text-align:center;">
+            <a href="../../index.html">Home</a> | 
+            <a href="../../blog.html">Blog</a> |
+            <a href="../../research.html">Research</a>
+          </p>
+          
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</body>
+</html>

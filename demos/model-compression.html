@@ -1,0 +1,816 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Model Compression Playground - Xuming Huang</title>
+  <meta name="author" content="Xuming Huang">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../stylesheet.css">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  
+  <style>
+    .control-group {
+      margin: 20px 0;
+      padding: 15px;
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+    }
+    
+    .control-group button {
+      padding: 8px 15px;
+      margin: 0 5px;
+      background: #1772d0;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    .control-group button:hover {
+      background: #0f5aa0;
+    }
+    
+    .control-group button:disabled {
+      background: #ccc;
+    }
+    
+    .control-group select, .control-group input {
+      margin: 0 10px;
+      padding: 5px;
+    }
+    
+    .viz-container {
+      background: #fafafa;
+      border: 1px solid #ddd;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin: 20px 0;
+    }
+    
+    .stat-box {
+      background: #f5f5f5;
+      padding: 10px;
+      border: 1px solid #ddd;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+    }
+    
+    .weight-node {
+      fill: #1772d0;
+      stroke: #0f5aa0;
+      stroke-width: 1;
+      transition: all 0.3s ease;
+    }
+    
+    .weight-node.pruned {
+      fill: #ff6b6b;
+      opacity: 0.3;
+    }
+    
+    .weight-node.quantized {
+      fill: #4CAF50;
+    }
+    
+    .weight-connection {
+      stroke: #999;
+      stroke-width: 1;
+      fill: none;
+      transition: opacity 0.3s ease;
+    }
+    
+    .weight-connection.pruned {
+      opacity: 0.1;
+    }
+    
+    .distillation-arrow {
+      stroke: #FF9800;
+      stroke-width: 3;
+      fill: none;
+      marker-end: url(#distill-arrow);
+    }
+    
+    .accuracy-bar {
+      fill: #1772d0;
+    }
+    
+    .accuracy-bar.compressed {
+      fill: #4CAF50;
+    }
+    
+    .size-bar {
+      fill: #FF5722;
+    }
+    
+    .size-bar.compressed {
+      fill: #8BC34A;
+    }
+    
+    .histogram-bar {
+      fill: #1772d0;
+      stroke: #0f5aa0;
+      stroke-width: 1;
+    }
+    
+    .histogram-bar.quantized {
+      fill: #4CAF50;
+    }
+    
+    .technique-tab {
+      display: inline-block;
+      padding: 10px 20px;
+      margin: 0 5px;
+      background: #f0f0f0;
+      border: 1px solid #ddd;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    
+    .technique-tab.active {
+      background: #1772d0;
+      color: white;
+    }
+    
+    .technique-content {
+      display: none;
+    }
+    
+    .technique-content.active {
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+  <table style="width:100%;max-width:900px;border:0px;margin:auto;">
+    <tbody>
+      <tr>
+        <td style="padding:20px;">
+          <p style="text-align:right;">
+            <a href="../projects.html">← Back to Projects</a>
+          </p>
+          
+          <heading>Model Compression Playground</heading>
+          <p>
+            Explore different model compression techniques including quantization, pruning, and knowledge distillation.
+            Visualize the trade-offs between model size, accuracy, and inference speed.
+          </p>
+          
+          <!-- Technique Selection -->
+          <div style="margin: 20px 0;">
+            <span class="technique-tab active" onclick="showTechnique('quantization')">Quantization</span>
+            <span class="technique-tab" onclick="showTechnique('pruning')">Pruning</span>
+            <span class="technique-tab" onclick="showTechnique('distillation')">Distillation</span>
+          </div>
+          
+          <!-- Quantization Tab -->
+          <div id="quantization-content" class="technique-content active">
+            <div class="control-group">
+              <label>Bit Width:
+                <select id="bit-width">
+                  <option value="32">FP32 (Original)</option>
+                  <option value="16">FP16</option>
+                  <option value="8">INT8</option>
+                  <option value="4">INT4</option>
+                  <option value="2">INT2</option>
+                </select>
+              </label>
+              
+              <label>Quantization Mode:
+                <select id="quant-mode">
+                  <option value="uniform">Uniform</option>
+                  <option value="non-uniform">Non-uniform</option>
+                  <option value="dynamic">Dynamic</option>
+                </select>
+              </label>
+              
+              <button onclick="applyQuantization()">Apply Quantization</button>
+              <button onclick="resetModel()">Reset</button>
+            </div>
+            
+            <div class="viz-container">
+              <h3 style="margin:0 0 10px 0; font-size:16px;">Weight Distribution</h3>
+              <svg id="weight-histogram" width="860" height="300"></svg>
+            </div>
+          </div>
+          
+          <!-- Pruning Tab -->
+          <div id="pruning-content" class="technique-content">
+            <div class="control-group">
+              <label>Sparsity Level:
+                <input type="range" id="sparsity-level" min="0" max="90" value="50" step="10">
+                <span id="sparsity-value">50%</span>
+              </label>
+              
+              <label>Pruning Strategy:
+                <select id="pruning-strategy">
+                  <option value="magnitude">Magnitude-based</option>
+                  <option value="structured">Structured</option>
+                  <option value="gradual">Gradual</option>
+                </select>
+              </label>
+              
+              <button onclick="applyPruning()">Apply Pruning</button>
+              <button onclick="resetModel()">Reset</button>
+            </div>
+            
+            <div class="viz-container">
+              <h3 style="margin:0 0 10px 0; font-size:16px;">Network Structure</h3>
+              <svg id="network-structure" width="860" height="400"></svg>
+            </div>
+          </div>
+          
+          <!-- Distillation Tab -->
+          <div id="distillation-content" class="technique-content">
+            <div class="control-group">
+              <label>Teacher Model Size:
+                <select id="teacher-size">
+                  <option value="large">Large (100M params)</option>
+                  <option value="xlarge">XLarge (300M params)</option>
+                </select>
+              </label>
+              
+              <label>Student Model Size:
+                <select id="student-size">
+                  <option value="small">Small (10M params)</option>
+                  <option value="medium">Medium (30M params)</option>
+                </select>
+              </label>
+              
+              <label>Temperature:
+                <input type="range" id="temperature" min="1" max="20" value="5" step="1">
+                <span id="temp-value">5</span>
+              </label>
+              
+              <button onclick="startDistillation()">Start Distillation</button>
+              <button onclick="resetModel()">Reset</button>
+            </div>
+            
+            <div class="viz-container">
+              <h3 style="margin:0 0 10px 0; font-size:16px;">Knowledge Transfer</h3>
+              <svg id="distillation-viz" width="860" height="400"></svg>
+            </div>
+          </div>
+          
+          <!-- Statistics -->
+          <div class="stats-grid">
+            <div class="stat-box">
+              <strong>Model Size:</strong> <span id="model-size">100</span> MB<br>
+              <strong>Compression:</strong> <span id="compression-ratio">1.0</span>x
+            </div>
+            <div class="stat-box">
+              <strong>Accuracy:</strong> <span id="accuracy">95.2</span>%<br>
+              <strong>Drop:</strong> <span id="accuracy-drop">0.0</span>%
+            </div>
+            <div class="stat-box">
+              <strong>Inference Speed:</strong> <span id="inference-speed">100</span> ms<br>
+              <strong>Speedup:</strong> <span id="speedup">1.0</span>x
+            </div>
+            <div class="stat-box">
+              <strong>Memory Usage:</strong> <span id="memory-usage">400</span> MB<br>
+              <strong>Reduction:</strong> <span id="memory-reduction">0</span>%
+            </div>
+          </div>
+          
+          <!-- Performance Comparison -->
+          <div class="viz-container">
+            <h3 style="margin:0 0 10px 0; font-size:16px;">Performance Comparison</h3>
+            <svg id="performance-chart" width="860" height="300"></svg>
+          </div>
+          
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <script>
+    // Model Compression Playground
+    class ModelCompressionPlayground {
+      constructor() {
+        this.originalWeights = this.generateWeights(1000);
+        this.currentWeights = [...this.originalWeights];
+        this.currentTechnique = 'quantization';
+        this.metrics = {
+          size: 100,
+          accuracy: 95.2,
+          speed: 100,
+          memory: 400
+        };
+        this.originalMetrics = {...this.metrics};
+        
+        this.initializeVisualizations();
+      }
+      
+      generateWeights(count) {
+        // Generate normally distributed weights
+        const weights = [];
+        for (let i = 0; i < count; i++) {
+          weights.push(this.normalRandom(0, 1));
+        }
+        return weights;
+      }
+      
+      normalRandom(mean, std) {
+        // Box-Muller transform for normal distribution
+        let u = 0, v = 0;
+        while(u === 0) u = Math.random();
+        while(v === 0) v = Math.random();
+        return mean + std * Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+      }
+      
+      initializeVisualizations() {
+        this.createWeightHistogram();
+        this.createNetworkStructure();
+        this.createDistillationViz();
+        this.createPerformanceChart();
+        this.updateStats();
+        
+        // Add arrow marker for distillation
+        d3.select('#distillation-viz')
+          .append('defs')
+          .append('marker')
+          .attr('id', 'distill-arrow')
+          .attr('viewBox', '0 0 10 10')
+          .attr('refX', 5)
+          .attr('refY', 3)
+          .attr('markerWidth', 6)
+          .attr('markerHeight', 6)
+          .attr('orient', 'auto')
+          .append('path')
+          .attr('d', 'M0,0 L0,6 L9,3 z')
+          .attr('fill', '#FF9800');
+      }
+      
+      createWeightHistogram() {
+        const svg = d3.select('#weight-histogram');
+        svg.selectAll('*').remove();
+        
+        const width = 860;
+        const height = 300;
+        const margin = {top: 20, right: 30, bottom: 40, left: 50};
+        
+        // Create histogram bins
+        const bins = d3.histogram()
+          .domain([-4, 4])
+          .thresholds(40)(this.currentWeights);
+        
+        const xScale = d3.scaleLinear()
+          .domain([-4, 4])
+          .range([margin.left, width - margin.right]);
+        
+        const yScale = d3.scaleLinear()
+          .domain([0, d3.max(bins, d => d.length)])
+          .range([height - margin.bottom, margin.top]);
+        
+        // Draw histogram
+        svg.selectAll('.histogram-bar')
+          .data(bins)
+          .enter()
+          .append('rect')
+          .attr('class', 'histogram-bar')
+          .attr('x', d => xScale(d.x0))
+          .attr('y', d => yScale(d.length))
+          .attr('width', d => Math.max(0, xScale(d.x1) - xScale(d.x0) - 1))
+          .attr('height', d => yScale(0) - yScale(d.length));
+        
+        // Add axes
+        svg.append('g')
+          .attr('transform', `translate(0,${height - margin.bottom})`)
+          .call(d3.axisBottom(xScale));
+        
+        svg.append('g')
+          .attr('transform', `translate(${margin.left},0)`)
+          .call(d3.axisLeft(yScale));
+        
+        // Add labels
+        svg.append('text')
+          .attr('x', width / 2)
+          .attr('y', height - 5)
+          .attr('text-anchor', 'middle')
+          .style('font-size', '12px')
+          .text('Weight Value');
+        
+        svg.append('text')
+          .attr('transform', 'rotate(-90)')
+          .attr('x', -height / 2)
+          .attr('y', 15)
+          .attr('text-anchor', 'middle')
+          .style('font-size', '12px')
+          .text('Count');
+      }
+      
+      createNetworkStructure() {
+        const svg = d3.select('#network-structure');
+        svg.selectAll('*').remove();
+        
+        const width = 860;
+        const height = 400;
+        const layers = [128, 64, 32, 10];
+        const layerSpacing = width / (layers.length + 1);
+        
+        // Draw layers
+        layers.forEach((neurons, layerIdx) => {
+          const x = (layerIdx + 1) * layerSpacing;
+          const neuronSpacing = Math.min(height / (neurons + 1), 20);
+          const startY = (height - (neurons - 1) * neuronSpacing) / 2;
+          
+          // Draw neurons
+          for (let i = 0; i < Math.min(neurons, 20); i++) {
+            const y = startY + i * neuronSpacing;
+            
+            svg.append('circle')
+              .attr('id', `neuron-${layerIdx}-${i}`)
+              .attr('class', 'weight-node')
+              .attr('cx', x)
+              .attr('cy', y)
+              .attr('r', 6);
+            
+            // Draw connections to next layer
+            if (layerIdx < layers.length - 1) {
+              const nextLayerNeurons = Math.min(layers[layerIdx + 1], 20);
+              const nextX = (layerIdx + 2) * layerSpacing;
+              const nextStartY = (height - (nextLayerNeurons - 1) * Math.min(height / (layers[layerIdx + 1] + 1), 20)) / 2;
+              const nextNeuronSpacing = Math.min(height / (layers[layerIdx + 1] + 1), 20);
+              
+              for (let j = 0; j < nextLayerNeurons; j++) {
+                const nextY = nextStartY + j * nextNeuronSpacing;
+                
+                svg.append('line')
+                  .attr('id', `connection-${layerIdx}-${i}-${j}`)
+                  .attr('class', 'weight-connection')
+                  .attr('x1', x)
+                  .attr('y1', y)
+                  .attr('x2', nextX)
+                  .attr('y2', nextY);
+              }
+            }
+          }
+          
+          // Add layer labels
+          svg.append('text')
+            .attr('x', x)
+            .attr('y', 30)
+            .attr('text-anchor', 'middle')
+            .style('font-size', '12px')
+            .text(`Layer ${layerIdx + 1} (${neurons})`);
+        });
+      }
+      
+      createDistillationViz() {
+        const svg = d3.select('#distillation-viz');
+        svg.selectAll('*').remove();
+        
+        const width = 860;
+        const height = 400;
+        
+        // Teacher model (left)
+        svg.append('rect')
+          .attr('x', 50)
+          .attr('y', 100)
+          .attr('width', 150)
+          .attr('height', 200)
+          .attr('fill', '#1772d0')
+          .attr('stroke', '#0f5aa0')
+          .attr('stroke-width', 2)
+          .attr('rx', 10);
+        
+        svg.append('text')
+          .attr('x', 125)
+          .attr('y', 200)
+          .attr('text-anchor', 'middle')
+          .style('fill', 'white')
+          .style('font-size', '14px')
+          .style('font-weight', 'bold')
+          .text('Teacher Model');
+        
+        svg.append('text')
+          .attr('x', 125)
+          .attr('y', 220)
+          .attr('text-anchor', 'middle')
+          .style('fill', 'white')
+          .style('font-size', '12px')
+          .text('Large & Accurate');
+        
+        // Student model (right)
+        svg.append('rect')
+          .attr('x', 650)
+          .attr('y', 150)
+          .attr('width', 100)
+          .attr('height', 100)
+          .attr('fill', '#4CAF50')
+          .attr('stroke', '#388E3C')
+          .attr('stroke-width', 2)
+          .attr('rx', 10);
+        
+        svg.append('text')
+          .attr('x', 700)
+          .attr('y', 200)
+          .attr('text-anchor', 'middle')
+          .style('fill', 'white')
+          .style('font-size', '14px')
+          .style('font-weight', 'bold')
+          .text('Student');
+        
+        svg.append('text')
+          .attr('x', 700)
+          .attr('y', 220)
+          .attr('text-anchor', 'middle')
+          .style('fill', 'white')
+          .style('font-size', '12px')
+          .text('Compact');
+        
+        // Knowledge transfer arrow
+        svg.append('path')
+          .attr('class', 'distillation-arrow')
+          .attr('d', 'M250,200 Q450,150 600,200')
+          .attr('id', 'knowledge-flow');
+        
+        svg.append('text')
+          .attr('x', 425)
+          .attr('y', 140)
+          .attr('text-anchor', 'middle')
+          .style('font-size', '14px')
+          .style('fill', '#FF9800')
+          .style('font-weight', 'bold')
+          .text('Knowledge Transfer');
+        
+        // Loss visualization
+        svg.append('text')
+          .attr('x', 430)
+          .attr('y', 320)
+          .attr('text-anchor', 'middle')
+          .style('font-size', '12px')
+          .text('Loss = α × L_hard + (1-α) × L_soft');
+      }
+      
+      createPerformanceChart() {
+        const svg = d3.select('#performance-chart');
+        svg.selectAll('*').remove();
+        
+        const width = 860;
+        const height = 300;
+        const margin = {top: 20, right: 30, bottom: 40, left: 50};
+        
+        const metrics = ['Model Size', 'Accuracy', 'Inference Speed', 'Memory Usage'];
+        const original = [100, 95, 100, 100]; // Normalized to 100
+        const compressed = [60, 93, 150, 40];  // Example compressed values
+        
+        const x = d3.scaleBand()
+          .domain(metrics)
+          .range([margin.left, width - margin.right])
+          .padding(0.1);
+        
+        const y = d3.scaleLinear()
+          .domain([0, 200])
+          .range([height - margin.bottom, margin.top]);
+        
+        // Original bars
+        svg.selectAll('.original-bar')
+          .data(original)
+          .enter()
+          .append('rect')
+          .attr('class', 'accuracy-bar')
+          .attr('x', (d, i) => x(metrics[i]) + 5)
+          .attr('y', d => y(d))
+          .attr('width', x.bandwidth() / 2 - 5)
+          .attr('height', d => y(0) - y(d));
+        
+        // Compressed bars
+        svg.selectAll('.compressed-bar')
+          .data(compressed)
+          .enter()
+          .append('rect')
+          .attr('class', 'accuracy-bar compressed')
+          .attr('x', (d, i) => x(metrics[i]) + x.bandwidth() / 2)
+          .attr('y', d => y(d))
+          .attr('width', x.bandwidth() / 2 - 5)
+          .attr('height', d => y(0) - y(d));
+        
+        // Add axes
+        svg.append('g')
+          .attr('transform', `translate(0,${height - margin.bottom})`)
+          .call(d3.axisBottom(x));
+        
+        svg.append('g')
+          .attr('transform', `translate(${margin.left},0)`)
+          .call(d3.axisLeft(y));
+        
+        // Legend
+        const legend = svg.append('g')
+          .attr('transform', `translate(${width - 150}, 30)`);
+        
+        legend.append('rect')
+          .attr('width', 15)
+          .attr('height', 15)
+          .attr('fill', '#1772d0');
+        
+        legend.append('text')
+          .attr('x', 20)
+          .attr('y', 12)
+          .style('font-size', '12px')
+          .text('Original');
+        
+        legend.append('rect')
+          .attr('y', 20)
+          .attr('width', 15)
+          .attr('height', 15)
+          .attr('fill', '#4CAF50');
+        
+        legend.append('text')
+          .attr('x', 20)
+          .attr('y', 32)
+          .style('font-size', '12px')
+          .text('Compressed');
+      }
+      
+      applyQuantization() {
+        const bitWidth = parseInt(document.getElementById('bit-width').value);
+        const mode = document.getElementById('quant-mode').value;
+        
+        this.currentWeights = this.originalWeights.map(w => this.quantizeWeight(w, bitWidth, mode));
+        
+        // Update metrics based on bit width
+        const compressionRatio = 32 / bitWidth;
+        this.metrics.size = this.originalMetrics.size / compressionRatio;
+        this.metrics.accuracy = this.originalMetrics.accuracy - (32 - bitWidth) * 0.3;
+        this.metrics.speed = this.originalMetrics.speed * Math.sqrt(compressionRatio);
+        this.metrics.memory = this.originalMetrics.memory / compressionRatio;
+        
+        this.createWeightHistogram();
+        this.updateStats();
+        
+        // Highlight quantized bars
+        d3.selectAll('.histogram-bar').classed('quantized', true);
+      }
+      
+      quantizeWeight(weight, bitWidth, mode) {
+        const levels = Math.pow(2, bitWidth);
+        const maxVal = Math.max(...this.originalWeights.map(Math.abs));
+        
+        if (mode === 'uniform') {
+          const scale = maxVal / (levels / 2 - 1);
+          return Math.round(weight / scale) * scale;
+        } else if (mode === 'non-uniform') {
+          // Simple non-uniform quantization
+          return Math.sign(weight) * Math.pow(Math.abs(weight / maxVal), 1/3) * maxVal;
+        } else { // dynamic
+          return Math.round(weight * levels) / levels;
+        }
+      }
+      
+      applyPruning() {
+        const sparsity = parseFloat(document.getElementById('sparsity-level').value) / 100;
+        const strategy = document.getElementById('pruning-strategy').value;
+        
+        // Sort weights by magnitude for magnitude-based pruning
+        const sortedIndices = [...Array(this.originalWeights.length).keys()]
+          .sort((a, b) => Math.abs(this.originalWeights[a]) - Math.abs(this.originalWeights[b]));
+        
+        const numToPrune = Math.floor(this.originalWeights.length * sparsity);
+        const prunedIndices = new Set(sortedIndices.slice(0, numToPrune));
+        
+        this.currentWeights = this.originalWeights.map((w, i) => 
+          prunedIndices.has(i) ? 0 : w
+        );
+        
+        // Update metrics
+        this.metrics.size = this.originalMetrics.size * (1 - sparsity * 0.8);
+        this.metrics.accuracy = this.originalMetrics.accuracy - sparsity * 8;
+        this.metrics.speed = this.originalMetrics.speed * (1 + sparsity * 0.5);
+        this.metrics.memory = this.originalMetrics.memory * (1 - sparsity * 0.6);
+        
+        this.visualizePruning(prunedIndices);
+        this.updateStats();
+      }
+      
+      visualizePruning(prunedIndices) {
+        // Update network visualization
+        const svg = d3.select('#network-structure');
+        
+        // Mark pruned connections
+        svg.selectAll('.weight-connection')
+          .classed('pruned', (d, i) => prunedIndices.has(i % 100));
+        
+        svg.selectAll('.weight-node')
+          .classed('pruned', (d, i) => prunedIndices.has(i % 50));
+      }
+      
+      startDistillation() {
+        const teacherSize = document.getElementById('teacher-size').value;
+        const studentSize = document.getElementById('student-size').value;
+        const temperature = parseFloat(document.getElementById('temperature').value);
+        
+        // Simulate distillation process
+        this.animateDistillation();
+        
+        // Update metrics based on student size
+        const sizeReduction = studentSize === 'small' ? 0.1 : 0.3;
+        const accuracyDrop = studentSize === 'small' ? 3.5 : 1.8;
+        
+        this.metrics.size = this.originalMetrics.size * sizeReduction;
+        this.metrics.accuracy = this.originalMetrics.accuracy - accuracyDrop + temperature * 0.2;
+        this.metrics.speed = this.originalMetrics.speed * (1 / sizeReduction);
+        this.metrics.memory = this.originalMetrics.memory * sizeReduction;
+        
+        this.updateStats();
+      }
+      
+      animateDistillation() {
+        const arrow = d3.select('#knowledge-flow');
+        
+        // Animate knowledge transfer
+        arrow.style('stroke-dasharray', '10,5')
+          .style('stroke-dashoffset', '0')
+          .transition()
+          .duration(2000)
+          .style('stroke-dashoffset', '-30')
+          .on('end', () => {
+            arrow.style('stroke-dasharray', 'none');
+          });
+      }
+      
+      updateStats() {
+        const compressionRatio = this.originalMetrics.size / this.metrics.size;
+        const accuracyDrop = this.originalMetrics.accuracy - this.metrics.accuracy;
+        const speedup = this.metrics.speed / this.originalMetrics.speed;
+        const memoryReduction = (this.originalMetrics.memory - this.metrics.memory) / this.originalMetrics.memory * 100;
+        
+        document.getElementById('model-size').textContent = this.metrics.size.toFixed(1);
+        document.getElementById('compression-ratio').textContent = compressionRatio.toFixed(1);
+        document.getElementById('accuracy').textContent = this.metrics.accuracy.toFixed(1);
+        document.getElementById('accuracy-drop').textContent = accuracyDrop.toFixed(1);
+        document.getElementById('inference-speed').textContent = this.metrics.speed.toFixed(0);
+        document.getElementById('speedup').textContent = speedup.toFixed(1);
+        document.getElementById('memory-usage').textContent = this.metrics.memory.toFixed(0);
+        document.getElementById('memory-reduction').textContent = memoryReduction.toFixed(1);
+      }
+      
+      resetModel() {
+        this.currentWeights = [...this.originalWeights];
+        this.metrics = {...this.originalMetrics};
+        
+        this.createWeightHistogram();
+        this.createNetworkStructure();
+        this.updateStats();
+        
+        // Reset UI elements
+        document.getElementById('bit-width').value = '32';
+        document.getElementById('sparsity-level').value = '50';
+        document.getElementById('sparsity-value').textContent = '50%';
+        document.getElementById('temperature').value = '5';
+        document.getElementById('temp-value').textContent = '5';
+      }
+    }
+    
+    // Global instance
+    const playground = new ModelCompressionPlayground();
+    
+    function showTechnique(technique) {
+      // Update tabs
+      document.querySelectorAll('.technique-tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.querySelector(`[onclick="showTechnique('${technique}')"]`).classList.add('active');
+      
+      // Update content
+      document.querySelectorAll('.technique-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      document.getElementById(`${technique}-content`).classList.add('active');
+      
+      playground.currentTechnique = technique;
+      playground.resetModel();
+    }
+    
+    function applyQuantization() {
+      playground.applyQuantization();
+    }
+    
+    function applyPruning() {
+      playground.applyPruning();
+    }
+    
+    function startDistillation() {
+      playground.startDistillation();
+    }
+    
+    function resetModel() {
+      playground.resetModel();
+    }
+    
+    // Event listeners for sliders
+    document.getElementById('sparsity-level').addEventListener('input', function() {
+      document.getElementById('sparsity-value').textContent = this.value + '%';
+    });
+    
+    document.getElementById('temperature').addEventListener('input', function() {
+      document.getElementById('temp-value').textContent = this.value;
+    });
+  </script>
+</body>
+</html>

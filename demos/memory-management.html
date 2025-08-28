@@ -1,0 +1,987 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Memory Management Visualizer - Xuming Huang</title>
+  <meta name="author" content="Xuming Huang">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../stylesheet.css">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  
+  <style>
+    .control-group {
+      margin: 20px 0;
+      padding: 15px;
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+    }
+    
+    .control-group button {
+      padding: 8px 15px;
+      margin: 0 5px;
+      background: #1772d0;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    .control-group button:hover {
+      background: #0f5aa0;
+    }
+    
+    .control-group button:disabled {
+      background: #ccc;
+    }
+    
+    .control-group select, .control-group input {
+      margin: 0 10px;
+      padding: 5px;
+    }
+    
+    .viz-container {
+      background: #fafafa;
+      border: 1px solid #ddd;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin: 20px 0;
+    }
+    
+    .stat-box {
+      background: #f5f5f5;
+      padding: 10px;
+      border: 1px solid #ddd;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+    }
+    
+    .memory-block {
+      stroke: #333;
+      stroke-width: 1;
+    }
+    
+    .memory-block.allocated {
+      fill: #1772d0;
+    }
+    
+    .memory-block.free {
+      fill: #e0e0e0;
+    }
+    
+    .memory-block.fragmented {
+      fill: #ff6b6b;
+    }
+    
+    .memory-block.optimized {
+      fill: #4CAF50;
+    }
+    
+    .memory-block.cached {
+      fill: #FF9800;
+    }
+    
+    .tensor-rect {
+      stroke: #333;
+      stroke-width: 2;
+      rx: 3;
+    }
+    
+    .tensor-text {
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      text-anchor: middle;
+      fill: white;
+    }
+    
+    .allocation-line {
+      stroke: #1772d0;
+      stroke-width: 2;
+      opacity: 0;
+      marker-end: url(#allocation-arrow);
+    }
+    
+    .allocation-line.active {
+      animation: allocate 1s ease-in-out;
+    }
+    
+    @keyframes allocate {
+      0% { opacity: 0; stroke-dasharray: 0 100; }
+      50% { opacity: 1; stroke-dasharray: 5 5; }
+      100% { opacity: 0; stroke-dasharray: 0 100; }
+    }
+    
+    .gc-indicator {
+      fill: #ff6b6b;
+      opacity: 0;
+    }
+    
+    .gc-indicator.active {
+      animation: gc-sweep 2s ease-in-out;
+    }
+    
+    @keyframes gc-sweep {
+      0% { opacity: 0; }
+      50% { opacity: 0.7; }
+      100% { opacity: 0; }
+    }
+    
+    .strategy-tab {
+      display: inline-block;
+      padding: 10px 20px;
+      margin: 0 5px;
+      background: #f0f0f0;
+      border: 1px solid #ddd;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    
+    .strategy-tab.active {
+      background: #1772d0;
+      color: white;
+    }
+    
+    .pool-header {
+      fill: #1772d0;
+      font-size: 12px;
+      font-weight: bold;
+      text-anchor: middle;
+    }
+    
+    .timeline-point {
+      fill: #1772d0;
+      r: 4;
+    }
+    
+    .timeline-line {
+      stroke: #1772d0;
+      stroke-width: 2;
+      fill: none;
+    }
+  </style>
+</head>
+
+<body>
+  <table style="width:100%;max-width:900px;border:0px;margin:auto;">
+    <tbody>
+      <tr>
+        <td style="padding:20px;">
+          <p style="text-align:right;">
+            <a href="../projects.html">← Back to Projects</a>
+          </p>
+          
+          <heading>Memory Management Visualizer</heading>
+          <p>
+            Explore memory management strategies for deep learning including tensor allocation, 
+            memory pooling, garbage collection, and optimization techniques like memory mapping and caching.
+          </p>
+          
+          <!-- Strategy Selection -->
+          <div style="margin: 20px 0;">
+            <span class="strategy-tab active" onclick="showStrategy('allocation')">Allocation</span>
+            <span class="strategy-tab" onclick="showStrategy('pooling')">Memory Pooling</span>
+            <span class="strategy-tab" onclick="showStrategy('optimization')">Optimization</span>
+          </div>
+          
+          <!-- Controls -->
+          <div class="control-group">
+            <label>Allocation Strategy:
+              <select id="alloc-strategy">
+                <option value="first-fit">First Fit</option>
+                <option value="best-fit">Best Fit</option>
+                <option value="buddy">Buddy System</option>
+                <option value="pooled">Memory Pool</option>
+              </select>
+            </label>
+            
+            <label>Tensor Size (MB):
+              <input type="range" id="tensor-size" min="1" max="100" value="20" step="1">
+              <span id="size-value">20</span> MB
+            </label>
+            
+            <label>Memory Pressure:
+              <select id="memory-pressure">
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+            </label>
+            
+            <button onclick="allocateTensor()">Allocate Tensor</button>
+            <button onclick="deallocateRandom()">Deallocate Random</button>
+            <button onclick="runGarbageCollection()">Run GC</button>
+            <button onclick="defragmentMemory()">Defragment</button>
+            <button onclick="resetMemory()">Reset</button>
+          </div>
+          
+          <!-- Memory Layout Visualization -->
+          <div class="viz-container">
+            <h3 style="margin:0 0 10px 0; font-size:16px;">Memory Layout (GPU VRAM)</h3>
+            <svg id="memory-layout" width="860" height="200"></svg>
+          </div>
+          
+          <!-- Statistics -->
+          <div class="stats-grid">
+            <div class="stat-box">
+              <strong>Total Memory:</strong> <span id="total-memory">8192</span> MB<br>
+              <strong>Available:</strong> <span id="available-memory">6144</span> MB
+            </div>
+            <div class="stat-box">
+              <strong>Allocated:</strong> <span id="allocated-memory">2048</span> MB<br>
+              <strong>Utilization:</strong> <span id="utilization">25.0</span>%
+            </div>
+            <div class="stat-box">
+              <strong>Fragmentation:</strong> <span id="fragmentation">15</span>%<br>
+              <strong>Largest Block:</strong> <span id="largest-block">1024</span> MB
+            </div>
+            <div class="stat-box">
+              <strong>Allocations:</strong> <span id="allocation-count">12</span><br>
+              <strong>GC Cycles:</strong> <span id="gc-cycles">3</span>
+            </div>
+          </div>
+          
+          <!-- Tensor Pool Visualization -->
+          <div class="viz-container">
+            <h3 style="margin:0 0 10px 0; font-size:16px;">Memory Pools & Tensor Lifecycle</h3>
+            <svg id="memory-pools" width="860" height="300"></svg>
+          </div>
+          
+          <!-- Memory Usage Timeline -->
+          <div class="viz-container">
+            <h3 style="margin:0 0 10px 0; font-size:16px;">Memory Usage Over Time</h3>
+            <svg id="memory-timeline" width="860" height="250"></svg>
+          </div>
+          
+          <!-- Allocation Strategies Comparison -->
+          <div class="viz-container">
+            <h3 style="margin:0 0 10px 0; font-size:16px;">Allocation Strategy Performance</h3>
+            <svg id="strategy-comparison" width="860" height="200"></svg>
+          </div>
+          
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <script>
+    // Memory Management Visualizer
+    class MemoryManager {
+      constructor() {
+        this.totalMemory = 8192; // 8GB in MB
+        this.memoryBlocks = [];
+        this.allocatedTensors = [];
+        this.memoryHistory = [];
+        this.gcCycles = 0;
+        this.strategy = 'first-fit';
+        this.poolSizes = [16, 32, 64, 128, 256, 512, 1024]; // MB
+        this.pools = {};
+        
+        this.initializePools();
+        this.initializeMemory();
+        this.initializeVisualizations();
+        this.updateStats();
+        this.startMemoryTracking();
+      }
+      
+      initializePools() {
+        this.poolSizes.forEach(size => {
+          this.pools[size] = {
+            free: [],
+            used: [],
+            totalBlocks: 8,
+            blockSize: size
+          };
+          
+          // Initialize free blocks
+          for (let i = 0; i < this.pools[size].totalBlocks; i++) {
+            this.pools[size].free.push({
+              id: `pool-${size}-${i}`,
+              size: size,
+              allocated: false
+            });
+          }
+        });
+      }
+      
+      initializeMemory() {
+        this.memoryBlocks = [
+          { start: 0, size: this.totalMemory, allocated: false, tensorId: null, type: 'free' }
+        ];
+      }
+      
+      initializeVisualizations() {
+        this.createMemoryLayout();
+        this.createMemoryPools();
+        this.createMemoryTimeline();
+        this.createStrategyComparison();
+        
+        // Add arrow marker for allocation
+        d3.select('#memory-layout')
+          .append('defs')
+          .append('marker')
+          .attr('id', 'allocation-arrow')
+          .attr('viewBox', '0 0 10 10')
+          .attr('refX', 5)
+          .attr('refY', 3)
+          .attr('markerWidth', 6)
+          .attr('markerHeight', 6)
+          .attr('orient', 'auto')
+          .append('path')
+          .attr('d', 'M0,0 L0,6 L9,3 z')
+          .attr('fill', '#1772d0');
+      }
+      
+      createMemoryLayout() {
+        const svg = d3.select('#memory-layout');
+        svg.selectAll('*').remove();
+        
+        const width = 860;
+        const height = 200;
+        const margin = {top: 20, right: 30, bottom: 20, left: 30};
+        
+        const blockHeight = (height - margin.top - margin.bottom) / 2;
+        const memoryWidth = width - margin.left - margin.right;
+        
+        // Draw memory blocks
+        const blockGroup = svg.append('g')
+          .attr('transform', `translate(${margin.left}, ${margin.top})`);
+        
+        this.updateMemoryBlocks(blockGroup, memoryWidth, blockHeight);
+        
+        // Add memory address labels
+        svg.append('text')
+          .attr('x', margin.left)
+          .attr('y', margin.top - 5)
+          .style('font-size', '10px')
+          .text('0 MB');
+        
+        svg.append('text')
+          .attr('x', width - margin.right)
+          .attr('y', margin.top - 5)
+          .attr('text-anchor', 'end')
+          .style('font-size', '10px')
+          .text(`${this.totalMemory} MB`);
+        
+        // Legend
+        const legend = svg.append('g')
+          .attr('transform', `translate(${margin.left}, ${height - 50})`);
+        
+        const legendItems = [
+          { color: '#1772d0', label: 'Allocated' },
+          { color: '#e0e0e0', label: 'Free' },
+          { color: '#ff6b6b', label: 'Fragmented' },
+          { color: '#4CAF50', label: 'Optimized' }
+        ];
+        
+        legendItems.forEach((item, i) => {
+          legend.append('rect')
+            .attr('x', i * 120)
+            .attr('y', 0)
+            .attr('width', 15)
+            .attr('height', 15)
+            .attr('fill', item.color);
+          
+          legend.append('text')
+            .attr('x', i * 120 + 20)
+            .attr('y', 12)
+            .style('font-size', '12px')
+            .text(item.label);
+        });
+      }
+      
+      updateMemoryBlocks(container, memoryWidth, blockHeight) {
+        const blocks = container.selectAll('.memory-block')
+          .data(this.memoryBlocks);
+        
+        blocks.exit().remove();
+        
+        const newBlocks = blocks.enter()
+          .append('rect')
+          .attr('class', 'memory-block');
+        
+        blocks.merge(newBlocks)
+          .attr('x', d => (d.start / this.totalMemory) * memoryWidth)
+          .attr('y', 0)
+          .attr('width', d => Math.max(1, (d.size / this.totalMemory) * memoryWidth))
+          .attr('height', blockHeight)
+          .attr('class', d => `memory-block ${d.type}`)
+          .append('title')
+          .text(d => `${d.type === 'allocated' ? 'Tensor ' + d.tensorId : 'Free'}: ${d.size} MB`);
+      }
+      
+      createMemoryPools() {
+        const svg = d3.select('#memory-pools');
+        svg.selectAll('*').remove();
+        
+        const width = 860;
+        const height = 300;
+        const margin = {top: 30, right: 30, bottom: 30, left: 30};
+        
+        const poolWidth = (width - margin.left - margin.right) / this.poolSizes.length;
+        const poolHeight = height - margin.top - margin.bottom - 40;
+        
+        this.poolSizes.forEach((size, i) => {
+          const x = margin.left + i * poolWidth;
+          const pool = this.pools[size];
+          const blockSize = poolHeight / pool.totalBlocks;
+          
+          // Pool header
+          svg.append('text')
+            .attr('class', 'pool-header')
+            .attr('x', x + poolWidth / 2)
+            .attr('y', margin.top - 10)
+            .text(`${size} MB Pool`);
+          
+          // Pool blocks
+          for (let j = 0; j < pool.totalBlocks; j++) {
+            const isUsed = j < pool.used.length;
+            
+            svg.append('rect')
+              .attr('x', x + 5)
+              .attr('y', margin.top + j * blockSize)
+              .attr('width', poolWidth - 10)
+              .attr('height', blockSize - 2)
+              .attr('fill', isUsed ? '#1772d0' : '#e0e0e0')
+              .attr('stroke', '#333')
+              .attr('rx', 2);
+            
+            if (isUsed && pool.used[j]) {
+              svg.append('text')
+                .attr('x', x + poolWidth / 2)
+                .attr('y', margin.top + j * blockSize + blockSize / 2 + 4)
+                .attr('class', 'tensor-text')
+                .attr('fill', 'white')
+                .style('font-size', '10px')
+                .text(pool.used[j].id || '');
+            }
+          }
+          
+          // Pool statistics
+          svg.append('text')
+            .attr('x', x + poolWidth / 2)
+            .attr('y', height - 10)
+            .attr('text-anchor', 'middle')
+            .style('font-size', '10px')
+            .text(`${pool.used.length}/${pool.totalBlocks} used`);
+        });
+      }
+      
+      createMemoryTimeline() {
+        const svg = d3.select('#memory-timeline');
+        svg.selectAll('*').remove();
+        
+        const width = 860;
+        const height = 250;
+        const margin = {top: 20, right: 30, bottom: 40, left: 60};
+        
+        if (this.memoryHistory.length < 2) {
+          svg.append('text')
+            .attr('x', width / 2)
+            .attr('y', height / 2)
+            .attr('text-anchor', 'middle')
+            .style('font-size', '14px')
+            .text('Perform some allocations to see memory usage over time');
+          return;
+        }
+        
+        const xScale = d3.scaleLinear()
+          .domain([0, this.memoryHistory.length - 1])
+          .range([margin.left, width - margin.right]);
+        
+        const yScale = d3.scaleLinear()
+          .domain([0, this.totalMemory])
+          .range([height - margin.bottom, margin.top]);
+        
+        const line = d3.line()
+          .x((d, i) => xScale(i))
+          .y(d => yScale(d.allocated))
+          .curve(d3.curveMonotoneX);
+        
+        // Draw usage line
+        svg.append('path')
+          .datum(this.memoryHistory)
+          .attr('class', 'timeline-line')
+          .attr('d', line);
+        
+        // Draw points
+        svg.selectAll('.timeline-point')
+          .data(this.memoryHistory)
+          .enter()
+          .append('circle')
+          .attr('class', 'timeline-point')
+          .attr('cx', (d, i) => xScale(i))
+          .attr('cy', d => yScale(d.allocated))
+          .append('title')
+          .text(d => `Time: ${d.timestamp}, Allocated: ${d.allocated} MB`);
+        
+        // Add axes
+        svg.append('g')
+          .attr('transform', `translate(0,${height - margin.bottom})`)
+          .call(d3.axisBottom(xScale).ticks(Math.min(10, this.memoryHistory.length)));
+        
+        svg.append('g')
+          .attr('transform', `translate(${margin.left},0)`)
+          .call(d3.axisLeft(yScale).tickFormat(d => `${d} MB`));
+        
+        // Labels
+        svg.append('text')
+          .attr('x', width / 2)
+          .attr('y', height - 5)
+          .attr('text-anchor', 'middle')
+          .style('font-size', '12px')
+          .text('Time Steps');
+        
+        svg.append('text')
+          .attr('transform', 'rotate(-90)')
+          .attr('x', -height / 2)
+          .attr('y', 15)
+          .attr('text-anchor', 'middle')
+          .style('font-size', '12px')
+          .text('Memory Usage (MB)');
+      }
+      
+      createStrategyComparison() {
+        const svg = d3.select('#strategy-comparison');
+        svg.selectAll('*').remove();
+        
+        const width = 860;
+        const height = 200;
+        const margin = {top: 20, right: 30, bottom: 40, left: 60};
+        
+        const strategies = ['first-fit', 'best-fit', 'buddy', 'pooled'];
+        const metrics = {
+          'first-fit': { speed: 95, fragmentation: 75, efficiency: 70 },
+          'best-fit': { speed: 70, fragmentation: 60, efficiency: 85 },
+          'buddy': { speed: 85, fragmentation: 50, efficiency: 80 },
+          'pooled': { speed: 90, fragmentation: 30, efficiency: 95 }
+        };
+        
+        const x = d3.scaleBand()
+          .domain(strategies)
+          .range([margin.left, width - margin.right])
+          .padding(0.1);
+        
+        const y = d3.scaleLinear()
+          .domain([0, 100])
+          .range([height - margin.bottom, margin.top]);
+        
+        const metricNames = ['speed', 'fragmentation', 'efficiency'];
+        const colors = ['#1772d0', '#ff6b6b', '#4CAF50'];
+        
+        strategies.forEach(strategy => {
+          metricNames.forEach((metric, i) => {
+            svg.append('rect')
+              .attr('x', x(strategy) + i * (x.bandwidth() / 3))
+              .attr('y', y(metrics[strategy][metric]))
+              .attr('width', x.bandwidth() / 3 - 2)
+              .attr('height', y(0) - y(metrics[strategy][metric]))
+              .attr('fill', colors[i])
+              .append('title')
+              .text(`${strategy} ${metric}: ${metrics[strategy][metric]}%`);
+          });
+        });
+        
+        // Add axes
+        svg.append('g')
+          .attr('transform', `translate(0,${height - margin.bottom})`)
+          .call(d3.axisBottom(x));
+        
+        svg.append('g')
+          .attr('transform', `translate(${margin.left},0)`)
+          .call(d3.axisLeft(y).tickFormat(d => `${d}%`));
+        
+        // Legend
+        const legend = svg.append('g')
+          .attr('transform', `translate(${width - 150}, ${margin.top})`);
+        
+        metricNames.forEach((metric, i) => {
+          legend.append('rect')
+            .attr('x', 0)
+            .attr('y', i * 20)
+            .attr('width', 15)
+            .attr('height', 15)
+            .attr('fill', colors[i]);
+          
+          legend.append('text')
+            .attr('x', 20)
+            .attr('y', i * 20 + 12)
+            .style('font-size', '12px')
+            .text(metric);
+        });
+      }
+      
+      allocateTensor() {
+        const size = parseInt(document.getElementById('tensor-size').value);
+        const tensorId = `T${this.allocatedTensors.length}`;
+        
+        let allocated = false;
+        
+        if (this.strategy === 'pooled') {
+          allocated = this.allocateFromPool(size, tensorId);
+        } else {
+          allocated = this.allocateWithStrategy(size, tensorId);
+        }
+        
+        if (allocated) {
+          this.allocatedTensors.push({ id: tensorId, size: size, timestamp: Date.now() });
+          this.visualizeAllocation(size);
+        } else {
+          alert('Allocation failed: Insufficient memory');
+        }
+        
+        this.updateVisualizations();
+        this.updateStats();
+        this.recordMemoryUsage();
+      }
+      
+      allocateFromPool(size, tensorId) {
+        // Find best fitting pool
+        const suitablePool = this.poolSizes.find(poolSize => poolSize >= size);
+        
+        if (!suitablePool || this.pools[suitablePool].free.length === 0) {
+          return false;
+        }
+        
+        const block = this.pools[suitablePool].free.pop();
+        block.tensorId = tensorId;
+        block.allocated = true;
+        this.pools[suitablePool].used.push(block);
+        
+        return true;
+      }
+      
+      allocateWithStrategy(size, tensorId) {
+        let selectedBlock = null;
+        
+        if (this.strategy === 'first-fit') {
+          selectedBlock = this.memoryBlocks.find(block => !block.allocated && block.size >= size);
+        } else if (this.strategy === 'best-fit') {
+          const freeBlocks = this.memoryBlocks.filter(block => !block.allocated && block.size >= size);
+          selectedBlock = freeBlocks.reduce((best, block) => 
+            !best || block.size < best.size ? block : best, null);
+        } else if (this.strategy === 'buddy') {
+          selectedBlock = this.findBuddyBlock(size);
+        }
+        
+        if (!selectedBlock) return false;
+        
+        // Split block if necessary
+        if (selectedBlock.size > size) {
+          const remainingBlock = {
+            start: selectedBlock.start + size,
+            size: selectedBlock.size - size,
+            allocated: false,
+            tensorId: null,
+            type: 'free'
+          };
+          
+          const index = this.memoryBlocks.indexOf(selectedBlock);
+          this.memoryBlocks.splice(index + 1, 0, remainingBlock);
+        }
+        
+        selectedBlock.size = size;
+        selectedBlock.allocated = true;
+        selectedBlock.tensorId = tensorId;
+        selectedBlock.type = 'allocated';
+        
+        return true;
+      }
+      
+      findBuddyBlock(size) {
+        // Simplified buddy system - round up to nearest power of 2
+        const buddySize = Math.pow(2, Math.ceil(Math.log2(size)));
+        return this.memoryBlocks.find(block => !block.allocated && block.size >= buddySize);
+      }
+      
+      deallocateRandom() {
+        if (this.allocatedTensors.length === 0) return;
+        
+        const randomIndex = Math.floor(Math.random() * this.allocatedTensors.length);
+        const tensor = this.allocatedTensors[randomIndex];
+        
+        if (this.strategy === 'pooled') {
+          this.deallocateFromPool(tensor.id);
+        } else {
+          this.deallocateFromMemory(tensor.id);
+        }
+        
+        this.allocatedTensors.splice(randomIndex, 1);
+        this.updateVisualizations();
+        this.updateStats();
+        this.recordMemoryUsage();
+      }
+      
+      deallocateFromPool(tensorId) {
+        for (const poolSize of this.poolSizes) {
+          const pool = this.pools[poolSize];
+          const blockIndex = pool.used.findIndex(block => block.tensorId === tensorId);
+          
+          if (blockIndex !== -1) {
+            const block = pool.used.splice(blockIndex, 1)[0];
+            block.allocated = false;
+            block.tensorId = null;
+            pool.free.push(block);
+            break;
+          }
+        }
+      }
+      
+      deallocateFromMemory(tensorId) {
+        const block = this.memoryBlocks.find(b => b.tensorId === tensorId);
+        if (block) {
+          block.allocated = false;
+          block.tensorId = null;
+          block.type = 'free';
+          
+          // Merge adjacent free blocks
+          this.mergeAdjacentFreeBlocks();
+        }
+      }
+      
+      mergeAdjacentFreeBlocks() {
+        this.memoryBlocks.sort((a, b) => a.start - b.start);
+        
+        for (let i = 0; i < this.memoryBlocks.length - 1; i++) {
+          const current = this.memoryBlocks[i];
+          const next = this.memoryBlocks[i + 1];
+          
+          if (!current.allocated && !next.allocated && current.start + current.size === next.start) {
+            current.size += next.size;
+            this.memoryBlocks.splice(i + 1, 1);
+            i--; // Recheck the merged block
+          }
+        }
+      }
+      
+      runGarbageCollection() {
+        this.gcCycles++;
+        
+        // Simulate GC - remove some old allocations
+        if (this.allocatedTensors.length > 0) {
+          const toRemove = Math.floor(this.allocatedTensors.length * 0.3);
+          for (let i = 0; i < toRemove; i++) {
+            this.deallocateRandom();
+          }
+        }
+        
+        // Visual GC indicator
+        const svg = d3.select('#memory-layout');
+        svg.append('rect')
+          .attr('class', 'gc-indicator')
+          .attr('x', 30)
+          .attr('y', 20)
+          .attr('width', 800)
+          .attr('height', 100)
+          .classed('active', true);
+        
+        setTimeout(() => {
+          svg.select('.gc-indicator').remove();
+        }, 2000);
+        
+        this.updateVisualizations();
+        this.updateStats();
+      }
+      
+      defragmentMemory() {
+        // Compact allocated blocks to reduce fragmentation
+        this.memoryBlocks.sort((a, b) => {
+          if (a.allocated && !b.allocated) return -1;
+          if (!a.allocated && b.allocated) return 1;
+          return a.start - b.start;
+        });
+        
+        let currentStart = 0;
+        this.memoryBlocks.forEach(block => {
+          block.start = currentStart;
+          currentStart += block.size;
+          if (block.allocated) {
+            block.type = 'optimized';
+          }
+        });
+        
+        // Merge free blocks
+        this.mergeAdjacentFreeBlocks();
+        
+        // Reset type after animation
+        setTimeout(() => {
+          this.memoryBlocks.forEach(block => {
+            if (block.type === 'optimized') {
+              block.type = 'allocated';
+            }
+          });
+          this.updateVisualizations();
+        }, 1000);
+        
+        this.updateVisualizations();
+        this.updateStats();
+      }
+      
+      resetMemory() {
+        this.memoryBlocks = [
+          { start: 0, size: this.totalMemory, allocated: false, tensorId: null, type: 'free' }
+        ];
+        this.allocatedTensors = [];
+        this.memoryHistory = [];
+        this.gcCycles = 0;
+        this.initializePools();
+        
+        this.updateVisualizations();
+        this.updateStats();
+      }
+      
+      visualizeAllocation(size) {
+        // Animate allocation
+        const svg = d3.select('#memory-layout');
+        const arrow = svg.append('line')
+          .attr('class', 'allocation-line')
+          .attr('x1', 50)
+          .attr('y1', 10)
+          .attr('x2', 400)
+          .attr('y2', 50)
+          .classed('active', true);
+        
+        setTimeout(() => arrow.remove(), 1000);
+      }
+      
+      updateVisualizations() {
+        this.createMemoryLayout();
+        this.createMemoryPools();
+        this.createMemoryTimeline();
+      }
+      
+      updateStats() {
+        const allocated = this.getAllocatedMemory();
+        const available = this.totalMemory - allocated;
+        const utilization = (allocated / this.totalMemory) * 100;
+        const fragmentation = this.calculateFragmentation();
+        const largestFreeBlock = this.getLargestFreeBlock();
+        
+        document.getElementById('total-memory').textContent = this.totalMemory;
+        document.getElementById('available-memory').textContent = available;
+        document.getElementById('allocated-memory').textContent = allocated;
+        document.getElementById('utilization').textContent = utilization.toFixed(1);
+        document.getElementById('fragmentation').textContent = fragmentation.toFixed(0);
+        document.getElementById('largest-block').textContent = largestFreeBlock;
+        document.getElementById('allocation-count').textContent = this.allocatedTensors.length;
+        document.getElementById('gc-cycles').textContent = this.gcCycles;
+      }
+      
+      getAllocatedMemory() {
+        if (this.strategy === 'pooled') {
+          let total = 0;
+          for (const poolSize of this.poolSizes) {
+            total += this.pools[poolSize].used.length * poolSize;
+          }
+          return total;
+        } else {
+          return this.memoryBlocks
+            .filter(block => block.allocated)
+            .reduce((sum, block) => sum + block.size, 0);
+        }
+      }
+      
+      calculateFragmentation() {
+        if (this.strategy === 'pooled') return 5; // Pools have low fragmentation
+        
+        const freeBlocks = this.memoryBlocks.filter(block => !block.allocated);
+        if (freeBlocks.length <= 1) return 0;
+        
+        const totalFree = freeBlocks.reduce((sum, block) => sum + block.size, 0);
+        const largestFree = Math.max(...freeBlocks.map(block => block.size));
+        
+        return totalFree > 0 ? ((totalFree - largestFree) / totalFree) * 100 : 0;
+      }
+      
+      getLargestFreeBlock() {
+        if (this.strategy === 'pooled') {
+          return Math.max(...this.poolSizes.filter(size => this.pools[size].free.length > 0));
+        } else {
+          const freeBlocks = this.memoryBlocks.filter(block => !block.allocated);
+          return freeBlocks.length > 0 ? Math.max(...freeBlocks.map(block => block.size)) : 0;
+        }
+      }
+      
+      recordMemoryUsage() {
+        this.memoryHistory.push({
+          timestamp: this.memoryHistory.length,
+          allocated: this.getAllocatedMemory(),
+          available: this.totalMemory - this.getAllocatedMemory()
+        });
+        
+        // Keep only last 50 entries
+        if (this.memoryHistory.length > 50) {
+          this.memoryHistory.shift();
+        }
+      }
+      
+      startMemoryTracking() {
+        setInterval(() => {
+          this.recordMemoryUsage();
+          if (this.memoryHistory.length > 1) {
+            this.createMemoryTimeline();
+          }
+        }, 1000);
+      }
+    }
+    
+    // Global instance
+    const memoryManager = new MemoryManager();
+    
+    function showStrategy(strategy) {
+      // Implementation for different strategy views
+      document.querySelectorAll('.strategy-tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.querySelector(`[onclick="showStrategy('${strategy}')"]`).classList.add('active');
+    }
+    
+    function allocateTensor() {
+      const strategy = document.getElementById('alloc-strategy').value;
+      memoryManager.strategy = strategy;
+      memoryManager.allocateTensor();
+    }
+    
+    function deallocateRandom() {
+      memoryManager.deallocateRandom();
+    }
+    
+    function runGarbageCollection() {
+      memoryManager.runGarbageCollection();
+    }
+    
+    function defragmentMemory() {
+      memoryManager.defragmentMemory();
+    }
+    
+    function resetMemory() {
+      memoryManager.resetMemory();
+    }
+    
+    // Event listeners
+    document.getElementById('tensor-size').addEventListener('input', function() {
+      document.getElementById('size-value').textContent = this.value;
+    });
+    
+    document.getElementById('alloc-strategy').addEventListener('change', function() {
+      memoryManager.strategy = this.value;
+      memoryManager.updateVisualizations();
+    });
+    
+    // Auto-allocate demo data
+    setTimeout(() => {
+      for (let i = 0; i < 5; i++) {
+        setTimeout(() => {
+          document.getElementById('tensor-size').value = 20 + Math.random() * 80;
+          document.getElementById('size-value').textContent = document.getElementById('tensor-size').value;
+          allocateTensor();
+        }, i * 1000);
+      }
+    }, 2000);
+  </script>
+</body>
+</html>

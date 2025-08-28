@@ -1,0 +1,215 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Xuming Huang</title>
+  <meta name="author" content="Xuming Huang">
+  <meta name="description" content="Personal academic website of Xuming Huang">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="stylesheet.css">
+  <link rel="icon" type="image/png" href="images/favicon.png">
+</head>
+
+<body>
+  <table style="width:100%;max-width:900px;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+    <tbody>
+      <tr style="padding:0px">
+        <td style="padding:0px">
+          
+          <!-- Bio Section -->
+          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+            <tbody>
+              <tr style="padding:0px">
+                <td style="padding:2.5%;width:63%;vertical-align:middle">
+                  <p style="text-align:center">
+                    <name>Xuming Huang</name>
+                  </p>
+                  <p>
+                    I am a Junior Comp Sci Student at University of Wisconsin - Madison, where I work on 
+                    Machine Learning Systems, Operating Systems, and Efficient Computing Infrastructure.
+                  </p>
+                  <p>
+                    My research interests include MLSys, distributed systems, compiler optimization,
+                    and the intersection of systems and machine learning. I'm particularly interested
+                    in making large-scale ML training and inference more efficient.
+                  </p>
+                  <p>
+                    Last summer, I did my summer session in Stanford. I got A+ (99/100) in CS107 Computer Organization & Systems,
+					and A (93/100) in CS161 Design and Analysis of Algorithms.
+                  </p>
+                  <p style="text-align:center">
+                    <a href="javascript:;" onclick="showEmail()" id="email-link">[show email]</a> / 
+                    <a href="cv/Resume.pdf">CV</a> /
+                    <a href="https://scholar.google.com/citations?user=Wd0QQ7kAAAAJ&hl=en">Google Scholar</a> /
+                    <a href="https://github.com/mac-huang">GitHub</a> /
+                    <a href="https://www.linkedin.com/in/xuminghuang/">LinkedIn</a> 
+				  </p>
+                </td>
+                <td style="padding:2.5%;width:40%;max-width:40%">
+                  <img style="width:100%;max-width:100%;border-radius:50%;" alt="profile photo" src="./images/profile.jpg">
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <!-- Navigation -->
+          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+            <tbody>
+              <tr>
+                <td style="padding:20px;width:100%;vertical-align:middle">
+                  <p style="text-align:center;font-size:18px;">
+                    <a href="index.html" style="font-weight:700;">Home</a> &nbsp;|&nbsp;
+                    <a href="research.html">Research</a> &nbsp;|&nbsp;
+                    <a href="projects.html">Projects</a> &nbsp;|&nbsp;
+                    <a href="blog.html">Blog</a> &nbsp;|&nbsp;
+                    <a href="courses.html">Courses</a> &nbsp;|&nbsp;
+                    <a href="bot.html">Ask Me</a>
+                  </p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <!-- Research Section -->
+          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+            <tbody>
+              <tr>
+                <td style="padding:20px;width:100%;vertical-align:middle">
+                  <heading>Research</heading>
+                  <p>
+                    I'm interested in machine learning systems, operating systems, 
+                    and the intersection of systems and ML. My recent work focuses on 
+                    efficient training and inference of large language models, 
+                    distributed computing, and hardware-software co-design.
+                    Representative projects are <span class="highlight">highlighted</span>.
+                  </p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <!-- Publications Table -->
+          <table style="width:100%;border:0px;border-spacing:0px 10px;border-collapse:separate;margin-right:auto;margin-left:auto;" id="selected-publications">
+            <tbody>
+              <!-- Publications will be loaded dynamically from publications.js -->
+            </tbody>
+          </table>
+          
+          <!-- View All Publications Link -->
+          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+            <tbody>
+              <tr>
+                <td style="padding:20px;width:100%;vertical-align:middle;text-align:center">
+                  <a href="research.html">View All Works →</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <!-- Projects Preview -->
+          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+            <tbody>
+              <tr>
+                <td style="padding:20px;width:100%;vertical-align:middle">
+                  <heading>Selected Projects</heading>
+                  <p>
+                    I create interactive visualizations and educational tools for computer science concepts.
+                    <a href="projects.html">See All Projects →</a>
+                  </p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+            <tbody>
+              <tr>
+                <td style="padding:20px;width:33%;vertical-align:top">
+                  <div style="text-align:center;">
+                    <a href="demos/sorting.html">
+                      <img src="images/sorting-demo.png" alt="Sorting Visualizer" style="width:100%;max-width:200px;border-radius:5px;">
+                    </a>
+                    <p><strong>Sorting Algorithm Visualizer</strong></p>
+                    <p style="font-size:13px;">Interactive visualization of various sorting algorithms</p>
+                  </div>
+                </td>
+                <td style="padding:20px;width:33%;vertical-align:top">
+                  <div style="text-align:center;">
+                    <a href="demos/neural.html">
+                      <img src="images/neural-demo.png" alt="Neural Network" style="width:100%;max-width:200px;border-radius:5px;">
+                    </a>
+                    <p><strong>Neural Network Playground</strong></p>
+                    <p style="font-size:13px;">Train and visualize simple neural networks in your browser</p>
+                  </div>
+                </td>
+                <td style="padding:20px;width:33%;vertical-align:top">
+                  <div style="text-align:center;">
+                    <a href="demos/compiler.html">
+                      <img src="images/compiler-demo.png" alt="Compiler" style="width:100%;max-width:200px;border-radius:5px;">
+                    </a>
+                    <p><strong>Compiler Explorer</strong></p>
+                    <p style="font-size:13px;">Explore compilation stages and optimizations</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <!-- Teaching -->
+          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+            <tbody>
+              <tr>
+                <td style="padding:20px;width:100%;vertical-align:middle">
+                  <heading>Teaching & Tutorials</heading>
+                  <p>
+                    <strong>Deep Learning Architecture Tutorials:</strong><br>
+                    • <a href="https://github.com/Mac-Huang/Transformer">Understanding Transformers</a> - Comprehensive tutorial on Transformer architecture with implementations<br>
+                    • <a href="https://github.com/Mac-Huang/GPT">GPT Implementation Guide</a> - Step-by-step implementation and explanation of GPT models<br>
+                    <br>
+                    <strong>Teaching Assistant Aspirations:</strong><br>
+                    Planning to TA for COMP SCI 252: Introduction of Computer Engineering (Future semesters)
+                  </p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <!-- Service -->
+          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+            <tbody>
+              <tr>
+                <td style="padding:20px;width:100%;vertical-align:middle">
+                  <heading>Service & Activities</heading>
+                  <p>
+                    <strong>Leadership:</strong> NFL Flag Football Team Captain - USST "Earthmoving Vehicles" (2023 National Champions)<br>
+                    <strong>Community:</strong> Peer tutor for CS252 Discussion Sections at UW-Madison (coming soon...)<br>
+                    <strong>Open Source:</strong> Contributing to machine learning projects and educational materials
+                  </p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <!-- Footer -->
+          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+            <tbody>
+              <tr>
+                <td style="padding:0px">
+                  <br>
+                  <p style="text-align:center;font-size:14px;color:#999;padding:20px;">
+                    Feel free to clone my templete <a href="https://github.com/Mac-Huang/xuming.ai.git" style="color:#999;">Xuming Huang</a>
+                  </p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <script src="data/publications.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

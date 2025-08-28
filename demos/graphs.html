@@ -1,0 +1,571 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Graph Algorithms Playground</title>
+  <meta name="author" content="Xuming Huang">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../stylesheet.css">
+  <style>
+    /* Clean, academic styling */
+    #graph-canvas {
+      border: 1px solid #ddd;
+      background: white;
+      cursor: crosshair;
+      display: block;
+      margin: 20px auto;
+    }
+    
+    .controls {
+      text-align: center;
+      margin: 20px 0;
+    }
+    
+    .controls button, .controls select {
+      margin: 5px;
+      padding: 8px 15px;
+      font-family: 'EB Garamond', Georgia, serif;
+      font-size: 16px;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    
+    .controls button:hover, .controls select:hover {
+      border-color: #1772d0;
+    }
+    
+    .controls button.active {
+      background: #1772d0;
+      color: white;
+      border-color: #1772d0;
+    }
+    
+    .info-panel {
+      background: #f9f9f9;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 20px 0;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+    }
+    
+    .legend {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 15px 0;
+      font-size: 14px;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .legend-color {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid #333;
+    }
+  </style>
+</head>
+
+<body>
+  <table style="width:100%;max-width:900px;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+    <tbody>
+      <tr>
+        <td style="padding:20px">
+          
+          <p style="text-align:center">
+            <name>Graph Algorithms Playground</name>
+          </p>
+          
+          <p style="text-align:center; margin:20px 0;">
+            <a href="../projects.html">← Back to Projects</a>
+          </p>
+          
+          <div class="controls">
+            <strong>Mode:</strong>
+            <button id="add-node" class="active">Add Node</button>
+            <button id="add-edge">Add Edge</button>
+            <button id="delete">Delete</button>
+            <button id="clear">Clear All</button>
+          </div>
+          
+          <div class="controls">
+            <strong>Algorithm:</strong>
+            <select id="algorithm">
+              <option value="bfs">Breadth-First Search (BFS)</option>
+              <option value="dfs">Depth-First Search (DFS)</option>
+              <option value="dijkstra">Dijkstra's Shortest Path</option>
+              <option value="astar">A* Pathfinding</option>
+              <option value="kruskal">Kruskal's MST</option>
+              <option value="prim">Prim's MST</option>
+            </select>
+            
+            <button id="run-algorithm">Run Algorithm</button>
+            <button id="step-algorithm">Step Through</button>
+            <button id="reset-algorithm">Reset</button>
+            
+            <label style="margin-left:10px;">
+              Speed: <input type="range" id="speed" min="100" max="2000" value="500" style="width:100px;">
+            </label>
+          </div>
+          
+          <canvas id="graph-canvas" width="800" height="500"></canvas>
+          
+          <div class="legend">
+            <div class="legend-item">
+              <div class="legend-color" style="background:#ddd;"></div>
+              <span>Unvisited</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color" style="background:#ffe066;"></div>
+              <span>Current/Frontier</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color" style="background:#51cf66;"></div>
+              <span>Visited</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color" style="background:#ff6b6b;"></div>
+              <span>Start Node</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color" style="background:#4dabf7;"></div>
+              <span>End Node</span>
+            </div>
+            <div class="legend-item">
+              <div style="width:20px;height:3px;background:#1772d0;"></div>
+              <span>Path</span>
+            </div>
+          </div>
+          
+          <div class="info-panel">
+            <strong>Algorithm Status:</strong> <span id="status">Ready</span><br>
+            <strong>Nodes Visited:</strong> <span id="nodes-visited">0</span><br>
+            <strong>Path Length:</strong> <span id="path-length">-</span><br>
+            <strong>Time Complexity:</strong> <span id="complexity">-</span>
+          </div>
+          
+          <div style="margin-top:30px;">
+            <heading>Instructions</heading>
+            <ul>
+              <li><strong>Add Node:</strong> Click on empty space to add a node</li>
+              <li><strong>Add Edge:</strong> Click two nodes to connect them</li>
+              <li><strong>Delete:</strong> Click on a node or edge to remove it</li>
+              <li><strong>Set Start/End:</strong> Right-click on nodes to set start (red) or end (blue)</li>
+              <li><strong>Edge Weight:</strong> Click on an edge to change its weight (for weighted algorithms)</li>
+            </ul>
+            
+            <heading>Algorithm Descriptions</heading>
+            <ul>
+              <li><strong>BFS:</strong> Explores nodes level by level, guarantees shortest path in unweighted graphs</li>
+              <li><strong>DFS:</strong> Explores as deep as possible before backtracking</li>
+              <li><strong>Dijkstra:</strong> Finds shortest path in weighted graphs with non-negative weights</li>
+              <li><strong>A*:</strong> Uses heuristic to find shortest path more efficiently than Dijkstra</li>
+              <li><strong>Kruskal's MST:</strong> Builds minimum spanning tree by selecting edges in order of weight</li>
+              <li><strong>Prim's MST:</strong> Builds minimum spanning tree by growing from a starting node</li>
+            </ul>
+          </div>
+          
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <script>
+    // Graph data structure
+    class Graph {
+      constructor() {
+        this.nodes = [];
+        this.edges = [];
+        this.startNode = null;
+        this.endNode = null;
+        this.nodeIdCounter = 0;
+      }
+      
+      addNode(x, y) {
+        const node = {
+          id: this.nodeIdCounter++,
+          x: x,
+          y: y,
+          visited: false,
+          distance: Infinity,
+          parent: null,
+          color: '#ddd'
+        };
+        this.nodes.push(node);
+        return node;
+      }
+      
+      addEdge(node1, node2, weight = 1) {
+        const edge = {
+          from: node1,
+          to: node2,
+          weight: weight,
+          color: '#999'
+        };
+        this.edges.push(edge);
+        return edge;
+      }
+      
+      getNeighbors(node) {
+        const neighbors = [];
+        this.edges.forEach(edge => {
+          if (edge.from === node) {
+            neighbors.push({ node: edge.to, weight: edge.weight });
+          } else if (edge.to === node) {
+            neighbors.push({ node: edge.from, weight: edge.weight });
+          }
+        });
+        return neighbors;
+      }
+      
+      reset() {
+        this.nodes.forEach(node => {
+          node.visited = false;
+          node.distance = Infinity;
+          node.parent = null;
+          node.color = '#ddd';
+        });
+        this.edges.forEach(edge => {
+          edge.color = '#999';
+        });
+      }
+    }
+    
+    // Canvas setup
+    const canvas = document.getElementById('graph-canvas');
+    const ctx = canvas.getContext('2d');
+    const graph = new Graph();
+    
+    let mode = 'add-node';
+    let selectedNode = null;
+    let running = false;
+    let speed = 500;
+    
+    // Drawing functions
+    function drawGraph() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw edges
+      graph.edges.forEach(edge => {
+        ctx.strokeStyle = edge.color;
+        ctx.lineWidth = edge.color === '#1772d0' ? 3 : 1;
+        ctx.beginPath();
+        ctx.moveTo(edge.from.x, edge.from.y);
+        ctx.lineTo(edge.to.x, edge.to.y);
+        ctx.stroke();
+        
+        // Draw weight
+        if (edge.weight !== 1) {
+          const midX = (edge.from.x + edge.to.x) / 2;
+          const midY = (edge.from.y + edge.to.y) / 2;
+          ctx.fillStyle = 'white';
+          ctx.fillRect(midX - 10, midY - 10, 20, 20);
+          ctx.fillStyle = 'black';
+          ctx.font = '14px Courier New';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(edge.weight, midX, midY);
+        }
+      });
+      
+      // Draw nodes
+      graph.nodes.forEach(node => {
+        ctx.fillStyle = node === graph.startNode ? '#ff6b6b' : 
+                        node === graph.endNode ? '#4dabf7' : 
+                        node.color;
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, 20, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        
+        // Draw node ID
+        ctx.fillStyle = node.color === '#ddd' ? 'black' : 'white';
+        ctx.font = '14px Courier New';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(node.id, node.x, node.y);
+      });
+    }
+    
+    // Event handlers
+    canvas.addEventListener('click', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      // Find clicked node
+      const clickedNode = graph.nodes.find(node => {
+        const dx = node.x - x;
+        const dy = node.y - y;
+        return Math.sqrt(dx * dx + dy * dy) < 20;
+      });
+      
+      if (mode === 'add-node' && !clickedNode) {
+        graph.addNode(x, y);
+        drawGraph();
+      } else if (mode === 'add-edge') {
+        if (clickedNode) {
+          if (!selectedNode) {
+            selectedNode = clickedNode;
+            clickedNode.color = '#ffe066';
+            drawGraph();
+          } else if (selectedNode !== clickedNode) {
+            const weight = prompt('Edge weight (default: 1):', '1');
+            graph.addEdge(selectedNode, clickedNode, parseInt(weight) || 1);
+            selectedNode.color = '#ddd';
+            selectedNode = null;
+            drawGraph();
+          }
+        }
+      } else if (mode === 'delete' && clickedNode) {
+        // Remove node and connected edges
+        graph.nodes = graph.nodes.filter(n => n !== clickedNode);
+        graph.edges = graph.edges.filter(e => e.from !== clickedNode && e.to !== clickedNode);
+        if (graph.startNode === clickedNode) graph.startNode = null;
+        if (graph.endNode === clickedNode) graph.endNode = null;
+        drawGraph();
+      }
+    });
+    
+    canvas.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      const clickedNode = graph.nodes.find(node => {
+        const dx = node.x - x;
+        const dy = node.y - y;
+        return Math.sqrt(dx * dx + dy * dy) < 20;
+      });
+      
+      if (clickedNode) {
+        if (!graph.startNode) {
+          graph.startNode = clickedNode;
+        } else if (!graph.endNode && clickedNode !== graph.startNode) {
+          graph.endNode = clickedNode;
+        } else {
+          graph.startNode = clickedNode;
+          graph.endNode = null;
+        }
+        drawGraph();
+      }
+    });
+    
+    // Mode buttons
+    document.getElementById('add-node').addEventListener('click', () => {
+      mode = 'add-node';
+      selectedNode = null;
+      document.querySelectorAll('.controls button').forEach(btn => btn.classList.remove('active'));
+      document.getElementById('add-node').classList.add('active');
+    });
+    
+    document.getElementById('add-edge').addEventListener('click', () => {
+      mode = 'add-edge';
+      selectedNode = null;
+      document.querySelectorAll('.controls button').forEach(btn => btn.classList.remove('active'));
+      document.getElementById('add-edge').classList.add('active');
+    });
+    
+    document.getElementById('delete').addEventListener('click', () => {
+      mode = 'delete';
+      selectedNode = null;
+      document.querySelectorAll('.controls button').forEach(btn => btn.classList.remove('active'));
+      document.getElementById('delete').classList.add('active');
+    });
+    
+    document.getElementById('clear').addEventListener('click', () => {
+      graph.nodes = [];
+      graph.edges = [];
+      graph.startNode = null;
+      graph.endNode = null;
+      graph.nodeIdCounter = 0;
+      drawGraph();
+    });
+    
+    // Algorithm functions
+    async function bfs() {
+      if (!graph.startNode) return;
+      
+      const queue = [graph.startNode];
+      graph.startNode.visited = true;
+      graph.startNode.distance = 0;
+      let visitedCount = 0;
+      
+      while (queue.length > 0 && running) {
+        const current = queue.shift();
+        current.color = '#51cf66';
+        visitedCount++;
+        document.getElementById('nodes-visited').textContent = visitedCount;
+        drawGraph();
+        await sleep(speed);
+        
+        const neighbors = graph.getNeighbors(current);
+        for (const { node } of neighbors) {
+          if (!node.visited) {
+            node.visited = true;
+            node.parent = current;
+            node.distance = current.distance + 1;
+            node.color = '#ffe066';
+            queue.push(node);
+            
+            if (node === graph.endNode) {
+              highlightPath();
+              return;
+            }
+          }
+        }
+      }
+    }
+    
+    async function dfs() {
+      if (!graph.startNode) return;
+      
+      const stack = [graph.startNode];
+      let visitedCount = 0;
+      
+      while (stack.length > 0 && running) {
+        const current = stack.pop();
+        
+        if (!current.visited) {
+          current.visited = true;
+          current.color = '#51cf66';
+          visitedCount++;
+          document.getElementById('nodes-visited').textContent = visitedCount;
+          drawGraph();
+          await sleep(speed);
+          
+          if (current === graph.endNode) {
+            highlightPath();
+            return;
+          }
+          
+          const neighbors = graph.getNeighbors(current);
+          neighbors.forEach(({ node }) => {
+            if (!node.visited) {
+              node.parent = current;
+              node.color = '#ffe066';
+              stack.push(node);
+            }
+          });
+        }
+      }
+    }
+    
+    function highlightPath() {
+      if (!graph.endNode || !graph.endNode.parent) return;
+      
+      let current = graph.endNode;
+      let pathLength = 0;
+      
+      while (current.parent) {
+        const parent = current.parent;
+        
+        // Highlight edge
+        graph.edges.forEach(edge => {
+          if ((edge.from === current && edge.to === parent) ||
+              (edge.to === current && edge.from === parent)) {
+            edge.color = '#1772d0';
+          }
+        });
+        
+        pathLength++;
+        current = parent;
+      }
+      
+      document.getElementById('path-length').textContent = pathLength;
+      drawGraph();
+    }
+    
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    
+    // Algorithm controls
+    document.getElementById('run-algorithm').addEventListener('click', async () => {
+      running = true;
+      graph.reset();
+      drawGraph();
+      
+      const algorithm = document.getElementById('algorithm').value;
+      document.getElementById('status').textContent = 'Running ' + algorithm.toUpperCase();
+      document.getElementById('nodes-visited').textContent = '0';
+      document.getElementById('path-length').textContent = '-';
+      
+      // Set complexity
+      const complexities = {
+        'bfs': 'O(V + E)',
+        'dfs': 'O(V + E)',
+        'dijkstra': 'O((V + E) log V)',
+        'astar': 'O((V + E) log V)',
+        'kruskal': 'O(E log E)',
+        'prim': 'O(E log V)'
+      };
+      document.getElementById('complexity').textContent = complexities[algorithm];
+      
+      switch(algorithm) {
+        case 'bfs':
+          await bfs();
+          break;
+        case 'dfs':
+          await dfs();
+          break;
+        // Additional algorithms can be implemented similarly
+      }
+      
+      document.getElementById('status').textContent = 'Complete';
+      running = false;
+    });
+    
+    document.getElementById('reset-algorithm').addEventListener('click', () => {
+      running = false;
+      graph.reset();
+      document.getElementById('status').textContent = 'Ready';
+      document.getElementById('nodes-visited').textContent = '0';
+      document.getElementById('path-length').textContent = '-';
+      drawGraph();
+    });
+    
+    document.getElementById('speed').addEventListener('input', (e) => {
+      speed = 2100 - parseInt(e.target.value);
+    });
+    
+    // Create sample graph
+    function createSampleGraph() {
+      const n1 = graph.addNode(200, 250);
+      const n2 = graph.addNode(350, 150);
+      const n3 = graph.addNode(350, 350);
+      const n4 = graph.addNode(500, 250);
+      const n5 = graph.addNode(650, 150);
+      const n6 = graph.addNode(650, 350);
+      
+      graph.addEdge(n1, n2, 2);
+      graph.addEdge(n1, n3, 3);
+      graph.addEdge(n2, n3, 1);
+      graph.addEdge(n2, n4, 4);
+      graph.addEdge(n3, n4, 2);
+      graph.addEdge(n4, n5, 3);
+      graph.addEdge(n4, n6, 1);
+      graph.addEdge(n5, n6, 2);
+      
+      graph.startNode = n1;
+      graph.endNode = n6;
+      
+      drawGraph();
+    }
+    
+    // Initialize with sample graph
+    createSampleGraph();
+  </script>
+</body>
+</html>

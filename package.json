@@ -1,0 +1,20 @@
+{
+  "name": "xuming-portfolio",
+  "version": "1.0.0",
+  "description": "Academic portfolio website with publication management",
+  "scripts": {
+    "add-publication": "node add-publication.js",
+    "serve": "python -m http.server 8000",
+    "update-thumbnails": "node scripts/generate-thumbnails.js"
+  },
+  "keywords": [
+    "portfolio",
+    "academic",
+    "publications",
+    "research"
+  ],
+  "author": "Xuming Huang",
+  "license": "MIT",
+  "devDependencies": {},
+  "dependencies": {}
+}

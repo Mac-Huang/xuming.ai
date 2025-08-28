@@ -1,0 +1,713 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Distributed Training Simulator - Xuming Huang</title>
+  <meta name="author" content="Xuming Huang">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../stylesheet.css">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  
+  <style>
+    .control-group {
+      margin: 20px 0;
+      padding: 15px;
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+    }
+    
+    .control-group button {
+      padding: 8px 15px;
+      margin: 0 5px;
+      background: #1772d0;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    .control-group button:hover {
+      background: #0f5aa0;
+    }
+    
+    .control-group button:disabled {
+      background: #ccc;
+    }
+    
+    .control-group select, .control-group input {
+      margin: 0 10px;
+      padding: 5px;
+    }
+    
+    .viz-container {
+      background: #fafafa;
+      border: 1px solid #ddd;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin: 20px 0;
+    }
+    
+    .stat-box {
+      background: #f5f5f5;
+      padding: 10px;
+      border: 1px solid #ddd;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+    }
+    
+    .worker-node {
+      fill: #1772d0;
+      stroke: #0f5aa0;
+      stroke-width: 2;
+    }
+    
+    .worker-node.computing {
+      fill: #ff6b6b;
+    }
+    
+    .worker-node.idle {
+      fill: #ddd;
+    }
+    
+    .parameter-server {
+      fill: #4CAF50;
+      stroke: #388E3C;
+      stroke-width: 2;
+    }
+    
+    .data-flow {
+      stroke: #1772d0;
+      stroke-width: 2;
+      fill: none;
+      opacity: 0;
+    }
+    
+    .data-flow.active {
+      animation: flow 1s ease-in-out;
+    }
+    
+    @keyframes flow {
+      0% { opacity: 0; stroke-dasharray: 0 100; }
+      50% { opacity: 1; stroke-dasharray: 10 5; }
+      100% { opacity: 0; stroke-dasharray: 0 100; }
+    }
+    
+    .timeline-bar {
+      fill: #1772d0;
+      opacity: 0.7;
+    }
+    
+    .timeline-bar.gradient {
+      fill: #ff6b6b;
+    }
+    
+    .timeline-bar.communication {
+      fill: #FFC107;
+    }
+  </style>
+</head>
+
+<body>
+  <table style="width:100%;max-width:900px;border:0px;margin:auto;">
+    <tbody>
+      <tr>
+        <td style="padding:20px;">
+          <p style="text-align:right;">
+            <a href="../projects.html">← Back to Projects</a>
+          </p>
+          
+          <heading>Distributed Training Simulator</heading>
+          <p>
+            Visualize distributed training strategies including data parallelism, model parallelism,
+            and parameter server architectures. Observe communication patterns and synchronization overhead.
+          </p>
+          
+          <!-- Controls -->
+          <div class="control-group">
+            <label>Strategy:
+              <select id="strategy">
+                <option value="data-parallel">Data Parallel</option>
+                <option value="model-parallel">Model Parallel</option>
+                <option value="parameter-server">Parameter Server</option>
+                <option value="ring-allreduce">Ring AllReduce</option>
+              </select>
+            </label>
+            
+            <label>Workers:
+              <input type="number" id="num-workers" min="2" max="8" value="4">
+            </label>
+            
+            <label>Batch Size:
+              <input type="number" id="batch-size" min="16" max="256" step="16" value="64">
+            </label>
+            
+            <label>Model Size (MB):
+              <input type="number" id="model-size" min="10" max="1000" step="10" value="100">
+            </label>
+            
+            <button onclick="startSimulation()">Start</button>
+            <button onclick="pauseSimulation()">Pause</button>
+            <button onclick="resetSimulation()">Reset</button>
+          </div>
+          
+          <!-- Architecture Visualization -->
+          <div class="viz-container">
+            <h3 style="margin:0 0 10px 0; font-size:16px;">Architecture Overview</h3>
+            <svg id="architecture-viz" width="860" height="400"></svg>
+          </div>
+          
+          <!-- Statistics -->
+          <div class="stats-grid">
+            <div class="stat-box">
+              <strong>Step:</strong> <span id="step">0</span><br>
+              <strong>Strategy:</strong> <span id="current-strategy">-</span>
+            </div>
+            <div class="stat-box">
+              <strong>Throughput:</strong> <span id="throughput">0</span> samples/s<br>
+              <strong>Efficiency:</strong> <span id="efficiency">0</span>%
+            </div>
+            <div class="stat-box">
+              <strong>Comm. Time:</strong> <span id="comm-time">0</span> ms<br>
+              <strong>Comp. Time:</strong> <span id="comp-time">0</span> ms
+            </div>
+            <div class="stat-box">
+              <strong>Total Time:</strong> <span id="total-time">0</span> ms<br>
+              <strong>Speedup:</strong> <span id="speedup">0</span>x
+            </div>
+          </div>
+          
+          <!-- Timeline Visualization -->
+          <div class="viz-container">
+            <h3 style="margin:0 0 10px 0; font-size:16px;">Timeline (Worker Activity)</h3>
+            <svg id="timeline-viz" width="860" height="200"></svg>
+          </div>
+          
+          <!-- Communication Pattern -->
+          <div class="viz-container">
+            <h3 style="margin:0 0 10px 0; font-size:16px;">Communication Pattern</h3>
+            <svg id="comm-pattern" width="860" height="300"></svg>
+          </div>
+          
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <script>
+    // Distributed Training Simulator
+    class DistributedTrainingSimulator {
+      constructor() {
+        this.workers = [];
+        this.parameterServer = null;
+        this.strategy = 'data-parallel';
+        this.step = 0;
+        this.isRunning = false;
+        this.timeline = [];
+        this.commPattern = [];
+      }
+      
+      init(numWorkers, strategy) {
+        this.workers = [];
+        this.strategy = strategy;
+        this.step = 0;
+        this.timeline = [];
+        
+        // Initialize workers
+        for (let i = 0; i < numWorkers; i++) {
+          this.workers.push({
+            id: i,
+            status: 'idle',
+            gradients: null,
+            localModel: null,
+            batch: null,
+            computeTime: 0,
+            commTime: 0
+          });
+        }
+        
+        // Initialize parameter server if needed
+        if (strategy === 'parameter-server') {
+          this.parameterServer = {
+            model: null,
+            status: 'idle'
+          };
+        }
+        
+        this.visualizeArchitecture();
+      }
+      
+      visualizeArchitecture() {
+        const svg = d3.select('#architecture-viz');
+        svg.selectAll('*').remove();
+        
+        const width = 860;
+        const height = 400;
+        const centerX = width / 2;
+        const centerY = height / 2;
+        
+        if (this.strategy === 'parameter-server') {
+          // Draw parameter server in center
+          svg.append('rect')
+            .attr('class', 'parameter-server')
+            .attr('x', centerX - 40)
+            .attr('y', centerY - 40)
+            .attr('width', 80)
+            .attr('height', 80)
+            .attr('rx', 5);
+          
+          svg.append('text')
+            .attr('x', centerX)
+            .attr('y', centerY + 5)
+            .attr('text-anchor', 'middle')
+            .style('font-size', '12px')
+            .style('fill', 'white')
+            .text('PS');
+          
+          // Draw workers in circle around parameter server
+          const radius = 150;
+          this.workers.forEach((worker, i) => {
+            const angle = (i / this.workers.length) * 2 * Math.PI - Math.PI / 2;
+            const x = centerX + radius * Math.cos(angle);
+            const y = centerY + radius * Math.sin(angle);
+            
+            // Connection line
+            svg.append('line')
+              .attr('class', `data-flow worker-${i}`)
+              .attr('x1', centerX)
+              .attr('y1', centerY)
+              .attr('x2', x)
+              .attr('y2', y)
+              .style('stroke', '#ddd');
+            
+            // Worker node
+            svg.append('circle')
+              .attr('id', `worker-${i}`)
+              .attr('class', 'worker-node')
+              .attr('cx', x)
+              .attr('cy', y)
+              .attr('r', 30);
+            
+            svg.append('text')
+              .attr('x', x)
+              .attr('y', y + 5)
+              .attr('text-anchor', 'middle')
+              .style('font-size', '12px')
+              .style('fill', 'white')
+              .text(`W${i}`);
+          });
+          
+        } else if (this.strategy === 'ring-allreduce') {
+          // Draw workers in ring
+          const radius = 150;
+          this.workers.forEach((worker, i) => {
+            const angle = (i / this.workers.length) * 2 * Math.PI - Math.PI / 2;
+            const x = centerX + radius * Math.cos(angle);
+            const y = centerY + radius * Math.sin(angle);
+            
+            // Connection to next worker
+            const nextI = (i + 1) % this.workers.length;
+            const nextAngle = (nextI / this.workers.length) * 2 * Math.PI - Math.PI / 2;
+            const nextX = centerX + radius * Math.cos(nextAngle);
+            const nextY = centerY + radius * Math.sin(nextAngle);
+            
+            svg.append('line')
+              .attr('class', `data-flow ring-${i}`)
+              .attr('x1', x)
+              .attr('y1', y)
+              .attr('x2', nextX)
+              .attr('y2', nextY)
+              .style('stroke', '#ddd')
+              .style('marker-end', 'url(#arrow)');
+            
+            // Worker node
+            svg.append('circle')
+              .attr('id', `worker-${i}`)
+              .attr('class', 'worker-node')
+              .attr('cx', x)
+              .attr('cy', y)
+              .attr('r', 30);
+            
+            svg.append('text')
+              .attr('x', x)
+              .attr('y', y + 5)
+              .attr('text-anchor', 'middle')
+              .style('font-size', '12px')
+              .style('fill', 'white')
+              .text(`W${i}`);
+          });
+          
+        } else {
+          // Data parallel or model parallel - show workers in grid
+          const cols = Math.ceil(Math.sqrt(this.workers.length));
+          const rows = Math.ceil(this.workers.length / cols);
+          const spacing = 100;
+          const startX = (width - (cols - 1) * spacing) / 2;
+          const startY = (height - (rows - 1) * spacing) / 2;
+          
+          this.workers.forEach((worker, i) => {
+            const col = i % cols;
+            const row = Math.floor(i / cols);
+            const x = startX + col * spacing;
+            const y = startY + row * spacing;
+            
+            svg.append('rect')
+              .attr('id', `worker-${i}`)
+              .attr('class', 'worker-node')
+              .attr('x', x - 35)
+              .attr('y', y - 35)
+              .attr('width', 70)
+              .attr('height', 70)
+              .attr('rx', 5);
+            
+            svg.append('text')
+              .attr('x', x)
+              .attr('y', y + 5)
+              .attr('text-anchor', 'middle')
+              .style('font-size', '12px')
+              .style('fill', 'white')
+              .text(`Worker ${i}`);
+            
+            // Show data partition for data parallel
+            if (this.strategy === 'data-parallel') {
+              svg.append('text')
+                .attr('x', x)
+                .attr('y', y + 20)
+                .attr('text-anchor', 'middle')
+                .style('font-size', '10px')
+                .style('fill', 'white')
+                .text(`Data ${i}/${this.workers.length}`);
+            }
+            
+            // Show model partition for model parallel
+            if (this.strategy === 'model-parallel') {
+              svg.append('text')
+                .attr('x', x)
+                .attr('y', y + 20)
+                .attr('text-anchor', 'middle')
+                .style('font-size', '10px')
+                .style('fill', 'white')
+                .text(`Layer ${i}`);
+            }
+          });
+        }
+        
+        // Add legend
+        const legendData = [
+          {status: 'idle', color: '#ddd', label: 'Idle'},
+          {status: 'computing', color: '#ff6b6b', label: 'Computing'},
+          {status: 'communicating', color: '#FFC107', label: 'Communicating'}
+        ];
+        
+        const legend = svg.append('g')
+          .attr('transform', `translate(20, 20)`);
+        
+        legendData.forEach((item, i) => {
+          legend.append('rect')
+            .attr('x', 0)
+            .attr('y', i * 25)
+            .attr('width', 15)
+            .attr('height', 15)
+            .attr('fill', item.color);
+          
+          legend.append('text')
+            .attr('x', 20)
+            .attr('y', i * 25 + 12)
+            .style('font-size', '12px')
+            .text(item.label);
+        });
+      }
+      
+      async simulateStep() {
+        const batchSize = parseInt(document.getElementById('batch-size').value);
+        const modelSize = parseInt(document.getElementById('model-size').value);
+        
+        // Compute phase
+        await this.simulateCompute(batchSize, modelSize);
+        
+        // Communication phase
+        await this.simulateCommunication(modelSize);
+        
+        // Update statistics
+        this.updateStats();
+        
+        // Update timeline
+        this.updateTimeline();
+        
+        this.step++;
+      }
+      
+      async simulateCompute(batchSize, modelSize) {
+        const baseComputeTime = (batchSize * modelSize) / 100; // Simplified compute time
+        
+        // Update worker status
+        this.workers.forEach((worker, i) => {
+          worker.status = 'computing';
+          worker.computeTime = baseComputeTime * (1 + Math.random() * 0.2); // Add variation
+          
+          // Visualize
+          d3.select(`#worker-${i}`)
+            .classed('computing', true)
+            .classed('idle', false);
+        });
+        
+        // Animate
+        await this.sleep(500);
+      }
+      
+      async simulateCommunication(modelSize) {
+        const baseCommTime = modelSize / 10; // Simplified communication time
+        
+        if (this.strategy === 'parameter-server') {
+          // Workers send gradients to PS
+          for (let i = 0; i < this.workers.length; i++) {
+            d3.select(`.worker-${i}`)
+              .classed('active', true);
+            await this.sleep(100);
+            d3.select(`.worker-${i}`)
+              .classed('active', false);
+          }
+          
+        } else if (this.strategy === 'ring-allreduce') {
+          // Ring communication
+          for (let step = 0; step < this.workers.length; step++) {
+            d3.select(`.ring-${step}`)
+              .classed('active', true);
+            await this.sleep(100);
+            d3.select(`.ring-${step}`)
+              .classed('active', false);
+          }
+          
+        } else if (this.strategy === 'data-parallel') {
+          // All-reduce pattern
+          this.visualizeAllReduce();
+          await this.sleep(500);
+        }
+        
+        // Update worker status
+        this.workers.forEach((worker, i) => {
+          worker.status = 'idle';
+          worker.commTime = baseCommTime * (1 + Math.random() * 0.3);
+          
+          d3.select(`#worker-${i}`)
+            .classed('computing', false)
+            .classed('idle', true);
+        });
+      }
+      
+      visualizeAllReduce() {
+        const svg = d3.select('#comm-pattern');
+        svg.selectAll('*').remove();
+        
+        const width = 860;
+        const height = 300;
+        const workerWidth = width / (this.workers.length + 1);
+        
+        // Draw communication matrix
+        this.workers.forEach((sender, i) => {
+          this.workers.forEach((receiver, j) => {
+            if (i !== j) {
+              const x1 = (i + 1) * workerWidth;
+              const y1 = 50;
+              const x2 = (j + 1) * workerWidth;
+              const y2 = 250;
+              
+              svg.append('line')
+                .attr('x1', x1)
+                .attr('y1', y1)
+                .attr('x2', x2)
+                .attr('y2', y2)
+                .style('stroke', '#1772d0')
+                .style('stroke-width', 1)
+                .style('opacity', 0.3);
+            }
+          });
+          
+          // Draw worker nodes
+          svg.append('circle')
+            .attr('cx', (i + 1) * workerWidth)
+            .attr('cy', 50)
+            .attr('r', 20)
+            .attr('fill', '#1772d0');
+          
+          svg.append('text')
+            .attr('x', (i + 1) * workerWidth)
+            .attr('y', 55)
+            .attr('text-anchor', 'middle')
+            .style('fill', 'white')
+            .style('font-size', '12px')
+            .text(`W${i}`);
+          
+          svg.append('circle')
+            .attr('cx', (i + 1) * workerWidth)
+            .attr('cy', 250)
+            .attr('r', 20)
+            .attr('fill', '#1772d0');
+          
+          svg.append('text')
+            .attr('x', (i + 1) * workerWidth)
+            .attr('y', 255)
+            .attr('text-anchor', 'middle')
+            .style('fill', 'white')
+            .style('font-size', '12px')
+            .text(`W${i}`);
+        });
+        
+        svg.append('text')
+          .attr('x', width / 2)
+          .attr('y', 20)
+          .attr('text-anchor', 'middle')
+          .style('font-size', '14px')
+          .text('All-Reduce Communication Pattern');
+      }
+      
+      updateTimeline() {
+        const svg = d3.select('#timeline-viz');
+        svg.selectAll('*').remove();
+        
+        const width = 860;
+        const height = 200;
+        const margin = {top: 20, right: 30, bottom: 30, left: 50};
+        
+        // Create timeline data
+        const timelineData = [];
+        const timePerStep = 100;
+        
+        this.workers.forEach((worker, i) => {
+          timelineData.push({
+            worker: i,
+            type: 'compute',
+            start: this.step * timePerStep,
+            duration: worker.computeTime
+          });
+          
+          timelineData.push({
+            worker: i,
+            type: 'communicate',
+            start: this.step * timePerStep + worker.computeTime,
+            duration: worker.commTime
+          });
+        });
+        
+        const xScale = d3.scaleLinear()
+          .domain([Math.max(0, (this.step - 10) * timePerStep), (this.step + 1) * timePerStep])
+          .range([margin.left, width - margin.right]);
+        
+        const yScale = d3.scaleBand()
+          .domain(d3.range(this.workers.length))
+          .range([margin.top, height - margin.bottom])
+          .padding(0.1);
+        
+        // Draw bars
+        svg.selectAll('.timeline-bar')
+          .data(timelineData)
+          .enter()
+          .append('rect')
+          .attr('class', d => `timeline-bar ${d.type === 'compute' ? '' : 'communication'}`)
+          .attr('x', d => xScale(d.start))
+          .attr('y', d => yScale(d.worker))
+          .attr('width', d => Math.max(1, xScale(d.start + d.duration) - xScale(d.start)))
+          .attr('height', yScale.bandwidth());
+        
+        // Add axes
+        svg.append('g')
+          .attr('transform', `translate(0,${height - margin.bottom})`)
+          .call(d3.axisBottom(xScale).ticks(5));
+        
+        svg.append('g')
+          .attr('transform', `translate(${margin.left},0)`)
+          .call(d3.axisLeft(yScale).tickFormat(d => `W${d}`));
+      }
+      
+      updateStats() {
+        const batchSize = parseInt(document.getElementById('batch-size').value);
+        const numWorkers = this.workers.length;
+        
+        // Calculate metrics
+        const totalComputeTime = Math.max(...this.workers.map(w => w.computeTime));
+        const totalCommTime = Math.max(...this.workers.map(w => w.commTime));
+        const totalTime = totalComputeTime + totalCommTime;
+        const throughput = (batchSize * numWorkers) / (totalTime / 1000);
+        const efficiency = (totalComputeTime / totalTime) * 100;
+        const speedup = numWorkers * efficiency / 100;
+        
+        // Update display
+        document.getElementById('step').textContent = this.step;
+        document.getElementById('current-strategy').textContent = this.strategy;
+        document.getElementById('throughput').textContent = throughput.toFixed(0);
+        document.getElementById('efficiency').textContent = efficiency.toFixed(1);
+        document.getElementById('comm-time').textContent = totalCommTime.toFixed(1);
+        document.getElementById('comp-time').textContent = totalComputeTime.toFixed(1);
+        document.getElementById('total-time').textContent = totalTime.toFixed(1);
+        document.getElementById('speedup').textContent = speedup.toFixed(2);
+      }
+      
+      sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
+    }
+    
+    // Global simulator instance
+    const simulator = new DistributedTrainingSimulator();
+    let animationInterval = null;
+    
+    function startSimulation() {
+      const strategy = document.getElementById('strategy').value;
+      const numWorkers = parseInt(document.getElementById('num-workers').value);
+      
+      if (!simulator.isRunning) {
+        simulator.init(numWorkers, strategy);
+        simulator.isRunning = true;
+        
+        animationInterval = setInterval(async () => {
+          if (simulator.isRunning) {
+            await simulator.simulateStep();
+          }
+        }, 2000);
+      }
+    }
+    
+    function pauseSimulation() {
+      simulator.isRunning = false;
+      if (animationInterval) {
+        clearInterval(animationInterval);
+        animationInterval = null;
+      }
+    }
+    
+    function resetSimulation() {
+      pauseSimulation();
+      const strategy = document.getElementById('strategy').value;
+      const numWorkers = parseInt(document.getElementById('num-workers').value);
+      simulator.init(numWorkers, strategy);
+      
+      // Clear stats
+      document.getElementById('step').textContent = '0';
+      document.getElementById('throughput').textContent = '0';
+      document.getElementById('efficiency').textContent = '0';
+      document.getElementById('comm-time').textContent = '0';
+      document.getElementById('comp-time').textContent = '0';
+      document.getElementById('total-time').textContent = '0';
+      document.getElementById('speedup').textContent = '0';
+      
+      // Clear visualizations
+      d3.select('#timeline-viz').selectAll('*').remove();
+      d3.select('#comm-pattern').selectAll('*').remove();
+    }
+    
+    // Initialize on load
+    window.addEventListener('load', function() {
+      resetSimulation();
+    });
+    
+    // Update when strategy changes
+    document.getElementById('strategy').addEventListener('change', resetSimulation);
+    document.getElementById('num-workers').addEventListener('change', resetSimulation);
+  </script>
+</body>
+</html>

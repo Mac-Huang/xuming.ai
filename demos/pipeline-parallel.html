@@ -1,0 +1,927 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Pipeline Parallelism Demo - Xuming Huang</title>
+  <meta name="author" content="Xuming Huang">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../stylesheet.css">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  
+  <style>
+    .control-group {
+      margin: 20px 0;
+      padding: 15px;
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+    }
+    
+    .control-group button {
+      padding: 8px 15px;
+      margin: 0 5px;
+      background: #1772d0;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    .control-group button:hover {
+      background: #0f5aa0;
+    }
+    
+    .control-group button:disabled {
+      background: #ccc;
+    }
+    
+    .control-group select, .control-group input {
+      margin: 0 10px;
+      padding: 5px;
+    }
+    
+    .viz-container {
+      background: #fafafa;
+      border: 1px solid #ddd;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin: 20px 0;
+    }
+    
+    .stat-box {
+      background: #f5f5f5;
+      padding: 10px;
+      border: 1px solid #ddd;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+    }
+    
+    .pipeline-stage {
+      fill: #1772d0;
+      stroke: #0f5aa0;
+      stroke-width: 2;
+      rx: 5;
+    }
+    
+    .pipeline-stage.forward {
+      fill: #4CAF50;
+    }
+    
+    .pipeline-stage.backward {
+      fill: #FF9800;
+    }
+    
+    .pipeline-stage.idle {
+      fill: #e0e0e0;
+    }
+    
+    .pipeline-stage.bubble {
+      fill: #ff6b6b;
+      opacity: 0.5;
+    }
+    
+    .microbatch {
+      fill: #1772d0;
+      stroke: #0f5aa0;
+      stroke-width: 1;
+      rx: 3;
+    }
+    
+    .microbatch.forward {
+      fill: #4CAF50;
+    }
+    
+    .microbatch.backward {
+      fill: #FF9800;
+    }
+    
+    .microbatch.sync {
+      fill: #9C27B0;
+    }
+    
+    .schedule-bar {
+      rx: 2;
+      stroke: #333;
+      stroke-width: 1;
+    }
+    
+    .schedule-bar.forward {
+      fill: #4CAF50;
+    }
+    
+    .schedule-bar.backward {
+      fill: #FF9800;
+    }
+    
+    .schedule-bar.idle {
+      fill: #e0e0e0;
+    }
+    
+    .schedule-bar.bubble {
+      fill: #ff6b6b;
+      opacity: 0.7;
+    }
+    
+    .data-flow {
+      stroke: #1772d0;
+      stroke-width: 2;
+      fill: none;
+      opacity: 0;
+      marker-end: url(#data-arrow);
+    }
+    
+    .data-flow.active {
+      opacity: 1;
+      animation: flow 1.5s ease-in-out;
+    }
+    
+    @keyframes flow {
+      0% { stroke-dasharray: 0 20; }
+      100% { stroke-dasharray: 20 0; }
+    }
+    
+    .strategy-tab {
+      display: inline-block;
+      padding: 10px 20px;
+      margin: 0 5px;
+      background: #f0f0f0;
+      border: 1px solid #ddd;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    
+    .strategy-tab.active {
+      background: #1772d0;
+      color: white;
+    }
+    
+    .layer-label {
+      font-size: 12px;
+      text-anchor: middle;
+      fill: #333;
+    }
+    
+    .timeline-axis {
+      stroke: #333;
+      stroke-width: 1;
+    }
+    
+    .efficiency-bar {
+      fill: #1772d0;
+      opacity: 0.8;
+    }
+    
+    .bubble-indicator {
+      fill: #ff6b6b;
+      opacity: 0.3;
+    }
+  </style>
+</head>
+
+<body>
+  <table style="width:100%;max-width:900px;border:0px;margin:auto;">
+    <tbody>
+      <tr>
+        <td style="padding:20px;">
+          <p style="text-align:right;">
+            <a href="../projects.html">← Back to Projects</a>
+          </p>
+          
+          <heading>Pipeline Parallelism Demo</heading>
+          <p>
+            Visualize pipeline parallelism strategies including 1F1B (One Forward One Backward) scheduling,
+            bubble reduction techniques, and interleaved scheduling. Compare efficiency and resource utilization.
+          </p>
+          
+          <!-- Strategy Selection -->
+          <div style="margin: 20px 0;">
+            <span class="strategy-tab active" onclick="showStrategy('naive')">Naive Pipeline</span>
+            <span class="strategy-tab" onclick="showStrategy('1f1b')">1F1B</span>
+            <span class="strategy-tab" onclick="showStrategy('interleaved')">Interleaved</span>
+          </div>
+          
+          <!-- Controls -->
+          <div class="control-group">
+            <label>Pipeline Stages:
+              <input type="range" id="num-stages" min="2" max="8" value="4" step="1">
+              <span id="stages-value">4</span>
+            </label>
+            
+            <label>Microbatches:
+              <input type="range" id="num-microbatches" min="4" max="16" value="8" step="1">
+              <span id="batches-value">8</span>
+            </label>
+            
+            <label>Forward Time (ms):
+              <input type="range" id="forward-time" min="50" max="200" value="100" step="10">
+              <span id="forward-value">100</span>
+            </label>
+            
+            <label>Backward Time (ms):
+              <input type="range" id="backward-time" min="80" max="250" value="150" step="10">
+              <span id="backward-value">150</span>
+            </label>
+            
+            <button onclick="startPipeline()">Start Pipeline</button>
+            <button onclick="pausePipeline()">Pause</button>
+            <button onclick="resetPipeline()">Reset</button>
+          </div>
+          
+          <!-- Pipeline Architecture -->
+          <div class="viz-container">
+            <h3 style="margin:0 0 10px 0; font-size:16px;">Pipeline Architecture</h3>
+            <svg id="pipeline-arch" width="860" height="200"></svg>
+          </div>
+          
+          <!-- Statistics -->
+          <div class="stats-grid">
+            <div class="stat-box">
+              <strong>Strategy:</strong> <span id="current-strategy">Naive Pipeline</span><br>
+              <strong>Stages:</strong> <span id="active-stages">4</span>
+            </div>
+            <div class="stat-box">
+              <strong>Throughput:</strong> <span id="throughput">0</span> batches/s<br>
+              <strong>Efficiency:</strong> <span id="efficiency">0</span>%
+            </div>
+            <div class="stat-box">
+              <strong>Bubble Time:</strong> <span id="bubble-time">0</span> ms<br>
+              <strong>Total Time:</strong> <span id="total-time">0</span> ms
+            </div>
+            <div class="stat-box">
+              <strong>Memory Peak:</strong> <span id="memory-peak">0</span> MB<br>
+              <strong>Utilization:</strong> <span id="utilization">0</span>%
+            </div>
+          </div>
+          
+          <!-- Execution Timeline -->
+          <div class="viz-container">
+            <h3 style="margin:0 0 10px 0; font-size:16px;">Execution Timeline</h3>
+            <svg id="execution-timeline" width="860" height="300"></svg>
+          </div>
+          
+          <!-- Schedule Comparison -->
+          <div class="viz-container">
+            <h3 style="margin:0 0 10px 0; font-size:16px;">Schedule Comparison</h3>
+            <svg id="schedule-comparison" width="860" height="250"></svg>
+          </div>
+          
+          <!-- Performance Metrics -->
+          <div class="viz-container">
+            <h3 style="margin:0 0 10px 0; font-size:16px;">Performance Analysis</h3>
+            <svg id="performance-metrics" width="860" height="200"></svg>
+          </div>
+          
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <script>
+    // Pipeline Parallelism Demo
+    class PipelineParallelismDemo {
+      constructor() {
+        this.strategy = 'naive';
+        this.numStages = 4;
+        this.numMicrobatches = 8;
+        this.forwardTime = 100;
+        this.backwardTime = 150;
+        this.isRunning = false;
+        this.currentTime = 0;
+        this.timeline = [];
+        this.schedules = {};
+        
+        this.initializeVisualizations();
+        this.generateSchedules();
+        this.updateStats();
+      }
+      
+      initializeVisualizations() {
+        this.createPipelineArchitecture();
+        this.createExecutionTimeline();
+        this.createScheduleComparison();
+        this.createPerformanceMetrics();
+        
+        // Add arrow markers
+        const defs = d3.select('#pipeline-arch').append('defs');
+        
+        defs.append('marker')
+          .attr('id', 'data-arrow')
+          .attr('viewBox', '0 0 10 10')
+          .attr('refX', 5)
+          .attr('refY', 3)
+          .attr('markerWidth', 6)
+          .attr('markerHeight', 6)
+          .attr('orient', 'auto')
+          .append('path')
+          .attr('d', 'M0,0 L0,6 L9,3 z')
+          .attr('fill', '#1772d0');
+      }
+      
+      createPipelineArchitecture() {
+        const svg = d3.select('#pipeline-arch');
+        svg.selectAll('*').remove();
+        
+        const width = 860;
+        const height = 200;
+        const stageWidth = (width - 100) / this.numStages;
+        const stageHeight = 80;
+        const startY = (height - stageHeight) / 2;
+        
+        // Draw pipeline stages
+        for (let i = 0; i < this.numStages; i++) {
+          const x = 50 + i * stageWidth;
+          
+          // Stage rectangle
+          svg.append('rect')
+            .attr('id', `stage-${i}`)
+            .attr('class', 'pipeline-stage')
+            .attr('x', x)
+            .attr('y', startY)
+            .attr('width', stageWidth - 20)
+            .attr('height', stageHeight);
+          
+          // Stage label
+          svg.append('text')
+            .attr('x', x + (stageWidth - 20) / 2)
+            .attr('y', startY + stageHeight / 2)
+            .attr('class', 'layer-label')
+            .style('fill', 'white')
+            .style('font-weight', 'bold')
+            .text(`Stage ${i}`);
+          
+          // GPU/Device label
+          svg.append('text')
+            .attr('x', x + (stageWidth - 20) / 2)
+            .attr('y', startY + stageHeight / 2 + 15)
+            .attr('class', 'layer-label')
+            .style('fill', 'white')
+            .style('font-size', '10px')
+            .text(`GPU ${i}`);
+          
+          // Connection arrow to next stage
+          if (i < this.numStages - 1) {
+            svg.append('line')
+              .attr('class', 'data-flow')
+              .attr('id', `flow-${i}`)
+              .attr('x1', x + stageWidth - 20)
+              .attr('y1', startY + stageHeight / 2)
+              .attr('x2', x + stageWidth)
+              .attr('y2', startY + stageHeight / 2);
+          }
+        }
+        
+        // Add legend
+        const legend = svg.append('g')
+          .attr('transform', 'translate(50, 20)');
+        
+        const legendItems = [
+          { color: '#4CAF50', label: 'Forward Pass' },
+          { color: '#FF9800', label: 'Backward Pass' },
+          { color: '#e0e0e0', label: 'Idle' },
+          { color: '#ff6b6b', label: 'Bubble' }
+        ];
+        
+        legendItems.forEach((item, i) => {
+          legend.append('rect')
+            .attr('x', i * 120)
+            .attr('y', 0)
+            .attr('width', 15)
+            .attr('height', 15)
+            .attr('fill', item.color);
+          
+          legend.append('text')
+            .attr('x', i * 120 + 20)
+            .attr('y', 12)
+            .style('font-size', '11px')
+            .text(item.label);
+        });
+      }
+      
+      createExecutionTimeline() {
+        const svg = d3.select('#execution-timeline');
+        svg.selectAll('*').remove();
+        
+        const width = 860;
+        const height = 300;
+        const margin = {top: 30, right: 30, bottom: 40, left: 80};
+        
+        // Create timeline grid
+        const timelineWidth = width - margin.left - margin.right;
+        const stageHeight = (height - margin.top - margin.bottom) / this.numStages;
+        
+        // Stage labels
+        for (let i = 0; i < this.numStages; i++) {
+          const y = margin.top + i * stageHeight + stageHeight / 2;
+          
+          svg.append('text')
+            .attr('x', margin.left - 10)
+            .attr('y', y + 5)
+            .attr('text-anchor', 'end')
+            .style('font-size', '12px')
+            .text(`Stage ${i}`);
+          
+          // Horizontal grid line
+          svg.append('line')
+            .attr('class', 'timeline-axis')
+            .attr('x1', margin.left)
+            .attr('y1', y + stageHeight / 2)
+            .attr('x2', width - margin.right)
+            .attr('y2', y + stageHeight / 2)
+            .style('opacity', 0.3);
+        }
+        
+        // Time axis
+        svg.append('line')
+          .attr('class', 'timeline-axis')
+          .attr('x1', margin.left)
+          .attr('y1', margin.top)
+          .attr('x2', margin.left)
+          .attr('y2', height - margin.bottom);
+        
+        svg.append('text')
+          .attr('x', width / 2)
+          .attr('y', height - 10)
+          .attr('text-anchor', 'middle')
+          .style('font-size', '12px')
+          .text('Time');
+      }
+      
+      createScheduleComparison() {
+        const svg = d3.select('#schedule-comparison');
+        svg.selectAll('*').remove();
+        
+        const width = 860;
+        const height = 250;
+        const margin = {top: 30, right: 30, bottom: 40, left: 100};
+        
+        const strategies = ['naive', '1f1b', 'interleaved'];
+        const strategyHeight = (height - margin.top - margin.bottom) / strategies.length;
+        
+        strategies.forEach((strategy, i) => {
+          const y = margin.top + i * strategyHeight;
+          
+          svg.append('text')
+            .attr('x', margin.left - 10)
+            .attr('y', y + strategyHeight / 2)
+            .attr('text-anchor', 'end')
+            .style('font-size', '12px')
+            .style('font-weight', 'bold')
+            .text(strategy.toUpperCase());
+          
+          // Draw simplified schedule representation
+          this.drawSchedulePreview(svg, margin.left, y, width - margin.left - margin.right, 
+                                   strategyHeight - 10, strategy);
+        });
+      }
+      
+      drawSchedulePreview(svg, x, y, width, height, strategy) {
+        const schedule = this.generateSchedule(strategy);
+        if (!schedule || schedule.length === 0) return;
+        
+        const maxTime = Math.max(...schedule.map(task => task.endTime));
+        const timeScale = width / maxTime;
+        const stageHeight = height / this.numStages;
+        
+        schedule.forEach(task => {
+          const taskX = x + task.startTime * timeScale;
+          const taskWidth = (task.endTime - task.startTime) * timeScale;
+          const taskY = y + task.stage * stageHeight;
+          
+          svg.append('rect')
+            .attr('class', `schedule-bar ${task.type}`)
+            .attr('x', taskX)
+            .attr('y', taskY)
+            .attr('width', Math.max(1, taskWidth))
+            .attr('height', stageHeight - 1);
+        });
+      }
+      
+      createPerformanceMetrics() {
+        const svg = d3.select('#performance-metrics');
+        svg.selectAll('*').remove();
+        
+        const width = 860;
+        const height = 200;
+        const margin = {top: 20, right: 30, bottom: 40, left: 60};
+        
+        const strategies = ['naive', '1f1b', 'interleaved'];
+        const metrics = this.calculateMetrics();
+        
+        const x = d3.scaleBand()
+          .domain(strategies)
+          .range([margin.left, width - margin.right])
+          .padding(0.1);
+        
+        const y = d3.scaleLinear()
+          .domain([0, 100])
+          .range([height - margin.bottom, margin.top]);
+        
+        // Draw efficiency bars
+        strategies.forEach(strategy => {
+          const efficiency = metrics[strategy]?.efficiency || 0;
+          
+          svg.append('rect')
+            .attr('class', 'efficiency-bar')
+            .attr('x', x(strategy))
+            .attr('y', y(efficiency))
+            .attr('width', x.bandwidth())
+            .attr('height', y(0) - y(efficiency))
+            .append('title')
+            .text(`${strategy}: ${efficiency.toFixed(1)}% efficiency`);
+          
+          // Bubble time indicator
+          const bubbleRatio = (metrics[strategy]?.bubbleTime || 0) / (metrics[strategy]?.totalTime || 1) * 100;
+          svg.append('rect')
+            .attr('class', 'bubble-indicator')
+            .attr('x', x(strategy))
+            .attr('y', y(bubbleRatio))
+            .attr('width', x.bandwidth())
+            .attr('height', y(0) - y(bubbleRatio));
+        });
+        
+        // Add axes
+        svg.append('g')
+          .attr('transform', `translate(0,${height - margin.bottom})`)
+          .call(d3.axisBottom(x));
+        
+        svg.append('g')
+          .attr('transform', `translate(${margin.left},0)`)
+          .call(d3.axisLeft(y).tickFormat(d => `${d}%`));
+        
+        // Labels
+        svg.append('text')
+          .attr('x', width / 2)
+          .attr('y', height - 5)
+          .attr('text-anchor', 'middle')
+          .style('font-size', '12px')
+          .text('Pipeline Strategy');
+        
+        svg.append('text')
+          .attr('transform', 'rotate(-90)')
+          .attr('x', -height / 2)
+          .attr('y', 15)
+          .attr('text-anchor', 'middle')
+          .style('font-size', '12px')
+          .text('Efficiency (%)');
+      }
+      
+      generateSchedules() {
+        this.schedules = {
+          naive: this.generateSchedule('naive'),
+          '1f1b': this.generateSchedule('1f1b'),
+          interleaved: this.generateSchedule('interleaved')
+        };
+      }
+      
+      generateSchedule(strategy) {
+        const schedule = [];
+        let currentTime = 0;
+        
+        if (strategy === 'naive') {
+          // Forward pass for all microbatches, then backward pass
+          for (let mb = 0; mb < this.numMicrobatches; mb++) {
+            for (let stage = 0; stage < this.numStages; stage++) {
+              schedule.push({
+                microbatch: mb,
+                stage: stage,
+                type: 'forward',
+                startTime: currentTime,
+                endTime: currentTime + this.forwardTime
+              });
+              currentTime += this.forwardTime;
+            }
+          }
+          
+          for (let mb = this.numMicrobatches - 1; mb >= 0; mb--) {
+            for (let stage = this.numStages - 1; stage >= 0; stage--) {
+              schedule.push({
+                microbatch: mb,
+                stage: stage,
+                type: 'backward',
+                startTime: currentTime,
+                endTime: currentTime + this.backwardTime
+              });
+              currentTime += this.backwardTime;
+            }
+          }
+          
+        } else if (strategy === '1f1b') {
+          // 1F1B scheduling
+          const stageTimers = new Array(this.numStages).fill(0);
+          const warmupSteps = this.numStages - 1;
+          
+          // Warmup phase
+          for (let step = 0; step < warmupSteps; step++) {
+            for (let stage = 0; stage <= step; stage++) {
+              const mb = step - stage;
+              if (mb >= 0 && mb < this.numMicrobatches) {
+                schedule.push({
+                  microbatch: mb,
+                  stage: stage,
+                  type: 'forward',
+                  startTime: stageTimers[stage],
+                  endTime: stageTimers[stage] + this.forwardTime
+                });
+                stageTimers[stage] += this.forwardTime;
+              }
+            }
+          }
+          
+          // Steady state: 1F1B
+          const steadySteps = this.numMicrobatches - warmupSteps;
+          for (let step = 0; step < steadySteps; step++) {
+            for (let stage = 0; stage < this.numStages; stage++) {
+              // Forward pass
+              const forwardMb = warmupSteps + step - stage;
+              if (forwardMb >= 0 && forwardMb < this.numMicrobatches) {
+                schedule.push({
+                  microbatch: forwardMb,
+                  stage: stage,
+                  type: 'forward',
+                  startTime: stageTimers[stage],
+                  endTime: stageTimers[stage] + this.forwardTime
+                });
+                stageTimers[stage] += this.forwardTime;
+              }
+              
+              // Backward pass
+              const backwardMb = step + stage;
+              if (backwardMb >= 0 && backwardMb < this.numMicrobatches) {
+                schedule.push({
+                  microbatch: backwardMb,
+                  stage: this.numStages - 1 - stage,
+                  type: 'backward',
+                  startTime: stageTimers[this.numStages - 1 - stage],
+                  endTime: stageTimers[this.numStages - 1 - stage] + this.backwardTime
+                });
+                stageTimers[this.numStages - 1 - stage] += this.backwardTime;
+              }
+            }
+          }
+          
+        } else if (strategy === 'interleaved') {
+          // Interleaved 1F1B with smaller chunks
+          const chunksPerStage = 2;
+          const chunkSize = Math.ceil(this.numMicrobatches / chunksPerStage);
+          
+          for (let chunk = 0; chunk < chunksPerStage; chunk++) {
+            const chunkStart = chunk * chunkSize;
+            const chunkEnd = Math.min(chunkStart + chunkSize, this.numMicrobatches);
+            
+            // Forward pass for this chunk
+            for (let mb = chunkStart; mb < chunkEnd; mb++) {
+              for (let stage = 0; stage < this.numStages; stage++) {
+                schedule.push({
+                  microbatch: mb,
+                  stage: stage,
+                  type: 'forward',
+                  startTime: currentTime,
+                  endTime: currentTime + this.forwardTime
+                });
+                currentTime += this.forwardTime;
+              }
+            }
+            
+            // Backward pass for this chunk
+            for (let mb = chunkEnd - 1; mb >= chunkStart; mb--) {
+              for (let stage = this.numStages - 1; stage >= 0; stage--) {
+                schedule.push({
+                  microbatch: mb,
+                  stage: stage,
+                  type: 'backward',
+                  startTime: currentTime,
+                  endTime: currentTime + this.backwardTime
+                });
+                currentTime += this.backwardTime;
+              }
+            }
+          }
+        }
+        
+        return schedule;
+      }
+      
+      calculateMetrics() {
+        const metrics = {};
+        
+        ['naive', '1f1b', 'interleaved'].forEach(strategy => {
+          const schedule = this.schedules[strategy] || [];
+          if (schedule.length === 0) {
+            metrics[strategy] = { efficiency: 0, bubbleTime: 0, totalTime: 0 };
+            return;
+          }
+          
+          const totalTime = Math.max(...schedule.map(task => task.endTime));
+          const idealTime = (this.numMicrobatches * (this.forwardTime + this.backwardTime)) / this.numStages;
+          
+          // Calculate bubble time
+          let bubbleTime = 0;
+          const stageUtilization = new Array(this.numStages).fill(0);
+          
+          schedule.forEach(task => {
+            stageUtilization[task.stage] += task.endTime - task.startTime;
+          });
+          
+          bubbleTime = totalTime * this.numStages - stageUtilization.reduce((sum, util) => sum + util, 0);
+          
+          metrics[strategy] = {
+            efficiency: (idealTime / totalTime) * 100,
+            bubbleTime: Math.max(0, bubbleTime),
+            totalTime: totalTime
+          };
+        });
+        
+        return metrics;
+      }
+      
+      async startPipeline() {
+        if (this.isRunning) return;
+        
+        this.isRunning = true;
+        this.currentTime = 0;
+        
+        const schedule = this.schedules[this.strategy] || [];
+        const timeStep = 50; // ms
+        const timeScale = 10; // Animation speed multiplier
+        
+        this.animateSchedule(schedule, timeStep, timeScale);
+      }
+      
+      async animateSchedule(schedule, timeStep, timeScale) {
+        const svg = d3.select('#execution-timeline');
+        const margin = {top: 30, right: 30, bottom: 40, left: 80};
+        const width = 860 - margin.left - margin.right;
+        const stageHeight = (300 - margin.top - margin.bottom) / this.numStages;
+        
+        // Clear previous animation
+        svg.selectAll('.animated-task').remove();
+        
+        const maxTime = Math.max(...schedule.map(task => task.endTime));
+        const timeScale_viz = width / maxTime;
+        
+        // Animate tasks
+        for (const task of schedule) {
+          if (!this.isRunning) break;
+          
+          const taskX = margin.left + task.startTime * timeScale_viz;
+          const taskWidth = (task.endTime - task.startTime) * timeScale_viz;
+          const taskY = margin.top + task.stage * stageHeight;
+          
+          // Add animated task
+          const rect = svg.append('rect')
+            .attr('class', `animated-task schedule-bar ${task.type}`)
+            .attr('x', taskX)
+            .attr('y', taskY)
+            .attr('width', 0)
+            .attr('height', stageHeight - 2)
+            .append('title')
+            .text(`MB${task.microbatch} ${task.type} on Stage${task.stage}`);
+          
+          // Animate task execution
+          rect.transition()
+            .duration((task.endTime - task.startTime) * timeScale)
+            .attr('width', taskWidth);
+          
+          // Update stage color
+          d3.select(`#stage-${task.stage}`)
+            .classed('forward', task.type === 'forward')
+            .classed('backward', task.type === 'backward')
+            .classed('idle', false);
+          
+          // Animate data flow
+          if (task.type === 'forward' && task.stage < this.numStages - 1) {
+            d3.select(`#flow-${task.stage}`)
+              .classed('active', true);
+            
+            setTimeout(() => {
+              d3.select(`#flow-${task.stage}`).classed('active', false);
+            }, 1500);
+          }
+          
+          await this.sleep((task.endTime - task.startTime) * timeScale);
+          
+          // Reset stage to idle
+          d3.select(`#stage-${task.stage}`)
+            .classed('forward', false)
+            .classed('backward', false)
+            .classed('idle', true);
+        }
+        
+        this.isRunning = false;
+      }
+      
+      pausePipeline() {
+        this.isRunning = false;
+      }
+      
+      resetPipeline() {
+        this.isRunning = false;
+        this.currentTime = 0;
+        
+        // Reset visualizations
+        d3.select('#execution-timeline').selectAll('.animated-task').remove();
+        d3.selectAll('.pipeline-stage')
+          .classed('forward', false)
+          .classed('backward', false)
+          .classed('idle', true);
+        
+        this.generateSchedules();
+        this.updateVisualizations();
+        this.updateStats();
+      }
+      
+      updateConfiguration() {
+        this.numStages = parseInt(document.getElementById('num-stages').value);
+        this.numMicrobatches = parseInt(document.getElementById('num-microbatches').value);
+        this.forwardTime = parseInt(document.getElementById('forward-time').value);
+        this.backwardTime = parseInt(document.getElementById('backward-time').value);
+        
+        this.generateSchedules();
+        this.updateVisualizations();
+        this.updateStats();
+      }
+      
+      updateVisualizations() {
+        this.createPipelineArchitecture();
+        this.createExecutionTimeline();
+        this.createScheduleComparison();
+        this.createPerformanceMetrics();
+      }
+      
+      updateStats() {
+        const metrics = this.calculateMetrics();
+        const currentMetrics = metrics[this.strategy] || { efficiency: 0, bubbleTime: 0, totalTime: 0 };
+        
+        const throughput = this.numMicrobatches / (currentMetrics.totalTime / 1000);
+        const memoryPeak = this.numStages * 100; // Simplified memory calculation
+        const utilization = (currentMetrics.totalTime - currentMetrics.bubbleTime) / currentMetrics.totalTime * 100;
+        
+        document.getElementById('current-strategy').textContent = this.strategy.toUpperCase();
+        document.getElementById('active-stages').textContent = this.numStages;
+        document.getElementById('throughput').textContent = throughput.toFixed(2);
+        document.getElementById('efficiency').textContent = currentMetrics.efficiency.toFixed(1);
+        document.getElementById('bubble-time').textContent = currentMetrics.bubbleTime.toFixed(0);
+        document.getElementById('total-time').textContent = currentMetrics.totalTime.toFixed(0);
+        document.getElementById('memory-peak').textContent = memoryPeak;
+        document.getElementById('utilization').textContent = utilization.toFixed(1);
+      }
+      
+      sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
+    }
+    
+    // Global instance
+    const pipelineDemo = new PipelineParallelismDemo();
+    
+    function showStrategy(strategy) {
+      // Update tabs
+      document.querySelectorAll('.strategy-tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.querySelector(`[onclick="showStrategy('${strategy}')"]`).classList.add('active');
+      
+      pipelineDemo.strategy = strategy;
+      pipelineDemo.resetPipeline();
+    }
+    
+    function startPipeline() {
+      pipelineDemo.startPipeline();
+    }
+    
+    function pausePipeline() {
+      pipelineDemo.pausePipeline();
+    }
+    
+    function resetPipeline() {
+      pipelineDemo.resetPipeline();
+    }
+    
+    // Event listeners for sliders
+    document.getElementById('num-stages').addEventListener('input', function() {
+      document.getElementById('stages-value').textContent = this.value;
+      pipelineDemo.updateConfiguration();
+    });
+    
+    document.getElementById('num-microbatches').addEventListener('input', function() {
+      document.getElementById('batches-value').textContent = this.value;
+      pipelineDemo.updateConfiguration();
+    });
+    
+    document.getElementById('forward-time').addEventListener('input', function() {
+      document.getElementById('forward-value').textContent = this.value;
+      pipelineDemo.updateConfiguration();
+    });
+    
+    document.getElementById('backward-time').addEventListener('input', function() {
+      document.getElementById('backward-value').textContent = this.value;
+      pipelineDemo.updateConfiguration();
+    });
+  </script>
+</body>
+</html>

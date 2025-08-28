@@ -1,0 +1,152 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Xuming Bot - Ask Me Anything</title>
+  <meta name="author" content="Xuming Huang">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="stylesheet.css">
+  <link rel="icon" type="image/png" href="images/favicon.png">
+</head>
+
+<body>
+  <table style="width:100%;max-width:900px;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+    <tbody>
+      <tr style="padding:0px">
+        <td style="padding:0px">
+          
+          <!-- Header -->
+          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+            <tbody>
+              <tr>
+                <td style="padding:20px;width:100%;vertical-align:middle">
+                  <p style="text-align:center">
+                    <name>Xuming Bot</name>
+                  </p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <!-- Navigation -->
+          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+            <tbody>
+              <tr>
+                <td style="padding:20px;width:100%;vertical-align:middle">
+                  <p style="text-align:center;font-size:18px;">
+                    <a href="index.html">Home</a> &nbsp;|&nbsp;
+                    <a href="research.html">Research</a> &nbsp;|&nbsp;
+                    <a href="projects.html">Projects</a> &nbsp;|&nbsp;
+                    <a href="blog.html">Blog</a> &nbsp;|&nbsp;
+                    <a href="courses.html">Courses</a> &nbsp;|&nbsp;
+                    <a href="bot.html" style="font-weight:700;">Ask Me</a>
+                  </p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <!-- Introduction -->
+          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+            <tbody>
+              <tr>
+                <td style="padding:20px;width:100%;vertical-align:middle">
+                  <p>
+                    Ask me about my research, publications, projects, or academic experience. 
+                    I'm here to help you understand my work in machine learning systems and computer science.
+                  </p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <!-- Chat Interface -->
+          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+            <tbody>
+              <tr>
+                <td style="padding:20px;width:100%;vertical-align:middle">
+                  <div id="chat-container" style="border:1px solid #ddd; padding:20px; min-height:400px; max-height:500px; overflow-y:auto; margin-bottom:20px; background:#fafafa;">
+                    <div id="messages">
+                      <!-- Messages will appear here -->
+                      <div class="bot-message">
+                        <strong>Xuming Bot:</strong> Hello! I'm here to answer questions about Xuming's research, publications, and projects. What would you like to know?
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div style="display:flex; gap:10px;">
+                    <input type="text" id="message-input" 
+                           placeholder="Type your question..." 
+                           style="flex:1; padding:10px; font-family:'EB Garamond', Georgia, serif; font-size:16px; border:1px solid #ddd; border-radius:3px;"
+                           onkeypress="if(event.key==='Enter') sendMessage()">
+                    <button onclick="sendMessage()" 
+                            style="padding:10px 20px; font-family:'EB Garamond', Georgia, serif; font-size:16px;">
+                      Send
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <!-- Suggested Questions -->
+          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+            <tbody>
+              <tr>
+                <td style="padding:20px;width:100%;vertical-align:middle">
+                  <heading>Suggested Questions</heading>
+                  <p style="line-height:1.8;">
+                    • <a href="javascript:;" onclick="askQuestion('What is your current research focus?')">What is your current research focus?</a><br>
+                    • <a href="javascript:;" onclick="askQuestion('Tell me about your recent publications')">Tell me about your recent publications</a><br>
+                    • <a href="javascript:;" onclick="askQuestion('What projects are you working on?')">What projects are you working on?</a><br>
+                    • <a href="javascript:;" onclick="askQuestion('What was your experience at Stanford?')">What was your experience at Stanford?</a><br>
+                    • <a href="javascript:;" onclick="askQuestion('What courses have you taken at UW-Madison?')">What courses have you taken at UW-Madison?</a><br>
+                    • <a href="javascript:;" onclick="askQuestion('How can I contribute to your projects?')">How can I contribute to your projects?</a><br>
+                    • <a href="javascript:;" onclick="askQuestion('What is gradient checkpointing?')">What is gradient checkpointing?</a><br>
+                    • <a href="javascript:;" onclick="askQuestion('Explain distributed training')">Explain distributed training</a>
+                  </p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <!-- Privacy Notice -->
+          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+            <tbody>
+              <tr>
+                <td style="padding:20px;width:100%;vertical-align:middle">
+                  <p style="font-size:14px; color:#666; background:#f9f9f9; padding:15px; border-radius:3px;">
+                    <strong>Note:</strong> This is a simple keyword-based bot that provides information about my academic work. 
+                    For detailed discussions or collaborations, please <a href="javascript:;" onclick="showEmail()">email me directly</a>.
+                  </p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <!-- Footer -->
+          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+            <tbody>
+              <tr>
+                <td style="padding:0px">
+                  <br>
+                  <p style="text-align:center;font-size:14px;color:#999;padding:20px;">
+                    Feel free to clone my template <a href="https://github.com/Mac-Huang/xuming.ai.git" style="color:#999;">Xuming Huang</a>
+                  </p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <script src="data/publications.js"></script>
+  <script src="data/projects.js"></script>
+  <script src="data/blog-posts.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/bot.js"></script>
+</body>
+</html>

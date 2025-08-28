@@ -1,0 +1,330 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Courses - Xuming Huang</title>
+  <meta name="author" content="Xuming Huang">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="stylesheet.css">
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  
+  <style>
+    /* Course-specific styles */
+    .course-section {
+      margin-bottom: 40px;
+    }
+    
+    .course-header {
+      margin-bottom: 20px;
+    }
+    
+    .course-content h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-top: 30px;
+      margin-bottom: 10px;
+    }
+    
+    .course-content h4 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      color: #444;
+    }
+    
+    .course-content ul {
+      margin: 15px 0;
+      padding-left: 30px;
+    }
+    
+    .course-content li {
+      margin: 8px 0;
+      line-height: 1.6;
+    }
+    
+    .code-block {
+      background: #f4f4f4;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      padding: 15px;
+      margin: 20px 0;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    
+    .semester-header {
+      background: #f9f9f9;
+      padding: 10px 15px;
+      margin: 20px 0;
+      border-left: 3px solid #1772d0;
+    }
+    
+    hr {
+      border: none;
+      border-top: 1px solid #ddd;
+      margin: 40px 0;
+    }
+  </style>
+</head>
+
+<body>
+  <table style="width:100%;max-width:900px;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+    <tbody>
+      <tr>
+        <td style="padding:20px">
+          
+          <!-- Header -->
+          <p style="text-align:right;">
+            <a href="index.html">← Back to Home</a>
+          </p>
+          
+          <heading>My Course Journey</heading>
+          <p>
+            This page documents my academic journey through various courses, including my understanding, experiences, and projects completed during these courses.
+          </p>
+          
+          <!-- Navigation -->
+          <p style="text-align:center; margin: 30px 0;">
+            <a href="index.html">Home</a> |
+            <a href="research.html">Research</a> |
+            <a href="projects.html">Projects</a> |
+            <a href="blog.html">Blog</a> |
+            <a href="courses.html" style="font-weight:700;">Courses</a> |
+            <a href="bot.html">Ask Me</a>
+          </p>
+          
+          <!-- Spring 2025 Semester -->
+          <div class="semester-header">
+            <h2 style="margin:0; font-size:20px;">Spring 2025 Semester</h2>
+            <p style="margin:5px 0 0 0;"><strong>Institution:</strong> University of Wisconsin–Madison</p>
+          </div>
+          
+          <div class="course-content">
+            
+            <!-- CS 200 -->
+            <h3>COMP SCI 200: Programming I</h3>
+            <p><strong>Instructor:</strong> Professor Jim Williams</p>
+            
+            <h4>Course Description</h4>
+            <p>An introductory programming course focusing on fundamental concepts using Java.</p>
+            
+            <h4>Key Learnings</h4>
+            <ul>
+              <li>Reinforced core programming fundamentals</li>
+              <li>Enhanced understanding of lower-level operational logic</li>
+              <li>Developed teaching and peer support skills</li>
+              <li>Gained confidence in collaborative learning environments</li>
+            </ul>
+            
+            <div class="code-block">
+public class Student {
+    private String name;
+    private int age;
+    private double gpa;
+
+    public Student(String name, int age) {
+        this.name = name;
+        this.age = age;
+        this.gpa = 0.0;
+    }
+
+    public void updateGPA(double newGPA) {
+        if (newGPA >= 0.0 && newGPA <= 4.0) {
+            this.gpa = newGPA;
+        }
+    }
+
+    public String getStatus() {
+        if (gpa >= 3.5) return "Dean's List";
+        if (gpa >= 2.0) return "Good Standing";
+        return "Academic Warning";
+    }
+}
+            </div>
+            
+            <h4>Reflection</h4>
+            <p>
+              While the material was relatively straightforward, the discussion sections proved to be the most valuable aspect of the course.
+            </p>
+            <p>
+              The opportunity to assist classmates not only reinforced my own understanding but also deepened my appreciation for programming fundamentals.
+            </p>
+            <p>
+              Professor Williams' teaching style was particularly effective - engaging, clear, and well-paced.
+            </p>
+            <p>
+              This experience has inspired me to consider becoming a TA for this course in the future.
+            </p>
+            
+            <hr>
+            
+            <!-- ECE 252 -->
+            <h3>E C E 252: Introduction to Computer Engineering</h3>
+            <p><strong>Instructor:</strong> Professor Bhuvana Krishnaswamy</p>
+            
+            <h4>Course Description</h4>
+            <p>A foundational course in computer organization and low-level computing concepts.</p>
+            
+            <h4>Key Learnings</h4>
+            <ul>
+              <li>Understanding of computer organization</li>
+              <li>Assembly language programming</li>
+              <li>Byte and register-level data management</li>
+              <li>Computer architecture fundamentals</li>
+            </ul>
+            
+            <div class="code-block">
+;************************************
+; Multiples two numbers AxB
+;
+; Parameters
+;   R0 - A 
+;   R1 - B 
+;Returns 
+;   R0 - AxB
+;************************************
+MULT
+        ST R2, MULT_R2
+        AND R2, R2, #0
+
+        ADD R1, R1, #0
+        BRp MULT_LOOP
+        AND R0, R0, #0
+        BR END_SUB
+
+MULT_LOOP
+        ADD R2, R2, R0
+        ADD R1, R1, #-1
+        BRp MULT_LOOP
+
+        ADD R0, R2, #0
+        LD R2, MULT_R2
+END_SUB
+    RET
+
+MULT_R2 .BLKW 1
+    .END
+            </div>
+            
+            <h4>Reflection</h4>
+            <p>
+              This was my favorite course of the semester.
+            </p>
+            <p>
+              The exploration of assembly language and low-level computing concepts provided a fascinating insight into how computers operate at their core.
+            </p>
+            <p>
+              The course structure, featuring one lecture and two group-based discussion sections weekly, effectively reinforced the material.
+            </p>
+            <p>
+              This experience has motivated me to pursue COMP SCI 352: Digital System Fundamentals and COMP SCI 552: Introduction to Computer Architecture in future semesters.
+            </p>
+            
+            <hr>
+            
+            <!-- MATH 340 -->
+            <h3>MATH 340: Elementary Matrix and Linear Algebra</h3>
+            <p><strong>Instructor:</strong> Professor Ruhui Jin</p>
+            
+            <h4>Course Description</h4>
+            <p>An advanced mathematics course covering matrix operations and linear algebra concepts.</p>
+            
+            <h4>Key Learnings</h4>
+            <ul>
+              <li>Linear transformations</li>
+              <li>Matrix operations</li>
+              <li>High-dimensional mathematical structures</li>
+              <li>Applications in machine learning and neural networks</li>
+            </ul>
+            
+            <h4>Reflection</h4>
+            <p>
+              This intellectually stimulating course provided a deeper understanding of mathematical structures.
+            </p>
+            <p>
+              The concepts of linear transformations have significantly enhanced my understanding of neural network architectures, like Transformers.
+            </p>
+            <p>
+              While I'm performing well academically, I recognize the need for further study to fully grasp the interconnections between concepts.
+            </p>
+            
+            <hr>
+            
+            <!-- CS 240 -->
+            <h3>COMP SCI 240: Introduction to Discrete Mathematics</h3>
+            <p><strong>Instructor:</strong> Professor Mitch Keller</p>
+            
+            <h4>Course Description</h4>
+            <p>A course covering fundamental discrete mathematics concepts and their applications in computer science.</p>
+            
+            <h4>Key Learnings</h4>
+            <ul>
+              <li>Mathematical proofs</li>
+              <li>Relations and functions</li>
+              <li>Graph theory</li>
+              <li>Tree structures</li>
+              <li>Abstract logic</li>
+            </ul>
+            
+            <h4>Reflection</h4>
+            <p>
+              This was the most challenging course of the semester, primarily due to the abstract nature of the content.
+            </p>
+            <p>
+              While I understand the importance of these concepts for data structures and algorithms, I found it difficult to maintain motivation for some of the more theoretical aspects.
+            </p>
+            <p>
+              I hope to gain a deeper appreciation of these concepts through their application in future advanced CS courses.
+            </p>
+            
+            <hr>
+            
+            <!-- Overall Reflection -->
+            <h2 style="font-size:20px; margin-top:40px;">Overall Semester Reflection</h2>
+            
+            <p>This semester has been transformative in several ways:</p>
+            
+            <ul>
+              <li>Solidified my interest in computer systems and architecture</li>
+              <li>Developed a passion for low-level programming</li>
+              <li>Gained valuable experience in collaborative learning</li>
+              <li>Enhanced understanding of theoretical mathematics in relation to machine learning</li>
+              <li>Improved communication and teaching skills through peer support</li>
+            </ul>
+            
+            <p>
+              While not all subjects resonated equally, each course has contributed to shaping my academic path and future interests. I'm particularly excited about pursuing further studies in computer architecture and systems, while continuing to build on my mathematical foundation for machine learning applications.
+            </p>
+            
+            <hr>
+            
+            <p style="font-style:italic; color:#666;">
+              Note: This page is continuously updated as I progress through my academic journey.
+            </p>
+          </div>
+          
+          <!-- Footer -->
+          <hr>
+          
+          <p style="text-align:center;">
+            <a href="index.html">Home</a> |
+            <a href="research.html">Research</a> |
+            <a href="projects.html">Projects</a> |
+            <a href="blog.html">Blog</a> |
+            <a href="courses.html">Courses</a> |
+            <a href="bot.html">Ask Me</a>
+          </p>
+          
+          <p style="text-align:center;font-size:14px;color:#999;padding:20px;">
+            Feel free to clone my template <a href="https://github.com/Mac-Huang/xuming.ai.git" style="color:#999;">Xuming Huang</a>
+          </p>
+          
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</body>
+</html>

@@ -1,0 +1,395 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Sorting Algorithm Visualizer</title>
+  <meta name="author" content="Xuming Huang">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../stylesheet.css">
+  <style>
+    .bar {
+      display: inline-block;
+      width: 20px;
+      margin: 0 2px;
+      background: #1772d0;
+      transition: all 0.3s ease;
+      vertical-align: bottom;
+    }
+    .bar.comparing {
+      background: #ff6b6b !important;
+    }
+    .bar.sorted {
+      background: #51cf66 !important;
+    }
+    #visualization {
+      height: 300px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 20px;
+      background: white;
+      border-radius: 5px;
+      margin: 20px 0;
+    }
+    .controls button {
+      margin: 5px;
+      padding: 8px 15px;
+    }
+    .controls select {
+      margin: 5px;
+      padding: 8px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+
+<body>
+  <table style="width:100%;max-width:900px;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+    <tbody>
+      <tr>
+        <td style="padding:20px">
+          
+          <p style="text-align:center">
+            <name>Sorting Algorithm Visualizer</name>
+          </p>
+          
+          <p style="text-align:center; margin:20px 0;">
+            <a href="../index.html">← Back to Home</a>
+          </p>
+          
+          <div class="demo-container">
+            <div class="demo-controls controls" style="text-align:center;">
+              <select id="algorithm">
+                <option value="bubble">Bubble Sort</option>
+                <option value="selection">Selection Sort</option>
+                <option value="insertion">Insertion Sort</option>
+                <option value="quick">Quick Sort</option>
+                <option value="merge">Merge Sort</option>
+                <option value="heap">Heap Sort</option>
+              </select>
+              
+              <select id="size">
+                <option value="10">10 elements</option>
+                <option value="20" selected>20 elements</option>
+                <option value="30">30 elements</option>
+                <option value="50">50 elements</option>
+              </select>
+              
+              <select id="speed">
+                <option value="1000">Slow</option>
+                <option value="500" selected>Medium</option>
+                <option value="100">Fast</option>
+                <option value="10">Very Fast</option>
+              </select>
+              
+              <button onclick="generateArray()">New Array</button>
+              <button onclick="startSort()">Start Sort</button>
+              <button onclick="stopSort()">Stop</button>
+            </div>
+            
+            <div id="visualization"></div>
+            
+            <div style="text-align:center; padding:20px;">
+              <p><strong>Algorithm:</strong> <span id="current-algorithm">Bubble Sort</span></p>
+              <p><strong>Time Complexity:</strong> <span id="complexity">O(n²)</span></p>
+              <p><strong>Comparisons:</strong> <span id="comparisons">0</span> | 
+                 <strong>Swaps:</strong> <span id="swaps">0</span></p>
+            </div>
+          </div>
+          
+          <div style="margin-top:40px;">
+            <heading>About This Visualization</heading>
+            <p>
+              This interactive demo visualizes how different sorting algorithms work. 
+              Each bar represents a number, with height corresponding to its value. 
+              Red bars indicate elements being compared, and green bars show sorted elements.
+            </p>
+            
+            <heading>Algorithm Descriptions</heading>
+            <ul>
+              <li><strong>Bubble Sort:</strong> Repeatedly steps through the list, compares adjacent elements and swaps them if they're in the wrong order.</li>
+              <li><strong>Selection Sort:</strong> Divides the list into sorted and unsorted regions, repeatedly selecting the smallest element from the unsorted region.</li>
+              <li><strong>Insertion Sort:</strong> Builds the final sorted array one item at a time, inserting each element into its proper position.</li>
+              <li><strong>Quick Sort:</strong> Picks a pivot element and partitions the array around it, then recursively sorts the sub-arrays.</li>
+              <li><strong>Merge Sort:</strong> Divides the array into halves, recursively sorts them, then merges the sorted halves.</li>
+              <li><strong>Heap Sort:</strong> Builds a max heap from the array, then repeatedly extracts the maximum element.</li>
+            </ul>
+          </div>
+          
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <script>
+    let array = [];
+    let sorting = false;
+    let comparisons = 0;
+    let swaps = 0;
+    let speed = 500;
+    
+    const complexities = {
+      'bubble': 'O(n²)',
+      'selection': 'O(n²)',
+      'insertion': 'O(n²)',
+      'quick': 'O(n log n) average',
+      'merge': 'O(n log n)',
+      'heap': 'O(n log n)'
+    };
+    
+    function generateArray() {
+      const size = parseInt(document.getElementById('size').value);
+      array = [];
+      for (let i = 0; i < size; i++) {
+        array.push(Math.floor(Math.random() * 100) + 1);
+      }
+      displayArray();
+      resetCounters();
+    }
+    
+    function displayArray() {
+      const viz = document.getElementById('visualization');
+      viz.innerHTML = '';
+      const maxVal = Math.max(...array);
+      
+      array.forEach((val, idx) => {
+        const bar = document.createElement('div');
+        bar.className = 'bar';
+        bar.style.height = `${(val / maxVal) * 250}px`;
+        bar.id = `bar-${idx}`;
+        viz.appendChild(bar);
+      });
+    }
+    
+    function resetCounters() {
+      comparisons = 0;
+      swaps = 0;
+      updateCounters();
+    }
+    
+    function updateCounters() {
+      document.getElementById('comparisons').textContent = comparisons;
+      document.getElementById('swaps').textContent = swaps;
+    }
+    
+    async function startSort() {
+      if (sorting) return;
+      sorting = true;
+      resetCounters();
+      
+      const algorithm = document.getElementById('algorithm').value;
+      speed = parseInt(document.getElementById('speed').value);
+      
+      document.getElementById('current-algorithm').textContent = 
+        document.getElementById('algorithm').options[document.getElementById('algorithm').selectedIndex].text;
+      document.getElementById('complexity').textContent = complexities[algorithm];
+      
+      // Clear all sorted classes
+      document.querySelectorAll('.bar').forEach(bar => {
+        bar.classList.remove('sorted');
+      });
+      
+      switch(algorithm) {
+        case 'bubble':
+          await bubbleSort();
+          break;
+        case 'selection':
+          await selectionSort();
+          break;
+        case 'insertion':
+          await insertionSort();
+          break;
+        case 'quick':
+          await quickSort(0, array.length - 1);
+          break;
+        case 'merge':
+          await mergeSort(0, array.length - 1);
+          break;
+        case 'heap':
+          await heapSort();
+          break;
+      }
+      
+      // Mark all as sorted
+      document.querySelectorAll('.bar').forEach(bar => {
+        bar.classList.add('sorted');
+      });
+      
+      sorting = false;
+    }
+    
+    function stopSort() {
+      sorting = false;
+    }
+    
+    async function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    
+    async function compare(i, j) {
+      if (!sorting) return false;
+      comparisons++;
+      updateCounters();
+      
+      document.getElementById(`bar-${i}`).classList.add('comparing');
+      document.getElementById(`bar-${j}`).classList.add('comparing');
+      
+      await sleep(speed);
+      
+      document.getElementById(`bar-${i}`).classList.remove('comparing');
+      document.getElementById(`bar-${j}`).classList.remove('comparing');
+      
+      return array[i] > array[j];
+    }
+    
+    async function swap(i, j) {
+      if (!sorting) return;
+      swaps++;
+      updateCounters();
+      
+      [array[i], array[j]] = [array[j], array[i]];
+      displayArray();
+      await sleep(speed);
+    }
+    
+    async function bubbleSort() {
+      for (let i = 0; i < array.length - 1 && sorting; i++) {
+        for (let j = 0; j < array.length - i - 1 && sorting; j++) {
+          if (await compare(j, j + 1)) {
+            await swap(j, j + 1);
+          }
+        }
+        document.getElementById(`bar-${array.length - i - 1}`).classList.add('sorted');
+      }
+    }
+    
+    async function selectionSort() {
+      for (let i = 0; i < array.length - 1 && sorting; i++) {
+        let minIdx = i;
+        for (let j = i + 1; j < array.length && sorting; j++) {
+          if (await compare(minIdx, j)) {
+            minIdx = j;
+          }
+        }
+        if (minIdx !== i) {
+          await swap(i, minIdx);
+        }
+        document.getElementById(`bar-${i}`).classList.add('sorted');
+      }
+    }
+    
+    async function insertionSort() {
+      for (let i = 1; i < array.length && sorting; i++) {
+        let j = i - 1;
+        while (j >= 0 && sorting && await compare(j, j + 1)) {
+          await swap(j, j + 1);
+          j--;
+        }
+      }
+    }
+    
+    async function quickSort(low, high) {
+      if (low < high && sorting) {
+        const pi = await partition(low, high);
+        await quickSort(low, pi - 1);
+        await quickSort(pi + 1, high);
+      }
+    }
+    
+    async function partition(low, high) {
+      let i = low - 1;
+      for (let j = low; j < high && sorting; j++) {
+        if (!(await compare(j, high))) {
+          i++;
+          await swap(i, j);
+        }
+      }
+      await swap(i + 1, high);
+      return i + 1;
+    }
+    
+    async function mergeSort(l, r) {
+      if (l >= r || !sorting) return;
+      const m = Math.floor((l + r) / 2);
+      await mergeSort(l, m);
+      await mergeSort(m + 1, r);
+      await merge(l, m, r);
+    }
+    
+    async function merge(l, m, r) {
+      const left = array.slice(l, m + 1);
+      const right = array.slice(m + 1, r + 1);
+      let i = 0, j = 0, k = l;
+      
+      while (i < left.length && j < right.length && sorting) {
+        comparisons++;
+        updateCounters();
+        if (left[i] <= right[j]) {
+          array[k] = left[i];
+          i++;
+        } else {
+          array[k] = right[j];
+          j++;
+        }
+        k++;
+        displayArray();
+        await sleep(speed);
+      }
+      
+      while (i < left.length && sorting) {
+        array[k] = left[i];
+        i++;
+        k++;
+        displayArray();
+        await sleep(speed);
+      }
+      
+      while (j < right.length && sorting) {
+        array[k] = right[j];
+        j++;
+        k++;
+        displayArray();
+        await sleep(speed);
+      }
+    }
+    
+    async function heapSort() {
+      // Build max heap
+      for (let i = Math.floor(array.length / 2) - 1; i >= 0 && sorting; i--) {
+        await heapify(array.length, i);
+      }
+      
+      // Extract elements from heap
+      for (let i = array.length - 1; i > 0 && sorting; i--) {
+        await swap(0, i);
+        await heapify(i, 0);
+        document.getElementById(`bar-${i}`).classList.add('sorted');
+      }
+    }
+    
+    async function heapify(n, i) {
+      let largest = i;
+      const l = 2 * i + 1;
+      const r = 2 * i + 2;
+      
+      if (l < n && await compare(l, largest)) {
+        largest = l;
+      }
+      
+      if (r < n && await compare(r, largest)) {
+        largest = r;
+      }
+      
+      if (largest !== i && sorting) {
+        await swap(i, largest);
+        await heapify(n, largest);
+      }
+    }
+    
+    // Initialize on load
+    window.onload = function() {
+      generateArray();
+    };
+  </script>
+</body>
+</html>
