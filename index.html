@@ -8,6 +8,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" type="text/css" href="stylesheet.css">
   <link rel="icon" type="image/png" href="images/favicon.png">
+  <style>
+    .bio-section {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
 </head>
 
 <body>
@@ -17,6 +25,7 @@
         <td style="padding:0px">
           
           <!-- Bio Section -->
+          <div class="bio-section">
           <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
             <tbody>
               <tr style="padding:0px">
@@ -51,6 +60,7 @@
               </tr>
             </tbody>
           </table>
+          </div>
           
           <!-- Navigation -->
           <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
@@ -126,29 +136,29 @@
               <tr>
                 <td style="padding:20px;width:33%;vertical-align:top">
                   <div style="text-align:center;">
-                    <a href="demos/sorting.html">
-                      <img src="images/sorting-demo.png" alt="Sorting Visualizer" style="width:100%;max-width:200px;border-radius:5px;">
+                    <a href="demos/heap-allocator.html">
+                      <img src="images/projects/heap-allocator-thumb.jpg" alt="Heap Allocator" style="width:100%;max-width:200px;height:120px;object-fit:cover;border-radius:5px;border:1px solid #ddd;">
                     </a>
-                    <p><strong>Sorting Algorithm Visualizer</strong></p>
-                    <p style="font-size:13px;">Interactive visualization of various sorting algorithms</p>
+                    <p style="margin-top:10px;"><strong>Heap Allocator Visualization</strong></p>
+                    <p style="font-size:13px;color:#666;">CS107 memory allocation strategies with coalescing and fragmentation analysis</p>
+                  </div>
+                </td>
+                <td style="padding:20px;width:33%;vertical-align:top">
+                  <div style="text-align:center;">
+                    <a href="demos/sorting.html">
+                      <img src="images/projects/sorting-thumb.jpg" alt="Sorting Visualizer" style="width:100%;max-width:200px;height:120px;object-fit:cover;border-radius:5px;border:1px solid #ddd;">
+                    </a>
+                    <p style="margin-top:10px;"><strong>Sorting Algorithm Visualizer</strong></p>
+                    <p style="font-size:13px;color:#666;">Interactive visualization of quicksort, mergesort, heapsort and more</p>
                   </div>
                 </td>
                 <td style="padding:20px;width:33%;vertical-align:top">
                   <div style="text-align:center;">
                     <a href="demos/neural.html">
-                      <img src="images/neural-demo.png" alt="Neural Network" style="width:100%;max-width:200px;border-radius:5px;">
+                      <img src="images/projects/neural-thumb.jpg" alt="Neural Network" style="width:100%;max-width:200px;height:120px;object-fit:cover;border-radius:5px;border:1px solid #ddd;">
                     </a>
-                    <p><strong>Neural Network Playground</strong></p>
-                    <p style="font-size:13px;">Train and visualize simple neural networks in your browser</p>
-                  </div>
-                </td>
-                <td style="padding:20px;width:33%;vertical-align:top">
-                  <div style="text-align:center;">
-                    <a href="demos/compiler.html">
-                      <img src="images/compiler-demo.png" alt="Compiler" style="width:100%;max-width:200px;border-radius:5px;">
-                    </a>
-                    <p><strong>Compiler Explorer</strong></p>
-                    <p style="font-size:13px;">Explore compilation stages and optimizations</p>
+                    <p style="margin-top:10px;"><strong>Neural Network Playground</strong></p>
+                    <p style="font-size:13px;color:#666;">Train neural networks with real-time decision boundary visualization</p>
                   </div>
                 </td>
               </tr>
@@ -167,7 +177,7 @@
                     • <a href="https://github.com/Mac-Huang/GPT">GPT Implementation Guide</a> - Step-by-step implementation and explanation of GPT models<br>
                     <br>
                     <strong>Teaching Assistant Aspirations:</strong><br>
-                    Planning to TA for COMP SCI 252: Introduction of Computer Engineering (Future semesters)
+                    Planning to TA for COMP SCI 252: Introduction to Computer Engineering (Future semesters)
                   </p>
                 </td>
               </tr>

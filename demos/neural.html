@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" type="text/css" href="../stylesheet.css">
   <style>
-    /* Clean, academic styling for neural network demo */
+    /* Enhanced styling for neural network demo */
     .demo-container {
       display: flex;
       gap: 20px;
@@ -16,7 +16,7 @@
     
     .left-panel {
       flex: 1;
-      min-width: 300px;
+      min-width: 320px;
     }
     
     .right-panel {
@@ -26,16 +26,27 @@
     }
     
     canvas {
-      border: 1px solid #ddd;
+      border: 2px solid #ddd;
       background: white;
       display: block;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      cursor: crosshair;
     }
     
     .controls {
       background: #f9f9f9;
-      padding: 15px;
-      border-radius: 5px;
+      padding: 20px;
+      border-radius: 8px;
       margin-bottom: 15px;
+      border: 1px solid #e0e0e0;
+    }
+    
+    .controls h3 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      color: #333;
+      border-bottom: 2px solid #1772d0;
+      padding-bottom: 5px;
     }
     
     .control-group {
@@ -46,54 +57,92 @@
       display: block;
       margin-bottom: 5px;
       font-weight: 700;
+      color: #555;
     }
     
     .control-group input[type="range"] {
       width: 100%;
+      margin-bottom: 5px;
     }
     
     .control-group select {
       width: 100%;
-      padding: 5px;
+      padding: 8px;
       font-family: 'EB Garamond', Georgia, serif;
       font-size: 16px;
-      border: 1px solid #ddd;
-      border-radius: 3px;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      background: white;
+      cursor: pointer;
+    }
+    
+    .control-group select:hover {
+      border-color: #1772d0;
     }
     
     button {
-      padding: 8px 15px;
+      padding: 8px 16px;
       font-family: 'EB Garamond', Georgia, serif;
-      font-size: 16px;
+      font-size: 15px;
       background: white;
-      border: 1px solid #ddd;
-      border-radius: 3px;
+      color: #333;
+      border: 2px solid #ddd;
+      border-radius: 5px;
       cursor: pointer;
-      margin-right: 10px;
+      margin-right: 8px;
+      margin-bottom: 8px;
+      transition: all 0.3s ease;
     }
     
-    button:hover {
+    button:hover:not(:disabled) {
       border-color: #1772d0;
+      background: #1772d0;
+      color: white;
     }
     
     button.active {
       background: #1772d0;
       color: white;
       border-color: #1772d0;
+      font-weight: bold;
+    }
+    
+    button.danger {
+      border-color: #ff6b6b;
+      color: #ff6b6b;
+    }
+    
+    button.danger:hover:not(:disabled) {
+      background: #ff6b6b;
+      color: white;
+      border-color: #ff6b6b;
+    }
+    
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
     
     .stats {
-      background: #f9f9f9;
-      padding: 10px;
-      border-radius: 5px;
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
       font-family: 'Courier New', monospace;
       font-size: 14px;
+      border: 2px solid #e0e0e0;
+      border-left: 4px solid #1772d0;
+    }
+    
+    .stats-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
     }
     
     .legend {
       display: flex;
       justify-content: center;
-      gap: 20px;
+      gap: 30px;
       margin: 15px 0;
       font-size: 14px;
     }
@@ -101,24 +150,94 @@
     .legend-item {
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 8px;
     }
     
     .legend-color {
       width: 20px;
       height: 20px;
-      border: 1px solid #333;
+      border: 2px solid #333;
+      border-radius: 3px;
     }
     
     /* Network architecture display */
     .architecture {
       text-align: center;
-      padding: 10px;
-      background: #f9f9f9;
-      border-radius: 5px;
+      padding: 15px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 8px;
       margin-top: 15px;
       font-family: 'Courier New', monospace;
       font-size: 14px;
+    }
+    
+    .range-value {
+      display: inline-block;
+      padding: 2px 8px;
+      background: #1772d0;
+      color: white;
+      border-radius: 3px;
+      font-weight: bold;
+      min-width: 50px;
+      text-align: center;
+    }
+    
+    .status-indicator {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 5px;
+    }
+    
+    .status-indicator.training {
+      background: #51cf66;
+      animation: pulse 1s infinite;
+    }
+    
+    .status-indicator.paused {
+      background: #ffe066;
+    }
+    
+    .status-indicator.stopped {
+      background: #ff6b6b;
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+    
+    .preset-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 10px;
+    }
+    
+    .preset-buttons button {
+      padding: 5px 10px;
+      font-size: 14px;
+      margin: 0;
+      color: #333;
+      background: #e8f5e9;
+      border: 1px solid #4caf50;
+    }
+    
+    .preset-buttons button:hover:not(:disabled) {
+      background: #4caf50;
+      color: white;
+      border-color: #4caf50;
+    }
+    
+    .info-box {
+      background: #e3f2fd;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+      border-left: 4px solid #1772d0;
     }
   </style>
 </head>
@@ -137,120 +256,173 @@
             <a href="../projects.html">← Back to Projects</a>
           </p>
           
-          <p style="text-align:center; margin-bottom:30px;">
-            Train a simple neural network to classify 2D data points. Experiment with network architecture, 
-            activation functions, and learning rates while visualizing the decision boundary in real-time.
-          </p>
+          <div class="info-box">
+            <p style="margin:0;">
+              <strong>Interactive Neural Network Training</strong><br>
+              Train a neural network to classify 2D data points. Click on the canvas to add custom data points!
+              Watch as the network learns to separate different classes through backpropagation.
+            </p>
+          </div>
           
           <div class="demo-container">
             <div class="left-panel">
               <div class="controls">
-                <h3>Dataset</h3>
+                <h3>🎯 Dataset</h3>
                 <div class="control-group">
-                  <label>Pattern:</label>
+                  <label>Pattern Type:</label>
                   <select id="dataset">
-                    <option value="circle">Circle</option>
-                    <option value="xor">XOR</option>
-                    <option value="spiral">Spiral</option>
-                    <option value="gaussian">Gaussian</option>
-                    <option value="linear">Linear</option>
+                    <option value="circle">Circle (Easy)</option>
+                    <option value="xor">XOR (Medium)</option>
+                    <option value="spiral">Spiral (Hard)</option>
+                    <option value="gaussian">Gaussian Clusters</option>
+                    <option value="linear">Linear Separation</option>
+                    <option value="moons">Two Moons</option>
+                    <option value="custom">Custom (Click to Add)</option>
                   </select>
                 </div>
                 
                 <div class="control-group">
-                  <label>Noise: <span id="noise-value">10%</span></label>
+                  <label>Noise Level: <span class="range-value" id="noise-value">10%</span></label>
                   <input type="range" id="noise" min="0" max="50" value="10">
                 </div>
                 
-                <button id="regenerate-data">Regenerate Data</button>
+                <div class="control-group">
+                  <label>Training Points: <span class="range-value" id="points-value">200</span></label>
+                  <input type="range" id="num-points" min="50" max="500" step="50" value="200">
+                </div>
+                
+                <button id="regenerate-data">🔄 Regenerate Data</button>
+                <button id="clear-data">❌ Clear All</button>
+                
+                <div class="preset-buttons">
+                  <button onclick="loadPreset('simple')">Simple Demo</button>
+                  <button onclick="loadPreset('complex')">Complex Demo</button>
+                  <button onclick="loadPreset('overfit')">Overfit Demo</button>
+                </div>
               </div>
               
               <div class="controls">
-                <h3>Network Architecture</h3>
+                <h3>🧠 Network Architecture</h3>
                 <div class="control-group">
                   <label>Hidden Layers:</label>
                   <select id="layers">
-                    <option value="1">1 Layer</option>
-                    <option value="2" selected>2 Layers</option>
-                    <option value="3">3 Layers</option>
-                    <option value="4">4 Layers</option>
+                    <option value="0">No Hidden Layers</option>
+                    <option value="1">1 Hidden Layer</option>
+                    <option value="2" selected>2 Hidden Layers</option>
+                    <option value="3">3 Hidden Layers</option>
+                    <option value="4">4 Hidden Layers</option>
                   </select>
                 </div>
                 
                 <div class="control-group">
-                  <label>Neurons per Layer: <span id="neurons-value">4</span></label>
-                  <input type="range" id="neurons" min="1" max="8" value="4">
+                  <label>Neurons per Layer: <span class="range-value" id="neurons-value">4</span></label>
+                  <input type="range" id="neurons" min="1" max="16" value="4">
                 </div>
                 
                 <div class="control-group">
                   <label>Activation Function:</label>
                   <select id="activation">
-                    <option value="relu">ReLU</option>
+                    <option value="relu" selected>ReLU</option>
                     <option value="tanh">Tanh</option>
                     <option value="sigmoid">Sigmoid</option>
-                    <option value="linear">Linear</option>
+                    <option value="leaky-relu">Leaky ReLU</option>
+                  </select>
+                </div>
+                
+                <div class="control-group">
+                  <label>Output Activation:</label>
+                  <select id="output-activation">
+                    <option value="softmax" selected>Softmax</option>
+                    <option value="sigmoid">Sigmoid</option>
                   </select>
                 </div>
               </div>
               
               <div class="controls">
-                <h3>Training</h3>
+                <h3>⚙️ Training Settings</h3>
                 <div class="control-group">
-                  <label>Learning Rate: <span id="lr-value">0.03</span></label>
-                  <input type="range" id="learning-rate" min="0.001" max="0.1" step="0.001" value="0.03">
+                  <label>Learning Rate: <span class="range-value" id="lr-value">0.03</span></label>
+                  <input type="range" id="learning-rate" min="0.001" max="0.5" step="0.001" value="0.03">
                 </div>
                 
                 <div class="control-group">
-                  <label>Batch Size: <span id="batch-value">10</span></label>
+                  <label>Batch Size: <span class="range-value" id="batch-value">10</span></label>
                   <input type="range" id="batch-size" min="1" max="50" value="10">
                 </div>
                 
-                <button id="train" class="active">Start Training</button>
-                <button id="pause">Pause</button>
-                <button id="reset">Reset Network</button>
+                <div class="control-group">
+                  <label>Regularization: <span class="range-value" id="reg-value">0.00</span></label>
+                  <input type="range" id="regularization" min="0" max="0.1" step="0.001" value="0">
+                </div>
+                
+                <button id="train" class="active">▶️ Start Training</button>
+                <button id="pause" disabled>⏸️ Pause</button>
+                <button id="step">⏭️ Single Step</button>
+                <button id="reset" class="danger">🔄 Reset Network</button>
               </div>
               
               <div class="stats">
-                <strong>Training Stats</strong><br>
-                Epoch: <span id="epoch">0</span><br>
-                Loss: <span id="loss">0.000</span><br>
-                Accuracy: <span id="accuracy">0.0%</span><br>
-                Training Time: <span id="time">0s</span>
+                <strong>📊 Training Statistics</strong>
+                <div style="margin-top:10px;">
+                  <div class="stats-row">
+                    <span>Status:</span>
+                    <span><span id="status-indicator" class="status-indicator stopped"></span><span id="status">Ready</span></span>
+                  </div>
+                  <div class="stats-row">
+                    <span>Epoch:</span>
+                    <span id="epoch">0</span>
+                  </div>
+                  <div class="stats-row">
+                    <span>Loss:</span>
+                    <span id="loss">0.000</span>
+                  </div>
+                  <div class="stats-row">
+                    <span>Accuracy:</span>
+                    <span id="accuracy">0.0%</span>
+                  </div>
+                  <div class="stats-row">
+                    <span>Time:</span>
+                    <span id="time">0.0s</span>
+                  </div>
+                </div>
               </div>
               
               <div class="architecture">
-                <strong>Architecture</strong><br>
-                <span id="architecture-text">Input (2) → Hidden (4) → Hidden (4) → Output (2)</span>
+                <strong>Network Structure</strong><br>
+                <span id="architecture-text">Input (2) → [4] → [4] → Output (2)</span>
               </div>
             </div>
             
             <div class="right-panel">
               <div>
-                <h3 style="text-align:center;">Input Data</h3>
+                <h3 style="text-align:center;">📍 Input Data</h3>
                 <canvas id="data-canvas" width="350" height="350"></canvas>
                 <div class="legend">
                   <div class="legend-item">
                     <div class="legend-color" style="background:#ff6b6b;"></div>
-                    <span>Class A</span>
+                    <span>Class A (Red)</span>
                   </div>
                   <div class="legend-item">
                     <div class="legend-color" style="background:#4dabf7;"></div>
-                    <span>Class B</span>
+                    <span>Class B (Blue)</span>
                   </div>
                 </div>
+                <p style="text-align:center; font-size:12px; color:#666;">
+                  Click to add points (Shift+Click for blue)
+                </p>
               </div>
               
               <div>
-                <h3 style="text-align:center;">Decision Boundary</h3>
+                <h3 style="text-align:center;">🎨 Decision Boundary</h3>
                 <canvas id="decision-canvas" width="350" height="350"></canvas>
                 <div class="legend">
                   <div class="legend-item">
-                    <div class="legend-color" style="background:#ffe0e0;"></div>
-                    <span>Region A</span>
+                    <div class="legend-color" style="background:rgba(255,107,107,0.3);"></div>
+                    <span>Predicts A</span>
                   </div>
                   <div class="legend-item">
-                    <div class="legend-color" style="background:#e0e0ff;"></div>
-                    <span>Region B</span>
+                    <div class="legend-color" style="background:rgba(77,171,247,0.3);"></div>
+                    <span>Predicts B</span>
                   </div>
                 </div>
               </div>
@@ -258,25 +430,39 @@
           </div>
           
           <div style="margin-top:30px;">
-            <canvas id="loss-chart" width="1160" height="150"></canvas>
-            <p style="text-align:center; font-size:14px; color:#666;">Training Loss Over Time</p>
+            <canvas id="loss-chart" width="1160" height="200"></canvas>
+            <p style="text-align:center; font-size:14px; color:#666;">
+              📈 Training Progress (Loss: <span style="color:#ff6b6b;">―</span> | Accuracy: <span style="color:#51cf66;">―</span>)
+            </p>
           </div>
           
           <div style="margin-top:30px;">
-            <heading>About This Demo</heading>
+            <heading>📚 About This Demo</heading>
             <p>
-              This interactive demonstration shows how a simple feedforward neural network learns to classify 
-              2D data points. The network uses backpropagation to adjust its weights and biases, gradually 
-              learning to separate the two classes.
+              This interactive demonstration shows how a feedforward neural network learns to classify 
+              2D data points through backpropagation. The network adjusts millions of parameters (weights and biases) 
+              to find the optimal decision boundary that separates different classes.
             </p>
             
-            <heading>Key Concepts</heading>
+            <heading>🔑 Key Concepts</heading>
             <ul>
-              <li><strong>Decision Boundary:</strong> The line or curve that separates different classes</li>
-              <li><strong>Activation Functions:</strong> Non-linear functions that allow networks to learn complex patterns</li>
-              <li><strong>Learning Rate:</strong> Controls how much weights are adjusted during training</li>
-              <li><strong>Loss Function:</strong> Measures how wrong the network's predictions are</li>
-              <li><strong>Backpropagation:</strong> Algorithm for computing gradients and updating weights</li>
+              <li><strong>Decision Boundary:</strong> The line or curve that the network learns to separate different classes</li>
+              <li><strong>Activation Functions:</strong> Non-linear functions (ReLU, Tanh, Sigmoid) that allow networks to learn complex patterns</li>
+              <li><strong>Learning Rate:</strong> Controls how much weights are adjusted during each training step</li>
+              <li><strong>Loss Function:</strong> Cross-entropy loss measures how wrong the network's predictions are</li>
+              <li><strong>Backpropagation:</strong> Algorithm that computes gradients and updates weights to minimize loss</li>
+              <li><strong>Overfitting:</strong> When the network memorizes training data instead of learning general patterns</li>
+              <li><strong>Regularization:</strong> Technique to prevent overfitting by penalizing large weights</li>
+            </ul>
+            
+            <heading>💡 Tips for Best Results</heading>
+            <ul>
+              <li>Start with simple datasets (Circle, Linear) before trying complex ones (Spiral, XOR)</li>
+              <li>More hidden layers and neurons can learn complex patterns but may overfit</li>
+              <li>Higher learning rates train faster but may overshoot the optimal solution</li>
+              <li>Add regularization if the network is overfitting (high training accuracy, poor generalization)</li>
+              <li>Try different activation functions - ReLU works well for most cases</li>
+              <li>Click on the canvas to add your own training points and see how the network adapts!</li>
             </ul>
           </div>
           
@@ -286,69 +472,163 @@
   </table>
   
   <script>
-    // Simple neural network implementation
+    // Enhanced Neural Network implementation with proper training
     class NeuralNetwork {
-      constructor(layers, activation = 'relu') {
+      constructor(layers, activation = 'relu', outputActivation = 'softmax') {
         this.layers = layers;
         this.activation = activation;
+        this.outputActivation = outputActivation;
         this.weights = [];
         this.biases = [];
         
-        // Initialize weights and biases
+        // Xavier initialization for weights
         for (let i = 0; i < layers.length - 1; i++) {
-          this.weights.push(this.randomMatrix(layers[i + 1], layers[i]));
-          this.biases.push(this.randomMatrix(layers[i + 1], 1));
+          const scale = Math.sqrt(2.0 / layers[i]);
+          this.weights.push(this.randomMatrix(layers[i + 1], layers[i], scale));
+          this.biases.push(this.zeros(layers[i + 1], 1));
         }
       }
       
-      randomMatrix(rows, cols) {
+      randomMatrix(rows, cols, scale = 1) {
         const matrix = [];
         for (let i = 0; i < rows; i++) {
           matrix[i] = [];
           for (let j = 0; j < cols; j++) {
-            matrix[i][j] = (Math.random() - 0.5) * 2;
+            matrix[i][j] = (Math.random() - 0.5) * 2 * scale;
           }
         }
         return matrix;
       }
       
-      activationFunction(x) {
+      zeros(rows, cols) {
+        const matrix = [];
+        for (let i = 0; i < rows; i++) {
+          matrix[i] = [];
+          for (let j = 0; j < cols; j++) {
+            matrix[i][j] = 0;
+          }
+        }
+        return matrix;
+      }
+      
+      activationFunction(x, derivative = false) {
         switch(this.activation) {
           case 'sigmoid':
+            if (derivative) {
+              const s = 1 / (1 + Math.exp(-x));
+              return s * (1 - s);
+            }
             return 1 / (1 + Math.exp(-x));
           case 'tanh':
+            if (derivative) {
+              const t = Math.tanh(x);
+              return 1 - t * t;
+            }
             return Math.tanh(x);
           case 'relu':
+            if (derivative) return x > 0 ? 1 : 0;
             return Math.max(0, x);
-          case 'linear':
-            return x;
+          case 'leaky-relu':
+            if (derivative) return x > 0 ? 1 : 0.01;
+            return x > 0 ? x : 0.01 * x;
           default:
             return x;
         }
       }
       
+      softmax(matrix) {
+        const maxVal = Math.max(...matrix.map(row => row[0]));
+        const exp = matrix.map(row => [Math.exp(row[0] - maxVal)]);
+        const sum = exp.reduce((acc, row) => acc + row[0], 0);
+        return exp.map(row => [row[0] / sum]);
+      }
+      
       forward(input) {
         let activation = input;
         this.activations = [activation];
+        this.zValues = [];
         
         for (let i = 0; i < this.weights.length; i++) {
           const z = this.matrixAdd(
             this.matrixMultiply(this.weights[i], activation),
             this.biases[i]
           );
-          activation = this.matrixMap(z, x => this.activationFunction(x));
+          this.zValues.push(z);
+          
+          // Apply activation function
+          if (i === this.weights.length - 1 && this.outputActivation === 'softmax') {
+            activation = this.softmax(z);
+          } else {
+            activation = this.matrixMap(z, x => this.activationFunction(x));
+          }
           this.activations.push(activation);
         }
         
         return activation;
       }
       
+      backward(input, target, learningRate, regularization = 0) {
+        const output = this.forward(input);
+        const m = 1; // Single sample
+        
+        // Calculate output layer error
+        let delta = this.matrixSubtract(output, target);
+        
+        // Backpropagate through layers
+        for (let i = this.weights.length - 1; i >= 0; i--) {
+          // Calculate gradients
+          const weightGrad = this.matrixMultiply(delta, this.transpose(this.activations[i]));
+          const biasGrad = delta;
+          
+          // Add regularization
+          if (regularization > 0) {
+            const regTerm = this.matrixScale(this.weights[i], regularization);
+            this.weights[i] = this.matrixSubtract(
+              this.weights[i],
+              this.matrixScale(this.matrixAdd(weightGrad, regTerm), learningRate / m)
+            );
+          } else {
+            this.weights[i] = this.matrixSubtract(
+              this.weights[i],
+              this.matrixScale(weightGrad, learningRate / m)
+            );
+          }
+          
+          this.biases[i] = this.matrixSubtract(
+            this.biases[i],
+            this.matrixScale(biasGrad, learningRate / m)
+          );
+          
+          // Calculate error for previous layer
+          if (i > 0) {
+            const weightT = this.transpose(this.weights[i]);
+            const prevDelta = this.matrixMultiply(weightT, delta);
+            const activationDerivative = this.matrixMap(
+              this.zValues[i - 1],
+              x => this.activationFunction(x, true)
+            );
+            delta = this.matrixElementMultiply(prevDelta, activationDerivative);
+          }
+        }
+        
+        // Calculate loss (cross-entropy)
+        let loss = 0;
+        for (let i = 0; i < output.length; i++) {
+          loss -= target[i][0] * Math.log(output[i][0] + 1e-10);
+        }
+        return loss;
+      }
+      
       matrixMultiply(a, b) {
         const result = [];
         for (let i = 0; i < a.length; i++) {
-          result[i] = [0];
-          for (let j = 0; j < a[0].length; j++) {
-            result[i][0] += a[i][j] * b[j][0];
+          result[i] = [];
+          for (let j = 0; j < b[0].length; j++) {
+            let sum = 0;
+            for (let k = 0; k < a[0].length; k++) {
+              sum += a[i][k] * b[k][j];
+            }
+            result[i][j] = sum;
           }
         }
         return result;
@@ -358,8 +638,31 @@
         return a.map((row, i) => row.map((val, j) => val + b[i][j]));
       }
       
+      matrixSubtract(a, b) {
+        return a.map((row, i) => row.map((val, j) => val - b[i][j]));
+      }
+      
+      matrixScale(matrix, scalar) {
+        return matrix.map(row => row.map(val => val * scalar));
+      }
+      
+      matrixElementMultiply(a, b) {
+        return a.map((row, i) => row.map((val, j) => val * b[i][j]));
+      }
+      
       matrixMap(matrix, fn) {
         return matrix.map(row => row.map(fn));
+      }
+      
+      transpose(matrix) {
+        const result = [];
+        for (let j = 0; j < matrix[0].length; j++) {
+          result[j] = [];
+          for (let i = 0; i < matrix.length; i++) {
+            result[j][i] = matrix[i][j];
+          }
+        }
+        return result;
       }
       
       predict(x, y) {
@@ -367,11 +670,18 @@
         const output = this.forward(input);
         return output[0][0] > output[1][0] ? 0 : 1;
       }
+      
+      getProbability(x, y) {
+        const input = [[x], [y]];
+        const output = this.forward(input);
+        return output[1][0]; // Probability of class 1
+      }
     }
     
-    // Data generation
+    // Data generation functions
     function generateData(type, noise, numPoints = 200) {
       const data = [];
+      const noiseLevel = noise / 100;
       
       for (let i = 0; i < numPoints; i++) {
         let x, y, label;
@@ -379,9 +689,9 @@
         switch(type) {
           case 'circle':
             const angle = Math.random() * Math.PI * 2;
-            const r = i < numPoints / 2 ? Math.random() * 0.4 : 0.5 + Math.random() * 0.4;
-            x = Math.cos(angle) * r;
-            y = Math.sin(angle) * r;
+            const r = i < numPoints / 2 ? Math.random() * 0.3 : 0.4 + Math.random() * 0.3;
+            x = Math.cos(angle) * r + (Math.random() - 0.5) * noiseLevel;
+            y = Math.sin(angle) * r + (Math.random() - 0.5) * noiseLevel;
             label = i < numPoints / 2 ? 0 : 1;
             break;
             
@@ -389,44 +699,68 @@
             x = Math.random() * 2 - 1;
             y = Math.random() * 2 - 1;
             label = (x * y > 0) ? 0 : 1;
+            if (Math.random() < noiseLevel) label = 1 - label;
             break;
             
           case 'spiral':
-            const t = (i / numPoints) * 4 * Math.PI;
-            const r2 = t / (4 * Math.PI);
-            if (i < numPoints / 2) {
-              x = Math.cos(t) * r2;
-              y = Math.sin(t) * r2;
+            const n = numPoints / 2;
+            if (i < n) {
+              const t = (i / n) * 3 * Math.PI;
+              x = Math.cos(t) * t / 10 + (Math.random() - 0.5) * noiseLevel;
+              y = Math.sin(t) * t / 10 + (Math.random() - 0.5) * noiseLevel;
               label = 0;
             } else {
-              x = Math.cos(t + Math.PI) * r2;
-              y = Math.sin(t + Math.PI) * r2;
+              const t = ((i - n) / n) * 3 * Math.PI;
+              x = -Math.cos(t) * t / 10 + (Math.random() - 0.5) * noiseLevel;
+              y = -Math.sin(t) * t / 10 + (Math.random() - 0.5) * noiseLevel;
               label = 1;
             }
             break;
             
           case 'gaussian':
             if (i < numPoints / 2) {
-              x = (Math.random() - 0.5) * 0.6 - 0.3;
-              y = (Math.random() - 0.5) * 0.6 + 0.3;
+              x = -0.3 + (Math.random() - 0.5) * 0.5;
+              y = -0.3 + (Math.random() - 0.5) * 0.5;
               label = 0;
             } else {
-              x = (Math.random() - 0.5) * 0.6 + 0.3;
-              y = (Math.random() - 0.5) * 0.6 - 0.3;
+              x = 0.3 + (Math.random() - 0.5) * 0.5;
+              y = 0.3 + (Math.random() - 0.5) * 0.5;
               label = 1;
             }
+            x += (Math.random() - 0.5) * noiseLevel;
+            y += (Math.random() - 0.5) * noiseLevel;
             break;
             
           case 'linear':
             x = Math.random() * 2 - 1;
             y = Math.random() * 2 - 1;
-            label = (y > x * 0.5 + 0.1) ? 0 : 1;
+            label = (x > y) ? 0 : 1;
+            if (Math.random() < noiseLevel) label = 1 - label;
             break;
-        }
-        
-        // Add noise
-        if (Math.random() < noise / 100) {
-          label = 1 - label;
+            
+          case 'moons':
+            if (i < numPoints / 2) {
+              const angle2 = Math.random() * Math.PI;
+              x = Math.cos(angle2) * 0.5;
+              y = Math.sin(angle2) * 0.5;
+              label = 0;
+            } else {
+              const angle2 = Math.random() * Math.PI;
+              x = 1 - Math.cos(angle2) * 0.5;
+              y = 0.5 - Math.sin(angle2) * 0.5;
+              label = 1;
+            }
+            x += (Math.random() - 0.5) * noiseLevel;
+            y += (Math.random() - 0.5) * noiseLevel;
+            break;
+            
+          case 'custom':
+            continue; // Skip for custom mode
+            
+          default:
+            x = Math.random() * 2 - 1;
+            y = Math.random() * 2 - 1;
+            label = 0;
         }
         
         data.push({ x, y, label });
@@ -435,241 +769,438 @@
       return data;
     }
     
-    // Canvas setup
-    const dataCanvas = document.getElementById('data-canvas');
-    const dataCtx = dataCanvas.getContext('2d');
-    const decisionCanvas = document.getElementById('decision-canvas');
-    const decisionCtx = decisionCanvas.getContext('2d');
-    const lossCanvas = document.getElementById('loss-chart');
-    const lossCtx = lossCanvas.getContext('2d');
-    
-    let data = [];
-    let network = null;
-    let training = false;
-    let epoch = 0;
-    let lossHistory = [];
-    let startTime = Date.now();
-    
-    // Drawing functions
-    function drawData() {
-      dataCtx.clearRect(0, 0, dataCanvas.width, dataCanvas.height);
+    // Visualization functions
+    function drawData(canvas, data, network = null) {
+      const ctx = canvas.getContext('2d');
+      const width = canvas.width;
+      const height = canvas.height;
       
-      data.forEach(point => {
-        const x = (point.x + 1) * dataCanvas.width / 2;
-        const y = (1 - point.y) * dataCanvas.height / 2;
+      ctx.clearRect(0, 0, width, height);
+      
+      // Draw decision boundary if network is provided
+      if (network) {
+        const resolution = 50;
+        const imageData = ctx.createImageData(width, height);
         
-        dataCtx.fillStyle = point.label === 0 ? '#ff6b6b' : '#4dabf7';
-        dataCtx.beginPath();
-        dataCtx.arc(x, y, 4, 0, Math.PI * 2);
-        dataCtx.fill();
-      });
-    }
-    
-    function drawDecisionBoundary() {
-      if (!network) return;
-      
-      const resolution = 50;
-      const imageData = decisionCtx.createImageData(decisionCanvas.width, decisionCanvas.height);
-      
-      for (let i = 0; i < resolution; i++) {
-        for (let j = 0; j < resolution; j++) {
-          const x = (i / resolution) * 2 - 1;
-          const y = (j / resolution) * 2 - 1;
-          
-          const prediction = network.predict(x, y);
-          const color = prediction === 0 ? [255, 224, 224] : [224, 224, 255];
-          
-          const pixelX = Math.floor(i * decisionCanvas.width / resolution);
-          const pixelY = Math.floor(j * decisionCanvas.height / resolution);
-          const pixelW = Math.ceil(decisionCanvas.width / resolution);
-          const pixelH = Math.ceil(decisionCanvas.height / resolution);
-          
-          for (let px = pixelX; px < pixelX + pixelW && px < decisionCanvas.width; px++) {
-            for (let py = pixelY; py < pixelY + pixelH && py < decisionCanvas.height; py++) {
-              const idx = (py * decisionCanvas.width + px) * 4;
-              imageData.data[idx] = color[0];
-              imageData.data[idx + 1] = color[1];
-              imageData.data[idx + 2] = color[2];
-              imageData.data[idx + 3] = 255;
+        for (let x = 0; x < width; x += resolution / 10) {
+          for (let y = 0; y < height; y += resolution / 10) {
+            const netX = (x / width) * 2 - 1;
+            const netY = (y / height) * 2 - 1;
+            const prob = network.getProbability(netX, netY);
+            
+            for (let dx = 0; dx < resolution / 10; dx++) {
+              for (let dy = 0; dy < resolution / 10; dy++) {
+                const px = x + dx;
+                const py = y + dy;
+                if (px < width && py < height) {
+                  const idx = (py * width + px) * 4;
+                  if (prob > 0.5) {
+                    // Blue region
+                    imageData.data[idx] = 77;
+                    imageData.data[idx + 1] = 171;
+                    imageData.data[idx + 2] = 247;
+                    imageData.data[idx + 3] = 80;
+                  } else {
+                    // Red region
+                    imageData.data[idx] = 255;
+                    imageData.data[idx + 1] = 107;
+                    imageData.data[idx + 2] = 107;
+                    imageData.data[idx + 3] = 80;
+                  }
+                }
+              }
             }
           }
         }
+        ctx.putImageData(imageData, 0, 0);
       }
       
-      decisionCtx.putImageData(imageData, 0, 0);
-      
-      // Draw data points on top
-      data.forEach(point => {
-        const x = (point.x + 1) * decisionCanvas.width / 2;
-        const y = (1 - point.y) * decisionCanvas.height / 2;
-        
-        decisionCtx.fillStyle = point.label === 0 ? '#ff6b6b' : '#4dabf7';
-        decisionCtx.beginPath();
-        decisionCtx.arc(x, y, 3, 0, Math.PI * 2);
-        decisionCtx.fill();
-      });
-    }
-    
-    function drawLossChart() {
-      lossCtx.clearRect(0, 0, lossCanvas.width, lossCanvas.height);
-      
-      if (lossHistory.length < 2) return;
+      // Draw grid
+      ctx.strokeStyle = '#e0e0e0';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 10; i++) {
+        const x = (width / 10) * i;
+        const y = (height / 10) * i;
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+      }
       
       // Draw axes
-      lossCtx.strokeStyle = '#ddd';
-      lossCtx.beginPath();
-      lossCtx.moveTo(30, 10);
-      lossCtx.lineTo(30, 130);
-      lossCtx.lineTo(1150, 130);
-      lossCtx.stroke();
+      ctx.strokeStyle = '#999';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(width / 2, 0);
+      ctx.lineTo(width / 2, height);
+      ctx.moveTo(0, height / 2);
+      ctx.lineTo(width, height / 2);
+      ctx.stroke();
       
-      // Draw loss curve
-      const maxLoss = Math.max(...lossHistory);
-      lossCtx.strokeStyle = '#1772d0';
-      lossCtx.lineWidth = 2;
-      lossCtx.beginPath();
-      
-      lossHistory.forEach((loss, i) => {
-        const x = 30 + (i / lossHistory.length) * 1120;
-        const y = 130 - (loss / maxLoss) * 110;
+      // Draw data points
+      data.forEach(point => {
+        const x = (point.x + 1) * width / 2;
+        const y = (point.y + 1) * height / 2;
         
-        if (i === 0) {
-          lossCtx.moveTo(x, y);
-        } else {
-          lossCtx.lineTo(x, y);
-        }
+        ctx.beginPath();
+        ctx.arc(x, y, 5, 0, Math.PI * 2);
+        ctx.fillStyle = point.label === 0 ? '#ff6b6b' : '#4dabf7';
+        ctx.fill();
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = 1;
+        ctx.stroke();
       });
-      
-      lossCtx.stroke();
     }
     
-    // Training function
-    async function train() {
-      if (!network || !training) return;
+    function drawLossChart(canvas, lossHistory, accuracyHistory) {
+      const ctx = canvas.getContext('2d');
+      const width = canvas.width;
+      const height = canvas.height;
       
+      ctx.clearRect(0, 0, width, height);
+      
+      // Background
+      ctx.fillStyle = '#f9f9f9';
+      ctx.fillRect(0, 0, width, height);
+      
+      // Draw grid
+      ctx.strokeStyle = '#e0e0e0';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 10; i++) {
+        const y = (height / 10) * i;
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+      }
+      
+      if (lossHistory.length > 1) {
+        const maxLoss = Math.max(...lossHistory, 1);
+        const scaleX = width / Math.max(lossHistory.length - 1, 1);
+        
+        // Draw loss line
+        ctx.strokeStyle = '#ff6b6b';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (let i = 0; i < lossHistory.length; i++) {
+          const x = i * scaleX;
+          const y = height - (lossHistory[i] / maxLoss) * height * 0.9 - height * 0.05;
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+        
+        // Draw accuracy line
+        if (accuracyHistory.length > 0) {
+          ctx.strokeStyle = '#51cf66';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          for (let i = 0; i < accuracyHistory.length; i++) {
+            const x = i * scaleX;
+            const y = height - (accuracyHistory[i] / 100) * height * 0.9 - height * 0.05;
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+        }
+      }
+    }
+    
+    // Global variables
+    let data = [];
+    let network = null;
+    let isTraining = false;
+    let isPaused = false;
+    let epoch = 0;
+    let lossHistory = [];
+    let accuracyHistory = [];
+    let startTime = null;
+    
+    // Initialize
+    function init() {
+      // Generate initial data
+      const dataset = document.getElementById('dataset').value;
+      const noise = parseInt(document.getElementById('noise').value);
+      const numPoints = parseInt(document.getElementById('num-points').value);
+      data = generateData(dataset, noise, numPoints);
+      
+      // Create network
+      const numLayers = parseInt(document.getElementById('layers').value);
+      const neuronsPerLayer = parseInt(document.getElementById('neurons').value);
+      const activation = document.getElementById('activation').value;
+      const outputActivation = document.getElementById('output-activation').value;
+      
+      const layers = [2]; // Input layer
+      for (let i = 0; i < numLayers; i++) {
+        layers.push(neuronsPerLayer);
+      }
+      layers.push(2); // Output layer
+      
+      network = new NeuralNetwork(layers, activation, outputActivation);
+      
+      // Update architecture display
+      updateArchitectureDisplay();
+      
+      // Draw initial state
+      const dataCanvas = document.getElementById('data-canvas');
+      const decisionCanvas = document.getElementById('decision-canvas');
+      drawData(dataCanvas, data);
+      drawData(decisionCanvas, data, network);
+      
+      // Reset stats
+      epoch = 0;
+      lossHistory = [];
+      accuracyHistory = [];
+      updateStats();
+    }
+    
+    function updateArchitectureDisplay() {
+      const numLayers = parseInt(document.getElementById('layers').value);
+      const neuronsPerLayer = parseInt(document.getElementById('neurons').value);
+      
+      let text = 'Input (2)';
+      for (let i = 0; i < numLayers; i++) {
+        text += ` → [${neuronsPerLayer}]`;
+      }
+      text += ' → Output (2)';
+      
+      document.getElementById('architecture-text').textContent = text;
+    }
+    
+    function updateStats() {
+      document.getElementById('epoch').textContent = epoch;
+      document.getElementById('loss').textContent = lossHistory.length > 0 ? 
+        lossHistory[lossHistory.length - 1].toFixed(4) : '0.0000';
+      document.getElementById('accuracy').textContent = accuracyHistory.length > 0 ?
+        accuracyHistory[accuracyHistory.length - 1].toFixed(1) + '%' : '0.0%';
+      
+      if (startTime) {
+        const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+        document.getElementById('time').textContent = elapsed + 's';
+      }
+    }
+    
+    async function trainStep() {
       const learningRate = parseFloat(document.getElementById('learning-rate').value);
       const batchSize = parseInt(document.getElementById('batch-size').value);
+      const regularization = parseFloat(document.getElementById('regularization').value);
       
-      // Simple training step (simplified for demo)
       let totalLoss = 0;
       let correct = 0;
       
-      for (let i = 0; i < batchSize && i < data.length; i++) {
-        const point = data[Math.floor(Math.random() * data.length)];
-        const input = [[point.x], [point.y]];
-        const output = network.forward(input);
+      // Shuffle data
+      const shuffled = [...data].sort(() => Math.random() - 0.5);
+      
+      // Train on batches
+      for (let i = 0; i < shuffled.length; i += batchSize) {
+        const batch = shuffled.slice(i, Math.min(i + batchSize, shuffled.length));
         
-        const predicted = output[0][0] > output[1][0] ? 0 : 1;
-        if (predicted === point.label) correct++;
-        
-        const target = point.label === 0 ? [[1], [0]] : [[0], [1]];
-        const loss = Math.pow(output[0][0] - target[0][0], 2) + Math.pow(output[1][0] - target[1][0], 2);
-        totalLoss += loss;
-        
-        // Simple weight update (gradient descent approximation for demo)
-        for (let j = 0; j < network.weights.length; j++) {
-          for (let k = 0; k < network.weights[j].length; k++) {
-            for (let l = 0; l < network.weights[j][k].length; l++) {
-              network.weights[j][k][l] += (Math.random() - 0.5) * learningRate;
-            }
-          }
+        for (const point of batch) {
+          const input = [[point.x], [point.y]];
+          const target = point.label === 0 ? [[1], [0]] : [[0], [1]];
+          
+          const loss = network.backward(input, target, learningRate, regularization);
+          totalLoss += loss;
+          
+          const prediction = network.predict(point.x, point.y);
+          if (prediction === point.label) correct++;
         }
       }
       
-      const avgLoss = totalLoss / batchSize;
-      const accuracy = (correct / batchSize) * 100;
+      const avgLoss = totalLoss / data.length;
+      const accuracy = (correct / data.length) * 100;
       
       lossHistory.push(avgLoss);
-      if (lossHistory.length > 500) lossHistory.shift();
-      
+      accuracyHistory.push(accuracy);
       epoch++;
       
-      // Update UI
-      document.getElementById('epoch').textContent = epoch;
-      document.getElementById('loss').textContent = avgLoss.toFixed(3);
-      document.getElementById('accuracy').textContent = accuracy.toFixed(1) + '%';
-      document.getElementById('time').textContent = Math.floor((Date.now() - startTime) / 1000) + 's';
-      
-      drawDecisionBoundary();
-      drawLossChart();
-      
-      if (training) {
-        requestAnimationFrame(() => train());
+      return { loss: avgLoss, accuracy };
+    }
+    
+    async function train() {
+      if (!isTraining) {
+        isTraining = true;
+        isPaused = false;
+        startTime = Date.now();
+        
+        document.getElementById('train').textContent = '⏹️ Stop';
+        document.getElementById('train').classList.remove('active');
+        document.getElementById('pause').disabled = false;
+        document.getElementById('status').textContent = 'Training';
+        document.getElementById('status-indicator').className = 'status-indicator training';
+        
+        while (isTraining) {
+          if (!isPaused) {
+            const { loss, accuracy } = await trainStep();
+            
+            // Update visualizations
+            const decisionCanvas = document.getElementById('decision-canvas');
+            drawData(decisionCanvas, data, network);
+            
+            const lossCanvas = document.getElementById('loss-chart');
+            drawLossChart(lossCanvas, lossHistory, accuracyHistory);
+            
+            updateStats();
+          }
+          
+          // Small delay for smooth animation
+          await new Promise(resolve => setTimeout(resolve, 10));
+        }
+      } else {
+        stopTraining();
       }
     }
     
-    // Event handlers
-    document.getElementById('regenerate-data').addEventListener('click', () => {
-      const type = document.getElementById('dataset').value;
-      const noise = parseInt(document.getElementById('noise').value);
-      data = generateData(type, noise);
-      drawData();
-      drawDecisionBoundary();
-    });
+    function stopTraining() {
+      isTraining = false;
+      isPaused = false;
+      document.getElementById('train').textContent = '▶️ Start Training';
+      document.getElementById('train').classList.add('active');
+      document.getElementById('pause').textContent = '⏸️ Pause';
+      document.getElementById('pause').disabled = true;
+      document.getElementById('status').textContent = 'Stopped';
+      document.getElementById('status-indicator').className = 'status-indicator stopped';
+    }
     
-    document.getElementById('train').addEventListener('click', () => {
-      training = true;
-      startTime = Date.now();
-      train();
-    });
-    
-    document.getElementById('pause').addEventListener('click', () => {
-      training = false;
-    });
-    
-    document.getElementById('reset').addEventListener('click', () => {
-      training = false;
-      epoch = 0;
-      lossHistory = [];
-      
-      const layers = parseInt(document.getElementById('layers').value);
-      const neurons = parseInt(document.getElementById('neurons').value);
-      const activation = document.getElementById('activation').value;
-      
-      const architecture = [2];
-      for (let i = 0; i < layers; i++) {
-        architecture.push(neurons);
+    window.loadPreset = function(type) {
+      switch(type) {
+        case 'simple':
+          document.getElementById('dataset').value = 'circle';
+          document.getElementById('layers').value = '1';
+          document.getElementById('neurons').value = '4';
+          document.getElementById('activation').value = 'relu';
+          document.getElementById('learning-rate').value = '0.1';
+          document.getElementById('noise').value = '5';
+          break;
+        case 'complex':
+          document.getElementById('dataset').value = 'spiral';
+          document.getElementById('layers').value = '3';
+          document.getElementById('neurons').value = '8';
+          document.getElementById('activation').value = 'tanh';
+          document.getElementById('learning-rate').value = '0.03';
+          document.getElementById('noise').value = '10';
+          break;
+        case 'overfit':
+          document.getElementById('dataset').value = 'xor';
+          document.getElementById('layers').value = '4';
+          document.getElementById('neurons').value = '16';
+          document.getElementById('activation').value = 'relu';
+          document.getElementById('learning-rate').value = '0.1';
+          document.getElementById('regularization').value = '0';
+          document.getElementById('noise').value = '20';
+          break;
       }
-      architecture.push(2);
       
-      network = new NeuralNetwork(architecture, activation);
+      // Update displays
+      document.getElementById('neurons-value').textContent = document.getElementById('neurons').value;
+      document.getElementById('lr-value').textContent = document.getElementById('learning-rate').value;
+      document.getElementById('noise-value').textContent = document.getElementById('noise').value + '%';
+      document.getElementById('reg-value').textContent = document.getElementById('regularization').value;
       
-      document.getElementById('architecture-text').textContent = 
-        'Input (2) → ' + 
-        Array(layers).fill(`Hidden (${neurons})`).join(' → ') + 
-        ' → Output (2)';
-      
-      document.getElementById('epoch').textContent = '0';
-      document.getElementById('loss').textContent = '0.000';
-      document.getElementById('accuracy').textContent = '0.0%';
-      document.getElementById('time').textContent = '0s';
-      
-      drawDecisionBoundary();
-      lossCtx.clearRect(0, 0, lossCanvas.width, lossCanvas.height);
-    });
+      init();
+    }
     
-    // Update displays
+    // Event listeners
+    document.getElementById('dataset').addEventListener('change', init);
+    document.getElementById('layers').addEventListener('change', () => {
+      updateArchitectureDisplay();
+      init();
+    });
+    document.getElementById('neurons').addEventListener('input', (e) => {
+      document.getElementById('neurons-value').textContent = e.target.value;
+      updateArchitectureDisplay();
+      init();
+    });
+    document.getElementById('activation').addEventListener('change', init);
+    document.getElementById('output-activation').addEventListener('change', init);
+    
     document.getElementById('noise').addEventListener('input', (e) => {
       document.getElementById('noise-value').textContent = e.target.value + '%';
     });
     
-    document.getElementById('neurons').addEventListener('input', (e) => {
-      document.getElementById('neurons-value').textContent = e.target.value;
+    document.getElementById('num-points').addEventListener('input', (e) => {
+      document.getElementById('points-value').textContent = e.target.value;
     });
     
     document.getElementById('learning-rate').addEventListener('input', (e) => {
-      document.getElementById('lr-value').textContent = parseFloat(e.target.value).toFixed(3);
+      document.getElementById('lr-value').textContent = e.target.value;
     });
     
     document.getElementById('batch-size').addEventListener('input', (e) => {
       document.getElementById('batch-value').textContent = e.target.value;
     });
     
-    // Initialize
-    data = generateData('xor', 10);
-    network = new NeuralNetwork([2, 4, 4, 2], 'relu');
-    drawData();
-    drawDecisionBoundary();
+    document.getElementById('regularization').addEventListener('input', (e) => {
+      document.getElementById('reg-value').textContent = e.target.value;
+    });
+    
+    document.getElementById('regenerate-data').addEventListener('click', init);
+    
+    document.getElementById('clear-data').addEventListener('click', () => {
+      data = [];
+      const dataCanvas = document.getElementById('data-canvas');
+      const decisionCanvas = document.getElementById('decision-canvas');
+      drawData(dataCanvas, data);
+      drawData(decisionCanvas, data, network);
+    });
+    
+    document.getElementById('train').addEventListener('click', train);
+    
+    document.getElementById('pause').addEventListener('click', () => {
+      isPaused = !isPaused;
+      const btn = document.getElementById('pause');
+      if (isPaused) {
+        btn.textContent = '▶️ Resume';
+        document.getElementById('status').textContent = 'Paused';
+        document.getElementById('status-indicator').className = 'status-indicator paused';
+      } else {
+        btn.textContent = '⏸️ Pause';
+        document.getElementById('status').textContent = 'Training';
+        document.getElementById('status-indicator').className = 'status-indicator training';
+      }
+    });
+    
+    document.getElementById('step').addEventListener('click', async () => {
+      if (!isTraining) {
+        await trainStep();
+        const decisionCanvas = document.getElementById('decision-canvas');
+        drawData(decisionCanvas, data, network);
+        const lossCanvas = document.getElementById('loss-chart');
+        drawLossChart(lossCanvas, lossHistory, accuracyHistory);
+        updateStats();
+      }
+    });
+    
+    document.getElementById('reset').addEventListener('click', () => {
+      stopTraining();
+      init();
+    });
+    
+    // Add points on click
+    document.getElementById('data-canvas').addEventListener('click', (e) => {
+      if (document.getElementById('dataset').value !== 'custom') {
+        document.getElementById('dataset').value = 'custom';
+      }
+      
+      const rect = e.target.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      const y = ((e.clientY - rect.top) / rect.height) * 2 - 1;
+      const label = e.shiftKey ? 1 : 0;
+      
+      data.push({ x, y, label });
+      
+      const dataCanvas = document.getElementById('data-canvas');
+      const decisionCanvas = document.getElementById('decision-canvas');
+      drawData(dataCanvas, data);
+      drawData(decisionCanvas, data, network);
+    });
+    
+    // Initialize on load
+    init();
   </script>
 </body>
 </html>

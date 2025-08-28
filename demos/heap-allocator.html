@@ -2,99 +2,197 @@
 <html lang="en">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>Heap Allocator Visualization - Xuming Huang</title>
+  <title>Heap Allocator Visualization - CS107 Stanford</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" type="text/css" href="../stylesheet.css">
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
+    /* Clean, professional styling */
+    body {
+      background: #f8f9fa;
+      min-height: 100vh;
+    }
+    
     .container {
       max-width: 1200px;
       margin: 0 auto;
       padding: 20px;
     }
     
+    .main-card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 30px;
+      margin: 20px 0;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #4CAF50;
+    }
+    
+    .header h1 {
+      color: #333;
+      font-size: 32px;
+      margin: 10px 0;
+      font-weight: 700;
+    }
+    
+    .header p {
+      color: #666;
+      font-size: 16px;
+      margin: 10px 0;
+    }
+    
+    .badge {
+      display: inline-block;
+      background: #4CAF50;
+      color: white;
+      padding: 5px 15px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: bold;
+      margin: 0 5px;
+    }
+    
+    /* Control Panel */
     .control-panel {
-      background: #f9f9f9;
+      background: #f5f5f5;
       padding: 20px;
       border-radius: 8px;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
+      border: 1px solid #ddd;
+    }
+    
+    .control-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 15px;
+      align-items: center;
     }
     
     .control-group {
-      display: inline-block;
-      margin-right: 20px;
-      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: white;
+      padding: 10px 15px;
+      border-radius: 4px;
+      border: 1px solid #e0e0e0;
     }
     
     .control-group label {
-      font-weight: bold;
-      margin-right: 8px;
+      font-weight: 600;
+      color: #555;
+      font-size: 14px;
     }
     
     button {
-      padding: 8px 15px;
-      background: #1772d0;
+      padding: 8px 16px;
+      background: #4CAF50;
       color: white;
       border: none;
       border-radius: 4px;
       cursor: pointer;
-      margin: 0 5px;
       font-family: 'EB Garamond', Georgia, serif;
-      font-size: 14px;
+      font-size: 15px;
+      font-weight: 600;
+      transition: background-color 0.2s ease;
     }
     
-    button:hover {
-      background: #1455a3;
+    button:hover:not(:disabled) {
+      background: #45a049;
     }
     
     button:disabled {
-      background: #ccc;
+      background: #cccccc;
       cursor: not-allowed;
     }
     
-    select, input {
-      padding: 6px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-family: 'EB Garamond', Georgia, serif;
+    button.danger {
+      background: #f44336;
     }
     
-    /* Tabs */
+    button.danger:hover:not(:disabled) {
+      background: #da190b;
+    }
+    
+    button.success {
+      background: #4CAF50;
+    }
+    
+    button.warning {
+      background: #ff9800;
+    }
+    
+    select, input {
+      padding: 8px 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-family: 'EB Garamond', Georgia, serif;
+      font-size: 14px;
+      background: white;
+      transition: border-color 0.3s;
+    }
+    
+    select:focus, input:focus {
+      outline: none;
+      border-color: #4CAF50;
+    }
+    
+    /* Beautiful Tabs */
     .tabs {
       display: flex;
-      border-bottom: 2px solid #ddd;
-      margin-bottom: 20px;
+      gap: 10px;
+      margin-bottom: 25px;
+      border-bottom: 3px solid #e0e0e0;
+      padding-bottom: 0;
     }
     
     .tab {
-      padding: 10px 20px;
+      padding: 12px 25px;
       cursor: pointer;
       background: #f5f5f5;
-      border: 1px solid #ddd;
-      border-bottom: none;
-      margin-right: 5px;
-      border-radius: 4px 4px 0 0;
+      border: none;
+      border-radius: 10px 10px 0 0;
+      font-weight: 600;
+      color: #666;
+      transition: all 0.3s ease;
+      position: relative;
+      top: 3px;
+    }
+    
+    .tab:hover {
+      background: #e8e8e8;
     }
     
     .tab.active {
-      background: white;
-      border-color: #1772d0;
-      border-bottom: 2px solid white;
-      margin-bottom: -2px;
+      background: #4CAF50;
+      color: white;
     }
     
     .tab-content {
       display: none;
+      animation: fadeIn 0.5s;
     }
     
     .tab-content.active {
       display: block;
     }
     
-    /* Heap visualization */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Heap Visualization */
     .heap-container {
-      background: white;
-      border: 2px solid #333;
+      background: #ffffff;
+      border: 1px solid #ddd;
       border-radius: 8px;
       padding: 20px;
       margin: 20px 0;
@@ -102,21 +200,42 @@
       position: relative;
     }
     
+    .heap-title {
+      position: absolute;
+      top: -15px;
+      left: 30px;
+      background: white;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-weight: bold;
+      color: #4CAF50;
+      border: 2px solid #4CAF50;
+    }
+    
+    .heap-blocks {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
     .heap-block {
-      display: inline-block;
-      border: 2px solid #333;
-      margin: 2px;
-      padding: 5px 10px;
+      border: 3px solid;
+      border-radius: 10px;
+      padding: 10px;
       position: relative;
-      transition: all 0.3s ease;
-      vertical-align: top;
-      min-height: 60px;
-      box-sizing: border-box;
+      transition: opacity 0.2s ease;
+      min-width: 100px;
+      background: white;
+    }
+    
+    .heap-block:hover {
+      opacity: 0.9;
     }
     
     .heap-block.free {
       background: #e8f5e9;
-      border-color: #4caf50;
+      border-color: #4CAF50;
     }
     
     .heap-block.allocated {
@@ -125,1268 +244,725 @@
     }
     
     .heap-block.coalescing {
-      background: #fff3e0;
-      border-color: #ff9800;
-      animation: pulse 0.5s;
+      background: #fff8e1;
+      border-color: #ffc107;
+      animation: coalesce 1s ease;
     }
     
     .heap-block.splitting {
       background: #e3f2fd;
       border-color: #2196f3;
-      animation: split 0.5s;
+      animation: split 1s ease;
+    }
+    
+    @keyframes coalesce {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    
+    @keyframes split {
+      0% { transform: scaleX(1); }
+      50% { transform: scaleX(1.2); }
+      100% { transform: scaleX(1); }
     }
     
     .block-header {
-      font-size: 10px;
+      font-size: 11px;
       color: #666;
-      border-bottom: 1px solid #ddd;
-      padding-bottom: 2px;
-      margin-bottom: 5px;
+      padding: 5px;
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 5px;
+      margin-bottom: 8px;
       font-family: 'Courier New', monospace;
+      text-align: center;
     }
     
     .block-size {
       font-weight: bold;
-      font-size: 14px;
+      font-size: 18px;
       text-align: center;
-      margin: 5px 0;
+      margin: 10px 0;
+      color: #333;
+    }
+    
+    .block-address {
+      font-size: 10px;
+      color: #888;
+      text-align: center;
+      font-family: 'Courier New', monospace;
     }
     
     .block-footer {
-      font-size: 10px;
+      font-size: 11px;
       color: #666;
-      border-top: 1px solid #ddd;
-      padding-top: 2px;
-      margin-top: 5px;
+      padding: 5px;
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 5px;
+      margin-top: 8px;
       font-family: 'Courier New', monospace;
+      text-align: center;
     }
     
     .block-payload {
-      background: rgba(255, 255, 255, 0.5);
-      padding: 5px;
-      margin: 5px 0;
-      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 8px;
+      margin: 8px 0;
+      border-radius: 5px;
       font-family: 'Courier New', monospace;
-      font-size: 11px;
+      font-size: 12px;
       text-align: center;
-      min-height: 20px;
+      min-height: 30px;
+      border: 1px dashed #999;
     }
     
-    /* Free list visualization */
+    /* Free List Visualization */
     .freelist-container {
       background: #f5f5f5;
       border-radius: 8px;
-      padding: 15px;
+      padding: 20px;
       margin: 20px 0;
+      border: 1px solid #ddd;
+    }
+    
+    .freelist-title {
+      font-weight: bold;
+      color: #1976d2;
+      margin-bottom: 15px;
+      font-size: 18px;
+      text-align: center;
+    }
+    
+    .freelist-chain {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
     }
     
     .freelist-node {
-      display: inline-block;
       background: #e8f5e9;
       border: 2px solid #4caf50;
-      padding: 10px;
-      margin: 5px;
+      padding: 15px;
       border-radius: 4px;
-      position: relative;
+      min-width: 80px;
+      text-align: center;
+      font-weight: bold;
+      transition: opacity 0.2s;
+    }
+    
+    .freelist-node:hover {
+      opacity: 0.9;
     }
     
     .freelist-arrow {
-      display: inline-block;
-      margin: 0 10px;
-      font-size: 20px;
-      color: #666;
+      font-size: 24px;
+      color: #4caf50;
+      font-weight: bold;
     }
     
-    /* Statistics panel */
+    /* Statistics Panel */
     .stats-panel {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
+      background: #f5f5f5;
+      border-radius: 8px;
+      padding: 20px;
       margin: 20px 0;
+      border: 1px solid #ddd;
     }
     
-    .stat-item {
-      background: #f9f9f9;
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+    }
+    
+    .stat-card {
+      background: white;
       padding: 15px;
-      border-radius: 8px;
-      border-left: 4px solid #1772d0;
+      border-radius: 4px;
+      text-align: center;
+      border: 1px solid #e0e0e0;
     }
     
     .stat-label {
       font-size: 12px;
       color: #666;
       text-transform: uppercase;
+      letter-spacing: 1px;
       margin-bottom: 5px;
     }
     
     .stat-value {
       font-size: 24px;
       font-weight: bold;
-      color: #333;
+      color: #667eea;
     }
     
-    /* Operation log */
-    .operation-log {
-      background: #263238;
-      color: #aed581;
-      padding: 15px;
-      border-radius: 8px;
-      font-family: 'Courier New', monospace;
-      font-size: 12px;
-      max-height: 200px;
-      overflow-y: auto;
-      margin: 20px 0;
-    }
-    
-    .log-entry {
-      margin: 5px 0;
-      padding: 5px;
-      border-left: 2px solid transparent;
-    }
-    
-    .log-entry.malloc {
-      border-left-color: #4caf50;
-    }
-    
-    .log-entry.free {
-      border-left-color: #f44336;
-    }
-    
-    .log-entry.realloc {
-      border-left-color: #ff9800;
-    }
-    
-    .log-entry.coalesce {
-      border-left-color: #9c27b0;
-    }
-    
-    /* Memory address display */
-    .address {
-      font-family: 'Courier New', monospace;
-      font-size: 10px;
+    .stat-unit {
+      font-size: 14px;
       color: #999;
-      position: absolute;
-      top: -15px;
-      left: 0;
     }
     
     /* Legend */
     .legend {
       display: flex;
-      gap: 20px;
-      margin: 15px 0;
-      padding: 10px;
+      justify-content: center;
+      gap: 30px;
+      margin: 20px 0;
+      padding: 15px;
       background: #f5f5f5;
-      border-radius: 8px;
+      border-radius: 10px;
     }
     
     .legend-item {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
     
     .legend-box {
-      width: 20px;
-      height: 20px;
-      border: 2px solid;
-      border-radius: 3px;
+      width: 30px;
+      height: 30px;
+      border: 3px solid;
+      border-radius: 5px;
     }
     
-    /* Info boxes */
+    .legend-box.free {
+      background: linear-gradient(135deg, #e8f8f5, #a8e6cf);
+      border-color: #51cf66;
+    }
+    
+    .legend-box.allocated {
+      background: linear-gradient(135deg, #ffe5e5, #ffb3ba);
+      border-color: #ff6b6b;
+    }
+    
     .info-box {
-      background: #fffde7;
-      border-left: 4px solid #ffd93d;
-      padding: 15px;
+      background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+      border-left: 5px solid #2196f3;
+      padding: 15px 20px;
       margin: 20px 0;
-      border-radius: 4px;
+      border-radius: 0 10px 10px 0;
     }
     
-    .algorithm-box {
-      background: #f5f5f5;
-      padding: 15px;
-      border-radius: 8px;
-      margin: 15px 0;
-    }
-    
-    .algorithm-box h4 {
+    .info-box h3 {
+      color: #1976d2;
       margin-top: 0;
-      color: #333;
     }
     
-    .code-snippet {
-      background: #263238;
-      color: #aed581;
-      padding: 10px;
-      border-radius: 4px;
-      font-family: 'Courier New', monospace;
-      font-size: 12px;
-      margin: 10px 0;
-      overflow-x: auto;
+    .back-link {
+      text-align: center;
+      margin: 20px 0;
     }
     
-    /* Animations */
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
+    .back-link a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 10px 20px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 25px;
+      transition: all 0.3s;
     }
     
-    @keyframes split {
-      0% { opacity: 1; }
-      50% { opacity: 0.5; transform: scaleX(0.95); }
-      100% { opacity: 1; }
-    }
-    
-    /* Alignment indicators */
-    .alignment-marker {
-      position: absolute;
-      bottom: -20px;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: repeating-linear-gradient(
-        90deg,
-        #1772d0,
-        #1772d0 8px,
-        transparent 8px,
-        transparent 16px
-      );
+    .back-link a:hover {
+      background: rgba(255, 255, 255, 0.3);
     }
   </style>
 </head>
 
 <body>
-  <table style="width:100%;max-width:1200px;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
-    <tbody>
-      <tr>
-        <td style="padding:20px;">
-          <p><a href="../projects.html">← Back to Projects</a></p>
-          
-          <heading>Heap Allocator Visualization</heading>
-          <p>Interactive visualization of heap memory allocation strategies, inspired by CS107 Assignment 6 at Stanford. 
-             Explore implicit and explicit free-list implementations with real-time coalescing and splitting.</p>
-          
-          <!-- Tabs -->
-          <div class="tabs">
-            <div class="tab active" onclick="switchTab('implicit')">Implicit Free List</div>
-            <div class="tab" onclick="switchTab('explicit')">Explicit Free List</div>
-            <div class="tab" onclick="switchTab('comparison')">Comparison</div>
-            <div class="tab" onclick="switchTab('concepts')">Concepts</div>
+  <div class="container">
+    <div class="back-link">
+      <a href="../projects.html">← Back to Projects</a>
+    </div>
+    
+    <div class="main-card">
+      <div class="header">
+        <h1>🧮 Heap Allocator Visualization</h1>
+        <p>Interactive demonstration of heap memory allocation strategies from CS107 Stanford</p>
+        <div>
+          <span class="badge">CS107</span>
+          <span class="badge">Systems Programming</span>
+          <span class="badge">Memory Management</span>
+        </div>
+      </div>
+      
+      <!-- Control Panel -->
+      <div class="control-panel">
+        <div class="control-row">
+          <div class="control-group">
+            <label>Implementation:</label>
+            <select id="allocator-type">
+              <option value="implicit">Implicit Free List</option>
+              <option value="explicit">Explicit Free List (with Footer)</option>
+            </select>
           </div>
           
-          <!-- Implicit Free List Tab -->
-          <div id="implicit-tab" class="tab-content active">
-            <div class="control-panel">
-              <div class="control-group">
-                <label>Heap Size:</label>
-                <select id="implicit-heap-size">
-                  <option value="256">256 bytes</option>
-                  <option value="512" selected>512 bytes</option>
-                  <option value="1024">1024 bytes</option>
-                </select>
-              </div>
-              
-              <div class="control-group">
-                <label>Allocation Size:</label>
-                <input type="number" id="implicit-alloc-size" value="64" min="8" max="256" step="8">
-              </div>
-              
-              <div class="control-group">
-                <label>Search Policy:</label>
-                <select id="implicit-policy">
-                  <option value="first">First Fit</option>
-                  <option value="best">Best Fit</option>
-                  <option value="next">Next Fit</option>
-                </select>
-              </div>
-              
-              <button onclick="implicitHeap.malloc()">Malloc</button>
-              <button onclick="implicitHeap.free()">Free</button>
-              <button onclick="implicitHeap.reset()">Reset</button>
-              <button onclick="implicitHeap.runDemo()">Run Demo</button>
-            </div>
-            
-            <div class="heap-container" id="implicit-heap">
-              <!-- Heap blocks will be rendered here -->
-            </div>
-            
-            <div class="legend">
-              <div class="legend-item">
-                <div class="legend-box" style="background: #e8f5e9; border-color: #4caf50;"></div>
-                <span>Free Block</span>
-              </div>
-              <div class="legend-item">
-                <div class="legend-box" style="background: #ffebee; border-color: #f44336;"></div>
-                <span>Allocated Block</span>
-              </div>
-              <div class="legend-item">
-                <div class="legend-box" style="background: #fff3e0; border-color: #ff9800;"></div>
-                <span>Coalescing</span>
-              </div>
-            </div>
-            
-            <div class="stats-panel">
-              <div class="stat-item">
-                <div class="stat-label">Total Heap</div>
-                <div class="stat-value" id="implicit-total">512B</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-label">Allocated</div>
-                <div class="stat-value" id="implicit-allocated">0B</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-label">Free</div>
-                <div class="stat-value" id="implicit-free">512B</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-label">Fragmentation</div>
-                <div class="stat-value" id="implicit-frag">0%</div>
-              </div>
-            </div>
-            
-            <div class="operation-log" id="implicit-log">
-              <div class="log-entry">Heap initialized with 512 bytes</div>
-            </div>
-            
-            <div class="algorithm-box">
-              <h4>Implicit Free List Algorithm</h4>
-              <p>Uses headers to track block sizes and allocation status. Requires linear scan to find free blocks.</p>
-              <div class="code-snippet">
-// Block structure
-[header | payload]
-
-// Header format (8-byte aligned)
-size_t header = size | allocated_bit;
-
-// Finding free block (O(n))
-for (block = heap_start; block < heap_end; block = next_block(block)) {
-    if (!is_allocated(block) && get_size(block) >= need) {
-        return block;
-    }
-}
-              </div>
-            </div>
+          <div class="control-group">
+            <label>Heap Size:</label>
+            <select id="heap-size">
+              <option value="256">256 bytes</option>
+              <option value="512" selected>512 bytes</option>
+              <option value="1024">1024 bytes</option>
+            </select>
           </div>
           
-          <!-- Explicit Free List Tab -->
-          <div id="explicit-tab" class="tab-content">
-            <div class="control-panel">
-              <div class="control-group">
-                <label>Heap Size:</label>
-                <select id="explicit-heap-size">
-                  <option value="256">256 bytes</option>
-                  <option value="512" selected>512 bytes</option>
-                  <option value="1024">1024 bytes</option>
-                </select>
-              </div>
-              
-              <div class="control-group">
-                <label>Allocation Size:</label>
-                <input type="number" id="explicit-alloc-size" value="64" min="16" max="256" step="8">
-              </div>
-              
-              <div class="control-group">
-                <label>Coalescing:</label>
-                <select id="explicit-coalesce">
-                  <option value="immediate" selected>Immediate</option>
-                  <option value="deferred">Deferred</option>
-                  <option value="none">None</option>
-                </select>
-              </div>
-              
-              <button onclick="explicitHeap.malloc()">Malloc</button>
-              <button onclick="explicitHeap.free()">Free</button>
-              <button onclick="explicitHeap.realloc()">Realloc</button>
-              <button onclick="explicitHeap.reset()">Reset</button>
-              <button onclick="explicitHeap.runDemo()">Run Demo</button>
+          <div class="control-group">
+            <label>Allocation Size:</label>
+            <input type="number" id="alloc-size" value="32" min="8" max="256" step="8">
+            <span style="font-size: 12px; color: #666;">bytes</span>
+          </div>
+        </div>
+        
+        <div class="control-row">
+          <button onclick="allocateMemory()" class="success">
+            🎯 Malloc
+          </button>
+          <button onclick="freeMemory()" class="danger">
+            🗑️ Free
+          </button>
+          <button onclick="randomOperation()" class="warning">
+            🎲 Random Op
+          </button>
+          <button onclick="resetHeap()">
+            🔄 Reset Heap
+          </button>
+          <button onclick="runScenario()">
+            ▶️ Run Scenario
+          </button>
+        </div>
+      </div>
+      
+      <!-- Tabs -->
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('heap')">
+          Heap View
+        </div>
+        <div class="tab" onclick="switchTab('freelist')">
+          Free List Structure
+        </div>
+        <div class="tab" onclick="switchTab('stats')">
+          Statistics
+        </div>
+        <div class="tab" onclick="switchTab('learn')">
+          Learn
+        </div>
+      </div>
+      
+      <!-- Tab Contents -->
+      <div id="heap-tab" class="tab-content active">
+        <div class="heap-container">
+          <div class="heap-title">Heap Memory Layout</div>
+          <div id="heap-visualization" class="heap-blocks"></div>
+        </div>
+        
+        <div class="legend">
+          <div class="legend-item">
+            <div class="legend-box free"></div>
+            <span><strong>Free Block</strong></span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-box allocated"></div>
+            <span><strong>Allocated Block</strong></span>
+          </div>
+        </div>
+      </div>
+      
+      <div id="freelist-tab" class="tab-content">
+        <div class="freelist-container">
+          <div class="freelist-title">Free List Chain (Explicit Implementation)</div>
+          <div id="freelist-visualization" class="freelist-chain"></div>
+        </div>
+        
+        <div class="info-box">
+          <h3>ℹ️ About Free Lists</h3>
+          <p><strong>Implicit Free List:</strong> Free blocks are found by linear scan through all blocks.</p>
+          <p><strong>Explicit Free List:</strong> Free blocks are linked together using next/prev pointers stored in the payload area, enabling O(1) coalescing with footers.</p>
+        </div>
+      </div>
+      
+      <div id="stats-tab" class="tab-content">
+        <div class="stats-panel">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-label">Total Heap Size</div>
+              <div class="stat-value" id="stat-total">512</div>
+              <div class="stat-unit">bytes</div>
             </div>
-            
-            <div class="heap-container" id="explicit-heap">
-              <!-- Heap blocks will be rendered here -->
+            <div class="stat-card">
+              <div class="stat-label">Allocated</div>
+              <div class="stat-value" id="stat-allocated">0</div>
+              <div class="stat-unit">bytes</div>
             </div>
-            
-            <div class="freelist-container">
-              <h4>Free List Structure:</h4>
-              <div id="explicit-freelist">
-                <!-- Free list visualization -->
-              </div>
+            <div class="stat-card">
+              <div class="stat-label">Free</div>
+              <div class="stat-value" id="stat-free">512</div>
+              <div class="stat-unit">bytes</div>
             </div>
-            
-            <div class="stats-panel">
-              <div class="stat-item">
-                <div class="stat-label">Total Heap</div>
-                <div class="stat-value" id="explicit-total">512B</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-label">Allocated</div>
-                <div class="stat-value" id="explicit-allocated">0B</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-label">Free List Size</div>
-                <div class="stat-value" id="explicit-list-size">1</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-label">Coalesces</div>
-                <div class="stat-value" id="explicit-coalesces">0</div>
-              </div>
+            <div class="stat-card">
+              <div class="stat-label">Fragmentation</div>
+              <div class="stat-value" id="stat-fragmentation">0</div>
+              <div class="stat-unit">%</div>
             </div>
-            
-            <div class="operation-log" id="explicit-log">
-              <div class="log-entry">Heap initialized with 512 bytes</div>
-              <div class="log-entry">Free list head points to single free block</div>
+            <div class="stat-card">
+              <div class="stat-label">Free Blocks</div>
+              <div class="stat-value" id="stat-freeblocks">1</div>
+              <div class="stat-unit">blocks</div>
             </div>
-            
-            <div class="algorithm-box">
-              <h4>Explicit Free List Algorithm</h4>
-              <p>Maintains doubly-linked list of free blocks. O(1) coalescing with footer optimization.</p>
-              <div class="code-snippet">
-// Free block structure
-[header | prev_ptr | next_ptr | ... | footer]
-
-// Header with additional flags
-size_t header = size | alloc_bit | prev_alloc_bit;
-
-// O(1) coalescing using footer
-if (!prev_allocated(block)) {
-    prev = get_prev_block_using_footer(block);
-    remove_from_freelist(block);
-    block = coalesce(prev, block);
-}
-              </div>
+            <div class="stat-card">
+              <div class="stat-label">Allocations</div>
+              <div class="stat-value" id="stat-allocations">0</div>
+              <div class="stat-unit">total</div>
             </div>
           </div>
-          
-          <!-- Comparison Tab -->
-          <div id="comparison-tab" class="tab-content">
-            <div class="control-panel">
-              <button onclick="comparison.runBenchmark()">Run Benchmark</button>
-              <button onclick="comparison.reset()">Reset</button>
-            </div>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
-              <div>
-                <h3>Implicit Free List</h3>
-                <div class="heap-container" id="comparison-implicit" style="min-height: 200px;">
-                  <!-- Implicit heap visualization -->
-                </div>
-              </div>
-              
-              <div>
-                <h3>Explicit Free List</h3>
-                <div class="heap-container" id="comparison-explicit" style="min-height: 200px;">
-                  <!-- Explicit heap visualization -->
-                </div>
-              </div>
-            </div>
-            
-            <div id="performance-chart" style="margin: 20px 0;">
-              <!-- Performance comparison chart -->
-            </div>
-            
-            <table style="width: 100%; margin: 20px 0; border-collapse: collapse;">
-              <thead>
-                <tr style="background: #f5f5f5;">
-                  <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Metric</th>
-                  <th style="padding: 10px; text-align: center; border: 1px solid #ddd;">Implicit</th>
-                  <th style="padding: 10px; text-align: center; border: 1px solid #ddd;">Explicit</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style="padding: 10px; border: 1px solid #ddd;">malloc() time complexity</td>
-                  <td style="padding: 10px; text-align: center; border: 1px solid #ddd;">O(n)</td>
-                  <td style="padding: 10px; text-align: center; border: 1px solid #ddd;">O(m)</td>
-                </tr>
-                <tr>
-                  <td style="padding: 10px; border: 1px solid #ddd;">free() time complexity</td>
-                  <td style="padding: 10px; text-align: center; border: 1px solid #ddd;">O(1)</td>
-                  <td style="padding: 10px; text-align: center; border: 1px solid #ddd;">O(1)</td>
-                </tr>
-                <tr>
-                  <td style="padding: 10px; border: 1px solid #ddd;">Space overhead per block</td>
-                  <td style="padding: 10px; text-align: center; border: 1px solid #ddd;">8 bytes</td>
-                  <td style="padding: 10px; text-align: center; border: 1px solid #ddd;">8-24 bytes</td>
-                </tr>
-                <tr>
-                  <td style="padding: 10px; border: 1px solid #ddd;">Coalescing support</td>
-                  <td style="padding: 10px; text-align: center; border: 1px solid #ddd;">No / O(n)</td>
-                  <td style="padding: 10px; text-align: center; border: 1px solid #ddd;">Yes / O(1)</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          
-          <!-- Concepts Tab -->
-          <div id="concepts-tab" class="tab-content">
-            <div class="info-box">
-              <h3>Key Concepts</h3>
-              <p>Understanding heap allocators is crucial for systems programming. This visualization demonstrates 
-                 the core concepts from CS107 Assignment 6.</p>
-            </div>
-            
-            <div class="algorithm-box">
-              <h4>Memory Alignment</h4>
-              <p>All allocations must be 8-byte aligned for proper memory access on modern architectures.</p>
-              <div class="code-snippet">
-// Align size to 8-byte boundary
-size_t align_to_8(size_t n) {
-    return (n + 7) & ~7;  // Round up to multiple of 8
-}
-              </div>
-            </div>
-            
-            <div class="algorithm-box">
-              <h4>Block Splitting</h4>
-              <p>When a free block is larger than needed, split it into allocated and free portions.</p>
-              <div class="code-snippet">
-if (block_size - need >= MIN_BLOCK_SIZE) {
-    // Split: left becomes allocated, right stays free
-    set_header(block, need, ALLOCATED);
-    set_header(block + need, block_size - need, FREE);
-}
-              </div>
-            </div>
-            
-            <div class="algorithm-box">
-              <h4>Coalescing</h4>
-              <p>Merge adjacent free blocks to reduce fragmentation. Explicit list uses footers for O(1) operation.</p>
-              <div class="code-snippet">
-// Check left neighbor using footer
-if (!prev_allocated(block)) {
-    prev_block = get_prev_via_footer(block);
-    block = merge(prev_block, block);
-}
-// Check right neighbor
-next = get_next_block(block);
-if (!is_allocated(next)) {
-    block = merge(block, next);
-}
-              </div>
-            </div>
-            
-            <div class="algorithm-box">
-              <h4>Free List Management</h4>
-              <p>Explicit free list maintains pointers between free blocks for faster searching.</p>
-              <div class="code-snippet">
-typedef struct FreeBlock {
-    size_t header;
-    struct FreeBlock *prev;
-    struct FreeBlock *next;
-    // ... payload space ...
-    size_t footer;  // For O(1) coalescing
-} FreeBlock;
-              </div>
-            </div>
-            
-            <div style="margin-top: 30px; padding: 20px; background: #e3f2fd; border-radius: 8px;">
-              <h4>Learning Objectives</h4>
-              <ul style="line-height: 1.8;">
-                <li>Understand the trade-offs between implicit and explicit free lists</li>
-                <li>Learn how coalescing prevents fragmentation</li>
-                <li>See the importance of memory alignment</li>
-                <li>Visualize block splitting and merging strategies</li>
-                <li>Appreciate the complexity of memory management</li>
-              </ul>
-            </div>
-          </div>
-          
-          <!-- Educational footer -->
-          <div style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #ddd;">
-            <p style="color: #666; font-size: 14px;">
-              <strong>Note:</strong> This visualization is inspired by Stanford CS107 concepts but presents 
-              educational implementations for learning purposes. The actual assignment implementations are 
-              not shown to maintain academic integrity.
-            </p>
-          </div>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+        </div>
+        
+        <div class="info-box" style="margin-top: 20px;">
+          <h3>📊 Performance Metrics</h3>
+          <p><strong>Fragmentation:</strong> Percentage of free memory that cannot be used due to being split into small, non-contiguous blocks.</p>
+          <p><strong>Coalescing:</strong> Merging adjacent free blocks to reduce fragmentation.</p>
+        </div>
+      </div>
+      
+      <div id="learn-tab" class="tab-content">
+        <div class="info-box">
+          <h3>📚 Key Concepts</h3>
+          <ul>
+            <li><strong>8-byte Alignment:</strong> All blocks are aligned to 8-byte boundaries for performance.</li>
+            <li><strong>Headers:</strong> Each block has a header containing size and allocation status.</li>
+            <li><strong>Footers (Explicit):</strong> Enable constant-time coalescing by finding the previous block.</li>
+            <li><strong>Splitting:</strong> Large free blocks are split to satisfy smaller requests.</li>
+            <li><strong>Coalescing:</strong> Adjacent free blocks are merged to reduce fragmentation.</li>
+            <li><strong>First-fit:</strong> Allocator searches from the beginning and uses the first suitable block.</li>
+          </ul>
+        </div>
+        
+        <div class="info-box">
+          <h3>🎯 CS107 Implementation Details</h3>
+          <p>This visualization demonstrates the concepts from CS107 Assignment 6:</p>
+          <ul>
+            <li>Implicit free list with linear search (O(n) allocation)</li>
+            <li>Explicit free list with next/prev pointers (O(1) coalescing)</li>
+            <li>Footer optimization for bidirectional traversal</li>
+            <li>Minimum block size enforcement</li>
+            <li>Proper alignment and size masking</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
   
   <script>
-    // Heap Allocator Visualization Classes
-    
-    class ImplicitHeapAllocator {
-      constructor(containerId, size = 512) {
-        this.container = document.getElementById(containerId);
+    // Heap Allocator Implementation
+    class HeapAllocator {
+      constructor(size, type = 'implicit') {
+        this.type = type;
         this.heapSize = size;
         this.blocks = [];
-        this.allocCounter = 0;
+        this.allocations = 0;
         this.init();
       }
       
       init() {
-        // Initialize with single free block
+        // Initialize with one large free block
         this.blocks = [{
-          id: 0,
-          start: 0,
+          address: 0,
           size: this.heapSize,
           allocated: false,
-          headerSize: 8,
-          payload: null
+          id: 'block-0',
+          next: null,
+          prev: null
         }];
-        this.render();
-        this.log('Heap initialized with ' + this.heapSize + ' bytes');
       }
       
-      malloc() {
-        const size = parseInt(document.getElementById('implicit-alloc-size').value);
-        const alignedSize = this.align(size);
-        const totalSize = alignedSize + 8; // header size
+      malloc(requestSize) {
+        // Align to 8 bytes
+        const alignedSize = Math.ceil(requestSize / 8) * 8;
+        const totalSize = alignedSize + 8; // Include header size
         
-        const policy = document.getElementById('implicit-policy').value;
-        let blockIndex = this.findFit(totalSize, policy);
-        
-        if (blockIndex === -1) {
-          this.log('malloc(' + size + ') failed - no suitable block', 'error');
-          return;
-        }
-        
-        const block = this.blocks[blockIndex];
-        
-        // Split if remaining space is large enough
-        if (block.size - totalSize >= 16) { // Min block size
-          // Split the block
-          const newBlock = {
-            id: ++this.allocCounter,
-            start: block.start + totalSize,
-            size: block.size - totalSize,
-            allocated: false,
-            headerSize: 8,
-            payload: null
-          };
-          
-          block.size = totalSize;
-          this.blocks.splice(blockIndex + 1, 0, newBlock);
-          
-          // Animate splitting
-          this.animateSplit(blockIndex);
-        }
-        
-        block.allocated = true;
-        block.payload = 'ptr_' + this.allocCounter;
-        
-        this.log('malloc(' + size + ') = ' + block.payload + ' [block size: ' + block.size + ']', 'malloc');
-        this.render();
-        this.updateStats();
-      }
-      
-      free() {
-        // Free the most recently allocated block for demo
-        for (let i = this.blocks.length - 1; i >= 0; i--) {
-          if (this.blocks[i].allocated) {
-            const block = this.blocks[i];
-            block.allocated = false;
-            const payload = block.payload;
-            block.payload = null;
-            
-            this.log('free(' + payload + ')', 'free');
-            this.render();
-            this.updateStats();
-            return;
-          }
-        }
-        this.log('No allocated blocks to free', 'error');
-      }
-      
-      findFit(size, policy) {
-        let bestIndex = -1;
-        let bestSize = Infinity;
-        
+        // Find first fit
         for (let i = 0; i < this.blocks.length; i++) {
           const block = this.blocks[i];
-          if (!block.allocated && block.size >= size) {
-            if (policy === 'first') {
-              return i;
-            } else if (policy === 'best') {
-              if (block.size < bestSize) {
-                bestSize = block.size;
-                bestIndex = i;
-              }
+          if (!block.allocated && block.size >= totalSize) {
+            // Split if remaining space is large enough
+            if (block.size > totalSize + 16) {
+              // Create new free block
+              const newBlock = {
+                address: block.address + totalSize,
+                size: block.size - totalSize,
+                allocated: false,
+                id: `block-${Date.now()}`,
+                next: block.next,
+                prev: block.id
+              };
+              
+              // Update current block
+              block.size = totalSize;
+              block.allocated = true;
+              block.next = this.type === 'explicit' ? newBlock.id : null;
+              
+              // Insert new block
+              this.blocks.splice(i + 1, 0, newBlock);
+              
+              // Animation
+              this.animateSplit(block.id);
+            } else {
+              // Use entire block
+              block.allocated = true;
             }
+            
+            this.allocations++;
+            this.updateVisualization();
+            return block.id;
           }
         }
         
-        return policy === 'best' ? bestIndex : -1;
+        alert('Out of memory! No suitable block found.');
+        return null;
       }
       
-      align(size) {
-        return (size + 7) & ~7; // 8-byte alignment
-      }
-      
-      render() {
-        this.container.innerHTML = '';
-        
-        const scale = 800 / this.heapSize; // Scale to fit container
-        
-        this.blocks.forEach((block, index) => {
-          const div = document.createElement('div');
-          div.className = 'heap-block ' + (block.allocated ? 'allocated' : 'free');
-          div.style.width = (block.size * scale - 4) + 'px'; // -4 for borders
-          
-          // Header
-          const header = document.createElement('div');
-          header.className = 'block-header';
-          header.textContent = 'HDR: ' + block.size + ' | ' + (block.allocated ? '1' : '0');
-          div.appendChild(header);
-          
-          // Size display
-          const sizeDiv = document.createElement('div');
-          sizeDiv.className = 'block-size';
-          sizeDiv.textContent = block.size + 'B';
-          div.appendChild(sizeDiv);
-          
-          // Payload (if allocated)
-          if (block.allocated && block.payload) {
-            const payload = document.createElement('div');
-            payload.className = 'block-payload';
-            payload.textContent = block.payload;
-            div.appendChild(payload);
-          }
-          
-          // Address
-          const addr = document.createElement('div');
-          addr.className = 'address';
-          addr.textContent = '0x' + block.start.toString(16);
-          div.appendChild(addr);
-          
-          this.container.appendChild(div);
-        });
-      }
-      
-      animateSplit(index) {
-        const blocks = this.container.children;
-        if (blocks[index]) {
-          blocks[index].classList.add('splitting');
-          setTimeout(() => blocks[index].classList.remove('splitting'), 500);
-        }
-      }
-      
-      updateStats() {
-        let allocated = 0;
-        let free = 0;
-        let largestFree = 0;
-        
-        this.blocks.forEach(block => {
-          if (block.allocated) {
-            allocated += block.size;
-          } else {
-            free += block.size;
-            largestFree = Math.max(largestFree, block.size);
-          }
-        });
-        
-        const fragmentation = largestFree > 0 ? ((free - largestFree) / free * 100).toFixed(1) : 0;
-        
-        document.getElementById('implicit-allocated').textContent = allocated + 'B';
-        document.getElementById('implicit-free').textContent = free + 'B';
-        document.getElementById('implicit-frag').textContent = fragmentation + '%';
-      }
-      
-      log(message, type = 'info') {
-        const logDiv = document.getElementById('implicit-log');
-        const entry = document.createElement('div');
-        entry.className = 'log-entry ' + type;
-        entry.textContent = '> ' + message;
-        logDiv.appendChild(entry);
-        logDiv.scrollTop = logDiv.scrollHeight;
-        
-        // Keep only last 10 entries
-        while (logDiv.children.length > 10) {
-          logDiv.removeChild(logDiv.firstChild);
-        }
-      }
-      
-      reset() {
-        this.allocCounter = 0;
-        this.init();
-        this.updateStats();
-      }
-      
-      async runDemo() {
-        this.reset();
-        const sizes = [32, 64, 48, 128, 32, 96];
-        
-        for (let i = 0; i < sizes.length; i++) {
-          document.getElementById('implicit-alloc-size').value = sizes[i];
-          await this.sleep(1000);
-          this.malloc();
-          
-          if (i % 3 === 2) {
-            await this.sleep(1000);
-            this.free();
-          }
-        }
-      }
-      
-      sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-      }
-    }
-    
-    class ExplicitHeapAllocator {
-      constructor(containerId, size = 512) {
-        this.container = document.getElementById(containerId);
-        this.heapSize = size;
-        this.blocks = [];
-        this.freeList = [];
-        this.allocCounter = 0;
-        this.coalesceCount = 0;
-        this.init();
-      }
-      
-      init() {
-        // Initialize with single free block
-        this.blocks = [{
-          id: 0,
-          start: 0,
-          size: this.heapSize,
-          allocated: false,
-          headerSize: 8,
-          footerSize: 8,
-          prevAlloc: true, // Boundary condition
-          payload: null,
-          prevPtr: null,
-          nextPtr: null
-        }];
-        
-        this.freeList = [this.blocks[0]];
-        this.render();
-        this.renderFreeList();
-        this.log('Heap initialized with ' + this.heapSize + ' bytes');
-        this.log('Free list head points to single free block');
-      }
-      
-      malloc() {
-        const size = parseInt(document.getElementById('explicit-alloc-size').value);
-        const alignedSize = this.align(size);
-        const totalSize = alignedSize + 8; // header only for allocated blocks
-        
-        // Find first fit in free list
-        let blockIndex = -1;
-        let freeBlock = null;
-        
-        for (let i = 0; i < this.freeList.length; i++) {
-          if (this.freeList[i].size >= totalSize) {
-            freeBlock = this.freeList[i];
-            blockIndex = this.blocks.indexOf(freeBlock);
-            break;
-          }
-        }
-        
-        if (!freeBlock) {
-          this.log('malloc(' + size + ') failed - no suitable block', 'error');
+      free(blockId) {
+        const index = this.blocks.findIndex(b => b.id === blockId);
+        if (index === -1 || !this.blocks[index].allocated) {
+          alert('Invalid free operation!');
           return;
         }
         
-        // Remove from free list
-        this.removeFromFreeList(freeBlock);
+        this.blocks[index].allocated = false;
         
-        // Split if remaining space is large enough
-        if (freeBlock.size - totalSize >= 24) { // Min free block with header+footer+pointers
-          const newBlock = {
-            id: ++this.allocCounter,
-            start: freeBlock.start + totalSize,
-            size: freeBlock.size - totalSize,
-            allocated: false,
-            headerSize: 8,
-            footerSize: 8,
-            prevAlloc: true,
-            payload: null,
-            prevPtr: null,
-            nextPtr: null
-          };
-          
-          freeBlock.size = totalSize;
-          this.blocks.splice(blockIndex + 1, 0, newBlock);
-          
-          // Update next block's prevAlloc
-          if (blockIndex + 2 < this.blocks.length) {
-            this.blocks[blockIndex + 2].prevAlloc = false;
-          }
-          
-          // Add new free block to free list
-          this.addToFreeList(newBlock);
-          
-          this.animateSplit(blockIndex);
-        }
-        
-        freeBlock.allocated = true;
-        freeBlock.footerSize = 0; // Allocated blocks don't need footer
-        freeBlock.payload = 'ptr_' + this.allocCounter;
-        
-        // Update next block's prevAlloc
-        const nextIndex = blockIndex + 1;
-        if (nextIndex < this.blocks.length) {
-          this.blocks[nextIndex].prevAlloc = true;
-        }
-        
-        this.log('malloc(' + size + ') = ' + freeBlock.payload, 'malloc');
-        this.render();
-        this.renderFreeList();
-        this.updateStats();
-      }
-      
-      free() {
-        // Free the most recently allocated block
-        for (let i = this.blocks.length - 1; i >= 0; i--) {
-          if (this.blocks[i].allocated) {
-            const block = this.blocks[i];
-            const blockIndex = i;
-            const payload = block.payload;
-            
-            block.allocated = false;
-            block.footerSize = 8;
-            block.payload = null;
-            
-            // Update next block's prevAlloc
-            if (blockIndex + 1 < this.blocks.length) {
-              this.blocks[blockIndex + 1].prevAlloc = false;
-            }
-            
-            this.log('free(' + payload + ')', 'free');
-            
-            // Immediate coalescing
-            const coalesceMode = document.getElementById('explicit-coalesce').value;
-            if (coalesceMode === 'immediate') {
-              this.coalesce(blockIndex);
-            } else {
-              this.addToFreeList(block);
-            }
-            
-            this.render();
-            this.renderFreeList();
-            this.updateStats();
-            return;
-          }
-        }
-        this.log('No allocated blocks to free', 'error');
+        // Coalesce with adjacent free blocks
+        this.coalesce(index);
+        this.updateVisualization();
       }
       
       coalesce(index) {
-        let block = this.blocks[index];
-        let changed = false;
+        const block = this.blocks[index];
+        let coalesced = false;
         
-        // Coalesce with right neighbor
-        if (index + 1 < this.blocks.length && !this.blocks[index + 1].allocated) {
-          const rightBlock = this.blocks[index + 1];
-          this.removeFromFreeList(rightBlock);
-          
-          block.size += rightBlock.size;
+        // Check next block
+        if (index < this.blocks.length - 1 && !this.blocks[index + 1].allocated) {
+          const nextBlock = this.blocks[index + 1];
+          block.size += nextBlock.size;
+          block.next = nextBlock.next;
           this.blocks.splice(index + 1, 1);
-          
-          this.log('Coalesced with right neighbor', 'coalesce');
-          changed = true;
-          this.coalesceCount++;
+          coalesced = true;
         }
         
-        // Coalesce with left neighbor (using prevAlloc bit)
-        if (index > 0 && !block.prevAlloc) {
-          const leftBlock = this.blocks[index - 1];
-          if (!leftBlock.allocated) {
-            this.removeFromFreeList(leftBlock);
-            
-            leftBlock.size += block.size;
-            this.blocks.splice(index, 1);
-            block = leftBlock;
-            
-            this.log('Coalesced with left neighbor', 'coalesce');
-            changed = true;
-            this.coalesceCount++;
-          }
+        // Check previous block
+        if (index > 0 && !this.blocks[index - 1].allocated) {
+          const prevBlock = this.blocks[index - 1];
+          prevBlock.size += block.size;
+          prevBlock.next = block.next;
+          this.blocks.splice(index, 1);
+          coalesced = true;
         }
         
-        this.addToFreeList(block);
-        
-        if (changed) {
-          this.animateCoalesce(this.blocks.indexOf(block));
+        if (coalesced) {
+          this.animateCoalesce();
         }
       }
       
-      realloc() {
-        // Simple realloc demo - find an allocated block and resize
-        for (let i = 0; i < this.blocks.length; i++) {
-          if (this.blocks[i].allocated) {
-            const newSize = Math.floor(Math.random() * 100) + 32;
-            this.log('realloc(' + this.blocks[i].payload + ', ' + newSize + ')', 'realloc');
-            // Simplified - just log the operation
-            return;
-          }
+      animateSplit(blockId) {
+        const element = document.querySelector(`[data-block-id="${blockId}"]`);
+        if (element) {
+          element.classList.add('splitting');
+          setTimeout(() => element.classList.remove('splitting'), 1000);
         }
-        this.log('No allocated blocks to realloc', 'error');
       }
       
-      addToFreeList(block) {
-        // Add to head of free list
-        if (this.freeList.length > 0) {
-          block.nextPtr = this.freeList[0];
-          this.freeList[0].prevPtr = block;
-        }
-        block.prevPtr = null;
-        this.freeList.unshift(block);
+      animateCoalesce() {
+        const blocks = document.querySelectorAll('.heap-block.free');
+        blocks.forEach(block => {
+          block.classList.add('coalescing');
+          setTimeout(() => block.classList.remove('coalescing'), 1000);
+        });
       }
       
-      removeFromFreeList(block) {
-        const index = this.freeList.indexOf(block);
-        if (index !== -1) {
-          this.freeList.splice(index, 1);
+      updateVisualization() {
+        this.renderHeap();
+        this.renderFreeList();
+        this.updateStats();
+      }
+      
+      renderHeap() {
+        const container = document.getElementById('heap-visualization');
+        container.innerHTML = '';
+        
+        this.blocks.forEach(block => {
+          const div = document.createElement('div');
+          div.className = `heap-block ${block.allocated ? 'allocated' : 'free'}`;
+          div.setAttribute('data-block-id', block.id);
+          div.style.width = `${Math.max(100, block.size * 0.8)}px`;
           
-          // Fix pointers
-          if (block.prevPtr) {
-            block.prevPtr.nextPtr = block.nextPtr;
-          }
-          if (block.nextPtr) {
-            block.nextPtr.prevPtr = block.prevPtr;
-          }
+          div.innerHTML = `
+            <div class="block-header">Header (8 bytes)</div>
+            <div class="block-address">0x${block.address.toString(16).padStart(4, '0')}</div>
+            <div class="block-size">${block.size} bytes</div>
+            <div class="block-payload">${block.allocated ? 'User Data' : 'FREE'}</div>
+            ${this.type === 'explicit' && !block.allocated ? 
+              '<div class="block-footer">Footer (8 bytes)</div>' : ''}
+          `;
           
-          block.prevPtr = null;
-          block.nextPtr = null;
-        }
+          div.onclick = () => {
+            if (block.allocated) {
+              if (confirm(`Free this block (${block.size} bytes)?`)) {
+                this.free(block.id);
+              }
+            }
+          };
+          
+          container.appendChild(div);
+        });
       }
       
       renderFreeList() {
-        const container = document.getElementById('explicit-freelist');
+        const container = document.getElementById('freelist-visualization');
         container.innerHTML = '';
         
-        if (this.freeList.length === 0) {
-          container.innerHTML = '<em>Empty free list</em>';
+        if (this.type === 'implicit') {
+          container.innerHTML = '<p style="text-align:center; color:#666;">Implicit free list: No explicit chain (linear scan required)</p>';
           return;
         }
         
-        this.freeList.forEach((block, index) => {
+        // Show explicit free list chain
+        const freeBlocks = this.blocks.filter(b => !b.allocated);
+        freeBlocks.forEach((block, index) => {
           const node = document.createElement('div');
           node.className = 'freelist-node';
           node.innerHTML = `
-            <div>Block ${block.id}</div>
-            <div style="font-size: 12px;">${block.size}B</div>
-            <div style="font-size: 10px;">@0x${block.start.toString(16)}</div>
+            <div>${block.size}B</div>
+            <div style="font-size:10px;">0x${block.address.toString(16)}</div>
           `;
           container.appendChild(node);
           
-          if (index < this.freeList.length - 1) {
+          if (index < freeBlocks.length - 1) {
             const arrow = document.createElement('span');
             arrow.className = 'freelist-arrow';
-            arrow.textContent = '→';
+            arrow.innerHTML = '→';
             container.appendChild(arrow);
           }
         });
-      }
-      
-      align(size) {
-        return (size + 7) & ~7;
-      }
-      
-      render() {
-        this.container.innerHTML = '';
-        const scale = 800 / this.heapSize;
         
-        this.blocks.forEach((block, index) => {
-          const div = document.createElement('div');
-          div.className = 'heap-block ' + (block.allocated ? 'allocated' : 'free');
-          div.style.width = (block.size * scale - 4) + 'px';
-          
-          // Header with flags
-          const header = document.createElement('div');
-          header.className = 'block-header';
-          const flags = (block.allocated ? 'A' : 'F') + (block.prevAlloc ? 'P' : '-');
-          header.textContent = 'HDR: ' + block.size + ' [' + flags + ']';
-          div.appendChild(header);
-          
-          // Size display
-          const sizeDiv = document.createElement('div');
-          sizeDiv.className = 'block-size';
-          sizeDiv.textContent = block.size + 'B';
-          div.appendChild(sizeDiv);
-          
-          // Payload or free list pointers
-          if (block.allocated && block.payload) {
-            const payload = document.createElement('div');
-            payload.className = 'block-payload';
-            payload.textContent = block.payload;
-            div.appendChild(payload);
-          } else if (!block.allocated) {
-            const ptrs = document.createElement('div');
-            ptrs.className = 'block-payload';
-            ptrs.style.fontSize = '10px';
-            ptrs.textContent = 'prev/next ptrs';
-            div.appendChild(ptrs);
-          }
-          
-          // Footer (for free blocks)
-          if (!block.allocated && block.footerSize > 0) {
-            const footer = document.createElement('div');
-            footer.className = 'block-footer';
-            footer.textContent = 'FTR: ' + block.size;
-            div.appendChild(footer);
-          }
-          
-          // Address
-          const addr = document.createElement('div');
-          addr.className = 'address';
-          addr.textContent = '0x' + block.start.toString(16);
-          div.appendChild(addr);
-          
-          this.container.appendChild(div);
-        });
-      }
-      
-      animateSplit(index) {
-        const blocks = this.container.children;
-        if (blocks[index]) {
-          blocks[index].classList.add('splitting');
-          setTimeout(() => blocks[index].classList.remove('splitting'), 500);
-        }
-      }
-      
-      animateCoalesce(index) {
-        const blocks = this.container.children;
-        if (blocks[index]) {
-          blocks[index].classList.add('coalescing');
-          setTimeout(() => blocks[index].classList.remove('coalescing'), 500);
+        if (freeBlocks.length === 0) {
+          container.innerHTML = '<p style="text-align:center; color:#666;">No free blocks in the list</p>';
         }
       }
       
       updateStats() {
-        let allocated = 0;
-        let free = 0;
+        const totalSize = this.heapSize;
+        const allocatedSize = this.blocks.filter(b => b.allocated).reduce((sum, b) => sum + b.size, 0);
+        const freeSize = totalSize - allocatedSize;
+        const freeBlocks = this.blocks.filter(b => !b.allocated);
         
-        this.blocks.forEach(block => {
-          if (block.allocated) {
-            allocated += block.size;
-          } else {
-            free += block.size;
-          }
-        });
+        // Calculate fragmentation
+        const largestFree = Math.max(...freeBlocks.map(b => b.size), 0);
+        const fragmentation = freeSize > 0 ? Math.round((1 - largestFree / freeSize) * 100) : 0;
         
-        document.getElementById('explicit-allocated').textContent = allocated + 'B';
-        document.getElementById('explicit-list-size').textContent = this.freeList.length;
-        document.getElementById('explicit-coalesces').textContent = this.coalesceCount;
-      }
-      
-      log(message, type = 'info') {
-        const logDiv = document.getElementById('explicit-log');
-        const entry = document.createElement('div');
-        entry.className = 'log-entry ' + type;
-        entry.textContent = '> ' + message;
-        logDiv.appendChild(entry);
-        logDiv.scrollTop = logDiv.scrollHeight;
-        
-        while (logDiv.children.length > 10) {
-          logDiv.removeChild(logDiv.firstChild);
-        }
-      }
-      
-      reset() {
-        this.allocCounter = 0;
-        this.coalesceCount = 0;
-        this.init();
-        this.updateStats();
-      }
-      
-      async runDemo() {
-        this.reset();
-        const operations = [
-          { type: 'malloc', size: 48 },
-          { type: 'malloc', size: 72 },
-          { type: 'malloc', size: 32 },
-          { type: 'free' },
-          { type: 'malloc', size: 96 },
-          { type: 'free' },
-          { type: 'free' },
-          { type: 'malloc', size: 64 }
-        ];
-        
-        for (const op of operations) {
-          await this.sleep(1500);
-          
-          if (op.type === 'malloc') {
-            document.getElementById('explicit-alloc-size').value = op.size;
-            this.malloc();
-          } else {
-            this.free();
-          }
-        }
-      }
-      
-      sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+        document.getElementById('stat-total').textContent = totalSize;
+        document.getElementById('stat-allocated').textContent = allocatedSize;
+        document.getElementById('stat-free').textContent = freeSize;
+        document.getElementById('stat-fragmentation').textContent = fragmentation;
+        document.getElementById('stat-freeblocks').textContent = freeBlocks.length;
+        document.getElementById('stat-allocations').textContent = this.allocations;
       }
     }
     
-    // Comparison functionality
-    class HeapComparison {
-      constructor() {
-        this.implicitHeap = new ImplicitHeapAllocator('comparison-implicit', 256);
-        this.explicitHeap = new ExplicitHeapAllocator('comparison-explicit', 256);
+    // Global allocator instance
+    let allocator = new HeapAllocator(512, 'implicit');
+    
+    // Control functions
+    function allocateMemory() {
+      const size = parseInt(document.getElementById('alloc-size').value);
+      allocator.malloc(size);
+    }
+    
+    function freeMemory() {
+      const allocated = allocator.blocks.filter(b => b.allocated);
+      if (allocated.length === 0) {
+        alert('No blocks to free!');
+        return;
       }
       
-      async runBenchmark() {
-        this.reset();
-        
-        // Run same operations on both
-        const operations = [
-          { type: 'malloc', size: 32 },
-          { type: 'malloc', size: 48 },
-          { type: 'malloc', size: 64 },
-          { type: 'free' },
-          { type: 'malloc', size: 40 },
-          { type: 'free' }
-        ];
-        
-        for (const op of operations) {
-          await this.sleep(1000);
-          
-          if (op.type === 'malloc') {
-            document.getElementById('implicit-alloc-size').value = op.size;
-            document.getElementById('explicit-alloc-size').value = op.size;
-            this.implicitHeap.malloc();
-            this.explicitHeap.malloc();
-          } else {
-            this.implicitHeap.free();
-            this.explicitHeap.free();
-          }
-        }
-        
-        this.showResults();
-      }
-      
-      showResults() {
-        // Could add performance metrics visualization here
-        console.log('Benchmark complete');
-      }
-      
-      reset() {
-        this.implicitHeap.reset();
-        this.explicitHeap.reset();
-      }
-      
-      sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+      // Free a random allocated block
+      const randomBlock = allocated[Math.floor(Math.random() * allocated.length)];
+      allocator.free(randomBlock.id);
+    }
+    
+    function randomOperation() {
+      if (Math.random() < 0.6) {
+        const sizes = [16, 24, 32, 48, 64, 96, 128];
+        const size = sizes[Math.floor(Math.random() * sizes.length)];
+        document.getElementById('alloc-size').value = size;
+        allocateMemory();
+      } else {
+        freeMemory();
       }
     }
     
-    // Tab switching
-    function switchTab(tabName) {
-      document.querySelectorAll('.tab-content').forEach(tab => {
-        tab.classList.remove('active');
+    function resetHeap() {
+      const size = parseInt(document.getElementById('heap-size').value);
+      const type = document.getElementById('allocator-type').value;
+      allocator = new HeapAllocator(size, type);
+      allocator.updateVisualization();
+    }
+    
+    function runScenario() {
+      resetHeap();
+      
+      // Simulate a realistic allocation pattern
+      const scenario = [
+        { action: 'malloc', size: 32 },
+        { action: 'malloc', size: 64 },
+        { action: 'malloc', size: 32 },
+        { action: 'malloc', size: 128 },
+        { action: 'free', index: 1 },
+        { action: 'free', index: 2 },
+        { action: 'malloc', size: 48 },
+        { action: 'malloc', size: 32 }
+      ];
+      
+      let allocatedBlocks = [];
+      let delay = 0;
+      
+      scenario.forEach(step => {
+        setTimeout(() => {
+          if (step.action === 'malloc') {
+            document.getElementById('alloc-size').value = step.size;
+            const blockId = allocator.malloc(step.size);
+            if (blockId) allocatedBlocks.push(blockId);
+          } else {
+            if (allocatedBlocks[step.index]) {
+              allocator.free(allocatedBlocks[step.index]);
+              allocatedBlocks[step.index] = null;
+            }
+          }
+        }, delay);
+        delay += 1000;
       });
+    }
+    
+    function switchTab(tabName) {
+      // Update tab buttons
       document.querySelectorAll('.tab').forEach(tab => {
         tab.classList.remove('active');
       });
-      
-      document.getElementById(tabName + '-tab').classList.add('active');
       event.target.classList.add('active');
+      
+      // Update tab content
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      document.getElementById(`${tabName}-tab`).classList.add('active');
     }
     
-    // Initialize allocators
-    const implicitHeap = new ImplicitHeapAllocator('implicit-heap');
-    const explicitHeap = new ExplicitHeapAllocator('explicit-heap');
-    const comparison = new HeapComparison();
+    // Event listeners
+    document.getElementById('allocator-type').addEventListener('change', resetHeap);
+    document.getElementById('heap-size').addEventListener('change', resetHeap);
     
     // Initialize on load
     window.onload = function() {
-      implicitHeap.updateStats();
-      explicitHeap.updateStats();
+      allocator.updateVisualization();
     };
   </script>
 </body>

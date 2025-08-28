@@ -9,37 +9,72 @@
   <style>
     /* Clean, academic styling */
     #graph-canvas {
-      border: 1px solid #ddd;
+      border: 2px solid #ddd;
       background: white;
       cursor: crosshair;
       display: block;
       margin: 20px auto;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    #graph-canvas.add-node-mode {
+      cursor: crosshair;
+    }
+    
+    #graph-canvas.add-edge-mode {
+      cursor: pointer;
+    }
+    
+    #graph-canvas.delete-mode {
+      cursor: not-allowed;
     }
     
     .controls {
       text-align: center;
-      margin: 20px 0;
+      margin: 15px 0;
+      padding: 10px;
+      background: #f9f9f9;
+      border-radius: 5px;
     }
     
     .controls button, .controls select {
-      margin: 5px;
-      padding: 8px 15px;
+      margin: 3px;
+      padding: 6px 12px;
       font-family: 'EB Garamond', Georgia, serif;
-      font-size: 16px;
+      font-size: 14px;
       background: white;
-      border: 1px solid #ddd;
-      border-radius: 3px;
+      color: #333;
+      border: 2px solid #ddd;
+      border-radius: 5px;
       cursor: pointer;
+      transition: all 0.3s ease;
     }
     
-    .controls button:hover, .controls select:hover {
+    .controls button:hover:not(:disabled), .controls select:hover {
       border-color: #1772d0;
+      background: #1772d0;
+      color: white;
     }
     
     .controls button.active {
       background: #1772d0;
       color: white;
       border-color: #1772d0;
+      font-weight: bold;
+    }
+    
+    .controls button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .mode-indicator {
+      display: inline-block;
+      padding: 8px 15px;
+      background: #ffe066;
+      border-radius: 5px;
+      font-weight: bold;
+      margin: 10px;
     }
     
     .info-panel {
@@ -49,6 +84,7 @@
       margin: 20px 0;
       font-family: 'Courier New', monospace;
       font-size: 14px;
+      border-left: 4px solid #1772d0;
     }
     
     .legend {
@@ -56,6 +92,10 @@
       justify-content: center;
       gap: 20px;
       margin: 15px 0;
+      padding: 10px;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 5px;
       font-size: 14px;
     }
     
@@ -70,6 +110,34 @@
       height: 20px;
       border-radius: 50%;
       border: 2px solid #333;
+    }
+    
+    .instructions-box {
+      background: #e3f2fd;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 20px 0;
+    }
+    
+    .presets {
+      margin: 15px 0;
+      text-align: center;
+    }
+    
+    .presets button {
+      margin: 3px;
+      padding: 5px 10px;
+      background: #e8f5e9;
+      color: #2e7d32;
+      border: 1px solid #4caf50;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    
+    .presets button:hover {
+      background: #4caf50;
+      color: white;
     }
   </style>
 </head>
@@ -88,12 +156,27 @@
             <a href="../projects.html">← Back to Projects</a>
           </p>
           
+          <div class="instructions-box">
+            <strong>Current Mode:</strong> <span id="mode-display" class="mode-indicator">Add Node</span>
+            <p style="margin: 10px 0 0 0; font-size: 14px;" id="mode-instruction">Click on empty space to add a new node</p>
+          </div>
+          
+          <div class="presets">
+            <strong>Load Example:</strong>
+            <button onclick="loadPreset('binary-tree')">Binary Tree</button>
+            <button onclick="loadPreset('grid')">Grid Graph</button>
+            <button onclick="loadPreset('complete')">Complete Graph</button>
+            <button onclick="loadPreset('weighted')">Weighted Graph</button>
+          </div>
+          
           <div class="controls">
-            <strong>Mode:</strong>
-            <button id="add-node" class="active">Add Node</button>
-            <button id="add-edge">Add Edge</button>
-            <button id="delete">Delete</button>
-            <button id="clear">Clear All</button>
+            <strong>Graph Building:</strong>
+            <button id="add-node" class="active">➕ Add Node</button>
+            <button id="add-edge">🔗 Add Edge</button>
+            <button id="set-start">🚩 Set Start</button>
+            <button id="set-end">🎯 Set End</button>
+            <button id="delete">🗑️ Delete</button>
+            <button id="clear">❌ Clear All</button>
           </div>
           
           <div class="controls">
@@ -107,16 +190,18 @@
               <option value="prim">Prim's MST</option>
             </select>
             
-            <button id="run-algorithm">Run Algorithm</button>
-            <button id="step-algorithm">Step Through</button>
-            <button id="reset-algorithm">Reset</button>
+            <button id="run-algorithm">▶️ Run</button>
+            <button id="step-algorithm">⏭️ Step</button>
+            <button id="pause-algorithm">⏸️ Pause</button>
+            <button id="reset-algorithm">🔄 Reset</button>
             
             <label style="margin-left:10px;">
               Speed: <input type="range" id="speed" min="100" max="2000" value="500" style="width:100px;">
+              <span id="speed-display">500ms</span>
             </label>
           </div>
           
-          <canvas id="graph-canvas" width="800" height="500"></canvas>
+          <canvas id="graph-canvas" width="700" height="400"></canvas>
           
           <div class="legend">
             <div class="legend-item">
@@ -152,25 +237,24 @@
             <strong>Time Complexity:</strong> <span id="complexity">-</span>
           </div>
           
-          <div style="margin-top:30px;">
-            <heading>Instructions</heading>
-            <ul>
-              <li><strong>Add Node:</strong> Click on empty space to add a node</li>
-              <li><strong>Add Edge:</strong> Click two nodes to connect them</li>
-              <li><strong>Delete:</strong> Click on a node or edge to remove it</li>
-              <li><strong>Set Start/End:</strong> Right-click on nodes to set start (red) or end (blue)</li>
-              <li><strong>Edge Weight:</strong> Click on an edge to change its weight (for weighted algorithms)</li>
-            </ul>
-            
-            <heading>Algorithm Descriptions</heading>
-            <ul>
-              <li><strong>BFS:</strong> Explores nodes level by level, guarantees shortest path in unweighted graphs</li>
-              <li><strong>DFS:</strong> Explores as deep as possible before backtracking</li>
-              <li><strong>Dijkstra:</strong> Finds shortest path in weighted graphs with non-negative weights</li>
-              <li><strong>A*:</strong> Uses heuristic to find shortest path more efficiently than Dijkstra</li>
-              <li><strong>Kruskal's MST:</strong> Builds minimum spanning tree by selecting edges in order of weight</li>
-              <li><strong>Prim's MST:</strong> Builds minimum spanning tree by growing from a starting node</li>
-            </ul>
+          <div style="margin-top:20px; display:flex; gap:20px;">
+            <div style="flex:1;">
+              <heading style="font-size:16px;">Quick Instructions</heading>
+              <ul style="font-size:13px; margin:10px 0;">
+                <li>Click empty space to add nodes</li>
+                <li>Click two nodes to connect</li>
+                <li>Use Set Start/End buttons</li>
+                <li>Load presets for quick start</li>
+              </ul>
+            </div>
+            <div style="flex:1;">
+              <heading style="font-size:16px;">Algorithms</heading>
+              <ul style="font-size:13px; margin:10px 0;">
+                <li><strong>BFS/DFS:</strong> Graph traversal</li>
+                <li><strong>Dijkstra:</strong> Shortest path</li>
+                <li><strong>Kruskal/Prim:</strong> Min spanning tree</li>
+              </ul>
+            </div>
           </div>
           
         </td>
@@ -297,6 +381,44 @@
       });
     }
     
+    // Update mode display
+    function updateModeDisplay() {
+      const modeDisplay = document.getElementById('mode-display');
+      const modeInstruction = document.getElementById('mode-instruction');
+      const canvas = document.getElementById('graph-canvas');
+      
+      // Remove all mode classes
+      canvas.classList.remove('add-node-mode', 'add-edge-mode', 'delete-mode');
+      
+      switch(mode) {
+        case 'add-node':
+          modeDisplay.textContent = 'Add Node';
+          modeInstruction.textContent = 'Click on empty space to add a new node';
+          canvas.classList.add('add-node-mode');
+          break;
+        case 'add-edge':
+          modeDisplay.textContent = 'Add Edge';
+          modeInstruction.textContent = selectedNode ? 
+            'Click another node to connect' : 
+            'Click first node to start edge';
+          canvas.classList.add('add-edge-mode');
+          break;
+        case 'set-start':
+          modeDisplay.textContent = 'Set Start Node';
+          modeInstruction.textContent = 'Click a node to set as start (red)';
+          break;
+        case 'set-end':
+          modeDisplay.textContent = 'Set End Node';
+          modeInstruction.textContent = 'Click a node to set as destination (blue)';
+          break;
+        case 'delete':
+          modeDisplay.textContent = 'Delete Mode';
+          modeInstruction.textContent = 'Click nodes or edges to delete them';
+          canvas.classList.add('delete-mode');
+          break;
+      }
+    }
+    
     // Event handlers
     canvas.addEventListener('click', (e) => {
       const rect = canvas.getBoundingClientRect();
@@ -310,6 +432,12 @@
         return Math.sqrt(dx * dx + dy * dy) < 20;
       });
       
+      // Find clicked edge
+      const clickedEdge = graph.edges.find(edge => {
+        const dist = pointToLineDistance(x, y, edge.from.x, edge.from.y, edge.to.x, edge.to.y);
+        return dist < 10;
+      });
+      
       if (mode === 'add-node' && !clickedNode) {
         graph.addNode(x, y);
         drawGraph();
@@ -318,24 +446,69 @@
           if (!selectedNode) {
             selectedNode = clickedNode;
             clickedNode.color = '#ffe066';
+            updateModeDisplay();
             drawGraph();
           } else if (selectedNode !== clickedNode) {
             const weight = prompt('Edge weight (default: 1):', '1');
             graph.addEdge(selectedNode, clickedNode, parseInt(weight) || 1);
             selectedNode.color = '#ddd';
             selectedNode = null;
+            updateModeDisplay();
             drawGraph();
           }
         }
-      } else if (mode === 'delete' && clickedNode) {
-        // Remove node and connected edges
-        graph.nodes = graph.nodes.filter(n => n !== clickedNode);
-        graph.edges = graph.edges.filter(e => e.from !== clickedNode && e.to !== clickedNode);
-        if (graph.startNode === clickedNode) graph.startNode = null;
-        if (graph.endNode === clickedNode) graph.endNode = null;
+      } else if (mode === 'set-start' && clickedNode) {
+        graph.startNode = clickedNode;
         drawGraph();
+      } else if (mode === 'set-end' && clickedNode) {
+        graph.endNode = clickedNode;
+        drawGraph();
+      } else if (mode === 'delete') {
+        if (clickedNode) {
+          // Remove node and connected edges
+          graph.nodes = graph.nodes.filter(n => n !== clickedNode);
+          graph.edges = graph.edges.filter(e => e.from !== clickedNode && e.to !== clickedNode);
+          if (graph.startNode === clickedNode) graph.startNode = null;
+          if (graph.endNode === clickedNode) graph.endNode = null;
+          drawGraph();
+        } else if (clickedEdge) {
+          // Remove edge
+          graph.edges = graph.edges.filter(e => e !== clickedEdge);
+          drawGraph();
+        }
       }
     });
+    
+    // Helper function for edge click detection
+    function pointToLineDistance(px, py, x1, y1, x2, y2) {
+      const A = px - x1;
+      const B = py - y1;
+      const C = x2 - x1;
+      const D = y2 - y1;
+      
+      const dot = A * C + B * D;
+      const lenSq = C * C + D * D;
+      let param = -1;
+      
+      if (lenSq !== 0) param = dot / lenSq;
+      
+      let xx, yy;
+      
+      if (param < 0) {
+        xx = x1;
+        yy = y1;
+      } else if (param > 1) {
+        xx = x2;
+        yy = y2;
+      } else {
+        xx = x1 + param * C;
+        yy = y1 + param * D;
+      }
+      
+      const dx = px - xx;
+      const dy = py - yy;
+      return Math.sqrt(dx * dx + dy * dy);
+    }
     
     canvas.addEventListener('contextmenu', (e) => {
       e.preventDefault();
@@ -363,35 +536,168 @@
     });
     
     // Mode buttons
-    document.getElementById('add-node').addEventListener('click', () => {
-      mode = 'add-node';
+    function setMode(newMode) {
+      mode = newMode;
       selectedNode = null;
-      document.querySelectorAll('.controls button').forEach(btn => btn.classList.remove('active'));
-      document.getElementById('add-node').classList.add('active');
-    });
+      
+      // Update active button styling
+      document.querySelectorAll('.controls button').forEach(btn => {
+        if (btn.id === newMode || btn.id === `${newMode}-mode`) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+      
+      updateModeDisplay();
+    }
     
-    document.getElementById('add-edge').addEventListener('click', () => {
-      mode = 'add-edge';
-      selectedNode = null;
-      document.querySelectorAll('.controls button').forEach(btn => btn.classList.remove('active'));
-      document.getElementById('add-edge').classList.add('active');
-    });
-    
-    document.getElementById('delete').addEventListener('click', () => {
-      mode = 'delete';
-      selectedNode = null;
-      document.querySelectorAll('.controls button').forEach(btn => btn.classList.remove('active'));
-      document.getElementById('delete').classList.add('active');
-    });
+    document.getElementById('add-node').addEventListener('click', () => setMode('add-node'));
+    document.getElementById('add-edge').addEventListener('click', () => setMode('add-edge'));
+    document.getElementById('set-start').addEventListener('click', () => setMode('set-start'));
+    document.getElementById('set-end').addEventListener('click', () => setMode('set-end'));
+    document.getElementById('delete').addEventListener('click', () => setMode('delete'));
     
     document.getElementById('clear').addEventListener('click', () => {
+      if (confirm('Clear all nodes and edges?')) {
+        graph.nodes = [];
+        graph.edges = [];
+        graph.startNode = null;
+        graph.endNode = null;
+        graph.nodeIdCounter = 0;
+        drawGraph();
+        document.getElementById('status').textContent = 'Graph cleared';
+      }
+    });
+    
+    // Speed slider
+    document.getElementById('speed').addEventListener('input', (e) => {
+      speed = parseInt(e.target.value);
+      document.getElementById('speed-display').textContent = speed + 'ms';
+    });
+    
+    // Preset loading functions
+    window.loadPreset = function(type) {
       graph.nodes = [];
       graph.edges = [];
       graph.startNode = null;
       graph.endNode = null;
       graph.nodeIdCounter = 0;
+      
+      switch(type) {
+        case 'binary-tree':
+          // Create binary tree
+          const treeNodes = [];
+          const levels = 4;
+          let yOffset = 80;
+          
+          for (let level = 0; level < levels; level++) {
+            const nodesInLevel = Math.pow(2, level);
+            const xSpacing = 600 / (nodesInLevel + 1);
+            
+            for (let i = 0; i < nodesInLevel; i++) {
+              const x = 100 + xSpacing * (i + 1);
+              const y = yOffset + level * 100;
+              const node = { id: graph.nodeIdCounter++, x, y, visited: false, distance: Infinity, parent: null, color: '#ddd' };
+              treeNodes.push(node);
+              graph.nodes.push(node);
+              
+              // Connect to parent
+              if (level > 0) {
+                const parentIndex = Math.floor((treeNodes.length - nodesInLevel - 1 + i) / 2);
+                graph.edges.push({ from: treeNodes[parentIndex], to: node, weight: 1, color: '#999' });
+              }
+            }
+          }
+          break;
+          
+        case 'grid':
+          // Create grid graph
+          const rows = 5;
+          const cols = 6;
+          const gridNodes = [];
+          
+          for (let row = 0; row < rows; row++) {
+            for (let col = 0; col < cols; col++) {
+              const x = 150 + col * 100;
+              const y = 100 + row * 80;
+              const node = { id: graph.nodeIdCounter++, x, y, visited: false, distance: Infinity, parent: null, color: '#ddd' };
+              gridNodes.push(node);
+              graph.nodes.push(node);
+              
+              // Connect to previous node in row
+              if (col > 0) {
+                graph.edges.push({ from: gridNodes[gridNodes.length - 2], to: node, weight: 1, color: '#999' });
+              }
+              
+              // Connect to node above
+              if (row > 0) {
+                graph.edges.push({ from: gridNodes[(row - 1) * cols + col], to: node, weight: 1, color: '#999' });
+              }
+            }
+          }
+          break;
+          
+        case 'complete':
+          // Create complete graph (K5)
+          const n = 5;
+          const angleStep = (2 * Math.PI) / n;
+          const radius = 150;
+          const centerX = 400;
+          const centerY = 250;
+          const completeNodes = [];
+          
+          for (let i = 0; i < n; i++) {
+            const angle = i * angleStep;
+            const x = centerX + radius * Math.cos(angle);
+            const y = centerY + radius * Math.sin(angle);
+            const node = { id: graph.nodeIdCounter++, x, y, visited: false, distance: Infinity, parent: null, color: '#ddd' };
+            completeNodes.push(node);
+            graph.nodes.push(node);
+          }
+          
+          // Connect all pairs
+          for (let i = 0; i < n; i++) {
+            for (let j = i + 1; j < n; j++) {
+              graph.edges.push({ from: completeNodes[i], to: completeNodes[j], weight: Math.floor(Math.random() * 9) + 1, color: '#999' });
+            }
+          }
+          break;
+          
+        case 'weighted':
+          // Create weighted graph for shortest path demos
+          const positions = [
+            {x: 100, y: 250}, {x: 250, y: 150}, {x: 250, y: 350},
+            {x: 400, y: 100}, {x: 400, y: 250}, {x: 400, y: 400},
+            {x: 550, y: 150}, {x: 550, y: 350}, {x: 700, y: 250}
+          ];
+          
+          const weightedNodes = positions.map(pos => {
+            const node = { id: graph.nodeIdCounter++, x: pos.x, y: pos.y, visited: false, distance: Infinity, parent: null, color: '#ddd' };
+            graph.nodes.push(node);
+            return node;
+          });
+          
+          // Create weighted edges
+          const edgeData = [
+            [0, 1, 4], [0, 2, 3], [1, 3, 2], [1, 4, 5],
+            [2, 4, 7], [2, 5, 1], [3, 6, 3], [4, 6, 4],
+            [4, 7, 2], [5, 7, 6], [6, 8, 2], [7, 8, 3]
+          ];
+          
+          edgeData.forEach(([from, to, weight]) => {
+            graph.edges.push({ from: weightedNodes[from], to: weightedNodes[to], weight, color: '#999' });
+          });
+          
+          // Set default start and end
+          graph.startNode = weightedNodes[0];
+          graph.endNode = weightedNodes[8];
+          break;
+      }
+      
       drawGraph();
-    });
+      document.getElementById('status').textContent = `Loaded ${type} preset`;
+    }
     
     // Algorithm functions
     async function bfs() {
@@ -403,6 +709,12 @@
       let visitedCount = 0;
       
       while (queue.length > 0 && running) {
+        // Handle pause
+        while (paused && running) {
+          await sleep(100);
+        }
+        if (!running) break;
+        
         const current = queue.shift();
         current.color = '#51cf66';
         visitedCount++;
@@ -435,6 +747,12 @@
       let visitedCount = 0;
       
       while (stack.length > 0 && running) {
+        // Handle pause
+        while (paused && running) {
+          await sleep(100);
+        }
+        if (!running) break;
+        
         const current = stack.pop();
         
         if (!current.visited) {
@@ -492,8 +810,16 @@
     }
     
     // Algorithm controls
+    let paused = false;
+    
     document.getElementById('run-algorithm').addEventListener('click', async () => {
+      if (!graph.startNode) {
+        alert('Please set a start node first!\nUse the "Set Start" button and click a node.');
+        return;
+      }
+      
       running = true;
+      paused = false;
       graph.reset();
       drawGraph();
       
@@ -513,6 +839,11 @@
       };
       document.getElementById('complexity').textContent = complexities[algorithm];
       
+      // Disable edit buttons during execution
+      ['add-node', 'add-edge', 'set-start', 'set-end', 'delete', 'clear'].forEach(id => {
+        document.getElementById(id).disabled = true;
+      });
+      
       switch(algorithm) {
         case 'bfs':
           await bfs();
@@ -523,16 +854,42 @@
         // Additional algorithms can be implemented similarly
       }
       
-      document.getElementById('status').textContent = 'Complete';
+      if (running) {
+        document.getElementById('status').textContent = 'Complete';
+      }
       running = false;
+      
+      // Re-enable edit buttons
+      ['add-node', 'add-edge', 'set-start', 'set-end', 'delete', 'clear'].forEach(id => {
+        document.getElementById(id).disabled = false;
+      });
+    });
+    
+    document.getElementById('pause-algorithm').addEventListener('click', () => {
+      paused = !paused;
+      const btn = document.getElementById('pause-algorithm');
+      btn.textContent = paused ? '▶️ Resume' : '⏸️ Pause';
+      document.getElementById('status').textContent = paused ? 'Paused' : 'Running...';
+    });
+    
+    document.getElementById('step-algorithm').addEventListener('click', () => {
+      alert('Step-through mode coming soon!\nFor now, use Run with slower speed.');
     });
     
     document.getElementById('reset-algorithm').addEventListener('click', () => {
       running = false;
+      paused = false;
       graph.reset();
       document.getElementById('status').textContent = 'Ready';
       document.getElementById('nodes-visited').textContent = '0';
       document.getElementById('path-length').textContent = '-';
+      document.getElementById('pause-algorithm').textContent = '⏸️ Pause';
+      
+      // Re-enable all buttons
+      ['add-node', 'add-edge', 'set-start', 'set-end', 'delete', 'clear'].forEach(id => {
+        document.getElementById(id).disabled = false;
+      });
+      
       drawGraph();
     });
     
@@ -565,7 +922,13 @@
     }
     
     // Initialize with sample graph
-    createSampleGraph();
+    window.onload = function() {
+      updateModeDisplay();
+      createSampleGraph();
+      
+      // Show initial status
+      document.getElementById('status').textContent = 'Ready - Click nodes/canvas to build graph';
+    };
   </script>
 </body>
 </html>
