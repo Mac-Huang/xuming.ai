@@ -1703,21 +1703,348 @@
       }
       
       analyzeAvalanche() {
-        // Implement avalanche effect analysis
         const details = document.getElementById('analysis-details');
-        details.innerHTML = '<p>Avalanche Effect Analysis: Shows how small changes in input create large changes in hash output. Coming soon!</p>';
+        const svg = d3.select('#analysis-chart');
+        svg.selectAll('*').remove();
+        
+        const testString = 'test_key';
+        const functions = ['division', 'multiplication', 'universal', 'crypto'];
+        const results = [];
+        
+        functions.forEach(func => {
+          let totalBitChanges = 0;
+          const trials = 100;
+          
+          for (let trial = 0; trial < trials; trial++) {
+            const original = this[func + 'Hash'](testString, 256);
+            const modified = this[func + 'Hash'](testString + trial, 256);
+            
+            // Count bit differences
+            let xor = original ^ modified;
+            let bitCount = 0;
+            while (xor) {
+              bitCount += xor & 1;
+              xor >>= 1;
+            }
+            totalBitChanges += bitCount;
+          }
+          
+          results.push({
+            function: func,
+            avgBitChange: (totalBitChanges / trials) / 8 // Normalize to percentage
+          });
+        });
+        
+        this.drawAvalancheChart(results);
+        details.innerHTML = `
+          <h4>Avalanche Effect Results</h4>
+          <p>Shows how many bits change on average when input is slightly modified. 
+          Ideal is ~50% bit change for good avalanche effect.</p>
+          <table style="width: 100%; margin-top: 10px;">
+            ${results.map(r => `
+              <tr>
+                <td><strong>${r.function}:</strong></td>
+                <td>${(r.avgBitChange * 100).toFixed(1)}% bits changed</td>
+              </tr>
+            `).join('')}
+          </table>
+        `;
+      }
+      
+      drawAvalancheChart(results) {
+        const svg = d3.select('#analysis-chart');
+        const margin = {top: 40, right: 80, bottom: 60, left: 80};
+        const width = 900 - margin.left - margin.right;
+        const height = 400 - margin.top - margin.bottom;
+        
+        const g = svg.append('g')
+          .attr('transform', `translate(${margin.left},${margin.top})`);
+        
+        const x = d3.scaleBand()
+          .domain(results.map(d => d.function))
+          .range([0, width])
+          .padding(0.3);
+        
+        const y = d3.scaleLinear()
+          .domain([0, 1])
+          .range([height, 0]);
+        
+        // Draw bars
+        g.selectAll('.bar')
+          .data(results)
+          .enter().append('rect')
+          .attr('class', 'bar')
+          .attr('x', d => x(d.function))
+          .attr('y', d => y(d.avgBitChange))
+          .attr('width', x.bandwidth())
+          .attr('height', d => height - y(d.avgBitChange))
+          .attr('fill', '#1772d0');
+        
+        // Add ideal line at 50%
+        g.append('line')
+          .attr('x1', 0)
+          .attr('x2', width)
+          .attr('y1', y(0.5))
+          .attr('y2', y(0.5))
+          .attr('stroke', '#51cf66')
+          .attr('stroke-width', 2)
+          .attr('stroke-dasharray', '5,5');
+        
+        // Axes
+        g.append('g')
+          .attr('transform', `translate(0,${height})`)
+          .call(d3.axisBottom(x));
+        
+        g.append('g')
+          .call(d3.axisLeft(y).ticks(10, '%'));
+        
+        // Title
+        svg.append('text')
+          .attr('x', width / 2 + margin.left)
+          .attr('y', 20)
+          .attr('text-anchor', 'middle')
+          .style('font-size', '16px')
+          .text('Avalanche Effect: Average Bit Change Rate');
       }
       
       analyzeCollisionRate() {
-        // Implement collision rate analysis
         const details = document.getElementById('analysis-details');
-        details.innerHTML = '<p>Collision Rate Analysis: Measures collision frequency for different hash functions and load factors. Coming soon!</p>';
+        const functions = ['division', 'multiplication', 'universal', 'crypto'];
+        const tableSizes = [16, 32, 64, 128];
+        const numKeys = 200;
+        
+        const results = [];
+        
+        functions.forEach(func => {
+          const rates = tableSizes.map(size => {
+            const table = new Array(size).fill(0);
+            let collisions = 0;
+            
+            for (let i = 0; i < numKeys; i++) {
+              const key = 'item_' + i + '_' + Math.random().toString(36).substr(2, 5);
+              const hash = this[func + 'Hash'](key, size);
+              
+              if (table[hash] > 0) collisions++;
+              table[hash]++;
+            }
+            
+            return (collisions / numKeys) * 100;
+          });
+          
+          results.push({function: func, rates: rates});
+        });
+        
+        this.drawCollisionRateChart(results, tableSizes);
+        
+        details.innerHTML = `
+          <h4>Collision Rate Analysis</h4>
+          <p>Percentage of keys that collide for different table sizes and hash functions.</p>
+          <p><strong>Load Factor:</strong> ${(numKeys / tableSizes[tableSizes.length - 1]).toFixed(2)} for largest table</p>
+        `;
+      }
+      
+      drawCollisionRateChart(results, tableSizes) {
+        const svg = d3.select('#analysis-chart');
+        svg.selectAll('*').remove();
+        
+        const margin = {top: 40, right: 100, bottom: 60, left: 60};
+        const width = 900 - margin.left - margin.right;
+        const height = 400 - margin.top - margin.bottom;
+        
+        const g = svg.append('g')
+          .attr('transform', `translate(${margin.left},${margin.top})`);
+        
+        const x = d3.scaleLinear()
+          .domain([Math.min(...tableSizes), Math.max(...tableSizes)])
+          .range([0, width]);
+        
+        const y = d3.scaleLinear()
+          .domain([0, 100])
+          .range([height, 0]);
+        
+        const color = d3.scaleOrdinal()
+          .domain(results.map(d => d.function))
+          .range(['#1772d0', '#51cf66', '#ffd93d', '#ff6b6b']);
+        
+        const line = d3.line()
+          .x((d, i) => x(tableSizes[i]))
+          .y(d => y(d));
+        
+        // Draw lines
+        results.forEach(funcData => {
+          g.append('path')
+            .datum(funcData.rates)
+            .attr('fill', 'none')
+            .attr('stroke', color(funcData.function))
+            .attr('stroke-width', 2)
+            .attr('d', line);
+          
+          // Add dots
+          g.selectAll(`.dot-${funcData.function}`)
+            .data(funcData.rates)
+            .enter().append('circle')
+            .attr('cx', (d, i) => x(tableSizes[i]))
+            .attr('cy', d => y(d))
+            .attr('r', 4)
+            .attr('fill', color(funcData.function));
+        });
+        
+        // Axes
+        g.append('g')
+          .attr('transform', `translate(0,${height})`)
+          .call(d3.axisBottom(x))
+          .append('text')
+          .attr('x', width / 2)
+          .attr('y', 40)
+          .style('text-anchor', 'middle')
+          .style('fill', 'black')
+          .text('Table Size');
+        
+        g.append('g')
+          .call(d3.axisLeft(y))
+          .append('text')
+          .attr('transform', 'rotate(-90)')
+          .attr('y', -40)
+          .attr('x', -height / 2)
+          .style('text-anchor', 'middle')
+          .style('fill', 'black')
+          .text('Collision Rate (%)');
+        
+        // Legend
+        const legend = g.selectAll('.legend')
+          .data(results.map(d => d.function))
+          .enter().append('g')
+          .attr('class', 'legend')
+          .attr('transform', (d, i) => `translate(${width + 10},${i * 25})`);
+        
+        legend.append('rect')
+          .attr('width', 18)
+          .attr('height', 18)
+          .style('fill', color);
+        
+        legend.append('text')
+          .attr('x', 24)
+          .attr('y', 9)
+          .attr('dy', '.35em')
+          .style('text-anchor', 'start')
+          .text(d => d);
+        
+        // Title
+        svg.append('text')
+          .attr('x', width / 2 + margin.left)
+          .attr('y', 20)
+          .attr('text-anchor', 'middle')
+          .style('font-size', '16px')
+          .text('Collision Rate vs Table Size');
       }
       
       analyzePerformance() {
-        // Implement performance comparison
         const details = document.getElementById('analysis-details');
-        details.innerHTML = '<p>Performance Comparison: Benchmarks hash function speed and memory usage. Coming soon!</p>';
+        const functions = ['division', 'multiplication', 'universal', 'crypto'];
+        const results = [];
+        
+        functions.forEach(func => {
+          const keys = Array.from({length: 10000}, (_, i) => 'benchmark_key_' + i);
+          
+          const start = performance.now();
+          keys.forEach(key => {
+            this[func + 'Hash'](key, 256);
+          });
+          const end = performance.now();
+          
+          results.push({
+            function: func,
+            time: end - start,
+            opsPerSec: Math.round(10000 / ((end - start) / 1000))
+          });
+        });
+        
+        this.drawPerformanceChart(results);
+        
+        details.innerHTML = `
+          <h4>Performance Comparison</h4>
+          <p>Time to compute 10,000 hashes for each function.</p>
+          <table style="width: 100%; margin-top: 10px;">
+            <tr><th>Function</th><th>Time (ms)</th><th>Ops/sec</th></tr>
+            ${results.map(r => `
+              <tr>
+                <td>${r.function}</td>
+                <td>${r.time.toFixed(2)}</td>
+                <td>${r.opsPerSec.toLocaleString()}</td>
+              </tr>
+            `).join('')}
+          </table>
+        `;
+      }
+      
+      drawPerformanceChart(results) {
+        const svg = d3.select('#analysis-chart');
+        svg.selectAll('*').remove();
+        
+        const margin = {top: 40, right: 80, bottom: 60, left: 80};
+        const width = 900 - margin.left - margin.right;
+        const height = 400 - margin.top - margin.bottom;
+        
+        const g = svg.append('g')
+          .attr('transform', `translate(${margin.left},${margin.top})`);
+        
+        const x = d3.scaleBand()
+          .domain(results.map(d => d.function))
+          .range([0, width])
+          .padding(0.3);
+        
+        const y = d3.scaleLinear()
+          .domain([0, d3.max(results, d => d.opsPerSec)])
+          .range([height, 0]);
+        
+        // Draw bars
+        g.selectAll('.bar')
+          .data(results)
+          .enter().append('rect')
+          .attr('class', 'bar')
+          .attr('x', d => x(d.function))
+          .attr('y', d => y(d.opsPerSec))
+          .attr('width', x.bandwidth())
+          .attr('height', d => height - y(d.opsPerSec))
+          .attr('fill', (d, i) => ['#1772d0', '#51cf66', '#ffd93d', '#ff6b6b'][i]);
+        
+        // Add value labels
+        g.selectAll('.text')
+          .data(results)
+          .enter().append('text')
+          .attr('x', d => x(d.function) + x.bandwidth() / 2)
+          .attr('y', d => y(d.opsPerSec) - 5)
+          .attr('text-anchor', 'middle')
+          .text(d => d.opsPerSec.toLocaleString());
+        
+        // Axes
+        g.append('g')
+          .attr('transform', `translate(0,${height})`)
+          .call(d3.axisBottom(x))
+          .append('text')
+          .attr('x', width / 2)
+          .attr('y', 40)
+          .style('text-anchor', 'middle')
+          .style('fill', 'black')
+          .text('Hash Function');
+        
+        g.append('g')
+          .call(d3.axisLeft(y).ticks(10))
+          .append('text')
+          .attr('transform', 'rotate(-90)')
+          .attr('y', -50)
+          .attr('x', -height / 2)
+          .style('text-anchor', 'middle')
+          .style('fill', 'black')
+          .text('Operations per Second');
+        
+        // Title
+        svg.append('text')
+          .attr('x', width / 2 + margin.left)
+          .attr('y', 20)
+          .attr('text-anchor', 'middle')
+          .style('font-size', '16px')
+          .text('Hash Function Performance Comparison');
       }
       
       export() {

@@ -567,6 +567,37 @@
             <span><strong>Allocated Block</strong></span>
           </div>
         </div>
+        
+        <div class="info-box" style="background: #fff3cd; border: 1px solid #ffc107; margin-top: 20px;">
+          <h3>⚠️ Key Differences</h3>
+          <table style="width: 100%; margin-top: 10px;">
+            <tr>
+              <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Feature</th>
+              <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Implicit</th>
+              <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Explicit</th>
+            </tr>
+            <tr>
+              <td style="padding: 8px;">Footer</td>
+              <td style="padding: 8px;">None</td>
+              <td style="padding: 8px;">Free blocks only</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px;">Coalescing</td>
+              <td style="padding: 8px; color: red;">NO coalescing</td>
+              <td style="padding: 8px; color: green;">Immediate on free</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px;">Free list</td>
+              <td style="padding: 8px;">Linear scan</td>
+              <td style="padding: 8px;">Doubly-linked</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px;">Find fit</td>
+              <td style="padding: 8px;">O(n) all blocks</td>
+              <td style="padding: 8px;">O(f) free blocks</td>
+            </tr>
+          </table>
+        </div>
       </div>
       
       <div id="freelist-tab" class="tab-content">
@@ -621,7 +652,8 @@
         <div class="info-box" style="margin-top: 20px;">
           <h3>📊 Performance Metrics</h3>
           <p><strong>Fragmentation:</strong> Percentage of free memory that cannot be used due to being split into small, non-contiguous blocks.</p>
-          <p><strong>Coalescing:</strong> Merging adjacent free blocks to reduce fragmentation.</p>
+          <p><strong>Coalescing:</strong> Merging adjacent free blocks to reduce fragmentation (explicit allocator only).</p>
+          <p><strong>Note:</strong> Implicit allocator has NO coalescing - free blocks remain separate!</p>
         </div>
       </div>
       
@@ -629,11 +661,11 @@
         <div class="info-box">
           <h3>📚 Key Concepts</h3>
           <ul>
-            <li><strong>8-byte Alignment:</strong> All blocks are aligned to 8-byte boundaries for performance.</li>
-            <li><strong>Headers:</strong> Each block has a header containing size and allocation status.</li>
-            <li><strong>Footers (Explicit):</strong> Enable constant-time coalescing by finding the previous block.</li>
-            <li><strong>Splitting:</strong> Large free blocks are split to satisfy smaller requests.</li>
-            <li><strong>Coalescing:</strong> Adjacent free blocks are merged to reduce fragmentation.</li>
+            <li><strong>8-byte Alignment:</strong> All blocks are aligned to 8-byte boundaries for performance (ALIGNMENT = 8).</li>
+            <li><strong>Headers:</strong> Each block has a header containing size and allocation status (size_t).</li>
+            <li><strong>Implicit Allocator:</strong> NO coalescing, NO footer, uses linear scan O(n) to find free blocks.</li>
+            <li><strong>Explicit Allocator:</strong> Has footer for free blocks, immediate coalescing, doubly-linked free list O(1).</li>
+            <li><strong>Splitting:</strong> Large free blocks are split if remainder >= minimum block size.</li>
             <li><strong>First-fit:</strong> Allocator searches from the beginning and uses the first suitable block.</li>
           </ul>
         </div>
@@ -642,11 +674,11 @@
           <h3>🎯 CS107 Implementation Details</h3>
           <p>This visualization demonstrates the concepts from CS107 Assignment 6:</p>
           <ul>
-            <li>Implicit free list with linear search (O(n) allocation)</li>
-            <li>Explicit free list with next/prev pointers (O(1) coalescing)</li>
-            <li>Footer optimization for bidirectional traversal</li>
-            <li>Minimum block size enforcement</li>
-            <li>Proper alignment and size masking</li>
+            <li><strong>Implicit:</strong> Header-only, no coalescing, linear search through all blocks</li>
+            <li><strong>Explicit:</strong> Header + footer (for free blocks), immediate coalescing on free</li>
+            <li><strong>Free List:</strong> Explicit uses doubly-linked list with prev/next pointers in payload</li>
+            <li><strong>Minimum block size:</strong> 16 bytes (header + minimum payload)</li>
+            <li><strong>Bit flags:</strong> ALLOC_BIT (0x1 implicit, 0x2 explicit), LEFT_ALLOC_BIT (0x4 explicit only)</li>
           </ul>
         </div>
       </div>
@@ -737,10 +769,15 @@
       }
       
       coalesce(index) {
+        // Only explicit allocator does coalescing
+        if (this.type === 'implicit') {
+          return; // No coalescing for implicit allocator
+        }
+        
         const block = this.blocks[index];
         let coalesced = false;
         
-        // Check next block
+        // Check next block (right coalesce)
         if (index < this.blocks.length - 1 && !this.blocks[index + 1].allocated) {
           const nextBlock = this.blocks[index + 1];
           block.size += nextBlock.size;
@@ -749,7 +786,7 @@
           coalesced = true;
         }
         
-        // Check previous block
+        // Check previous block (left coalesce - using footer)
         if (index > 0 && !this.blocks[index - 1].allocated) {
           const prevBlock = this.blocks[index - 1];
           prevBlock.size += block.size;
@@ -796,12 +833,12 @@
           div.style.width = `${Math.max(100, block.size * 0.8)}px`;
           
           div.innerHTML = `
-            <div class="block-header">Header (8 bytes)</div>
+            <div class="block-header">Header [size|flags]</div>
             <div class="block-address">0x${block.address.toString(16).padStart(4, '0')}</div>
             <div class="block-size">${block.size} bytes</div>
             <div class="block-payload">${block.allocated ? 'User Data' : 'FREE'}</div>
             ${this.type === 'explicit' && !block.allocated ? 
-              '<div class="block-footer">Footer (8 bytes)</div>' : ''}
+              '<div class="block-footer">Footer [size]</div>' : ''}
           `;
           
           div.onclick = () => {
@@ -965,5 +1002,25 @@
       allocator.updateVisualization();
     };
   </script>
+  
+  <!-- Educational Disclaimer Footer -->
+  <div style="background: #f8f9fa; border-top: 2px solid #ddd; margin-top: 50px; padding: 30px 20px; text-align: center;">
+    <div style="max-width: 900px; margin: 0 auto;">
+      <h3 style="color: #666; margin-bottom: 15px;">📚 Educational Purpose Only</h3>
+      <p style="color: #777; line-height: 1.6; margin-bottom: 10px;">
+        This visualization is designed for <strong>educational and learning purposes only</strong>. 
+        It demonstrates the conceptual differences between implicit and explicit heap allocators 
+        as taught in Stanford CS107.
+      </p>
+      <p style="color: #888; font-size: 14px; margin-top: 15px;">
+        <strong>Note:</strong> This is a simplified visualization of memory allocation concepts. 
+        Actual implementation code is not provided to maintain academic integrity. 
+        Students should implement their own allocators based on course specifications.
+      </p>
+      <p style="color: #999; font-size: 13px; margin-top: 20px;">
+        Created by Xuming Huang | CS107 Stanford Summer 2024 | Grade: A+ (99/100)
+      </p>
+    </div>
+  </div>
 </body>
 </html>

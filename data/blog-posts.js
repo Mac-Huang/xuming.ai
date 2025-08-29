@@ -1,13 +1,13 @@
 // Blog posts data - simple and clean
 const blogPosts = [
   {
-    id: 'cs107-stanford',
-    title: 'CS 107: My Favorite Course at Stanford',
-    date: 'August 15, 2025',
+    id: 'stanford-summer',
+    title: 'Stanford Summer: Where Systems Meet Algorithms',
+    date: 'August 15, 2024',
     category: 'education',
-    excerpt: 'My experience earning an A+ (99/100) in CS 107 at Stanford. From heap allocators to security vulnerabilities, this course transformed how I think about computer systems.',
+    excerpt: 'My transformative summer at Stanford taking CS107 (A+, 99/100) and CS161 (A, 93/100). From heap allocators to algorithm analysis, discovering security vulnerabilities, and learning from amazing instructors.',
     url: 'blog/posts/cs107-stanford-summer.html',
-    readTime: '8 min'
+    readTime: '10 min'
   },
   
   {
