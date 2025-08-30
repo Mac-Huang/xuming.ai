@@ -389,8 +389,39 @@ function createBlogPost(post) {
   
   const tbody = document.createElement('tbody');
   const tr = document.createElement('tr');
+  
+  // Add cover image if available
+  if (post.cover) {
+    const imgTd = document.createElement('td');
+    imgTd.style.cssText = 'padding:20px;width:25%;vertical-align:middle';
+    
+    const coverLink = document.createElement('a');
+    coverLink.href = post.url;
+    
+    if (post.cover.endsWith('.mov') || post.cover.endsWith('.mp4')) {
+      // Handle video covers
+      const video = document.createElement('video');
+      video.style.cssText = 'width:100%;max-width:200px;height:120px;object-fit:cover;border-radius:8px;';
+      video.autoplay = true;
+      video.loop = true;
+      video.muted = true;
+      video.src = post.cover;
+      coverLink.appendChild(video);
+    } else {
+      // Handle image covers
+      const img = document.createElement('img');
+      img.style.cssText = 'width:100%;max-width:200px;height:120px;object-fit:cover;border-radius:8px;';
+      img.src = post.cover;
+      img.alt = post.title;
+      coverLink.appendChild(img);
+    }
+    
+    imgTd.appendChild(coverLink);
+    tr.appendChild(imgTd);
+  }
+  
   const td = document.createElement('td');
-  td.style.cssText = 'padding:20px;width:100%;vertical-align:middle';
+  td.style.cssText = 'padding:20px;width:' + (post.cover ? '75%' : '100%') + ';vertical-align:middle';
   
   // Title
   const heading = document.createElement('heading');

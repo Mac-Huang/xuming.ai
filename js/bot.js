@@ -9,11 +9,12 @@ const knowledgeBase = {
     university: "University of Wisconsin - Madison",
     interests: "Machine Learning Systems, Operating Systems, Efficient Computing Infrastructure",
     research: "MLSys, distributed systems, compiler optimization, and the intersection of systems and machine learning",
-    stanford: "Last summer, I did my summer session at Stanford. I got A+ (99/100) in CS107 Computer Organization & Systems, and A (93/100) in CS161 Design and Analysis of Algorithms.",
-    focus: "I'm particularly interested in making large-scale ML training and inference more efficient.",
-    goals: "My career goal is to work on cutting-edge ML infrastructure at leading tech companies or pursue a PhD in ML systems.",
-    skills: "Python, C++, Java, CUDA, PyTorch, JAX, distributed computing, compiler optimization, systems programming",
-    experience: "I've interned at leading tech companies working on ML infrastructure, contributed to open-source projects, and published research papers in top conferences."
+    stanford: "Summer 2024 at Stanford was transformative - earned A+ (99/100) in CS107 and A (93/100) in CS161. Discovered critical security vulnerabilities in Stanford's AFS system.",
+    focus: "I'm particularly interested in making large-scale ML training and inference more efficient through systems optimization.",
+    goals: "My career goal is to advance ML infrastructure at leading tech companies or pursue a PhD in ML systems.",
+    skills: "C/C++, Python, Java, x86 Assembly, CUDA, PyTorch, systems programming, security analysis, algorithm design",
+    experience: "Interned at CoolAI working on AI products, discovered Stanford AFS vulnerabilities, created widely-used CS educational tools.",
+    achievements: "NFL FLAG Football National Champion 2023, Stanford AFS vulnerability discovery, created educational CS visualizations"
   },
   
   topics: {
@@ -245,8 +246,23 @@ function generateResponse(message) {
     return "My research explores how to make ML training and inference more efficient. This includes: 1) Memory optimization techniques to train larger models, 2) Compiler optimizations for better hardware utilization, 3) Novel parallelization strategies for distributed training, 4) Hardware-aware algorithm design. I believe the next breakthroughs in AI will come from systems innovations.";
   }
   
+  // Achievements
+  if (lower.includes('achievement') || lower.includes('accomplish')) {
+    return knowledgeBase.bio.achievements + ". These diverse experiences taught me perseverance, teamwork, and the importance of thorough security analysis.";
+  }
+  
+  // Security and vulnerabilities
+  if (lower.includes('security') || lower.includes('vulnerability') || lower.includes('afs')) {
+    return "At Stanford, I discovered critical vulnerabilities in the Andrew File System (AFS). Following responsible disclosure protocols from CS107, I documented the issues, developed comprehensive solutions, and worked with Alex Keller from the engineering team to implement fixes. This experience reinforced the importance of security-conscious systems programming.";
+  }
+  
+  // Visualizations
+  if (lower.includes('visualization') || lower.includes('demo') || lower.includes('interactive')) {
+    return "I've created interactive visualizations for CS concepts including heap allocators (CS107), sorting algorithms, hash functions with collision analysis, and neural networks. These tools help students understand complex concepts through visual learning. Check out the Projects page for live demos!";
+  }
+  
   // Default response
-  return "I can help you learn about my research in machine learning systems, publications, projects, and academic experience. Try asking about specific topics like gradient checkpointing, distributed training, my Stanford courses, career goals, or advice for students. What would you like to know?";
+  return "I'm Xuming, a CS student passionate about systems and algorithms. You can ask me about:\n\n• Stanford experience (CS107 A+, CS161 A, AFS vulnerability discovery)\n• ML systems research and optimization techniques\n• Interactive CS visualizations I've built\n• NFL FLAG Football National Championship 2023\n• Technical topics (distributed training, memory optimization, etc.)\n• Career goals and advice\n\nWhat would you like to know?";
 }
 
 // Chat functionality

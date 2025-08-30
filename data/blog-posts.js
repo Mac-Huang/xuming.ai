@@ -7,7 +7,8 @@ const blogPosts = [
     category: 'education',
     excerpt: 'My transformative summer at Stanford taking CS107 (A+, 99/100) and CS161 (A, 93/100). From heap allocators to algorithm analysis, discovering security vulnerabilities, and learning from amazing instructors.',
     url: 'blog/posts/cs107-stanford-summer.html',
-    readTime: '10 min'
+    readTime: '10 min',
+    cover: 'images/blog/Stanford-Cover.jpg'
   },
   
   {
@@ -17,7 +18,8 @@ const blogPosts = [
     category: 'life',
     excerpt: "My first experiences in the United States, specifically in Madison, Wisconsin. It's a mix of culture shock, new friendships, and personal growth.",
     url: 'blog/posts/new-chapter-madison.html',
-    readTime: '4 min'
+    readTime: '4 min',
+    cover: 'images/blog/Madison_Cover.jpg'
   },
   
   {
@@ -27,7 +29,8 @@ const blogPosts = [
     category: 'career',
     excerpt: 'My internship experience at CoolAI, developing AI products and representing the company at the World Artificial Intelligence Conference (WAIC).',
     url: 'blog/posts/first-internship.html',
-    readTime: '5 min'
+    readTime: '5 min',
+    cover: 'images/blog/CoolAI-Cover.jpg'
   },
   
   {
@@ -37,7 +40,8 @@ const blogPosts = [
     category: 'life',
     excerpt: "Welcome to my first-ever website and blog post! Right here, I'm gonna jot down significant milestones in my life.",
     url: 'blog/posts/hello-world.html',
-    readTime: '2 min'
+    readTime: '2 min',
+    cover: 'images/blog/HelloWorld-Cover.jpg'
   },
   
   {
@@ -47,7 +51,8 @@ const blogPosts = [
     category: 'sports',
     excerpt: 'Celebrating our 2023 NFL FLAG "Star of Shine" National Championship victory - a pinnacle in our 14-year saga of sheer grit and dominance.',
     url: 'blog/posts/nfl-flag-football-championship.html',
-    readTime: '3 min'
+    readTime: '3 min',
+    cover: 'images/blog/Football-Cover.jpg'
   }
 ];
 
@@ -65,11 +70,10 @@ function getRecentPosts(limit = 5) {
   return blogPosts.slice(0, limit);
 }
 
-// Blog categories
+// Blog categories - simplified
 const blogCategories = [
-  { label: 'All Posts', value: 'all' },
-  { label: 'Education', value: 'education' },
-  { label: 'Life Updates', value: 'life' },
-  { label: 'Career', value: 'career' },
-  { label: 'Sports', value: 'sports' }
+  { label: 'All', value: 'all' },
+  { label: 'Academic', value: 'education' },
+  { label: 'Life', value: 'life' },
+  { label: 'Career', value: 'career' }
 ];

@@ -113,6 +113,14 @@
             This page documents my academic journey through various courses, including my understanding, experiences, and projects completed during these courses.
           </p>
           
+          <!-- Course Filters -->
+          <p style="text-align:center; margin: 25px 0; padding: 15px; background: #f5f5f5; border-radius: 8px;">
+            <strong>Filter by Institution:</strong> 
+            <a href="javascript:;" onclick="filterCourses('all')" id="filter-all" style="font-weight:700;">All</a> | 
+            <a href="javascript:;" onclick="filterCourses('stanford')" id="filter-stanford">Stanford</a> | 
+            <a href="javascript:;" onclick="filterCourses('uwmadison')" id="filter-uwmadison">UW-Madison</a>
+          </p>
+          
           <!-- Navigation -->
           <p style="text-align:center; margin: 30px 0;">
             <a href="index.html">Home</a> |
@@ -123,7 +131,9 @@
             <a href="bot.html">Ask Me</a>
           </p>
           
-          <!-- Summer 2025 - Stanford -->
+          <!-- Stanford Courses -->
+          <div id="stanford-courses">
+          <!-- Summer 2024 - Stanford -->
           <div class="semester-header">
             <h2 style="margin:0; font-size:20px;">Summer 2025</h2>
             <p style="margin:5px 0 0 0;"><strong>Institution:</strong> Stanford University</p>
@@ -207,9 +217,13 @@
               <a href="blog/posts/cs107-stanford-summer.html#cs161" style="color:#1772d0;">→ Read more about my CS 161 experience</a>
             </p>
           </div>
+          </div>
+          <!-- End Stanford Courses -->
           
           <hr>
           
+          <!-- UW-Madison Courses -->
+          <div id="uwmadison-courses">
           <!-- Spring 2025 Semester -->
           <div class="semester-header">
             <h2 style="margin:0; font-size:20px;">Spring 2025 Semester</h2>
@@ -428,6 +442,9 @@ MULT_R2 <span class="keyword">.BLKW</span> <span class="number">1</span>
             <a href="bot.html">Ask Me</a>
           </p>
           
+          </div>
+          <!-- End UW-Madison Courses -->
+          
           <p style="text-align:center;font-size:14px;color:#999;padding:20px;">
             Feel free to clone my template <a href="https://github.com/Mac-Huang/xuming.ai.git" style="color:#999;">Xuming Huang</a>
           </p>
@@ -436,5 +453,29 @@ MULT_R2 <span class="keyword">.BLKW</span> <span class="number">1</span>
       </tr>
     </tbody>
   </table>
+  
+  <script>
+    function filterCourses(institution) {
+      // Update filter button styles
+      document.getElementById('filter-all').style.fontWeight = institution === 'all' ? '700' : 'normal';
+      document.getElementById('filter-stanford').style.fontWeight = institution === 'stanford' ? '700' : 'normal';
+      document.getElementById('filter-uwmadison').style.fontWeight = institution === 'uwmadison' ? '700' : 'normal';
+      
+      // Show/hide course sections
+      const stanfordCourses = document.getElementById('stanford-courses');
+      const uwmadisonCourses = document.getElementById('uwmadison-courses');
+      
+      if (institution === 'all') {
+        stanfordCourses.style.display = 'block';
+        uwmadisonCourses.style.display = 'block';
+      } else if (institution === 'stanford') {
+        stanfordCourses.style.display = 'block';
+        uwmadisonCourses.style.display = 'none';
+      } else if (institution === 'uwmadison') {
+        stanfordCourses.style.display = 'none';
+        uwmadisonCourses.style.display = 'block';
+      }
+    }
+  </script>
 </body>
 </html>
