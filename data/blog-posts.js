@@ -3,10 +3,10 @@ const blogPosts = [
   {
     id: 'stanford-summer',
     title: 'Stanford Summer: Where Systems Meet Algorithms',
-    date: 'August 15, 2024',
+    date: 'August 15, 2025',
     category: 'education',
     excerpt: 'My transformative summer at Stanford taking CS107 (A+, 99/100) and CS161 (A, 93/100). From heap allocators to algorithm analysis, discovering security vulnerabilities, and learning from amazing instructors.',
-    url: 'blog/posts/cs107-stanford-summer.html',
+    url: 'blog/posts/stanford-summer-2025.html',
     readTime: '10 min',
     cover: 'images/blog/Stanford-Cover.jpg'
   },
