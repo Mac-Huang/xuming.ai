@@ -1,0 +1,295 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Network Protocol Analyzer - Xuming Huang</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../stylesheet.css">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body { font-family: 'Lato', sans-serif; margin: 0; padding: 20px; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); }
+    .container { max-width: 1500px; margin: 0 auto; background: white; border-radius: 12px; padding: 30px; }
+    .header { text-align: center; margin-bottom: 30px; }
+    .header h1 { color: #1772d0; }
+    .protocol-selector { display: flex; gap: 10px; justify-content: center; margin: 20px 0; }
+    .protocol-btn { padding: 10px 20px; background: white; border: 2px solid #1772d0; border-radius: 8px; cursor: pointer; }
+    .protocol-btn.active { background: #1772d0; color: white; }
+    .main-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
+    .packet-builder { background: #f8f9fa; border-radius: 8px; padding: 20px; }
+    .visualization { background: #263238; border-radius: 8px; padding: 20px; min-height: 500px; }
+    .layer { background: rgba(255,255,255,0.1); border: 2px solid; border-radius: 8px; padding: 15px; margin: 10px 0; }
+    .layer.application { border-color: #4caf50; }
+    .layer.transport { border-color: #2196f3; }
+    .layer.network { border-color: #ff9800; }
+    .layer.link { border-color: #9c27b0; }
+    .layer-title { color: white; font-weight: bold; margin-bottom: 10px; }
+    .packet-field { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; margin: 10px 0; }
+    .field-label { font-size: 12px; color: #666; }
+    .field-input { padding: 5px; border: 1px solid #ddd; border-radius: 4px; }
+    .send-btn { width: 100%; padding: 12px; background: #4caf50; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 20px; }
+    .packet-flow { margin: 20px 0; }
+    .packet { background: #ffd700; padding: 10px; border-radius: 4px; margin: 5px 0; animation: packetMove 2s linear; }
+    @keyframes packetMove { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin: 20px 0; }
+    .stat-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 8px; text-align: center; }
+    .handshake-diagram { margin: 20px 0; }
+    .sequence-line { stroke: #4caf50; stroke-width: 2; }
+    .message-arrow { stroke: #2196f3; stroke-width: 2; marker-end: url(#arrowhead); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🌐 Network Protocol Analyzer</h1>
+      <p>Interactive visualization of TCP/IP, HTTP, DNS, and networking protocols</p>
+      <p><a href="../projects.html">← Back to Projects</a></p>
+    </div>
+    
+    <div class="protocol-selector">
+      <button class="protocol-btn active" onclick="selectProtocol('tcp')">TCP</button>
+      <button class="protocol-btn" onclick="selectProtocol('udp')">UDP</button>
+      <button class="protocol-btn" onclick="selectProtocol('http')">HTTP</button>
+      <button class="protocol-btn" onclick="selectProtocol('dns')">DNS</button>
+      <button class="protocol-btn" onclick="selectProtocol('dhcp')">DHCP</button>
+    </div>
+    
+    <div class="main-grid">
+      <div class="packet-builder">
+        <h3>Packet Builder</h3>
+        
+        <div id="tcp-fields">
+          <div class="packet-field">
+            <span class="field-label">Source Port:</span>
+            <input type="text" class="field-input" value="8080">
+          </div>
+          <div class="packet-field">
+            <span class="field-label">Destination Port:</span>
+            <input type="text" class="field-input" value="80">
+          </div>
+          <div class="packet-field">
+            <span class="field-label">Sequence Number:</span>
+            <input type="text" class="field-input" value="1000">
+          </div>
+          <div class="packet-field">
+            <span class="field-label">ACK Number:</span>
+            <input type="text" class="field-input" value="0">
+          </div>
+          <div class="packet-field">
+            <span class="field-label">Flags:</span>
+            <select class="field-input">
+              <option>SYN</option>
+              <option>SYN-ACK</option>
+              <option>ACK</option>
+              <option>FIN</option>
+              <option>RST</option>
+            </select>
+          </div>
+          <div class="packet-field">
+            <span class="field-label">Window Size:</span>
+            <input type="text" class="field-input" value="65535">
+          </div>
+        </div>
+        
+        <button class="send-btn" onclick="sendPacket()">Send Packet</button>
+        
+        <div style="margin-top: 30px;">
+          <h4>Common Scenarios</h4>
+          <button class="protocol-btn" onclick="runScenario('handshake')" style="width: 100%; margin: 5px 0;">TCP 3-Way Handshake</button>
+          <button class="protocol-btn" onclick="runScenario('http-request')" style="width: 100%; margin: 5px 0;">HTTP Request</button>
+          <button class="protocol-btn" onclick="runScenario('dns-lookup')" style="width: 100%; margin: 5px 0;">DNS Lookup</button>
+        </div>
+      </div>
+      
+      <div class="visualization">
+        <h3 style="color: white;">OSI Layer Encapsulation</h3>
+        
+        <div class="layer application">
+          <div class="layer-title">Application Layer (L7)</div>
+          <div id="app-data" style="color: #aaa;">HTTP/HTTPS, FTP, SMTP, DNS</div>
+        </div>
+        
+        <div class="layer transport">
+          <div class="layer-title">Transport Layer (L4)</div>
+          <div id="transport-data" style="color: #aaa;">TCP/UDP Headers + Data</div>
+        </div>
+        
+        <div class="layer network">
+          <div class="layer-title">Network Layer (L3)</div>
+          <div id="network-data" style="color: #aaa;">IP Headers + Segment</div>
+        </div>
+        
+        <div class="layer link">
+          <div class="layer-title">Data Link Layer (L2)</div>
+          <div id="link-data" style="color: #aaa;">Ethernet Frame</div>
+        </div>
+        
+        <svg id="handshake-svg" width="100%" height="300" style="margin-top: 20px;">
+          <defs>
+            <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+              <polygon points="0 0, 10 3, 0 6" fill="#2196f3" />
+            </marker>
+          </defs>
+        </svg>
+      </div>
+    </div>
+    
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div style="font-size: 24px; font-weight: bold;">0</div>
+        <div style="font-size: 12px;">Packets Sent</div>
+      </div>
+      <div class="stat-card">
+        <div style="font-size: 24px; font-weight: bold;">0 ms</div>
+        <div style="font-size: 12px;">RTT</div>
+      </div>
+      <div class="stat-card">
+        <div style="font-size: 24px; font-weight: bold;">0 KB</div>
+        <div style="font-size: 12px;">Data Transferred</div>
+      </div>
+      <div class="stat-card">
+        <div style="font-size: 24px; font-weight: bold;">0</div>
+        <div style="font-size: 12px;">Retransmissions</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentProtocol = 'tcp';
+    let packetCount = 0;
+    
+    function selectProtocol(protocol) {
+      currentProtocol = protocol;
+      document.querySelectorAll('.protocol-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      updatePacketBuilder(protocol);
+    }
+    
+    function updatePacketBuilder(protocol) {
+      const fields = document.getElementById('tcp-fields');
+      // Update fields based on protocol
+      if (protocol === 'http') {
+        fields.innerHTML = `
+          <div class="packet-field">
+            <span class="field-label">Method:</span>
+            <select class="field-input">
+              <option>GET</option>
+              <option>POST</option>
+              <option>PUT</option>
+              <option>DELETE</option>
+            </select>
+          </div>
+          <div class="packet-field">
+            <span class="field-label">URL:</span>
+            <input type="text" class="field-input" value="/index.html">
+          </div>
+          <div class="packet-field">
+            <span class="field-label">Host:</span>
+            <input type="text" class="field-input" value="example.com">
+          </div>
+        `;
+      }
+    }
+    
+    function sendPacket() {
+      packetCount++;
+      animatePacketFlow();
+      updateStats();
+    }
+    
+    function animatePacketFlow() {
+      const layers = ['app-data', 'transport-data', 'network-data', 'link-data'];
+      layers.forEach((layer, index) => {
+        setTimeout(() => {
+          const element = document.getElementById(layer);
+          element.style.color = '#ffd700';
+          element.textContent = generateLayerData(layer);
+          setTimeout(() => {
+            element.style.color = '#aaa';
+          }, 1000);
+        }, index * 500);
+      });
+    }
+    
+    function generateLayerData(layer) {
+      const data = {
+        'app-data': 'GET /index.html HTTP/1.1\\nHost: example.com',
+        'transport-data': '[TCP Header: Src:8080 Dst:80 Seq:1000 Ack:0] + HTTP Data',
+        'network-data': '[IP Header: Src:192.168.1.1 Dst:93.184.216.34] + TCP Segment',
+        'link-data': '[Ethernet: Src:AA:BB:CC:DD:EE:FF Dst:11:22:33:44:55:66] + IP Packet'
+      };
+      return data[layer];
+    }
+    
+    function runScenario(scenario) {
+      if (scenario === 'handshake') {
+        drawTCPHandshake();
+      }
+    }
+    
+    function drawTCPHandshake() {
+      const svg = d3.select('#handshake-svg');
+      svg.selectAll('*').remove();
+      
+      const width = 600;
+      const height = 300;
+      
+      // Draw client and server lines
+      svg.append('line')
+        .attr('x1', 100).attr('y1', 50)
+        .attr('x2', 100).attr('y2', 250)
+        .attr('class', 'sequence-line');
+      
+      svg.append('line')
+        .attr('x1', 500).attr('y1', 50)
+        .attr('x2', 500).attr('y2', 250)
+        .attr('class', 'sequence-line');
+      
+      // Labels
+      svg.append('text')
+        .attr('x', 100).attr('y', 40)
+        .attr('text-anchor', 'middle')
+        .attr('fill', 'white')
+        .text('Client');
+      
+      svg.append('text')
+        .attr('x', 500).attr('y', 40)
+        .attr('text-anchor', 'middle')
+        .attr('fill', 'white')
+        .text('Server');
+      
+      // Animate handshake
+      const messages = [
+        {from: 100, to: 500, y: 100, text: 'SYN', delay: 0},
+        {from: 500, to: 100, y: 150, text: 'SYN-ACK', delay: 1000},
+        {from: 100, to: 500, y: 200, text: 'ACK', delay: 2000}
+      ];
+      
+      messages.forEach(msg => {
+        setTimeout(() => {
+          const arrow = svg.append('line')
+            .attr('x1', msg.from).attr('y1', msg.y)
+            .attr('x2', msg.from).attr('y2', msg.y)
+            .attr('class', 'message-arrow');
+          
+          arrow.transition()
+            .duration(800)
+            .attr('x2', msg.to);
+          
+          svg.append('text')
+            .attr('x', (msg.from + msg.to) / 2)
+            .attr('y', msg.y - 5)
+            .attr('text-anchor', 'middle')
+            .attr('fill', '#ffd700')
+            .text(msg.text);
+        }, msg.delay);
+      });
+    }
+    
+    function updateStats() {
+      document.querySelector('.stat-card:nth-child(1) div').textContent = packetCount;
+      document.querySelector('.stat-card:nth-child(2) div').textContent = Math.floor(Math.random() * 50 + 10) + ' ms';
+      document.querySelector('.stat-card:nth-child(3) div').textContent = (packetCount * 1.5).toFixed(1) + ' KB';
+    }
+  </script>
+</body>
+</html>

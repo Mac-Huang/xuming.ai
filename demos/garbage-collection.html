@@ -1,0 +1,1070 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Garbage Collection Algorithm Visualizer - Xuming Huang</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../stylesheet.css">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body {
+      font-family: 'Lato', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 30px;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .header h1 {
+      color: #1772d0;
+      margin-bottom: 10px;
+    }
+    
+    .gc-controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    
+    .gc-controls button {
+      padding: 10px 20px;
+      background: #1772d0;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+    
+    .gc-controls button:hover {
+      background: #1557a0;
+      transform: translateY(-2px);
+    }
+    
+    .gc-controls select {
+      padding: 8px 12px;
+      border: 2px solid #1772d0;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    
+    .memory-layout {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .heap-regions {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 15px;
+    }
+    
+    .heap-region {
+      margin-bottom: 15px;
+      background: white;
+      border-radius: 4px;
+      padding: 10px;
+      border: 2px solid #ddd;
+    }
+    
+    .region-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+    
+    .region-name {
+      color: #333;
+    }
+    
+    .region-usage {
+      color: #1772d0;
+      font-size: 12px;
+    }
+    
+    .memory-bar {
+      height: 40px;
+      background: #e0e0e0;
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .memory-used {
+      height: 100%;
+      transition: width 0.5s ease;
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      color: white;
+      font-size: 12px;
+    }
+    
+    .eden .memory-used {
+      background: linear-gradient(90deg, #4caf50, #66bb6a);
+    }
+    
+    .survivor .memory-used {
+      background: linear-gradient(90deg, #2196f3, #42a5f5);
+    }
+    
+    .old-gen .memory-used {
+      background: linear-gradient(90deg, #ff9800, #ffa726);
+    }
+    
+    .reference-graph {
+      background: #263238;
+      border-radius: 8px;
+      padding: 15px;
+      min-height: 400px;
+    }
+    
+    #reference-svg {
+      width: 100%;
+      height: 400px;
+    }
+    
+    .object-node {
+      cursor: pointer;
+    }
+    
+    .object-node circle {
+      transition: all 0.3s;
+    }
+    
+    .root-object {
+      fill: #ff5252;
+    }
+    
+    .reachable-object {
+      fill: #4caf50;
+    }
+    
+    .unreachable-object {
+      fill: #757575;
+    }
+    
+    .marked-object {
+      fill: #ffc107;
+      stroke: #ff9800;
+      stroke-width: 3;
+    }
+    
+    .reference-link {
+      stroke: #90a4ae;
+      stroke-width: 2;
+      fill: none;
+      marker-end: url(#arrowhead);
+    }
+    
+    .gc-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin: 20px 0;
+    }
+    
+    .stat-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 32px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    
+    .stat-label {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+    
+    .gc-timeline {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    
+    .timeline-header {
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #333;
+    }
+    
+    #timeline-chart {
+      height: 150px;
+    }
+    
+    .gc-event {
+      display: inline-block;
+      padding: 5px 10px;
+      margin: 2px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: white;
+    }
+    
+    .minor-gc {
+      background: #4caf50;
+    }
+    
+    .major-gc {
+      background: #f44336;
+    }
+    
+    .algorithm-selector {
+      display: flex;
+      gap: 10px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+    
+    .algorithm-card {
+      flex: 1;
+      min-width: 200px;
+      padding: 15px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-align: center;
+    }
+    
+    .algorithm-card:hover {
+      border-color: #1772d0;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .algorithm-card.active {
+      background: #e3f2fd;
+      border-color: #1772d0;
+    }
+    
+    .algorithm-name {
+      font-weight: bold;
+      color: #1772d0;
+      margin-bottom: 5px;
+    }
+    
+    .algorithm-desc {
+      font-size: 12px;
+      color: #666;
+    }
+    
+    .control-panel {
+      background: #f5f5f5;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 20px 0;
+    }
+    
+    .speed-control {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .speed-slider {
+      flex: 1;
+      -webkit-appearance: none;
+      height: 6px;
+      border-radius: 3px;
+      background: #ddd;
+      outline: none;
+    }
+    
+    .speed-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #1772d0;
+      cursor: pointer;
+    }
+    
+    .log-console {
+      background: #1e1e1e;
+      color: #4ec9b0;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      padding: 15px;
+      border-radius: 8px;
+      height: 200px;
+      overflow-y: auto;
+      margin-top: 20px;
+    }
+    
+    .log-entry {
+      margin: 3px 0;
+      opacity: 0;
+      animation: fadeIn 0.3s forwards;
+    }
+    
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
+    }
+    
+    .log-time {
+      color: #858585;
+      margin-right: 10px;
+    }
+    
+    .log-gc {
+      color: #ffd700;
+    }
+    
+    .log-alloc {
+      color: #4ec9b0;
+    }
+    
+    .log-free {
+      color: #f48771;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Garbage Collection Algorithm Visualizer</h1>
+      <p>Interactive visualization of memory management and GC algorithms</p>
+      <p><a href="../projects.html">← Back to Projects</a></p>
+    </div>
+    
+    <div class="algorithm-selector">
+      <div class="algorithm-card active" onclick="selectAlgorithm('mark-sweep')">
+        <div class="algorithm-name">Mark & Sweep</div>
+        <div class="algorithm-desc">Classic tracing GC algorithm</div>
+      </div>
+      <div class="algorithm-card" onclick="selectAlgorithm('ref-counting')">
+        <div class="algorithm-name">Reference Counting</div>
+        <div class="algorithm-desc">Immediate collection when refcount = 0</div>
+      </div>
+      <div class="algorithm-card" onclick="selectAlgorithm('generational')">
+        <div class="algorithm-name">Generational GC</div>
+        <div class="algorithm-desc">Young/Old generation with promotion</div>
+      </div>
+      <div class="algorithm-card" onclick="selectAlgorithm('copying')">
+        <div class="algorithm-name">Copying Collector</div>
+        <div class="algorithm-desc">Semi-space copying algorithm</div>
+      </div>
+    </div>
+    
+    <div class="gc-controls">
+      <button onclick="allocateObject()">Allocate Object</button>
+      <button onclick="createReference()">Create Reference</button>
+      <button onclick="removeReference()">Remove Reference</button>
+      <button onclick="triggerGC()" style="background: #f44336;">Trigger GC</button>
+      <button onclick="runSimulation()">Run Simulation</button>
+      <button onclick="reset()">Reset</button>
+    </div>
+    
+    <div class="control-panel">
+      <div class="speed-control">
+        <label>Animation Speed:</label>
+        <input type="range" class="speed-slider" id="speed-slider" min="100" max="2000" value="1000">
+        <span id="speed-value">1000ms</span>
+      </div>
+    </div>
+    
+    <div class="memory-layout">
+      <div class="heap-regions">
+        <h3>Heap Memory Regions</h3>
+        
+        <div class="heap-region eden">
+          <div class="region-header">
+            <span class="region-name">Eden Space</span>
+            <span class="region-usage" id="eden-usage">0 / 256 KB</span>
+          </div>
+          <div class="memory-bar">
+            <div class="memory-used" id="eden-bar" style="width: 0%">
+              <span id="eden-percent">0%</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="heap-region survivor">
+          <div class="region-header">
+            <span class="region-name">Survivor 0</span>
+            <span class="region-usage" id="survivor0-usage">0 / 64 KB</span>
+          </div>
+          <div class="memory-bar">
+            <div class="memory-used" id="survivor0-bar" style="width: 0%">
+              <span id="survivor0-percent">0%</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="heap-region survivor">
+          <div class="region-header">
+            <span class="region-name">Survivor 1</span>
+            <span class="region-usage" id="survivor1-usage">0 / 64 KB</span>
+          </div>
+          <div class="memory-bar">
+            <div class="memory-used" id="survivor1-bar" style="width: 0%">
+              <span id="survivor1-percent">0%</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="heap-region old-gen">
+          <div class="region-header">
+            <span class="region-name">Old Generation</span>
+            <span class="region-usage" id="old-usage">0 / 512 KB</span>
+          </div>
+          <div class="memory-bar">
+            <div class="memory-used" id="old-bar" style="width: 0%">
+              <span id="old-percent">0%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="reference-graph">
+        <svg id="reference-svg">
+          <defs>
+            <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="20" refY="3" orient="auto">
+              <polygon points="0 0, 10 3, 0 6" fill="#90a4ae" />
+            </marker>
+          </defs>
+        </svg>
+      </div>
+    </div>
+    
+    <div class="gc-stats">
+      <div class="stat-card">
+        <div class="stat-value" id="total-objects">0</div>
+        <div class="stat-label">Total Objects</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="reachable-objects">0</div>
+        <div class="stat-label">Reachable Objects</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="gc-count">0</div>
+        <div class="stat-label">GC Collections</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="total-pause">0ms</div>
+        <div class="stat-label">Total Pause Time</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="memory-freed">0KB</div>
+        <div class="stat-label">Memory Freed</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="throughput">100%</div>
+        <div class="stat-label">Throughput</div>
+      </div>
+    </div>
+    
+    <div class="gc-timeline">
+      <div class="timeline-header">GC Event Timeline</div>
+      <div id="timeline-chart"></div>
+    </div>
+    
+    <div class="log-console" id="log-console">
+      <div class="log-entry">
+        <span class="log-time">00:00:00</span>
+        <span class="log-gc">GC Visualizer initialized</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Memory object representation
+    class MemoryObject {
+      constructor(id, size = 10) {
+        this.id = id;
+        this.size = size;
+        this.references = new Set();
+        this.referencedBy = new Set();
+        this.marked = false;
+        this.age = 0;
+        this.generation = 'eden';
+        this.refCount = 0;
+        this.x = Math.random() * 600 + 50;
+        this.y = Math.random() * 300 + 50;
+      }
+    }
+    
+    // Garbage Collector
+    class GarbageCollector {
+      constructor() {
+        this.objects = new Map();
+        this.roots = new Set();
+        this.gcCount = 0;
+        this.totalPauseTime = 0;
+        this.memoryFreed = 0;
+        this.currentAlgorithm = 'mark-sweep';
+        this.nextId = 1;
+        
+        // Memory regions (in KB)
+        this.heap = {
+          eden: { used: 0, capacity: 256 },
+          survivor0: { used: 0, capacity: 64 },
+          survivor1: { used: 0, capacity: 64 },
+          old: { used: 0, capacity: 512 }
+        };
+        
+        // Initialize with root objects
+        this.initializeRoots();
+      }
+      
+      initializeRoots() {
+        for (let i = 0; i < 3; i++) {
+          const obj = new MemoryObject(this.nextId++, 5);
+          this.objects.set(obj.id, obj);
+          this.roots.add(obj.id);
+          this.heap.eden.used += obj.size;
+        }
+      }
+      
+      allocate(size = 10) {
+        const obj = new MemoryObject(this.nextId++, size);
+        
+        // Try to allocate in Eden
+        if (this.heap.eden.used + size > this.heap.eden.capacity) {
+          log('Eden space full, triggering Minor GC', 'gc');
+          this.minorGC();
+        }
+        
+        this.objects.set(obj.id, obj);
+        this.heap.eden.used += size;
+        
+        log(`Allocated object ${obj.id} (${size}KB) in Eden`, 'alloc');
+        return obj;
+      }
+      
+      createReference(fromId, toId) {
+        const from = this.objects.get(fromId);
+        const to = this.objects.get(toId);
+        
+        if (from && to) {
+          from.references.add(toId);
+          to.referencedBy.add(fromId);
+          to.refCount++;
+          log(`Created reference: ${fromId} → ${toId}`, 'alloc');
+        }
+      }
+      
+      removeReference(fromId, toId) {
+        const from = this.objects.get(fromId);
+        const to = this.objects.get(toId);
+        
+        if (from && to) {
+          from.references.delete(toId);
+          to.referencedBy.delete(fromId);
+          to.refCount--;
+          log(`Removed reference: ${fromId} → ${toId}`, 'free');
+          
+          if (this.currentAlgorithm === 'ref-counting' && to.refCount === 0) {
+            this.collectObject(to);
+          }
+        }
+      }
+      
+      // Mark & Sweep Algorithm
+      markAndSweep() {
+        const startTime = performance.now();
+        log('Starting Mark & Sweep GC', 'gc');
+        
+        // Mark phase
+        this.markPhase();
+        
+        // Sweep phase
+        const freed = this.sweepPhase();
+        
+        const pauseTime = performance.now() - startTime;
+        this.totalPauseTime += pauseTime;
+        this.gcCount++;
+        this.memoryFreed += freed;
+        
+        log(`GC completed: freed ${freed}KB in ${pauseTime.toFixed(2)}ms`, 'gc');
+        updateStats();
+      }
+      
+      markPhase() {
+        // Clear all marks
+        this.objects.forEach(obj => obj.marked = false);
+        
+        // Mark from roots
+        const stack = [...this.roots];
+        
+        while (stack.length > 0) {
+          const objId = stack.pop();
+          const obj = this.objects.get(objId);
+          
+          if (!obj || obj.marked) continue;
+          
+          obj.marked = true;
+          animateMarkObject(obj);
+          
+          // Add references to stack
+          obj.references.forEach(refId => {
+            if (!this.objects.get(refId)?.marked) {
+              stack.push(refId);
+            }
+          });
+        }
+      }
+      
+      sweepPhase() {
+        let freed = 0;
+        const toDelete = [];
+        
+        this.objects.forEach((obj, id) => {
+          if (!obj.marked && !this.roots.has(id)) {
+            toDelete.push(id);
+            freed += obj.size;
+          }
+        });
+        
+        // Free objects
+        toDelete.forEach(id => {
+          const obj = this.objects.get(id);
+          this.heap[obj.generation].used -= obj.size;
+          this.objects.delete(id);
+          animateSweepObject(obj);
+        });
+        
+        return freed;
+      }
+      
+      // Generational GC
+      minorGC() {
+        log('Starting Minor GC (Young Generation)', 'gc');
+        const startTime = performance.now();
+        
+        // Mark live objects in young generation
+        const liveYoung = new Set();
+        
+        const markYoung = (objId) => {
+          const obj = this.objects.get(objId);
+          if (!obj || obj.generation !== 'eden' || liveYoung.has(objId)) return;
+          
+          liveYoung.add(objId);
+          obj.references.forEach(refId => markYoung(refId));
+        };
+        
+        this.roots.forEach(rootId => markYoung(rootId));
+        
+        // Promote or move to survivor
+        liveYoung.forEach(objId => {
+          const obj = this.objects.get(objId);
+          obj.age++;
+          
+          if (obj.age > 15) {
+            // Promote to old generation
+            this.heap.eden.used -= obj.size;
+            this.heap.old.used += obj.size;
+            obj.generation = 'old';
+            log(`Promoted object ${objId} to Old Generation`, 'gc');
+          } else {
+            // Move to survivor space
+            this.heap.eden.used -= obj.size;
+            this.heap.survivor0.used += obj.size;
+            obj.generation = 'survivor0';
+          }
+        });
+        
+        // Clear dead objects from Eden
+        const toDelete = [];
+        this.objects.forEach((obj, id) => {
+          if (obj.generation === 'eden' && !liveYoung.has(id)) {
+            toDelete.push(id);
+          }
+        });
+        
+        toDelete.forEach(id => {
+          const obj = this.objects.get(id);
+          this.heap.eden.used -= obj.size;
+          this.objects.delete(id);
+        });
+        
+        const pauseTime = performance.now() - startTime;
+        log(`Minor GC completed in ${pauseTime.toFixed(2)}ms`, 'gc');
+      }
+      
+      // Reference Counting
+      collectObject(obj) {
+        if (this.roots.has(obj.id)) return;
+        
+        // Release references
+        obj.references.forEach(refId => {
+          const ref = this.objects.get(refId);
+          if (ref) {
+            ref.refCount--;
+            if (ref.refCount === 0) {
+              this.collectObject(ref);
+            }
+          }
+        });
+        
+        // Free object
+        this.heap[obj.generation].used -= obj.size;
+        this.objects.delete(obj.id);
+        this.memoryFreed += obj.size;
+        
+        log(`Collected object ${obj.id} (refcount=0)`, 'free');
+        animateSweepObject(obj);
+      }
+      
+      // Copying Collector
+      copyingCollect() {
+        log('Starting Copying Collection', 'gc');
+        const startTime = performance.now();
+        
+        const newObjects = new Map();
+        const forwarding = new Map();
+        
+        // Copy roots
+        this.roots.forEach(rootId => {
+          const obj = this.objects.get(rootId);
+          if (obj) {
+            const newObj = Object.assign(Object.create(Object.getPrototypeOf(obj)), obj);
+            newObj.id = obj.id;
+            newObjects.set(newObj.id, newObj);
+            forwarding.set(obj.id, newObj.id);
+          }
+        });
+        
+        // Copy reachable objects
+        const queue = [...this.roots];
+        while (queue.length > 0) {
+          const objId = queue.shift();
+          const obj = newObjects.get(objId);
+          
+          if (!obj) continue;
+          
+          const newRefs = new Set();
+          obj.references.forEach(refId => {
+            if (!forwarding.has(refId)) {
+              const refObj = this.objects.get(refId);
+              if (refObj) {
+                const newRefObj = Object.assign(Object.create(Object.getPrototypeOf(refObj)), refObj);
+                newObjects.set(newRefObj.id, newRefObj);
+                forwarding.set(refId, newRefObj.id);
+                queue.push(newRefObj.id);
+              }
+            }
+            newRefs.add(forwarding.get(refId));
+          });
+          obj.references = newRefs;
+        }
+        
+        const freed = (this.objects.size - newObjects.size) * 10;
+        this.objects = newObjects;
+        this.memoryFreed += freed;
+        
+        const pauseTime = performance.now() - startTime;
+        log(`Copying GC completed in ${pauseTime.toFixed(2)}ms, freed ${freed}KB`, 'gc');
+      }
+    }
+    
+    // Global variables
+    let gc = new GarbageCollector();
+    let selectedObject = null;
+    let animationSpeed = 1000;
+    
+    // D3 visualization
+    function visualizeReferenceGraph() {
+      const svg = d3.select('#reference-svg');
+      svg.selectAll('*').remove();
+      
+      const width = 700;
+      const height = 400;
+      
+      // Create simulation
+      const nodes = Array.from(gc.objects.values());
+      const links = [];
+      
+      nodes.forEach(node => {
+        node.references.forEach(refId => {
+          links.push({source: node.id, target: refId});
+        });
+      });
+      
+      const simulation = d3.forceSimulation(nodes)
+        .force('link', d3.forceLink(links).id(d => d.id).distance(80))
+        .force('charge', d3.forceManyBody().strength(-300))
+        .force('center', d3.forceCenter(width / 2, height / 2))
+        .force('collision', d3.forceCollide().radius(25));
+      
+      // Draw links
+      const link = svg.selectAll('.reference-link')
+        .data(links)
+        .enter().append('line')
+        .attr('class', 'reference-link');
+      
+      // Draw nodes
+      const node = svg.selectAll('.object-node')
+        .data(nodes)
+        .enter().append('g')
+        .attr('class', 'object-node')
+        .call(d3.drag()
+          .on('start', dragStarted)
+          .on('drag', dragged)
+          .on('end', dragEnded));
+      
+      node.append('circle')
+        .attr('r', d => 10 + d.size / 2)
+        .attr('class', d => {
+          if (gc.roots.has(d.id)) return 'root-object';
+          if (d.marked) return 'reachable-object';
+          return 'unreachable-object';
+        })
+        .on('click', (event, d) => {
+          selectedObject = selectedObject === d.id ? null : d.id;
+          visualizeReferenceGraph();
+        });
+      
+      node.append('text')
+        .text(d => d.id)
+        .attr('text-anchor', 'middle')
+        .attr('dy', '.35em')
+        .style('fill', 'white')
+        .style('font-size', '12px')
+        .style('pointer-events', 'none');
+      
+      // Update positions on tick
+      simulation.on('tick', () => {
+        link
+          .attr('x1', d => d.source.x)
+          .attr('y1', d => d.source.y)
+          .attr('x2', d => d.target.x)
+          .attr('y2', d => d.target.y);
+        
+        node
+          .attr('transform', d => `translate(${d.x}, ${d.y})`);
+      });
+      
+      function dragStarted(event, d) {
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x;
+        d.fy = d.y;
+      }
+      
+      function dragged(event, d) {
+        d.fx = event.x;
+        d.fy = event.y;
+      }
+      
+      function dragEnded(event, d) {
+        if (!event.active) simulation.alphaTarget(0);
+        d.fx = null;
+        d.fy = null;
+      }
+    }
+    
+    // UI Functions
+    function selectAlgorithm(algorithm) {
+      gc.currentAlgorithm = algorithm;
+      document.querySelectorAll('.algorithm-card').forEach(card => {
+        card.classList.remove('active');
+      });
+      event.target.closest('.algorithm-card').classList.add('active');
+      log(`Selected algorithm: ${algorithm}`, 'gc');
+    }
+    
+    function allocateObject() {
+      const obj = gc.allocate(Math.floor(Math.random() * 20) + 5);
+      
+      // Randomly create references to existing objects
+      if (Math.random() > 0.5 && gc.objects.size > 1) {
+        const existingIds = Array.from(gc.objects.keys());
+        const randomId = existingIds[Math.floor(Math.random() * existingIds.length)];
+        if (randomId !== obj.id) {
+          gc.createReference(obj.id, randomId);
+        }
+      }
+      
+      updateVisualization();
+    }
+    
+    function createReference() {
+      if (gc.objects.size < 2) return;
+      
+      const ids = Array.from(gc.objects.keys());
+      const from = ids[Math.floor(Math.random() * ids.length)];
+      const to = ids[Math.floor(Math.random() * ids.length)];
+      
+      if (from !== to) {
+        gc.createReference(from, to);
+        updateVisualization();
+      }
+    }
+    
+    function removeReference() {
+      const objsWithRefs = Array.from(gc.objects.values()).filter(obj => obj.references.size > 0);
+      if (objsWithRefs.length === 0) return;
+      
+      const obj = objsWithRefs[Math.floor(Math.random() * objsWithRefs.length)];
+      const refId = Array.from(obj.references)[0];
+      
+      gc.removeReference(obj.id, refId);
+      updateVisualization();
+    }
+    
+    function triggerGC() {
+      switch (gc.currentAlgorithm) {
+        case 'mark-sweep':
+          gc.markAndSweep();
+          break;
+        case 'generational':
+          gc.minorGC();
+          break;
+        case 'copying':
+          gc.copyingCollect();
+          break;
+        case 'ref-counting':
+          // Reference counting collects immediately
+          log('Reference counting collects objects immediately when refcount=0', 'gc');
+          break;
+      }
+      updateVisualization();
+    }
+    
+    function runSimulation() {
+      let step = 0;
+      const simulation = setInterval(() => {
+        if (step < 10) {
+          allocateObject();
+        } else if (step < 15) {
+          createReference();
+        } else if (step === 15) {
+          triggerGC();
+        } else if (step < 20) {
+          removeReference();
+        } else {
+          clearInterval(simulation);
+          triggerGC();
+        }
+        step++;
+      }, animationSpeed);
+    }
+    
+    function reset() {
+      gc = new GarbageCollector();
+      updateVisualization();
+      log('Reset complete', 'gc');
+    }
+    
+    function updateVisualization() {
+      visualizeReferenceGraph();
+      updateMemoryBars();
+      updateStats();
+    }
+    
+    function updateMemoryBars() {
+      // Update Eden
+      const edenPercent = (gc.heap.eden.used / gc.heap.eden.capacity * 100).toFixed(1);
+      document.getElementById('eden-bar').style.width = `${edenPercent}%`;
+      document.getElementById('eden-percent').textContent = `${edenPercent}%`;
+      document.getElementById('eden-usage').textContent = `${gc.heap.eden.used} / ${gc.heap.eden.capacity} KB`;
+      
+      // Update Survivor 0
+      const survivor0Percent = (gc.heap.survivor0.used / gc.heap.survivor0.capacity * 100).toFixed(1);
+      document.getElementById('survivor0-bar').style.width = `${survivor0Percent}%`;
+      document.getElementById('survivor0-percent').textContent = `${survivor0Percent}%`;
+      document.getElementById('survivor0-usage').textContent = `${gc.heap.survivor0.used} / ${gc.heap.survivor0.capacity} KB`;
+      
+      // Update Survivor 1
+      const survivor1Percent = (gc.heap.survivor1.used / gc.heap.survivor1.capacity * 100).toFixed(1);
+      document.getElementById('survivor1-bar').style.width = `${survivor1Percent}%`;
+      document.getElementById('survivor1-percent').textContent = `${survivor1Percent}%`;
+      document.getElementById('survivor1-usage').textContent = `${gc.heap.survivor1.used} / ${gc.heap.survivor1.capacity} KB`;
+      
+      // Update Old Gen
+      const oldPercent = (gc.heap.old.used / gc.heap.old.capacity * 100).toFixed(1);
+      document.getElementById('old-bar').style.width = `${oldPercent}%`;
+      document.getElementById('old-percent').textContent = `${oldPercent}%`;
+      document.getElementById('old-usage').textContent = `${gc.heap.old.used} / ${gc.heap.old.capacity} KB`;
+    }
+    
+    function updateStats() {
+      document.getElementById('total-objects').textContent = gc.objects.size;
+      
+      // Count reachable objects
+      let reachableCount = 0;
+      gc.objects.forEach(obj => {
+        if (obj.marked || gc.roots.has(obj.id)) reachableCount++;
+      });
+      document.getElementById('reachable-objects').textContent = reachableCount;
+      
+      document.getElementById('gc-count').textContent = gc.gcCount;
+      document.getElementById('total-pause').textContent = `${gc.totalPauseTime.toFixed(1)}ms`;
+      document.getElementById('memory-freed').textContent = `${gc.memoryFreed}KB`;
+      
+      const throughput = gc.totalPauseTime > 0 ? 
+        ((1 - gc.totalPauseTime / (performance.now())) * 100).toFixed(1) : 100;
+      document.getElementById('throughput').textContent = `${throughput}%`;
+    }
+    
+    function log(message, type = 'info') {
+      const console = document.getElementById('log-console');
+      const entry = document.createElement('div');
+      entry.className = 'log-entry';
+      
+      const time = new Date().toLocaleTimeString();
+      const typeClass = type === 'gc' ? 'log-gc' : 
+                       type === 'alloc' ? 'log-alloc' : 
+                       type === 'free' ? 'log-free' : '';
+      
+      entry.innerHTML = `
+        <span class="log-time">${time}</span>
+        <span class="${typeClass}">${message}</span>
+      `;
+      
+      console.appendChild(entry);
+      console.scrollTop = console.scrollHeight;
+    }
+    
+    function animateMarkObject(obj) {
+      // Animation for marking phase
+      // Would be implemented with D3 transitions
+    }
+    
+    function animateSweepObject(obj) {
+      // Animation for sweep phase
+      // Would be implemented with D3 transitions
+    }
+    
+    // Speed control
+    document.getElementById('speed-slider').addEventListener('input', (e) => {
+      animationSpeed = parseInt(e.target.value);
+      document.getElementById('speed-value').textContent = `${animationSpeed}ms`;
+    });
+    
+    // Initialize
+    updateVisualization();
+  </script>
+</body>
+</html>

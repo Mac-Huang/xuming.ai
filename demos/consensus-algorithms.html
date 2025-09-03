@@ -1,0 +1,402 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Distributed Systems Consensus Visualizer - Xuming Huang</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../stylesheet.css">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body { font-family: 'Lato', sans-serif; margin: 0; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .container { max-width: 1400px; margin: 0 auto; background: white; border-radius: 12px; padding: 30px; }
+    .header { text-align: center; margin-bottom: 30px; }
+    .header h1 { color: #1772d0; }
+    .algorithm-selector { display: flex; gap: 10px; justify-content: center; margin: 20px 0; }
+    .algo-btn { padding: 10px 20px; background: white; border: 2px solid #1772d0; border-radius: 8px; cursor: pointer; transition: all 0.3s; }
+    .algo-btn.active { background: #1772d0; color: white; }
+    .main-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
+    .control-panel { background: #f8f9fa; border-radius: 8px; padding: 20px; }
+    .visualization { background: #263238; border-radius: 8px; padding: 20px; min-height: 600px; }
+    .node { cursor: pointer; }
+    .node-circle { fill: #4caf50; stroke: white; stroke-width: 3; }
+    .node-circle.leader { fill: #ffd700; }
+    .node-circle.follower { fill: #2196f3; }
+    .node-circle.candidate { fill: #ff9800; }
+    .node-circle.failed { fill: #f44336; opacity: 0.5; }
+    .node-label { fill: white; text-anchor: middle; font-size: 14px; font-weight: bold; }
+    .message { stroke-width: 2; fill: none; stroke-dasharray: 5,5; animation: dash 1s linear infinite; }
+    @keyframes dash { to { stroke-dashoffset: -10; } }
+    .network-link { stroke: #666; stroke-width: 1; opacity: 0.3; }
+    .partition-line { stroke: #f44336; stroke-width: 3; stroke-dasharray: 10,5; }
+    .control-btn { width: 100%; padding: 10px; margin: 5px 0; background: #1772d0; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    .control-btn:hover { background: #1557a0; }
+    .status-panel { background: rgba(255,255,255,0.1); border-radius: 8px; padding: 15px; margin: 20px 0; }
+    .status-item { color: white; padding: 5px 0; display: flex; justify-content: space-between; }
+    .log-panel { background: #1e1e1e; color: #aed581; padding: 10px; border-radius: 4px; height: 200px; overflow-y: auto; font-family: monospace; font-size: 12px; }
+    .log-entry { padding: 2px 0; }
+    .scenario-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🌐 Distributed Systems Consensus Visualizer</h1>
+      <p>Interactive visualization of Raft, Paxos, PBFT, and distributed consensus algorithms</p>
+      <p><a href="../projects.html">← Back to Projects</a></p>
+    </div>
+    
+    <div class="algorithm-selector">
+      <button class="algo-btn active" onclick="selectAlgorithm('raft')">Raft</button>
+      <button class="algo-btn" onclick="selectAlgorithm('paxos')">Paxos</button>
+      <button class="algo-btn" onclick="selectAlgorithm('pbft')">PBFT</button>
+      <button class="algo-btn" onclick="selectAlgorithm('gossip')">Gossip Protocol</button>
+    </div>
+    
+    <div class="main-grid">
+      <div class="control-panel">
+        <h3>System Controls</h3>
+        
+        <button class="control-btn" onclick="startElection()">Trigger Leader Election</button>
+        <button class="control-btn" onclick="sendClientRequest()">Send Client Request</button>
+        <button class="control-btn" onclick="simulateNodeFailure()">Simulate Node Failure</button>
+        <button class="control-btn" onclick="createPartition()">Create Network Partition</button>
+        <button class="control-btn" onclick="healPartition()">Heal Partition</button>
+        <button class="control-btn" onclick="reset()">Reset System</button>
+        
+        <div class="scenario-buttons">
+          <button class="control-btn" onclick="runScenario('split-brain')">Split Brain</button>
+          <button class="control-btn" onclick="runScenario('byzantine')">Byzantine Fault</button>
+          <button class="control-btn" onclick="runScenario('cascading')">Cascading Failure</button>
+          <button class="control-btn" onclick="runScenario('recovery')">Leader Recovery</button>
+        </div>
+        
+        <div class="status-panel">
+          <div class="status-item">
+            <span>Current Term:</span>
+            <span id="current-term">1</span>
+          </div>
+          <div class="status-item">
+            <span>Leader:</span>
+            <span id="current-leader">Node 1</span>
+          </div>
+          <div class="status-item">
+            <span>Consensus:</span>
+            <span id="consensus-status">Stable</span>
+          </div>
+          <div class="status-item">
+            <span>Active Nodes:</span>
+            <span id="active-nodes">5/5</span>
+          </div>
+        </div>
+        
+        <h4>System Log</h4>
+        <div class="log-panel" id="log-panel">
+          <div class="log-entry">System initialized with 5 nodes</div>
+          <div class="log-entry">Node 1 elected as leader (term 1)</div>
+        </div>
+      </div>
+      
+      <div class="visualization">
+        <svg id="consensus-svg" width="100%" height="600"></svg>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentAlgorithm = 'raft';
+    let nodes = [];
+    let messages = [];
+    let currentTerm = 1;
+    let leaderId = 1;
+    let partitioned = false;
+    
+    // Initialize nodes
+    function initializeNodes() {
+      nodes = [];
+      for (let i = 0; i < 5; i++) {
+        nodes.push({
+          id: i + 1,
+          state: i === 0 ? 'leader' : 'follower',
+          x: 400 + 200 * Math.cos(2 * Math.PI * i / 5),
+          y: 300 + 200 * Math.sin(2 * Math.PI * i / 5),
+          term: 1,
+          log: [],
+          votes: 0,
+          failed: false
+        });
+      }
+      drawNetwork();
+    }
+    
+    function drawNetwork() {
+      const svg = d3.select('#consensus-svg');
+      svg.selectAll('*').remove();
+      
+      const width = 800;
+      const height = 600;
+      
+      // Draw network links
+      const links = [];
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          if (!nodes[i].failed && !nodes[j].failed) {
+            links.push({source: nodes[i], target: nodes[j]});
+          }
+        }
+      }
+      
+      svg.selectAll('.network-link')
+        .data(links)
+        .enter().append('line')
+        .attr('class', 'network-link')
+        .attr('x1', d => d.source.x)
+        .attr('y1', d => d.source.y)
+        .attr('x2', d => d.target.x)
+        .attr('y2', d => d.target.y);
+      
+      // Draw nodes
+      const nodeGroups = svg.selectAll('.node')
+        .data(nodes)
+        .enter().append('g')
+        .attr('class', 'node')
+        .attr('transform', d => `translate(${d.x},${d.y})`);
+      
+      nodeGroups.append('circle')
+        .attr('class', d => {
+          let classes = 'node-circle';
+          if (d.failed) classes += ' failed';
+          else if (d.state === 'leader') classes += ' leader';
+          else if (d.state === 'candidate') classes += ' candidate';
+          else classes += ' follower';
+          return classes;
+        })
+        .attr('r', 30);
+      
+      nodeGroups.append('text')
+        .attr('class', 'node-label')
+        .attr('dy', 5)
+        .text(d => `N${d.id}`);
+      
+      // Draw messages
+      messages.forEach(msg => {
+        const arrow = svg.append('line')
+          .attr('class', 'message')
+          .attr('x1', msg.from.x)
+          .attr('y1', msg.from.y)
+          .attr('x2', msg.from.x)
+          .attr('y2', msg.from.y)
+          .style('stroke', msg.type === 'vote' ? '#4caf50' : '#2196f3');
+        
+        arrow.transition()
+          .duration(1000)
+          .attr('x2', msg.to.x)
+          .attr('y2', msg.to.y)
+          .on('end', () => arrow.remove());
+      });
+    }
+    
+    function selectAlgorithm(algo) {
+      currentAlgorithm = algo;
+      document.querySelectorAll('.algo-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      addLog(`Switched to ${algo.toUpperCase()} algorithm`);
+      reset();
+    }
+    
+    function startElection() {
+      currentTerm++;
+      addLog(`Term ${currentTerm}: Election started`);
+      
+      // Random candidate
+      const candidates = nodes.filter(n => !n.failed && n.state !== 'leader');
+      if (candidates.length > 0) {
+        const candidate = candidates[Math.floor(Math.random() * candidates.length)];
+        candidate.state = 'candidate';
+        candidate.votes = 1;
+        
+        addLog(`Node ${candidate.id} became candidate`);
+        
+        // Request votes
+        nodes.forEach(node => {
+          if (node.id !== candidate.id && !node.failed) {
+            messages.push({
+              from: candidate,
+              to: node,
+              type: 'vote'
+            });
+          }
+        });
+        
+        drawNetwork();
+        
+        // Simulate election result
+        setTimeout(() => {
+          const activeNodes = nodes.filter(n => !n.failed).length;
+          const votesNeeded = Math.floor(activeNodes / 2) + 1;
+          
+          if (candidate.votes >= votesNeeded) {
+            nodes.forEach(n => {
+              if (!n.failed) {
+                n.state = n.id === candidate.id ? 'leader' : 'follower';
+              }
+            });
+            leaderId = candidate.id;
+            addLog(`Node ${candidate.id} elected as leader with ${candidate.votes} votes`);
+            updateStatus();
+          } else {
+            addLog(`Election failed - insufficient votes`);
+            candidate.state = 'follower';
+          }
+          
+          drawNetwork();
+        }, 1500);
+      }
+    }
+    
+    function sendClientRequest() {
+      const leader = nodes.find(n => n.state === 'leader');
+      if (leader && !leader.failed) {
+        addLog(`Client request sent to leader (Node ${leader.id})`);
+        
+        // Replicate to followers
+        nodes.forEach(node => {
+          if (node.state === 'follower' && !node.failed) {
+            messages.push({
+              from: leader,
+              to: node,
+              type: 'replicate'
+            });
+          }
+        });
+        
+        drawNetwork();
+        
+        setTimeout(() => {
+          addLog('Request replicated and committed');
+        }, 1000);
+      } else {
+        addLog('No leader available - request failed');
+      }
+    }
+    
+    function simulateNodeFailure() {
+      const activeNodes = nodes.filter(n => !n.failed);
+      if (activeNodes.length > 0) {
+        const node = activeNodes[Math.floor(Math.random() * activeNodes.length)];
+        node.failed = true;
+        
+        addLog(`Node ${node.id} failed`);
+        
+        if (node.state === 'leader') {
+          addLog('Leader failed - triggering new election');
+          setTimeout(startElection, 500);
+        }
+        
+        updateStatus();
+        drawNetwork();
+      }
+    }
+    
+    function createPartition() {
+      if (!partitioned) {
+        partitioned = true;
+        addLog('Network partition created');
+        
+        const svg = d3.select('#consensus-svg');
+        svg.append('line')
+          .attr('class', 'partition-line')
+          .attr('x1', 200)
+          .attr('y1', 100)
+          .attr('x2', 600)
+          .attr('y2', 500);
+        
+        updateStatus();
+      }
+    }
+    
+    function healPartition() {
+      if (partitioned) {
+        partitioned = false;
+        addLog('Network partition healed');
+        d3.selectAll('.partition-line').remove();
+        updateStatus();
+        drawNetwork();
+      }
+    }
+    
+    function runScenario(scenario) {
+      addLog(`Running scenario: ${scenario}`);
+      
+      switch(scenario) {
+        case 'split-brain':
+          createPartition();
+          setTimeout(() => {
+            nodes[0].state = 'leader';
+            nodes[3].state = 'leader';
+            addLog('Split-brain detected: multiple leaders');
+            drawNetwork();
+          }, 500);
+          break;
+          
+        case 'byzantine':
+          const byzantine = nodes[2];
+          byzantine.state = 'byzantine';
+          addLog(`Node ${byzantine.id} exhibiting Byzantine behavior`);
+          drawNetwork();
+          break;
+          
+        case 'cascading':
+          let failureCount = 0;
+          const interval = setInterval(() => {
+            simulateNodeFailure();
+            failureCount++;
+            if (failureCount >= 3) clearInterval(interval);
+          }, 1000);
+          break;
+          
+        case 'recovery':
+          nodes.forEach(n => n.failed = false);
+          addLog('All nodes recovered');
+          startElection();
+          break;
+      }
+    }
+    
+    function reset() {
+      currentTerm = 1;
+      leaderId = 1;
+      partitioned = false;
+      messages = [];
+      initializeNodes();
+      updateStatus();
+      addLog('System reset');
+    }
+    
+    function updateStatus() {
+      document.getElementById('current-term').textContent = currentTerm;
+      const leader = nodes.find(n => n.state === 'leader' && !n.failed);
+      document.getElementById('current-leader').textContent = leader ? `Node ${leader.id}` : 'None';
+      
+      const activeCount = nodes.filter(n => !n.failed).length;
+      document.getElementById('active-nodes').textContent = `${activeCount}/${nodes.length}`;
+      
+      const status = partitioned ? 'Partitioned' : (leader ? 'Stable' : 'No Leader');
+      document.getElementById('consensus-status').textContent = status;
+    }
+    
+    function addLog(message) {
+      const logPanel = document.getElementById('log-panel');
+      const entry = document.createElement('div');
+      entry.className = 'log-entry';
+      entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      logPanel.appendChild(entry);
+      logPanel.scrollTop = logPanel.scrollHeight;
+    }
+    
+    // Initialize
+    initializeNodes();
+    updateStatus();
+  </script>
+</body>
+</html>

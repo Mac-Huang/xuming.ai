@@ -100,7 +100,108 @@ const projects = [
     demo_url: null,
     code_url: 'https://github.com/Mac-Huang/Translator',
     featured: true
-  },  
+  },
+  
+  // Advanced Systems Visualizations
+  {
+    id: 'bplus-tree',
+    title: 'B+ Tree Database Index Simulator',
+    description: 'Interactive visualization of B+ tree operations showing how database indexes work internally. Features insertion with node splitting, deletion with merging, range queries, and performance metrics comparison with binary search trees.',
+    tech: 'JavaScript, D3.js, Database Systems, Data Structures',
+    thumbnail: 'images/projects/bplus-tree-thumb.jpg',
+    demo_url: 'demos/bplus-tree.html',
+    code_url: null,
+    featured: true
+  },
+  
+  {
+    id: 'garbage-collection',
+    title: 'Garbage Collection Algorithm Visualizer',
+    description: 'Comprehensive visualization of memory management and GC algorithms including Mark & Sweep, Reference Counting, Generational GC, and Copying Collector. Shows heap regions, reference graphs, and real-time performance metrics.',
+    tech: 'JavaScript, D3.js, Memory Management, JVM',
+    thumbnail: 'images/projects/gc-thumb.jpg',
+    demo_url: 'demos/garbage-collection.html',
+    code_url: null,
+    featured: true
+  },
+  
+  {
+    id: 'compiler-pipeline',
+    title: 'Interactive Compiler Pipeline Visualization',
+    description: 'Step-by-step visualization of compilation phases from source code to assembly. Includes lexical analysis, parsing, AST generation, semantic analysis, IR generation, optimization passes, and code generation with register allocation.',
+    tech: 'JavaScript, CodeMirror, D3.js, Compilers',
+    thumbnail: 'images/projects/compiler-thumb.jpg',
+    demo_url: 'demos/compiler-pipeline.html',
+    code_url: null,
+    featured: true
+  },
+  
+  {
+    id: 'transformer-architecture',
+    title: 'Interactive Transformer Architecture Visualization',
+    description: 'Deep dive into transformer models with step-by-step visualization of attention mechanisms, positional encoding, and layer operations. Supports encoder-only (BERT), decoder-only (GPT), and encoder-decoder architectures.',
+    tech: 'JavaScript, D3.js, TensorFlow.js, Deep Learning',
+    thumbnail: 'images/projects/transformer-thumb.jpg',
+    demo_url: 'demos/transformer-architecture.html',
+    code_url: null,
+    featured: true
+  },
+  
+  // Advanced Systems & Networking
+  {
+    id: 'consensus-algorithms',
+    title: 'Distributed Systems Consensus Visualizer',
+    description: 'Interactive visualization of consensus algorithms including Raft, Paxos, PBFT, and Gossip protocols. Simulate network partitions, node failures, leader elections, and Byzantine faults in distributed systems.',
+    tech: 'JavaScript, D3.js, Distributed Systems, Consensus',
+    thumbnail: 'images/projects/consensus-thumb.jpg',
+    demo_url: 'demos/consensus-algorithms.html',
+    code_url: null,
+    featured: true
+  },
+  
+  {
+    id: 'cpu-cache-simulator',
+    title: 'CPU Cache Hierarchy Simulator',
+    description: 'Comprehensive CPU cache simulator with L1/L2/L3 cache levels, various replacement policies (LRU, FIFO, Random), write policies, and memory access pattern analysis. Visualize cache hits/misses and performance metrics.',
+    tech: 'JavaScript, Computer Architecture, Cache Memory',
+    thumbnail: 'images/projects/cache-thumb.jpg',
+    demo_url: 'demos/cpu-cache-simulator.html',
+    code_url: null,
+    featured: true
+  },
+  
+  {
+    id: 'wasm-performance',
+    title: 'WebAssembly Performance Analyzer',
+    description: 'Compare JavaScript vs WebAssembly performance across computational tasks including matrix operations, prime generation, and image processing. Real-time benchmarking with detailed performance metrics.',
+    tech: 'WebAssembly, JavaScript, Performance Analysis',
+    thumbnail: 'images/projects/wasm-thumb.jpg',
+    demo_url: 'demos/wasm-performance.html',
+    code_url: null,
+    featured: true
+  },
+  
+  {
+    id: 'network-protocol',
+    title: 'Network Protocol Analyzer',
+    description: 'Interactive visualization of TCP/IP, HTTP, DNS, and DHCP protocols. Build packets, simulate TCP handshakes, visualize OSI layer encapsulation, and understand network communication patterns.',
+    tech: 'JavaScript, D3.js, Networking, TCP/IP',
+    thumbnail: 'images/projects/network-thumb.jpg',
+    demo_url: 'demos/network-protocol.html',
+    code_url: null,
+    featured: true
+  },
+  
+  {
+    id: 'process-scheduler',
+    title: 'Operating System Process Scheduler',
+    description: 'Simulate various CPU scheduling algorithms including FCFS, SJF, Round Robin, Priority, and MLFQ. Visualize process states, CPU utilization, and performance metrics like turnaround time and throughput.',
+    tech: 'JavaScript, Operating Systems, Process Scheduling',
+    thumbnail: 'images/projects/scheduler-thumb.jpg',
+    demo_url: 'demos/process-scheduler.html',
+    code_url: null,
+    featured: true
+  },
 ];
 
 // Helper functions

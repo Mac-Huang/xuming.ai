@@ -1,0 +1,1611 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Interactive Compiler Pipeline Visualization - Xuming Huang</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../stylesheet.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body {
+      font-family: 'Lato', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      padding: 30px;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .header h1 {
+      color: #1772d0;
+      margin-bottom: 10px;
+      font-size: 32px;
+    }
+    
+    .pipeline-stages {
+      display: flex;
+      justify-content: space-between;
+      margin: 30px 0;
+      position: relative;
+    }
+    
+    .pipeline-stages::before {
+      content: '';
+      position: absolute;
+      top: 35px;
+      left: 50px;
+      right: 50px;
+      height: 2px;
+      background: linear-gradient(90deg, #4caf50, #2196f3, #ff9800, #f44336);
+      z-index: 0;
+    }
+    
+    .stage {
+      flex: 1;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .stage-icon {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: white;
+      border: 3px solid #ddd;
+      margin: 0 auto 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      transition: all 0.3s;
+    }
+    
+    .stage.active .stage-icon {
+      border-color: #1772d0;
+      background: #e3f2fd;
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(23, 114, 208, 0.3);
+    }
+    
+    .stage.completed .stage-icon {
+      border-color: #4caf50;
+      background: #e8f5e9;
+    }
+    
+    .stage-name {
+      font-weight: bold;
+      color: #333;
+      font-size: 14px;
+    }
+    
+    .main-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .code-section {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 15px;
+    }
+    
+    .section-header {
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .CodeMirror {
+      height: 300px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin: 20px 0;
+      justify-content: center;
+    }
+    
+    .controls button {
+      padding: 12px 24px;
+      background: #1772d0;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .controls button:hover {
+      background: #1557a0;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    
+    .controls button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .output-tabs {
+      margin-bottom: 20px;
+    }
+    
+    .tab-buttons {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 15px;
+    }
+    
+    .tab-button {
+      padding: 8px 16px;
+      background: #e0e0e0;
+      border: none;
+      border-radius: 4px 4px 0 0;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .tab-button.active {
+      background: #1772d0;
+      color: white;
+    }
+    
+    .tab-content {
+      background: #263238;
+      color: #aed581;
+      padding: 15px;
+      border-radius: 0 8px 8px 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      min-height: 200px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    .token {
+      display: inline-block;
+      padding: 2px 6px;
+      margin: 2px;
+      border-radius: 3px;
+      font-size: 12px;
+    }
+    
+    .token-keyword {
+      background: #f44336;
+      color: white;
+    }
+    
+    .token-identifier {
+      background: #2196f3;
+      color: white;
+    }
+    
+    .token-number {
+      background: #4caf50;
+      color: white;
+    }
+    
+    .token-operator {
+      background: #ff9800;
+      color: white;
+    }
+    
+    .token-punctuation {
+      background: #9c27b0;
+      color: white;
+    }
+    
+    .ast-container {
+      width: 100%;
+      height: 400px;
+      overflow: auto;
+    }
+    
+    #ast-svg {
+      width: 100%;
+      min-height: 400px;
+    }
+    
+    .ast-node {
+      cursor: pointer;
+    }
+    
+    .ast-node rect {
+      fill: white;
+      stroke: #1772d0;
+      stroke-width: 2;
+      rx: 4;
+    }
+    
+    .ast-node text {
+      font-size: 12px;
+      font-family: monospace;
+    }
+    
+    .ast-link {
+      fill: none;
+      stroke: #666;
+      stroke-width: 1.5;
+    }
+    
+    .symbol-table {
+      background: #f5f5f5;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 20px 0;
+    }
+    
+    .symbol-entry {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      padding: 8px;
+      border-bottom: 1px solid #ddd;
+      font-size: 13px;
+    }
+    
+    .symbol-entry:first-child {
+      font-weight: bold;
+      background: #e0e0e0;
+    }
+    
+    .ir-instruction {
+      display: grid;
+      grid-template-columns: 60px 100px 150px 150px;
+      padding: 5px;
+      font-family: monospace;
+      font-size: 12px;
+      border-bottom: 1px solid #37474f;
+    }
+    
+    .ir-label {
+      color: #ffd700;
+      font-weight: bold;
+    }
+    
+    .ir-op {
+      color: #ff6b6b;
+    }
+    
+    .assembly-line {
+      font-family: monospace;
+      font-size: 13px;
+      padding: 2px 0;
+    }
+    
+    .assembly-label {
+      color: #ffd700;
+    }
+    
+    .assembly-instruction {
+      color: #4ec9b0;
+      margin-left: 20px;
+    }
+    
+    .register-allocation {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 10px;
+      margin: 15px 0;
+    }
+    
+    .register {
+      background: #37474f;
+      color: white;
+      padding: 8px;
+      border-radius: 4px;
+      text-align: center;
+      font-family: monospace;
+      font-size: 12px;
+    }
+    
+    .register.allocated {
+      background: #4caf50;
+    }
+    
+    .examples {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .example-btn {
+      padding: 8px 16px;
+      background: #673ab7;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    
+    .example-btn:hover {
+      background: #512da8;
+    }
+    
+    .error-display {
+      background: #ffebee;
+      border: 1px solid #f44336;
+      border-radius: 4px;
+      padding: 10px;
+      margin: 10px 0;
+      color: #c62828;
+      font-size: 13px;
+      display: none;
+    }
+    
+    .error-display.show {
+      display: block;
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    
+    .processing {
+      animation: pulse 1s infinite;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🔧 Interactive Compiler Pipeline Visualization</h1>
+      <p>Step through each phase of compilation from source code to assembly</p>
+      <p><a href="../projects.html" style="color: #1772d0;">← Back to Projects</a></p>
+    </div>
+    
+    <div class="pipeline-stages">
+      <div class="stage" id="stage-lexical">
+        <div class="stage-icon">📝</div>
+        <div class="stage-name">Lexical Analysis</div>
+      </div>
+      <div class="stage" id="stage-syntax">
+        <div class="stage-icon">🌳</div>
+        <div class="stage-name">Syntax Analysis</div>
+      </div>
+      <div class="stage" id="stage-semantic">
+        <div class="stage-icon">✓</div>
+        <div class="stage-name">Semantic Analysis</div>
+      </div>
+      <div class="stage" id="stage-ir">
+        <div class="stage-icon">🔄</div>
+        <div class="stage-name">IR Generation</div>
+      </div>
+      <div class="stage" id="stage-optimization">
+        <div class="stage-icon">⚡</div>
+        <div class="stage-name">Optimization</div>
+      </div>
+      <div class="stage" id="stage-codegen">
+        <div class="stage-icon">💾</div>
+        <div class="stage-name">Code Generation</div>
+      </div>
+    </div>
+    
+    <div class="examples">
+      <button class="example-btn" onclick="loadExample('fibonacci')">Fibonacci</button>
+      <button class="example-btn" onclick="loadExample('factorial')">Factorial</button>
+      <button class="example-btn" onclick="loadExample('bubblesort')">Bubble Sort</button>
+      <button class="example-btn" onclick="loadExample('expression')">Complex Expression</button>
+      <button class="example-btn" onclick="loadExample('control')">Control Flow</button>
+    </div>
+    
+    <div class="main-content">
+      <div class="code-section">
+        <div class="section-header">
+          <span>Source Code</span>
+          <small style="color: #666;">Edit and compile your code</small>
+        </div>
+        <textarea id="source-code"></textarea>
+      </div>
+      
+      <div class="code-section">
+        <div class="section-header">
+          <span>Compilation Output</span>
+        </div>
+        <div class="tab-buttons">
+          <button class="tab-button active" onclick="showTab('tokens')">Tokens</button>
+          <button class="tab-button" onclick="showTab('ast')">AST</button>
+          <button class="tab-button" onclick="showTab('symbols')">Symbols</button>
+          <button class="tab-button" onclick="showTab('ir')">IR Code</button>
+          <button class="tab-button" onclick="showTab('assembly')">Assembly</button>
+        </div>
+        <div class="tab-content" id="output-content">
+          <div id="tokens-output">Click "Compile" to see tokens</div>
+          <div id="ast-output" style="display:none;">
+            <svg id="ast-svg"></svg>
+          </div>
+          <div id="symbols-output" style="display:none;">Symbol table will appear here</div>
+          <div id="ir-output" style="display:none;">Intermediate representation will appear here</div>
+          <div id="assembly-output" style="display:none;">Assembly code will appear here</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="error-display" id="error-display"></div>
+    
+    <div class="controls">
+      <button onclick="compile()">
+        <span>▶</span> Compile
+      </button>
+      <button onclick="stepThrough()">
+        <span>→</span> Step Through
+      </button>
+      <button onclick="reset()">
+        <span>↺</span> Reset
+      </button>
+      <button onclick="optimize()" id="optimize-btn" disabled>
+        <span>⚡</span> Optimize
+      </button>
+    </div>
+    
+    <div class="register-allocation" id="register-allocation"></div>
+  </div>
+
+  <script>
+    // Initialize CodeMirror
+    const editor = CodeMirror.fromTextArea(document.getElementById('source-code'), {
+      mode: 'javascript',
+      lineNumbers: true,
+      theme: 'default'
+    });
+    
+    // Compiler Implementation
+    class Compiler {
+      constructor() {
+        this.source = '';
+        this.tokens = [];
+        this.ast = null;
+        this.symbolTable = new Map();
+        this.ir = [];
+        this.assembly = [];
+        this.errors = [];
+        this.currentStage = null;
+      }
+      
+      // Lexical Analysis
+      tokenize(source) {
+        this.tokens = [];
+        this.errors = [];
+        
+        const patterns = [
+          {type: 'KEYWORD', regex: /^(if|else|while|for|function|return|var|let|const|true|false)/},
+          {type: 'IDENTIFIER', regex: /^[a-zA-Z_][a-zA-Z0-9_]*/},
+          {type: 'NUMBER', regex: /^[0-9]+(\.[0-9]+)?/},
+          {type: 'STRING', regex: /^"([^"\\]|\\.)*"/},
+          {type: 'OPERATOR', regex: /^(\+\+|--|==|!=|<=|>=|&&|\|\||[+\-*/=<>!%])/},
+          {type: 'PUNCTUATION', regex: /^[{}()\[\];,]/},
+          {type: 'WHITESPACE', regex: /^\s+/},
+          {type: 'COMMENT', regex: /^\/\/.*/}
+        ];
+        
+        let position = 0;
+        let line = 1;
+        let column = 1;
+        
+        while (position < source.length) {
+          let matched = false;
+          
+          for (const {type, regex} of patterns) {
+            const remaining = source.slice(position);
+            const match = remaining.match(regex);
+            
+            if (match) {
+              const value = match[0];
+              
+              if (type !== 'WHITESPACE' && type !== 'COMMENT') {
+                this.tokens.push({
+                  type,
+                  value,
+                  line,
+                  column,
+                  position
+                });
+              }
+              
+              position += value.length;
+              
+              if (value.includes('\n')) {
+                line++;
+                column = 1;
+              } else {
+                column += value.length;
+              }
+              
+              matched = true;
+              break;
+            }
+          }
+          
+          if (!matched) {
+            this.errors.push({
+              type: 'LexicalError',
+              message: `Unexpected character '${source[position]}'`,
+              line,
+              column
+            });
+            position++;
+            column++;
+          }
+        }
+        
+        return this.tokens;
+      }
+      
+      // Syntax Analysis - Recursive Descent Parser
+      parse(tokens) {
+        let current = 0;
+        this.ast = null;
+        
+        const peek = () => tokens[current];
+        const consume = () => tokens[current++];
+        const expect = (type) => {
+          const token = consume();
+          if (!token || token.type !== type) {
+            throw new Error(`Expected ${type} but got ${token ? token.type : 'EOF'}`);
+          }
+          return token;
+        };
+        
+        const parseProgram = () => {
+          const statements = [];
+          while (current < tokens.length) {
+            statements.push(parseStatement());
+          }
+          return {type: 'Program', body: statements};
+        };
+        
+        const parseStatement = () => {
+          const token = peek();
+          if (!token) return null;
+          
+          if (token.type === 'KEYWORD') {
+            switch (token.value) {
+              case 'if': return parseIfStatement();
+              case 'while': return parseWhileStatement();
+              case 'for': return parseForStatement();
+              case 'return': return parseReturnStatement();
+              case 'var':
+              case 'let':
+              case 'const':
+                return parseVariableDeclaration();
+              case 'function':
+                return parseFunctionDeclaration();
+            }
+          }
+          
+          return parseExpressionStatement();
+        };
+        
+        const parseIfStatement = () => {
+          consume(); // 'if'
+          expect('PUNCTUATION'); // '('
+          const condition = parseExpression();
+          expect('PUNCTUATION'); // ')'
+          const consequent = parseBlockOrStatement();
+          
+          let alternate = null;
+          if (peek() && peek().value === 'else') {
+            consume();
+            alternate = parseBlockOrStatement();
+          }
+          
+          return {
+            type: 'IfStatement',
+            condition,
+            consequent,
+            alternate
+          };
+        };
+        
+        const parseWhileStatement = () => {
+          consume(); // 'while'
+          expect('PUNCTUATION'); // '('
+          const condition = parseExpression();
+          expect('PUNCTUATION'); // ')'
+          const body = parseBlockOrStatement();
+          
+          return {
+            type: 'WhileStatement',
+            condition,
+            body
+          };
+        };
+        
+        const parseVariableDeclaration = () => {
+          const kind = consume().value;
+          const identifier = expect('IDENTIFIER').value;
+          
+          let initializer = null;
+          if (peek() && peek().value === '=') {
+            consume();
+            initializer = parseExpression();
+          }
+          
+          if (peek() && peek().value === ';') consume();
+          
+          return {
+            type: 'VariableDeclaration',
+            kind,
+            identifier,
+            initializer
+          };
+        };
+        
+        const parseExpression = () => {
+          return parseAssignment();
+        };
+        
+        const parseAssignment = () => {
+          let left = parseBinary();
+          
+          if (peek() && peek().value === '=') {
+            consume();
+            const right = parseAssignment();
+            return {
+              type: 'AssignmentExpression',
+              left,
+              right
+            };
+          }
+          
+          return left;
+        };
+        
+        const parseBinary = (minPrec = 0) => {
+          let left = parseUnary();
+          
+          while (peek() && peek().type === 'OPERATOR') {
+            const op = peek().value;
+            const prec = getPrecedence(op);
+            
+            if (prec < minPrec) break;
+            
+            consume();
+            const right = parseBinary(prec + 1);
+            
+            left = {
+              type: 'BinaryExpression',
+              operator: op,
+              left,
+              right
+            };
+          }
+          
+          return left;
+        };
+        
+        const parseUnary = () => {
+          if (peek() && (peek().value === '!' || peek().value === '-' || peek().value === '++' || peek().value === '--')) {
+            const op = consume().value;
+            return {
+              type: 'UnaryExpression',
+              operator: op,
+              argument: parseUnary()
+            };
+          }
+          
+          return parsePrimary();
+        };
+        
+        const parsePrimary = () => {
+          const token = peek();
+          
+          if (!token) throw new Error('Unexpected end of input');
+          
+          if (token.type === 'NUMBER') {
+            consume();
+            return {
+              type: 'Literal',
+              value: parseFloat(token.value),
+              raw: token.value
+            };
+          }
+          
+          if (token.type === 'STRING') {
+            consume();
+            return {
+              type: 'Literal',
+              value: token.value.slice(1, -1),
+              raw: token.value
+            };
+          }
+          
+          if (token.type === 'IDENTIFIER') {
+            consume();
+            return {
+              type: 'Identifier',
+              name: token.value
+            };
+          }
+          
+          if (token.value === '(') {
+            consume();
+            const expr = parseExpression();
+            expect('PUNCTUATION'); // ')'
+            return expr;
+          }
+          
+          if (token.value === 'true' || token.value === 'false') {
+            consume();
+            return {
+              type: 'Literal',
+              value: token.value === 'true',
+              raw: token.value
+            };
+          }
+          
+          throw new Error(`Unexpected token: ${token.value}`);
+        };
+        
+        const parseBlockOrStatement = () => {
+          if (peek() && peek().value === '{') {
+            return parseBlock();
+          }
+          return parseStatement();
+        };
+        
+        const parseBlock = () => {
+          expect('PUNCTUATION'); // '{'
+          const statements = [];
+          
+          while (peek() && peek().value !== '}') {
+            statements.push(parseStatement());
+          }
+          
+          expect('PUNCTUATION'); // '}'
+          
+          return {
+            type: 'BlockStatement',
+            body: statements
+          };
+        };
+        
+        const parseExpressionStatement = () => {
+          const expr = parseExpression();
+          if (peek() && peek().value === ';') consume();
+          return {
+            type: 'ExpressionStatement',
+            expression: expr
+          };
+        };
+        
+        const parseReturnStatement = () => {
+          consume(); // 'return'
+          const argument = peek() && peek().value !== ';' ? parseExpression() : null;
+          if (peek() && peek().value === ';') consume();
+          return {
+            type: 'ReturnStatement',
+            argument
+          };
+        };
+        
+        const parseFunctionDeclaration = () => {
+          consume(); // 'function'
+          const name = expect('IDENTIFIER').value;
+          expect('PUNCTUATION'); // '('
+          
+          const params = [];
+          while (peek() && peek().value !== ')') {
+            params.push(expect('IDENTIFIER').value);
+            if (peek() && peek().value === ',') consume();
+          }
+          
+          expect('PUNCTUATION'); // ')'
+          const body = parseBlock();
+          
+          return {
+            type: 'FunctionDeclaration',
+            name,
+            params,
+            body
+          };
+        };
+        
+        const parseForStatement = () => {
+          consume(); // 'for'
+          expect('PUNCTUATION'); // '('
+          
+          const init = parseVariableDeclaration();
+          const test = parseExpression();
+          if (peek() && peek().value === ';') consume();
+          const update = parseExpression();
+          expect('PUNCTUATION'); // ')'
+          const body = parseBlockOrStatement();
+          
+          return {
+            type: 'ForStatement',
+            init,
+            test,
+            update,
+            body
+          };
+        };
+        
+        const getPrecedence = (op) => {
+          const precedences = {
+            '||': 1,
+            '&&': 2,
+            '==': 3, '!=': 3,
+            '<': 4, '>': 4, '<=': 4, '>=': 4,
+            '+': 5, '-': 5,
+            '*': 6, '/': 6, '%': 6
+          };
+          return precedences[op] || 0;
+        };
+        
+        try {
+          this.ast = parseProgram();
+        } catch (e) {
+          this.errors.push({
+            type: 'SyntaxError',
+            message: e.message
+          });
+        }
+        
+        return this.ast;
+      }
+      
+      // Semantic Analysis
+      analyze(ast) {
+        if (!ast) return;
+        
+        this.symbolTable.clear();
+        const scopes = [this.symbolTable];
+        
+        const currentScope = () => scopes[scopes.length - 1];
+        const enterScope = () => {
+          const newScope = new Map();
+          newScope.parent = currentScope();
+          scopes.push(newScope);
+        };
+        const exitScope = () => scopes.pop();
+        
+        const visit = (node) => {
+          if (!node) return;
+          
+          switch (node.type) {
+            case 'Program':
+              node.body.forEach(stmt => visit(stmt));
+              break;
+              
+            case 'VariableDeclaration':
+              const scope = currentScope();
+              if (scope.has(node.identifier)) {
+                this.errors.push({
+                  type: 'SemanticError',
+                  message: `Variable '${node.identifier}' already declared`
+                });
+              } else {
+                scope.set(node.identifier, {
+                  type: 'variable',
+                  kind: node.kind,
+                  initialized: node.initializer !== null
+                });
+              }
+              if (node.initializer) visit(node.initializer);
+              break;
+              
+            case 'FunctionDeclaration':
+              currentScope().set(node.name, {
+                type: 'function',
+                params: node.params
+              });
+              enterScope();
+              node.params.forEach(param => {
+                currentScope().set(param, {type: 'parameter'});
+              });
+              visit(node.body);
+              exitScope();
+              break;
+              
+            case 'Identifier':
+              const lookup = (name, scope) => {
+                if (scope.has(name)) return scope.get(name);
+                if (scope.parent) return lookup(name, scope.parent);
+                return null;
+              };
+              
+              if (!lookup(node.name, currentScope())) {
+                this.errors.push({
+                  type: 'SemanticError',
+                  message: `Undefined variable '${node.name}'`
+                });
+              }
+              break;
+              
+            case 'BlockStatement':
+              enterScope();
+              node.body.forEach(stmt => visit(stmt));
+              exitScope();
+              break;
+              
+            case 'IfStatement':
+              visit(node.condition);
+              visit(node.consequent);
+              if (node.alternate) visit(node.alternate);
+              break;
+              
+            case 'WhileStatement':
+            case 'ForStatement':
+              if (node.init) visit(node.init);
+              if (node.test || node.condition) visit(node.test || node.condition);
+              if (node.update) visit(node.update);
+              visit(node.body);
+              break;
+              
+            case 'BinaryExpression':
+            case 'AssignmentExpression':
+              visit(node.left);
+              visit(node.right);
+              break;
+              
+            case 'UnaryExpression':
+              visit(node.argument);
+              break;
+              
+            case 'ExpressionStatement':
+              visit(node.expression);
+              break;
+              
+            case 'ReturnStatement':
+              if (node.argument) visit(node.argument);
+              break;
+          }
+        };
+        
+        visit(ast);
+      }
+      
+      // IR Generation
+      generateIR(ast) {
+        if (!ast) return;
+        
+        this.ir = [];
+        let tempCounter = 0;
+        let labelCounter = 0;
+        
+        const newTemp = () => `t${tempCounter++}`;
+        const newLabel = () => `L${labelCounter++}`;
+        
+        const emit = (instruction) => {
+          this.ir.push(instruction);
+        };
+        
+        const generate = (node) => {
+          if (!node) return null;
+          
+          switch (node.type) {
+            case 'Program':
+              node.body.forEach(stmt => generate(stmt));
+              break;
+              
+            case 'Literal':
+              const temp = newTemp();
+              emit({op: 'const', result: temp, value: node.value});
+              return temp;
+              
+            case 'Identifier':
+              return node.name;
+              
+            case 'BinaryExpression':
+              const left = generate(node.left);
+              const right = generate(node.right);
+              const result = newTemp();
+              emit({op: node.operator, arg1: left, arg2: right, result});
+              return result;
+              
+            case 'AssignmentExpression':
+              const value = generate(node.right);
+              emit({op: 'assign', arg1: value, result: node.left.name});
+              return node.left.name;
+              
+            case 'VariableDeclaration':
+              if (node.initializer) {
+                const value = generate(node.initializer);
+                emit({op: 'assign', arg1: value, result: node.identifier});
+              }
+              break;
+              
+            case 'IfStatement':
+              const condition = generate(node.condition);
+              const falseLabel = newLabel();
+              const endLabel = newLabel();
+              
+              emit({op: 'iffalse', arg1: condition, arg2: falseLabel});
+              generate(node.consequent);
+              emit({op: 'goto', arg1: endLabel});
+              emit({op: 'label', arg1: falseLabel});
+              if (node.alternate) generate(node.alternate);
+              emit({op: 'label', arg1: endLabel});
+              break;
+              
+            case 'WhileStatement':
+              const startLabel = newLabel();
+              const exitLabel = newLabel();
+              
+              emit({op: 'label', arg1: startLabel});
+              const cond = generate(node.condition);
+              emit({op: 'iffalse', arg1: cond, arg2: exitLabel});
+              generate(node.body);
+              emit({op: 'goto', arg1: startLabel});
+              emit({op: 'label', arg1: exitLabel});
+              break;
+              
+            case 'BlockStatement':
+              node.body.forEach(stmt => generate(stmt));
+              break;
+              
+            case 'ExpressionStatement':
+              generate(node.expression);
+              break;
+              
+            case 'ReturnStatement':
+              if (node.argument) {
+                const value = generate(node.argument);
+                emit({op: 'return', arg1: value});
+              } else {
+                emit({op: 'return'});
+              }
+              break;
+          }
+        };
+        
+        generate(ast);
+        return this.ir;
+      }
+      
+      // Code Generation
+      generateAssembly(ir) {
+        this.assembly = [];
+        const registers = ['RAX', 'RBX', 'RCX', 'RDX', 'RSI', 'RDI'];
+        const allocation = new Map();
+        let nextReg = 0;
+        
+        const getReg = (variable) => {
+          if (!allocation.has(variable)) {
+            allocation.set(variable, registers[nextReg++ % registers.length]);
+          }
+          return allocation.get(variable);
+        };
+        
+        ir.forEach(inst => {
+          switch (inst.op) {
+            case 'const':
+              this.assembly.push(`MOV ${getReg(inst.result)}, ${inst.value}`);
+              break;
+              
+            case 'assign':
+              if (inst.arg1.startsWith('t')) {
+                this.assembly.push(`MOV ${getReg(inst.result)}, ${getReg(inst.arg1)}`);
+              } else {
+                this.assembly.push(`MOV ${getReg(inst.result)}, ${inst.arg1}`);
+              }
+              break;
+              
+            case '+':
+              this.assembly.push(
+                `MOV ${getReg(inst.result)}, ${getReg(inst.arg1)}`,
+                `ADD ${getReg(inst.result)}, ${getReg(inst.arg2)}`
+              );
+              break;
+              
+            case '-':
+              this.assembly.push(
+                `MOV ${getReg(inst.result)}, ${getReg(inst.arg1)}`,
+                `SUB ${getReg(inst.result)}, ${getReg(inst.arg2)}`
+              );
+              break;
+              
+            case '*':
+              this.assembly.push(
+                `MOV RAX, ${getReg(inst.arg1)}`,
+                `MUL ${getReg(inst.arg2)}`,
+                `MOV ${getReg(inst.result)}, RAX`
+              );
+              break;
+              
+            case '/':
+              this.assembly.push(
+                `MOV RAX, ${getReg(inst.arg1)}`,
+                `XOR RDX, RDX`,
+                `DIV ${getReg(inst.arg2)}`,
+                `MOV ${getReg(inst.result)}, RAX`
+              );
+              break;
+              
+            case '<':
+            case '>':
+            case '==':
+              this.assembly.push(
+                `CMP ${getReg(inst.arg1)}, ${getReg(inst.arg2)}`,
+                `SET${inst.op === '<' ? 'L' : inst.op === '>' ? 'G' : 'E'} ${getReg(inst.result)}`
+              );
+              break;
+              
+            case 'iffalse':
+              this.assembly.push(
+                `CMP ${getReg(inst.arg1)}, 0`,
+                `JE ${inst.arg2}`
+              );
+              break;
+              
+            case 'goto':
+              this.assembly.push(`JMP ${inst.arg1}`);
+              break;
+              
+            case 'label':
+              this.assembly.push(`${inst.arg1}:`);
+              break;
+              
+            case 'return':
+              if (inst.arg1) {
+                this.assembly.push(`MOV RAX, ${getReg(inst.arg1)}`);
+              }
+              this.assembly.push('RET');
+              break;
+          }
+        });
+        
+        return this.assembly;
+      }
+      
+      optimizeIR() {
+        // Simple constant folding
+        const optimized = [];
+        
+        this.ir.forEach(inst => {
+          if (inst.op === '+' || inst.op === '-' || inst.op === '*' || inst.op === '/') {
+            // Check if both operands are constants
+            const leftConst = this.ir.find(i => i.op === 'const' && i.result === inst.arg1);
+            const rightConst = this.ir.find(i => i.op === 'const' && i.result === inst.arg2);
+            
+            if (leftConst && rightConst) {
+              let value;
+              switch (inst.op) {
+                case '+': value = leftConst.value + rightConst.value; break;
+                case '-': value = leftConst.value - rightConst.value; break;
+                case '*': value = leftConst.value * rightConst.value; break;
+                case '/': value = leftConst.value / rightConst.value; break;
+              }
+              optimized.push({op: 'const', result: inst.result, value});
+              return;
+            }
+          }
+          optimized.push(inst);
+        });
+        
+        this.ir = optimized;
+      }
+    }
+    
+    // Global compiler instance
+    let compiler = new Compiler();
+    let currentStep = 0;
+    
+    // Functions
+    function loadExample(example) {
+      const examples = {
+        fibonacci: `function fibonacci(n) {
+  if (n <= 1) {
+    return n;
+  }
+  return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+let result = fibonacci(5);`,
+        
+        factorial: `function factorial(n) {
+  let result = 1;
+  let i = 2;
+  while (i <= n) {
+    result = result * i;
+    i = i + 1;
+  }
+  return result;
+}
+
+let x = factorial(5);`,
+        
+        bubblesort: `let arr = [5, 2, 8, 1, 9];
+let n = 5;
+let i = 0;
+
+while (i < n - 1) {
+  let j = 0;
+  while (j < n - i - 1) {
+    if (arr[j] > arr[j + 1]) {
+      let temp = arr[j];
+      arr[j] = arr[j + 1];
+      arr[j + 1] = temp;
+    }
+    j = j + 1;
+  }
+  i = i + 1;
+}`,
+        
+        expression: `let a = 10;
+let b = 20;
+let c = 30;
+let result = (a + b) * c / (a - b + c);
+let check = result > 100;`,
+        
+        control: `let x = 10;
+let y = 0;
+
+if (x > 5) {
+  y = x * 2;
+} else {
+  y = x / 2;
+}
+
+for (let i = 0; i < 5; i = i + 1) {
+  y = y + i;
+}`
+      };
+      
+      editor.setValue(examples[example] || '');
+    }
+    
+    function compile() {
+      reset();
+      const source = editor.getValue();
+      
+      if (!source.trim()) {
+        showError('Please enter some code to compile');
+        return;
+      }
+      
+      // Lexical Analysis
+      setStage('lexical');
+      compiler.tokenize(source);
+      displayTokens();
+      
+      setTimeout(() => {
+        // Syntax Analysis
+        setStage('syntax');
+        compiler.parse(compiler.tokens);
+        displayAST();
+        
+        setTimeout(() => {
+          // Semantic Analysis
+          setStage('semantic');
+          compiler.analyze(compiler.ast);
+          displaySymbols();
+          
+          if (compiler.errors.length > 0) {
+            showError(compiler.errors.map(e => e.message).join('\n'));
+            return;
+          }
+          
+          setTimeout(() => {
+            // IR Generation
+            setStage('ir');
+            compiler.generateIR(compiler.ast);
+            displayIR();
+            
+            setTimeout(() => {
+              // Optimization
+              setStage('optimization');
+              document.getElementById('optimize-btn').disabled = false;
+              
+              setTimeout(() => {
+                // Code Generation
+                setStage('codegen');
+                compiler.generateAssembly(compiler.ir);
+                displayAssembly();
+              }, 500);
+            }, 500);
+          }, 500);
+        }, 500);
+      }, 500);
+    }
+    
+    function stepThrough() {
+      const stages = ['lexical', 'syntax', 'semantic', 'ir', 'optimization', 'codegen'];
+      
+      if (currentStep === 0) {
+        reset();
+        const source = editor.getValue();
+        if (!source.trim()) {
+          showError('Please enter some code to compile');
+          return;
+        }
+      }
+      
+      if (currentStep < stages.length) {
+        const stage = stages[currentStep];
+        setStage(stage);
+        
+        switch (stage) {
+          case 'lexical':
+            compiler.tokenize(editor.getValue());
+            displayTokens();
+            showTab('tokens');
+            break;
+          case 'syntax':
+            compiler.parse(compiler.tokens);
+            displayAST();
+            showTab('ast');
+            break;
+          case 'semantic':
+            compiler.analyze(compiler.ast);
+            displaySymbols();
+            showTab('symbols');
+            break;
+          case 'ir':
+            compiler.generateIR(compiler.ast);
+            displayIR();
+            showTab('ir');
+            break;
+          case 'optimization':
+            document.getElementById('optimize-btn').disabled = false;
+            break;
+          case 'codegen':
+            compiler.generateAssembly(compiler.ir);
+            displayAssembly();
+            showTab('assembly');
+            break;
+        }
+        
+        currentStep++;
+      }
+    }
+    
+    function optimize() {
+      compiler.optimizeIR();
+      displayIR();
+      compiler.generateAssembly(compiler.ir);
+      displayAssembly();
+    }
+    
+    function reset() {
+      compiler = new Compiler();
+      currentStep = 0;
+      document.querySelectorAll('.stage').forEach(stage => {
+        stage.classList.remove('active', 'completed');
+      });
+      document.getElementById('optimize-btn').disabled = true;
+      hideError();
+      clearOutputs();
+    }
+    
+    function setStage(stage) {
+      document.querySelectorAll('.stage').forEach(s => {
+        s.classList.remove('active', 'processing');
+      });
+      
+      const stageElement = document.getElementById(`stage-${stage}`);
+      stageElement.classList.add('active', 'processing');
+      
+      // Mark previous stages as completed
+      const stages = ['lexical', 'syntax', 'semantic', 'ir', 'optimization', 'codegen'];
+      const currentIndex = stages.indexOf(stage);
+      for (let i = 0; i < currentIndex; i++) {
+        document.getElementById(`stage-${stages[i]}`).classList.add('completed');
+      }
+    }
+    
+    function showTab(tab) {
+      document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+      
+      document.querySelectorAll('#output-content > div').forEach(content => {
+        content.style.display = 'none';
+      });
+      document.getElementById(`${tab}-output`).style.display = 'block';
+    }
+    
+    function displayTokens() {
+      const output = document.getElementById('tokens-output');
+      output.innerHTML = '';
+      
+      compiler.tokens.forEach(token => {
+        const tokenElement = document.createElement('span');
+        tokenElement.className = `token token-${token.type.toLowerCase()}`;
+        tokenElement.textContent = token.value;
+        output.appendChild(tokenElement);
+      });
+    }
+    
+    function displayAST() {
+      if (!compiler.ast) return;
+      
+      const svg = d3.select('#ast-svg');
+      svg.selectAll('*').remove();
+      
+      const width = 600;
+      const height = 400;
+      
+      svg.attr('viewBox', `0 0 ${width} ${height}`);
+      
+      const treeLayout = d3.tree().size([width - 40, height - 40]);
+      
+      const root = d3.hierarchy(convertASTToD3(compiler.ast));
+      treeLayout(root);
+      
+      const g = svg.append('g')
+        .attr('transform', 'translate(20, 20)');
+      
+      // Draw links
+      g.selectAll('.ast-link')
+        .data(root.links())
+        .enter().append('path')
+        .attr('class', 'ast-link')
+        .attr('d', d3.linkVertical()
+          .x(d => d.x)
+          .y(d => d.y));
+      
+      // Draw nodes
+      const nodes = g.selectAll('.ast-node')
+        .data(root.descendants())
+        .enter().append('g')
+        .attr('class', 'ast-node')
+        .attr('transform', d => `translate(${d.x}, ${d.y})`);
+      
+      nodes.append('rect')
+        .attr('x', -30)
+        .attr('y', -10)
+        .attr('width', 60)
+        .attr('height', 20);
+      
+      nodes.append('text')
+        .attr('dy', '.35em')
+        .attr('text-anchor', 'middle')
+        .text(d => d.data.name);
+    }
+    
+    function convertASTToD3(node) {
+      if (!node) return null;
+      
+      const d3Node = {
+        name: node.type.replace(/Statement|Expression|Declaration/, ''),
+        children: []
+      };
+      
+      if (node.body) {
+        if (Array.isArray(node.body)) {
+          d3Node.children = node.body.map(child => convertASTToD3(child)).filter(Boolean);
+        } else {
+          d3Node.children.push(convertASTToD3(node.body));
+        }
+      }
+      
+      if (node.condition) d3Node.children.push(convertASTToD3(node.condition));
+      if (node.consequent) d3Node.children.push(convertASTToD3(node.consequent));
+      if (node.alternate) d3Node.children.push(convertASTToD3(node.alternate));
+      if (node.left) d3Node.children.push(convertASTToD3(node.left));
+      if (node.right) d3Node.children.push(convertASTToD3(node.right));
+      if (node.argument) d3Node.children.push(convertASTToD3(node.argument));
+      if (node.expression) d3Node.children.push(convertASTToD3(node.expression));
+      
+      if (node.type === 'Identifier') {
+        d3Node.name = node.name;
+      }
+      
+      if (node.type === 'Literal') {
+        d3Node.name = String(node.value);
+      }
+      
+      if (node.type === 'BinaryExpression') {
+        d3Node.name = node.operator;
+      }
+      
+      return d3Node;
+    }
+    
+    function displaySymbols() {
+      const output = document.getElementById('symbols-output');
+      output.innerHTML = '<div class="symbol-entry"><span>Name</span><span>Type</span><span>Properties</span></div>';
+      
+      compiler.symbolTable.forEach((info, name) => {
+        const entry = document.createElement('div');
+        entry.className = 'symbol-entry';
+        entry.innerHTML = `
+          <span>${name}</span>
+          <span>${info.type}</span>
+          <span>${JSON.stringify(info)}</span>
+        `;
+        output.appendChild(entry);
+      });
+    }
+    
+    function displayIR() {
+      const output = document.getElementById('ir-output');
+      output.innerHTML = '';
+      
+      compiler.ir.forEach((inst, index) => {
+        const line = document.createElement('div');
+        line.className = 'ir-instruction';
+        
+        if (inst.op === 'label') {
+          line.innerHTML = `<span class="ir-label">${inst.arg1}:</span>`;
+        } else {
+          line.innerHTML = `
+            <span>${index}</span>
+            <span class="ir-op">${inst.op}</span>
+            <span>${inst.arg1 || ''} ${inst.arg2 || ''}</span>
+            <span>${inst.result ? '→ ' + inst.result : ''}</span>
+          `;
+        }
+        
+        output.appendChild(line);
+      });
+    }
+    
+    function displayAssembly() {
+      const output = document.getElementById('assembly-output');
+      output.innerHTML = '';
+      
+      compiler.assembly.forEach(line => {
+        const asmLine = document.createElement('div');
+        asmLine.className = 'assembly-line';
+        
+        if (line.endsWith(':')) {
+          asmLine.innerHTML = `<span class="assembly-label">${line}</span>`;
+        } else {
+          asmLine.innerHTML = `<span class="assembly-instruction">${line}</span>`;
+        }
+        
+        output.appendChild(asmLine);
+      });
+    }
+    
+    function showError(message) {
+      const errorDisplay = document.getElementById('error-display');
+      errorDisplay.textContent = '⚠ ' + message;
+      errorDisplay.classList.add('show');
+    }
+    
+    function hideError() {
+      document.getElementById('error-display').classList.remove('show');
+    }
+    
+    function clearOutputs() {
+      document.getElementById('tokens-output').innerHTML = 'Click "Compile" to see tokens';
+      document.getElementById('ast-output').innerHTML = '';
+      document.getElementById('symbols-output').innerHTML = 'Symbol table will appear here';
+      document.getElementById('ir-output').innerHTML = 'Intermediate representation will appear here';
+      document.getElementById('assembly-output').innerHTML = 'Assembly code will appear here';
+    }
+    
+    // Initialize with example
+    loadExample('expression');
+  </script>
+</body>
+</html>

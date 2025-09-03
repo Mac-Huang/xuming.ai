@@ -1,0 +1,1060 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Interactive Transformer Architecture Visualization - Xuming Huang</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../stylesheet.css">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+  <style>
+    body {
+      font-family: 'Lato', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 1600px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      padding: 30px;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .header h1 {
+      color: #1772d0;
+      margin-bottom: 10px;
+      font-size: 32px;
+    }
+    
+    .main-layout {
+      display: grid;
+      grid-template-columns: 1fr 2fr 1fr;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .input-panel {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 20px;
+    }
+    
+    .architecture-view {
+      background: #263238;
+      border-radius: 8px;
+      padding: 20px;
+      min-height: 600px;
+      position: relative;
+    }
+    
+    .output-panel {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 20px;
+    }
+    
+    .section-title {
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #333;
+      font-size: 16px;
+    }
+    
+    .token-input {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #1772d0;
+      border-radius: 4px;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    
+    .token-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin: 10px 0;
+    }
+    
+    .token {
+      background: #1772d0;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .token:hover {
+      background: #1557a0;
+      transform: scale(1.05);
+    }
+    
+    .token.selected {
+      background: #ff9800;
+    }
+    
+    .model-selector {
+      display: flex;
+      gap: 10px;
+      margin: 20px 0;
+    }
+    
+    .model-option {
+      flex: 1;
+      padding: 10px;
+      border: 2px solid #ddd;
+      border-radius: 4px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .model-option:hover {
+      border-color: #1772d0;
+    }
+    
+    .model-option.active {
+      background: #e3f2fd;
+      border-color: #1772d0;
+    }
+    
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin: 20px 0;
+    }
+    
+    .controls button {
+      padding: 10px 20px;
+      background: #1772d0;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+    
+    .controls button:hover {
+      background: #1557a0;
+      transform: translateY(-2px);
+    }
+    
+    .layer-block {
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid #4caf50;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 10px 0;
+      position: relative;
+    }
+    
+    .layer-block.active {
+      background: rgba(76, 175, 80, 0.2);
+      border-color: #ffd700;
+      animation: pulse 1s infinite;
+    }
+    
+    .layer-title {
+      color: #4caf50;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    
+    .sublayer {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid #666;
+      border-radius: 4px;
+      padding: 8px;
+      margin: 5px 0;
+      color: #aaa;
+      font-size: 12px;
+    }
+    
+    .sublayer.processing {
+      border-color: #ffd700;
+      color: #ffd700;
+    }
+    
+    .attention-matrix {
+      width: 100%;
+      height: 300px;
+      background: white;
+      border-radius: 4px;
+      margin: 10px 0;
+    }
+    
+    .attention-head {
+      display: inline-block;
+      margin: 5px;
+      padding: 5px 10px;
+      background: #2196f3;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    
+    .attention-head.active {
+      background: #ff9800;
+    }
+    
+    .embedding-viz {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(30px, 1fr));
+      gap: 2px;
+      margin: 10px 0;
+    }
+    
+    .embedding-cell {
+      height: 30px;
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+    
+    .position-encoding {
+      display: flex;
+      gap: 5px;
+      margin: 10px 0;
+    }
+    
+    .position-bar {
+      flex: 1;
+      height: 40px;
+      background: linear-gradient(90deg, #4caf50, #2196f3);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 12px;
+    }
+    
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 20px 0;
+    }
+    
+    .metric-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    
+    .metric-value {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    
+    .metric-label {
+      font-size: 12px;
+      opacity: 0.9;
+    }
+    
+    .flow-arrow {
+      stroke: #4caf50;
+      stroke-width: 2;
+      fill: none;
+      marker-end: url(#arrowhead);
+    }
+    
+    .residual-connection {
+      stroke: #ff9800;
+      stroke-width: 1.5;
+      stroke-dasharray: 5,5;
+      fill: none;
+    }
+    
+    .info-tooltip {
+      position: absolute;
+      background: #333;
+      color: white;
+      padding: 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      display: none;
+      z-index: 1000;
+      max-width: 300px;
+    }
+    
+    .info-tooltip.show {
+      display: block;
+    }
+    
+    .heatmap-cell {
+      stroke: #fff;
+      stroke-width: 1;
+      cursor: pointer;
+    }
+    
+    .activation-display {
+      background: #f5f5f5;
+      border-radius: 4px;
+      padding: 10px;
+      margin: 10px 0;
+      font-family: monospace;
+      font-size: 11px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    
+    .tensor-shape {
+      background: #e3f2fd;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12px;
+      margin: 5px 0;
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.6; }
+      100% { opacity: 1; }
+    }
+    
+    @keyframes flow {
+      0% { stroke-dashoffset: 0; }
+      100% { stroke-dashoffset: -20; }
+    }
+    
+    .animating {
+      stroke-dasharray: 10, 10;
+      animation: flow 1s linear infinite;
+    }
+    
+    .layer-params {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 10px 0;
+    }
+    
+    .param-input {
+      padding: 5px;
+      border: 1px solid #666;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 12px;
+    }
+    
+    .param-label {
+      color: #aaa;
+      font-size: 11px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🤖 Interactive Transformer Architecture Visualization</h1>
+      <p>Step-by-step visualization of transformer models and attention mechanisms</p>
+      <p><a href="../projects.html" style="color: #1772d0;">← Back to Projects</a></p>
+    </div>
+    
+    <div class="model-selector">
+      <div class="model-option active" onclick="selectModel('encoder')">
+        <strong>Encoder-Only</strong><br>
+        <small>(BERT-style)</small>
+      </div>
+      <div class="model-option" onclick="selectModel('decoder')">
+        <strong>Decoder-Only</strong><br>
+        <small>(GPT-style)</small>
+      </div>
+      <div class="model-option" onclick="selectModel('encoder-decoder')">
+        <strong>Encoder-Decoder</strong><br>
+        <small>(T5-style)</small>
+      </div>
+    </div>
+    
+    <div class="main-layout">
+      <div class="input-panel">
+        <div class="section-title">Input Sequence</div>
+        <input type="text" class="token-input" id="token-input" placeholder="Enter text (e.g., 'The cat sat on mat')" value="The cat sat on mat">
+        <button onclick="tokenize()" style="width: 100%; padding: 8px; background: #4caf50; color: white; border: none; border-radius: 4px; cursor: pointer;">Tokenize</button>
+        
+        <div class="token-list" id="token-list"></div>
+        
+        <div class="section-title" style="margin-top: 20px;">Model Parameters</div>
+        <div class="layer-params">
+          <div>
+            <div class="param-label">Model Dimension</div>
+            <input type="number" class="param-input" id="d-model" value="512">
+          </div>
+          <div>
+            <div class="param-label">Attention Heads</div>
+            <input type="number" class="param-input" id="n-heads" value="8">
+          </div>
+          <div>
+            <div class="param-label">Layers</div>
+            <input type="number" class="param-input" id="n-layers" value="6">
+          </div>
+          <div>
+            <div class="param-label">FFN Dimension</div>
+            <input type="number" class="param-input" id="d-ff" value="2048">
+          </div>
+        </div>
+        
+        <div class="controls">
+          <button onclick="processSequence()">Process</button>
+          <button onclick="stepThrough()">Step</button>
+          <button onclick="reset()">Reset</button>
+        </div>
+      </div>
+      
+      <div class="architecture-view" id="architecture-view">
+        <svg id="architecture-svg" width="100%" height="600">
+          <defs>
+            <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+              <polygon points="0 0, 10 3, 0 6" fill="#4caf50" />
+            </marker>
+          </defs>
+        </svg>
+        
+        <div id="layer-stack"></div>
+      </div>
+      
+      <div class="output-panel">
+        <div class="section-title">Attention Visualization</div>
+        <div id="attention-heads"></div>
+        <svg id="attention-matrix" class="attention-matrix"></svg>
+        
+        <div class="section-title" style="margin-top: 20px;">Layer Activations</div>
+        <div class="activation-display" id="activation-display">
+          Select a layer to see activations
+        </div>
+        
+        <div class="section-title" style="margin-top: 20px;">Tensor Shapes</div>
+        <div id="tensor-shapes"></div>
+      </div>
+    </div>
+    
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-value" id="total-params">0</div>
+        <div class="metric-label">Total Parameters</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" id="attention-ops">0</div>
+        <div class="metric-label">Attention Operations</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" id="flops">0</div>
+        <div class="metric-label">FLOPs</div>
+      </div>
+    </div>
+    
+    <div class="info-tooltip" id="info-tooltip"></div>
+  </div>
+
+  <script>
+    // Transformer Implementation
+    class TransformerModel {
+      constructor(config) {
+        this.config = {
+          d_model: config.d_model || 512,
+          n_heads: config.n_heads || 8,
+          n_layers: config.n_layers || 6,
+          d_ff: config.d_ff || 2048,
+          vocab_size: config.vocab_size || 10000,
+          max_seq_len: config.max_seq_len || 512,
+          model_type: config.model_type || 'encoder'
+        };
+        
+        this.activations = [];
+        this.attentionWeights = [];
+        this.currentLayer = 0;
+      }
+      
+      // Positional Encoding
+      getPositionalEncoding(seq_len) {
+        const pe = [];
+        const d_model = this.config.d_model;
+        
+        for (let pos = 0; pos < seq_len; pos++) {
+          const position_enc = [];
+          for (let i = 0; i < d_model; i++) {
+            const angle = pos / Math.pow(10000, (2 * Math.floor(i / 2)) / d_model);
+            if (i % 2 === 0) {
+              position_enc.push(Math.sin(angle));
+            } else {
+              position_enc.push(Math.cos(angle));
+            }
+          }
+          pe.push(position_enc);
+        }
+        
+        return pe;
+      }
+      
+      // Multi-Head Attention
+      multiHeadAttention(Q, K, V, mask = null) {
+        const seq_len = Q.length;
+        const d_k = this.config.d_model / this.config.n_heads;
+        const heads = [];
+        
+        for (let h = 0; h < this.config.n_heads; h++) {
+          const attention = this.scaledDotProductAttention(Q, K, V, d_k, mask);
+          heads.push(attention);
+          
+          // Store attention weights for visualization
+          if (!this.attentionWeights[this.currentLayer]) {
+            this.attentionWeights[this.currentLayer] = [];
+          }
+          this.attentionWeights[this.currentLayer].push(attention.weights);
+        }
+        
+        // Concatenate and project
+        return this.concatenateHeads(heads);
+      }
+      
+      scaledDotProductAttention(Q, K, V, d_k, mask) {
+        const seq_len = Q.length;
+        const scores = [];
+        
+        // Compute attention scores
+        for (let i = 0; i < seq_len; i++) {
+          const row = [];
+          for (let j = 0; j < seq_len; j++) {
+            let score = this.dotProduct(Q[i], K[j]) / Math.sqrt(d_k);
+            
+            // Apply mask for causal attention
+            if (mask && i < j) {
+              score = -Infinity;
+            }
+            
+            row.push(score);
+          }
+          scores.push(row);
+        }
+        
+        // Apply softmax
+        const weights = scores.map(row => this.softmax(row));
+        
+        // Apply attention to values
+        const output = [];
+        for (let i = 0; i < seq_len; i++) {
+          const weighted = new Array(this.config.d_model).fill(0);
+          for (let j = 0; j < seq_len; j++) {
+            for (let k = 0; k < V[j].length; k++) {
+              weighted[k] += weights[i][j] * (V[j][k] || 0);
+            }
+          }
+          output.push(weighted);
+        }
+        
+        return {output, weights};
+      }
+      
+      dotProduct(a, b) {
+        return a.reduce((sum, val, i) => sum + val * (b[i] || 0), 0);
+      }
+      
+      softmax(scores) {
+        const maxScore = Math.max(...scores.filter(s => s !== -Infinity));
+        const expScores = scores.map(s => s === -Infinity ? 0 : Math.exp(s - maxScore));
+        const sumExp = expScores.reduce((a, b) => a + b, 0);
+        return expScores.map(s => s / sumExp);
+      }
+      
+      concatenateHeads(heads) {
+        // Simplified concatenation
+        return heads[0].output;
+      }
+      
+      // Feed-Forward Network
+      feedForward(input) {
+        const hidden = [];
+        
+        // First linear + ReLU
+        for (let i = 0; i < input.length; i++) {
+          const h = new Array(this.config.d_ff).fill(0);
+          for (let j = 0; j < this.config.d_ff; j++) {
+            let sum = 0;
+            for (let k = 0; k < input[i].length; k++) {
+              sum += input[i][k] * (Math.random() - 0.5) * 0.1;
+            }
+            h[j] = Math.max(0, sum); // ReLU
+          }
+          hidden.push(h);
+        }
+        
+        // Second linear
+        const output = [];
+        for (let i = 0; i < hidden.length; i++) {
+          const o = new Array(this.config.d_model).fill(0);
+          for (let j = 0; j < this.config.d_model; j++) {
+            let sum = 0;
+            for (let k = 0; k < hidden[i].length; k++) {
+              sum += hidden[i][k] * (Math.random() - 0.5) * 0.1;
+            }
+            o[j] = sum;
+          }
+          output.push(o);
+        }
+        
+        return output;
+      }
+      
+      // Layer Normalization
+      layerNorm(input) {
+        return input.map(vec => {
+          const mean = vec.reduce((a, b) => a + b, 0) / vec.length;
+          const variance = vec.reduce((sum, x) => sum + Math.pow(x - mean, 2), 0) / vec.length;
+          return vec.map(x => (x - mean) / Math.sqrt(variance + 1e-6));
+        });
+      }
+      
+      // Add residual connection
+      addResidual(input, output) {
+        return input.map((vec, i) => 
+          vec.map((val, j) => val + output[i][j])
+        );
+      }
+      
+      // Process sequence through transformer
+      processSequence(tokens) {
+        this.activations = [];
+        this.attentionWeights = [];
+        
+        // Embedding + Positional Encoding
+        let x = this.embedTokens(tokens);
+        const pe = this.getPositionalEncoding(tokens.length);
+        x = x.map((vec, i) => vec.map((val, j) => val + pe[i][j]));
+        
+        this.activations.push({name: 'Input + PE', data: x});
+        
+        // Process through layers
+        for (let layer = 0; layer < this.config.n_layers; layer++) {
+          this.currentLayer = layer;
+          
+          // Self-attention
+          const attnInput = this.layerNorm(x);
+          const mask = this.config.model_type === 'decoder' ? true : null;
+          const attnOutput = this.multiHeadAttention(attnInput, attnInput, attnInput, mask);
+          x = this.addResidual(x, attnOutput);
+          
+          this.activations.push({
+            name: `Layer ${layer + 1} - Attention`,
+            data: x
+          });
+          
+          // Feed-forward
+          const ffInput = this.layerNorm(x);
+          const ffOutput = this.feedForward(ffInput);
+          x = this.addResidual(x, ffOutput);
+          
+          this.activations.push({
+            name: `Layer ${layer + 1} - FFN`,
+            data: x
+          });
+        }
+        
+        return x;
+      }
+      
+      embedTokens(tokens) {
+        // Simple random embedding for visualization
+        return tokens.map(() => 
+          Array(this.config.d_model).fill(0).map(() => (Math.random() - 0.5) * 0.1)
+        );
+      }
+      
+      calculateParams() {
+        const d = this.config.d_model;
+        const h = this.config.n_heads;
+        const l = this.config.n_layers;
+        const ff = this.config.d_ff;
+        const v = this.config.vocab_size;
+        
+        // Embedding
+        let params = v * d;
+        
+        // Each layer
+        const perLayer = 
+          4 * d * d + // Q, K, V, O projections
+          2 * d * ff + 2 * ff; // FFN
+        
+        params += l * perLayer;
+        
+        // Layer norms
+        params += 2 * l * d;
+        
+        return params;
+      }
+    }
+    
+    // Global variables
+    let model = null;
+    let tokens = [];
+    let currentStep = 0;
+    let selectedHead = 0;
+    
+    // UI Functions
+    function selectModel(type) {
+      document.querySelectorAll('.model-option').forEach(opt => {
+        opt.classList.remove('active');
+      });
+      event.target.closest('.model-option').classList.add('active');
+      
+      const config = {
+        d_model: parseInt(document.getElementById('d-model').value),
+        n_heads: parseInt(document.getElementById('n-heads').value),
+        n_layers: parseInt(document.getElementById('n-layers').value),
+        d_ff: parseInt(document.getElementById('d-ff').value),
+        model_type: type
+      };
+      
+      model = new TransformerModel(config);
+      updateArchitectureView(type);
+      updateMetrics();
+    }
+    
+    function tokenize() {
+      const text = document.getElementById('token-input').value;
+      tokens = text.split(' ').filter(t => t.length > 0);
+      
+      const tokenList = document.getElementById('token-list');
+      tokenList.innerHTML = '';
+      
+      tokens.forEach((token, i) => {
+        const tokenElement = document.createElement('div');
+        tokenElement.className = 'token';
+        tokenElement.textContent = token;
+        tokenElement.onclick = () => selectToken(i);
+        tokenList.appendChild(tokenElement);
+      });
+    }
+    
+    function selectToken(index) {
+      document.querySelectorAll('.token').forEach((t, i) => {
+        t.classList.toggle('selected', i === index);
+      });
+    }
+    
+    function processSequence() {
+      if (tokens.length === 0) {
+        tokenize();
+      }
+      
+      const config = {
+        d_model: parseInt(document.getElementById('d-model').value),
+        n_heads: parseInt(document.getElementById('n-heads').value),
+        n_layers: parseInt(document.getElementById('n-layers').value),
+        d_ff: parseInt(document.getElementById('d-ff').value),
+        model_type: document.querySelector('.model-option.active').textContent.includes('Decoder') ? 'decoder' : 'encoder'
+      };
+      
+      model = new TransformerModel(config);
+      const output = model.processSequence(tokens);
+      
+      visualizeAttention();
+      displayActivations();
+      updateTensorShapes();
+      animateProcessing();
+    }
+    
+    function stepThrough() {
+      if (currentStep === 0 && tokens.length === 0) {
+        tokenize();
+      }
+      
+      const steps = [
+        'embedding',
+        'positional',
+        'attention-1',
+        'ffn-1',
+        'attention-2',
+        'ffn-2'
+      ];
+      
+      if (currentStep < steps.length) {
+        animateStep(steps[currentStep]);
+        currentStep++;
+      } else {
+        currentStep = 0;
+      }
+    }
+    
+    function reset() {
+      currentStep = 0;
+      document.querySelectorAll('.layer-block').forEach(block => {
+        block.classList.remove('active');
+      });
+      document.querySelectorAll('.sublayer').forEach(layer => {
+        layer.classList.remove('processing');
+      });
+    }
+    
+    function updateArchitectureView(type) {
+      const stack = document.getElementById('layer-stack');
+      stack.innerHTML = '';
+      
+      // Input Embedding
+      const embedBlock = createLayerBlock('Input Embedding', [
+        'Token Embedding',
+        'Positional Encoding',
+        'Dropout'
+      ]);
+      stack.appendChild(embedBlock);
+      
+      // Transformer Layers
+      const n_layers = parseInt(document.getElementById('n-layers').value);
+      
+      for (let i = 0; i < n_layers; i++) {
+        const layerBlock = createLayerBlock(`Transformer Layer ${i + 1}`, [
+          'Multi-Head Attention',
+          'Add & Norm',
+          'Feed Forward',
+          'Add & Norm'
+        ]);
+        stack.appendChild(layerBlock);
+      }
+      
+      // Output Layer
+      const outputBlock = createLayerBlock('Output Layer', [
+        'Layer Norm',
+        'Linear Projection',
+        'Softmax'
+      ]);
+      stack.appendChild(outputBlock);
+    }
+    
+    function createLayerBlock(title, sublayers) {
+      const block = document.createElement('div');
+      block.className = 'layer-block';
+      
+      const titleElement = document.createElement('div');
+      titleElement.className = 'layer-title';
+      titleElement.textContent = title;
+      block.appendChild(titleElement);
+      
+      sublayers.forEach(name => {
+        const sublayer = document.createElement('div');
+        sublayer.className = 'sublayer';
+        sublayer.textContent = name;
+        sublayer.onclick = () => showInfo(name);
+        block.appendChild(sublayer);
+      });
+      
+      return block;
+    }
+    
+    function visualizeAttention() {
+      if (!model || !model.attentionWeights.length) return;
+      
+      // Display attention heads
+      const headsContainer = document.getElementById('attention-heads');
+      headsContainer.innerHTML = '';
+      
+      for (let h = 0; h < model.config.n_heads; h++) {
+        const headButton = document.createElement('div');
+        headButton.className = 'attention-head';
+        headButton.textContent = `Head ${h + 1}`;
+        headButton.onclick = () => selectAttentionHead(h);
+        if (h === selectedHead) headButton.classList.add('active');
+        headsContainer.appendChild(headButton);
+      }
+      
+      // Visualize attention matrix
+      const weights = model.attentionWeights[0]?.[selectedHead];
+      if (!weights) return;
+      
+      const svg = d3.select('#attention-matrix');
+      svg.selectAll('*').remove();
+      
+      const margin = {top: 20, right: 20, bottom: 20, left: 20};
+      const width = 280 - margin.left - margin.right;
+      const height = 280 - margin.top - margin.bottom;
+      
+      const cellSize = width / tokens.length;
+      
+      const g = svg.append('g')
+        .attr('transform', `translate(${margin.left}, ${margin.top})`);
+      
+      // Color scale
+      const colorScale = d3.scaleSequential(d3.interpolateReds)
+        .domain([0, 1]);
+      
+      // Draw cells
+      for (let i = 0; i < tokens.length; i++) {
+        for (let j = 0; j < tokens.length; j++) {
+          g.append('rect')
+            .attr('class', 'heatmap-cell')
+            .attr('x', j * cellSize)
+            .attr('y', i * cellSize)
+            .attr('width', cellSize)
+            .attr('height', cellSize)
+            .style('fill', colorScale(weights[i][j]))
+            .on('mouseover', function() {
+              showTooltip(`${tokens[i]} → ${tokens[j]}: ${weights[i][j].toFixed(3)}`);
+            })
+            .on('mouseout', hideTooltip);
+        }
+      }
+      
+      // Add labels
+      tokens.forEach((token, i) => {
+        g.append('text')
+          .attr('x', i * cellSize + cellSize / 2)
+          .attr('y', -5)
+          .attr('text-anchor', 'middle')
+          .attr('font-size', '10px')
+          .text(token);
+        
+        g.append('text')
+          .attr('x', -5)
+          .attr('y', i * cellSize + cellSize / 2)
+          .attr('text-anchor', 'end')
+          .attr('dy', '.35em')
+          .attr('font-size', '10px')
+          .text(token);
+      });
+    }
+    
+    function selectAttentionHead(head) {
+      selectedHead = head;
+      visualizeAttention();
+    }
+    
+    function displayActivations() {
+      if (!model || !model.activations.length) return;
+      
+      const display = document.getElementById('activation-display');
+      const lastActivation = model.activations[model.activations.length - 1];
+      
+      display.innerHTML = `<strong>${lastActivation.name}</strong><br>`;
+      display.innerHTML += `Shape: [${lastActivation.data.length}, ${lastActivation.data[0].length}]<br><br>`;
+      
+      // Show first few values
+      lastActivation.data.slice(0, 3).forEach((vec, i) => {
+        display.innerHTML += `Token ${i + 1}: [${vec.slice(0, 8).map(v => v.toFixed(3)).join(', ')}...]<br>`;
+      });
+    }
+    
+    function updateTensorShapes() {
+      const shapes = document.getElementById('tensor-shapes');
+      shapes.innerHTML = '';
+      
+      const seq_len = tokens.length || 5;
+      const d = model ? model.config.d_model : 512;
+      
+      const shapeInfo = [
+        {name: 'Input', shape: `[${seq_len}, ${d}]`},
+        {name: 'Q, K, V', shape: `[${seq_len}, ${d}]`},
+        {name: 'Attention', shape: `[${seq_len}, ${seq_len}]`},
+        {name: 'FFN Hidden', shape: `[${seq_len}, ${model ? model.config.d_ff : 2048}]`},
+        {name: 'Output', shape: `[${seq_len}, ${d}]`}
+      ];
+      
+      shapeInfo.forEach(info => {
+        const shapeDiv = document.createElement('div');
+        shapeDiv.className = 'tensor-shape';
+        shapeDiv.innerHTML = `<strong>${info.name}:</strong> ${info.shape}`;
+        shapes.appendChild(shapeDiv);
+      });
+    }
+    
+    function updateMetrics() {
+      if (!model) return;
+      
+      const params = model.calculateParams();
+      document.getElementById('total-params').textContent = formatNumber(params);
+      
+      const seq_len = tokens.length || 5;
+      const attentionOps = seq_len * seq_len * model.config.n_heads * model.config.n_layers;
+      document.getElementById('attention-ops').textContent = formatNumber(attentionOps);
+      
+      const flops = params * seq_len * 2; // Rough estimate
+      document.getElementById('flops').textContent = formatNumber(flops);
+    }
+    
+    function formatNumber(num) {
+      if (num >= 1e9) return (num / 1e9).toFixed(1) + 'B';
+      if (num >= 1e6) return (num / 1e6).toFixed(1) + 'M';
+      if (num >= 1e3) return (num / 1e3).toFixed(1) + 'K';
+      return num.toString();
+    }
+    
+    function animateProcessing() {
+      const blocks = document.querySelectorAll('.layer-block');
+      let index = 0;
+      
+      const animate = () => {
+        if (index > 0) blocks[index - 1].classList.remove('active');
+        if (index < blocks.length) {
+          blocks[index].classList.add('active');
+          index++;
+          setTimeout(animate, 500);
+        }
+      };
+      
+      animate();
+    }
+    
+    function animateStep(step) {
+      const sublayers = document.querySelectorAll('.sublayer');
+      sublayers.forEach(layer => {
+        layer.classList.remove('processing');
+        if (layer.textContent.toLowerCase().includes(step.split('-')[0])) {
+          layer.classList.add('processing');
+        }
+      });
+    }
+    
+    function showInfo(component) {
+      const info = {
+        'Multi-Head Attention': 'Computes attention weights between all positions in parallel across multiple heads',
+        'Add & Norm': 'Residual connection followed by layer normalization',
+        'Feed Forward': 'Two linear transformations with ReLU activation',
+        'Token Embedding': 'Converts tokens to dense vectors',
+        'Positional Encoding': 'Adds position information using sinusoidal functions',
+        'Dropout': 'Regularization by randomly dropping connections',
+        'Layer Norm': 'Normalizes activations across features',
+        'Linear Projection': 'Projects to vocabulary size for prediction',
+        'Softmax': 'Converts logits to probabilities'
+      };
+      
+      showTooltip(info[component] || 'Component information');
+    }
+    
+    function showTooltip(text) {
+      const tooltip = document.getElementById('info-tooltip');
+      tooltip.textContent = text;
+      tooltip.classList.add('show');
+      tooltip.style.left = event.pageX + 'px';
+      tooltip.style.top = event.pageY + 'px';
+    }
+    
+    function hideTooltip() {
+      document.getElementById('info-tooltip').classList.remove('show');
+    }
+    
+    // Initialize
+    function init() {
+      tokenize();
+      selectModel('encoder');
+      updateMetrics();
+    }
+    
+    init();
+  </script>
+</body>
+</html>

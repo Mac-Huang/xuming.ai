@@ -1,0 +1,372 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Operating System Process Scheduler - Xuming Huang</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../stylesheet.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: 'Lato', sans-serif; margin: 0; padding: 20px; background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%); }
+    .container { max-width: 1500px; margin: 0 auto; background: white; border-radius: 12px; padding: 30px; }
+    .header { text-align: center; margin-bottom: 30px; }
+    .header h1 { color: #1772d0; }
+    .scheduler-selector { display: flex; gap: 10px; justify-content: center; margin: 20px 0; }
+    .scheduler-btn { padding: 10px 20px; background: white; border: 2px solid #1772d0; border-radius: 8px; cursor: pointer; }
+    .scheduler-btn.active { background: #1772d0; color: white; }
+    .main-layout { display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 20px; }
+    .process-creator { background: #f8f9fa; border-radius: 8px; padding: 20px; }
+    .cpu-visualization { background: #263238; border-radius: 8px; padding: 20px; min-height: 400px; }
+    .statistics { background: #f8f9fa; border-radius: 8px; padding: 20px; }
+    .process-queue { margin: 20px 0; }
+    .process { background: linear-gradient(90deg, #4caf50, #8bc34a); color: white; padding: 10px; border-radius: 4px; margin: 5px 0; display: flex; justify-content: space-between; }
+    .process.running { background: linear-gradient(90deg, #ffd700, #ffeb3b); color: #333; animation: pulse 1s infinite; }
+    .process.blocked { background: linear-gradient(90deg, #f44336, #ef5350); }
+    .process.completed { background: linear-gradient(90deg, #9e9e9e, #bdbdbd); }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+    .cpu-core { width: 100px; height: 100px; background: #37474f; border: 3px solid #666; border-radius: 8px; margin: 10px auto; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; }
+    .cpu-core.active { background: #4caf50; border-color: #8bc34a; }
+    .gantt-chart { margin: 20px 0; height: 200px; }
+    .control-panel { display: flex; gap: 10px; margin: 20px 0; }
+    .control-btn { padding: 10px 20px; background: #4caf50; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    .control-btn:hover { background: #45a049; }
+    .stat-card { background: white; border-left: 4px solid #1772d0; padding: 10px; margin: 10px 0; }
+    .stat-value { font-size: 20px; font-weight: bold; color: #1772d0; }
+    .input-group { margin: 10px 0; }
+    .input-group label { display: block; font-size: 12px; color: #666; margin-bottom: 5px; }
+    .input-group input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🖥️ Operating System Process Scheduler</h1>
+      <p>Interactive visualization of CPU scheduling algorithms and process management</p>
+      <p><a href="../projects.html">← Back to Projects</a></p>
+    </div>
+    
+    <div class="scheduler-selector">
+      <button class="scheduler-btn active" onclick="selectScheduler('fcfs')">FCFS</button>
+      <button class="scheduler-btn" onclick="selectScheduler('sjf')">SJF</button>
+      <button class="scheduler-btn" onclick="selectScheduler('rr')">Round Robin</button>
+      <button class="scheduler-btn" onclick="selectScheduler('priority')">Priority</button>
+      <button class="scheduler-btn" onclick="selectScheduler('mlfq')">MLFQ</button>
+    </div>
+    
+    <div class="main-layout">
+      <div class="process-creator">
+        <h3>Create Process</h3>
+        <div class="input-group">
+          <label>Process Name</label>
+          <input type="text" id="process-name" value="Process">
+        </div>
+        <div class="input-group">
+          <label>Burst Time (ms)</label>
+          <input type="number" id="burst-time" value="1000">
+        </div>
+        <div class="input-group">
+          <label>Priority (1-10)</label>
+          <input type="number" id="priority" value="5" min="1" max="10">
+        </div>
+        <div class="input-group">
+          <label>Arrival Time (ms)</label>
+          <input type="number" id="arrival-time" value="0">
+        </div>
+        <button class="control-btn" onclick="addProcess()" style="width: 100%;">Add Process</button>
+        
+        <h4 style="margin-top: 30px;">Quick Scenarios</h4>
+        <button class="control-btn" onclick="loadScenario('cpu-bound')" style="width: 100%; margin: 5px 0;">CPU Bound</button>
+        <button class="control-btn" onclick="loadScenario('io-bound')" style="width: 100%; margin: 5px 0;">I/O Bound</button>
+        <button class="control-btn" onclick="loadScenario('mixed')" style="width: 100%; margin: 5px 0;">Mixed Workload</button>
+      </div>
+      
+      <div class="cpu-visualization">
+        <h3 style="color: white; text-align: center;">CPU Cores</h3>
+        <div style="display: flex; justify-content: center; gap: 20px;">
+          <div class="cpu-core" id="core-0">IDLE</div>
+          <div class="cpu-core" id="core-1">IDLE</div>
+        </div>
+        
+        <h4 style="color: white; margin-top: 30px;">Ready Queue</h4>
+        <div class="process-queue" id="ready-queue"></div>
+        
+        <h4 style="color: white;">Running</h4>
+        <div class="process-queue" id="running-queue"></div>
+        
+        <h4 style="color: white;">Blocked (I/O)</h4>
+        <div class="process-queue" id="blocked-queue"></div>
+        
+        <h4 style="color: white;">Completed</h4>
+        <div class="process-queue" id="completed-queue"></div>
+      </div>
+      
+      <div class="statistics">
+        <h3>Statistics</h3>
+        <div class="stat-card">
+          <div class="stat-value" id="cpu-utilization">0%</div>
+          <div>CPU Utilization</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="avg-turnaround">0 ms</div>
+          <div>Avg Turnaround Time</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="avg-waiting">0 ms</div>
+          <div>Avg Waiting Time</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="avg-response">0 ms</div>
+          <div>Avg Response Time</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="throughput">0</div>
+          <div>Throughput (proc/s)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="context-switches">0</div>
+          <div>Context Switches</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="control-panel">
+      <button class="control-btn" onclick="startScheduler()">▶ Start</button>
+      <button class="control-btn" onclick="pauseScheduler()">⏸ Pause</button>
+      <button class="control-btn" onclick="stepScheduler()">→ Step</button>
+      <button class="control-btn" onclick="resetScheduler()">↺ Reset</button>
+      <label style="margin-left: 20px; color: #666;">
+        Time Quantum (ms): <input type="number" id="time-quantum" value="100" style="width: 80px;">
+      </label>
+    </div>
+    
+    <div class="gantt-chart">
+      <canvas id="gantt-chart"></canvas>
+    </div>
+  </div>
+
+  <script>
+    class Process {
+      constructor(name, burstTime, priority, arrivalTime) {
+        this.id = Date.now() + Math.random();
+        this.name = name;
+        this.burstTime = burstTime;
+        this.remainingTime = burstTime;
+        this.priority = priority;
+        this.arrivalTime = arrivalTime;
+        this.startTime = -1;
+        this.completionTime = -1;
+        this.waitingTime = 0;
+        this.state = 'ready';
+      }
+    }
+    
+    class Scheduler {
+      constructor() {
+        this.algorithm = 'fcfs';
+        this.processes = [];
+        this.readyQueue = [];
+        this.runningProcesses = [];
+        this.blockedQueue = [];
+        this.completedProcesses = [];
+        this.currentTime = 0;
+        this.contextSwitches = 0;
+        this.timeQuantum = 100;
+        this.running = false;
+      }
+      
+      addProcess(process) {
+        this.processes.push(process);
+        if (process.arrivalTime <= this.currentTime) {
+          this.readyQueue.push(process);
+        }
+      }
+      
+      schedule() {
+        // Check for new arrivals
+        this.processes.forEach(p => {
+          if (p.arrivalTime === this.currentTime && !this.readyQueue.includes(p) && p.state === 'ready') {
+            this.readyQueue.push(p);
+          }
+        });
+        
+        // Apply scheduling algorithm
+        switch (this.algorithm) {
+          case 'fcfs':
+            this.readyQueue.sort((a, b) => a.arrivalTime - b.arrivalTime);
+            break;
+          case 'sjf':
+            this.readyQueue.sort((a, b) => a.remainingTime - b.remainingTime);
+            break;
+          case 'priority':
+            this.readyQueue.sort((a, b) => b.priority - a.priority);
+            break;
+          case 'rr':
+            // Round robin - rotate queue
+            if (this.runningProcesses.length > 0) {
+              const current = this.runningProcesses[0];
+              if (current.remainingTime > 0 && (this.currentTime % this.timeQuantum === 0)) {
+                this.readyQueue.push(current);
+                this.runningProcesses = [];
+                this.contextSwitches++;
+              }
+            }
+            break;
+        }
+        
+        // Assign processes to CPU cores
+        while (this.runningProcesses.length < 2 && this.readyQueue.length > 0) {
+          const process = this.readyQueue.shift();
+          if (process.startTime === -1) {
+            process.startTime = this.currentTime;
+          }
+          process.state = 'running';
+          this.runningProcesses.push(process);
+          this.contextSwitches++;
+        }
+        
+        // Execute running processes
+        this.runningProcesses.forEach(process => {
+          process.remainingTime--;
+          if (process.remainingTime === 0) {
+            process.completionTime = this.currentTime;
+            process.state = 'completed';
+            this.completedProcesses.push(process);
+          }
+        });
+        
+        // Remove completed processes
+        this.runningProcesses = this.runningProcesses.filter(p => p.state !== 'completed');
+        
+        // Update waiting times
+        this.readyQueue.forEach(p => p.waitingTime++);
+        
+        this.currentTime++;
+        this.updateVisualization();
+      }
+      
+      updateVisualization() {
+        // Update queues
+        this.updateQueue('ready-queue', this.readyQueue);
+        this.updateQueue('running-queue', this.runningProcesses);
+        this.updateQueue('blocked-queue', this.blockedQueue);
+        this.updateQueue('completed-queue', this.completedProcesses);
+        
+        // Update CPU cores
+        document.getElementById('core-0').textContent = this.runningProcesses[0]?.name || 'IDLE';
+        document.getElementById('core-0').className = this.runningProcesses[0] ? 'cpu-core active' : 'cpu-core';
+        document.getElementById('core-1').textContent = this.runningProcesses[1]?.name || 'IDLE';
+        document.getElementById('core-1').className = this.runningProcesses[1] ? 'cpu-core active' : 'cpu-core';
+        
+        // Update statistics
+        this.updateStatistics();
+      }
+      
+      updateQueue(queueId, processes) {
+        const queue = document.getElementById(queueId);
+        queue.innerHTML = processes.map(p => `
+          <div class="process ${p.state}">
+            <span>${p.name}</span>
+            <span>${p.remainingTime}ms</span>
+          </div>
+        `).join('');
+      }
+      
+      updateStatistics() {
+        const totalProcesses = this.completedProcesses.length + this.runningProcesses.length + this.readyQueue.length;
+        const cpuUtilization = totalProcesses > 0 ? (this.runningProcesses.length / 2 * 100).toFixed(0) : 0;
+        
+        document.getElementById('cpu-utilization').textContent = `${cpuUtilization}%`;
+        document.getElementById('context-switches').textContent = this.contextSwitches;
+        
+        if (this.completedProcesses.length > 0) {
+          const avgTurnaround = this.completedProcesses.reduce((sum, p) => 
+            sum + (p.completionTime - p.arrivalTime), 0) / this.completedProcesses.length;
+          const avgWaiting = this.completedProcesses.reduce((sum, p) => 
+            sum + p.waitingTime, 0) / this.completedProcesses.length;
+          const avgResponse = this.completedProcesses.reduce((sum, p) => 
+            sum + (p.startTime - p.arrivalTime), 0) / this.completedProcesses.length;
+          const throughput = (this.completedProcesses.length / (this.currentTime / 1000)).toFixed(2);
+          
+          document.getElementById('avg-turnaround').textContent = `${avgTurnaround.toFixed(0)} ms`;
+          document.getElementById('avg-waiting').textContent = `${avgWaiting.toFixed(0)} ms`;
+          document.getElementById('avg-response').textContent = `${avgResponse.toFixed(0)} ms`;
+          document.getElementById('throughput').textContent = throughput;
+        }
+      }
+    }
+    
+    let scheduler = new Scheduler();
+    let schedulerInterval = null;
+    
+    function selectScheduler(algorithm) {
+      scheduler.algorithm = algorithm;
+      document.querySelectorAll('.scheduler-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+    }
+    
+    function addProcess() {
+      const name = document.getElementById('process-name').value || `P${scheduler.processes.length + 1}`;
+      const burstTime = parseInt(document.getElementById('burst-time').value) || 1000;
+      const priority = parseInt(document.getElementById('priority').value) || 5;
+      const arrivalTime = parseInt(document.getElementById('arrival-time').value) || 0;
+      
+      const process = new Process(name, burstTime, priority, arrivalTime);
+      scheduler.addProcess(process);
+      scheduler.updateVisualization();
+    }
+    
+    function startScheduler() {
+      if (!schedulerInterval) {
+        scheduler.running = true;
+        scheduler.timeQuantum = parseInt(document.getElementById('time-quantum').value) || 100;
+        schedulerInterval = setInterval(() => {
+          scheduler.schedule();
+        }, 100);
+      }
+    }
+    
+    function pauseScheduler() {
+      if (schedulerInterval) {
+        clearInterval(schedulerInterval);
+        schedulerInterval = null;
+        scheduler.running = false;
+      }
+    }
+    
+    function stepScheduler() {
+      scheduler.schedule();
+    }
+    
+    function resetScheduler() {
+      pauseScheduler();
+      scheduler = new Scheduler();
+      scheduler.updateVisualization();
+    }
+    
+    function loadScenario(type) {
+      resetScheduler();
+      
+      if (type === 'cpu-bound') {
+        scheduler.addProcess(new Process('Compute1', 3000, 5, 0));
+        scheduler.addProcess(new Process('Compute2', 2500, 5, 100));
+        scheduler.addProcess(new Process('Compute3', 2000, 5, 200));
+      } else if (type === 'io-bound') {
+        scheduler.addProcess(new Process('IO1', 500, 8, 0));
+        scheduler.addProcess(new Process('IO2', 400, 8, 50));
+        scheduler.addProcess(new Process('IO3', 600, 8, 100));
+        scheduler.addProcess(new Process('IO4', 300, 8, 150));
+      } else if (type === 'mixed') {
+        scheduler.addProcess(new Process('Web', 800, 9, 0));
+        scheduler.addProcess(new Process('Database', 1500, 7, 100));
+        scheduler.addProcess(new Process('Compute', 2000, 5, 200));
+        scheduler.addProcess(new Process('Background', 500, 3, 300));
+      }
+      
+      scheduler.updateVisualization();
+    }
+    
+    // Initialize with sample processes
+    loadScenario('mixed');
+  </script>
+</body>
+</html>
