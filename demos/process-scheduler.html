@@ -43,14 +43,37 @@
       <h1>🖥️ Operating System Process Scheduler</h1>
       <p>Interactive visualization of CPU scheduling algorithms and process management</p>
       <p><a href="../projects.html">← Back to Projects</a></p>
+      
+      <!-- Quick Start Guide -->
+      <div style="background: #f3e5f5; border: 1px solid #9c27b0; border-radius: 8px; padding: 15px; margin: 20px 0; text-align: left;">
+        <h3 style="color: #4a148c; margin: 0 0 10px 0;">🚀 Quick Start Guide</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; font-size: 14px;">
+          <div>
+            <strong>1. Choose Algorithm:</strong><br>
+            Select FCFS, SJF, Round Robin, Priority, or MLFQ
+          </div>
+          <div>
+            <strong>2. Load Scenario:</strong><br>
+            Try "🖥️ CPU Bound", "💾 I/O Bound", or "🔀 Mixed Workload"
+          </div>
+          <div>
+            <strong>3. Start Scheduler:</strong><br>
+            Click "▶️ Start" to watch processes execute
+          </div>
+          <div>
+            <strong>4. Monitor Stats:</strong><br>
+            View CPU utilization and performance metrics on the right
+          </div>
+        </div>
+      </div>
     </div>
     
     <div class="scheduler-selector">
-      <button class="scheduler-btn active" onclick="selectScheduler('fcfs')">FCFS</button>
-      <button class="scheduler-btn" onclick="selectScheduler('sjf')">SJF</button>
-      <button class="scheduler-btn" onclick="selectScheduler('rr')">Round Robin</button>
-      <button class="scheduler-btn" onclick="selectScheduler('priority')">Priority</button>
-      <button class="scheduler-btn" onclick="selectScheduler('mlfq')">MLFQ</button>
+      <button class="scheduler-btn active" onclick="selectScheduler('fcfs')">📋 FCFS</button>
+      <button class="scheduler-btn" onclick="selectScheduler('sjf')">⏱️ SJF</button>
+      <button class="scheduler-btn" onclick="selectScheduler('rr')">🔄 Round Robin</button>
+      <button class="scheduler-btn" onclick="selectScheduler('priority')">⭐ Priority</button>
+      <button class="scheduler-btn" onclick="selectScheduler('mlfq')">🎚️ MLFQ</button>
     </div>
     
     <div class="main-layout">
@@ -72,12 +95,12 @@
           <label>Arrival Time (ms)</label>
           <input type="number" id="arrival-time" value="0">
         </div>
-        <button class="control-btn" onclick="addProcess()" style="width: 100%;">Add Process</button>
+        <button class="control-btn" onclick="addProcess()" style="width: 100%;">➕ Add Process</button>
         
         <h4 style="margin-top: 30px;">Quick Scenarios</h4>
-        <button class="control-btn" onclick="loadScenario('cpu-bound')" style="width: 100%; margin: 5px 0;">CPU Bound</button>
-        <button class="control-btn" onclick="loadScenario('io-bound')" style="width: 100%; margin: 5px 0;">I/O Bound</button>
-        <button class="control-btn" onclick="loadScenario('mixed')" style="width: 100%; margin: 5px 0;">Mixed Workload</button>
+        <button class="control-btn" onclick="loadScenario('cpu-bound')" style="width: 100%; margin: 5px 0;">🖥️ CPU Bound</button>
+        <button class="control-btn" onclick="loadScenario('io-bound')" style="width: 100%; margin: 5px 0;">💾 I/O Bound</button>
+        <button class="control-btn" onclick="loadScenario('mixed')" style="width: 100%; margin: 5px 0;">🔀 Mixed Workload</button>
       </div>
       
       <div class="cpu-visualization">
@@ -130,10 +153,10 @@
     </div>
     
     <div class="control-panel">
-      <button class="control-btn" onclick="startScheduler()">▶ Start</button>
-      <button class="control-btn" onclick="pauseScheduler()">⏸ Pause</button>
-      <button class="control-btn" onclick="stepScheduler()">→ Step</button>
-      <button class="control-btn" onclick="resetScheduler()">↺ Reset</button>
+      <button class="control-btn" onclick="startScheduler()">▶️ Start</button>
+      <button class="control-btn" onclick="pauseScheduler()">⏸️ Pause</button>
+      <button class="control-btn" onclick="stepScheduler()">👉 Step</button>
+      <button class="control-btn" onclick="resetScheduler()">🔄 Reset</button>
       <label style="margin-left: 20px; color: #666;">
         Time Quantum (ms): <input type="number" id="time-quantum" value="100" style="width: 80px;">
       </label>

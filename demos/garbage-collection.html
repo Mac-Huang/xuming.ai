@@ -353,37 +353,60 @@
 <body>
   <div class="container">
     <div class="header">
-      <h1>Garbage Collection Algorithm Visualizer</h1>
+      <h1>♾️ Garbage Collection Algorithm Visualizer</h1>
       <p>Interactive visualization of memory management and GC algorithms</p>
       <p><a href="../projects.html">← Back to Projects</a></p>
+      
+      <div style="background: #e8f5e9; padding: 15px; border-radius: 8px; margin: 20px auto; max-width: 800px;">
+        <h3 style="margin-top: 0; color: #2e7d32;">🎮 Interactive Guide</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <div>
+            <strong>Quick Demo:</strong>
+            <ol style="margin: 5px 0; padding-left: 20px; font-size: 14px;">
+              <li>Click "Allocate" to create objects</li>
+              <li>Create/remove references between them</li>
+              <li>Trigger GC to see collection in action</li>
+            </ol>
+          </div>
+          <div>
+            <strong>Color Coding:</strong>
+            <ul style="margin: 5px 0; padding-left: 20px; font-size: 14px;">
+              <li>🔴 Root objects (GC roots)</li>
+              <li>🟢 Reachable (will survive)</li>
+              <li>⚫ Unreachable (will be collected)</li>
+              <li>🟡 Being marked/scanned</li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
     
     <div class="algorithm-selector">
       <div class="algorithm-card active" onclick="selectAlgorithm('mark-sweep')">
-        <div class="algorithm-name">Mark & Sweep</div>
+        <div class="algorithm-name">🏷️ Mark & Sweep</div>
         <div class="algorithm-desc">Classic tracing GC algorithm</div>
       </div>
       <div class="algorithm-card" onclick="selectAlgorithm('ref-counting')">
-        <div class="algorithm-name">Reference Counting</div>
+        <div class="algorithm-name">🔢 Reference Counting</div>
         <div class="algorithm-desc">Immediate collection when refcount = 0</div>
       </div>
       <div class="algorithm-card" onclick="selectAlgorithm('generational')">
-        <div class="algorithm-name">Generational GC</div>
+        <div class="algorithm-name">👶 Generational GC</div>
         <div class="algorithm-desc">Young/Old generation with promotion</div>
       </div>
       <div class="algorithm-card" onclick="selectAlgorithm('copying')">
-        <div class="algorithm-name">Copying Collector</div>
+        <div class="algorithm-name">📋 Copying Collector</div>
         <div class="algorithm-desc">Semi-space copying algorithm</div>
       </div>
     </div>
     
     <div class="gc-controls">
-      <button onclick="allocateObject()">Allocate Object</button>
-      <button onclick="createReference()">Create Reference</button>
-      <button onclick="removeReference()">Remove Reference</button>
-      <button onclick="triggerGC()" style="background: #f44336;">Trigger GC</button>
-      <button onclick="runSimulation()">Run Simulation</button>
-      <button onclick="reset()">Reset</button>
+      <button onclick="allocateObject()" style="background: #4caf50;">➕ Allocate</button>
+      <button onclick="createReference()" style="background: #2196f3;">🔗 Link Objects</button>
+      <button onclick="removeReference()" style="background: #ff9800;">✂️ Unlink</button>
+      <button onclick="triggerGC()" style="background: #f44336;">♾️ Trigger GC</button>
+      <button onclick="runDemo()" style="background: #9c27b0;">▶️ Auto Demo</button>
+      <button onclick="reset()" style="background: #6c757d;">🔄 Reset</button>
     </div>
     
     <div class="control-panel">

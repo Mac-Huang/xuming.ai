@@ -43,14 +43,37 @@
       <h1>🌐 Network Protocol Analyzer</h1>
       <p>Interactive visualization of TCP/IP, HTTP, DNS, and networking protocols</p>
       <p><a href="../projects.html">← Back to Projects</a></p>
+      
+      <!-- Quick Start Guide -->
+      <div style="background: #e8eaf6; border: 1px solid #3f51b5; border-radius: 8px; padding: 15px; margin: 20px 0; text-align: left;">
+        <h3 style="color: #1a237e; margin: 0 0 10px 0;">🚀 Quick Start Guide</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; font-size: 14px;">
+          <div>
+            <strong>1. Select Protocol:</strong><br>
+            Choose TCP, UDP, HTTP, DNS, or DHCP from the tabs above
+          </div>
+          <div>
+            <strong>2. Build Packet:</strong><br>
+            Fill in packet fields on the left panel
+          </div>
+          <div>
+            <strong>3. Send Packet:</strong><br>
+            Click "📡 Send Packet" to see OSI layer encapsulation
+          </div>
+          <div>
+            <strong>4. Try Scenarios:</strong><br>
+            Use preset scenarios like TCP handshake or HTTP request
+          </div>
+        </div>
+      </div>
     </div>
     
     <div class="protocol-selector">
-      <button class="protocol-btn active" onclick="selectProtocol('tcp')">TCP</button>
-      <button class="protocol-btn" onclick="selectProtocol('udp')">UDP</button>
-      <button class="protocol-btn" onclick="selectProtocol('http')">HTTP</button>
-      <button class="protocol-btn" onclick="selectProtocol('dns')">DNS</button>
-      <button class="protocol-btn" onclick="selectProtocol('dhcp')">DHCP</button>
+      <button class="protocol-btn active" onclick="selectProtocol('tcp')">🔗 TCP</button>
+      <button class="protocol-btn" onclick="selectProtocol('udp')">📦 UDP</button>
+      <button class="protocol-btn" onclick="selectProtocol('http')">🌐 HTTP</button>
+      <button class="protocol-btn" onclick="selectProtocol('dns')">🔍 DNS</button>
+      <button class="protocol-btn" onclick="selectProtocol('dhcp')">⚙️ DHCP</button>
     </div>
     
     <div class="main-grid">
@@ -90,13 +113,13 @@
           </div>
         </div>
         
-        <button class="send-btn" onclick="sendPacket()">Send Packet</button>
+        <button class="send-btn" onclick="sendPacket()">📡 Send Packet</button>
         
         <div style="margin-top: 30px;">
           <h4>Common Scenarios</h4>
-          <button class="protocol-btn" onclick="runScenario('handshake')" style="width: 100%; margin: 5px 0;">TCP 3-Way Handshake</button>
-          <button class="protocol-btn" onclick="runScenario('http-request')" style="width: 100%; margin: 5px 0;">HTTP Request</button>
-          <button class="protocol-btn" onclick="runScenario('dns-lookup')" style="width: 100%; margin: 5px 0;">DNS Lookup</button>
+          <button class="protocol-btn" onclick="runScenario('handshake')" style="width: 100%; margin: 5px 0;">🤝 TCP 3-Way Handshake</button>
+          <button class="protocol-btn" onclick="runScenario('http-request')" style="width: 100%; margin: 5px 0;">🌐 HTTP Request</button>
+          <button class="protocol-btn" onclick="runScenario('dns-lookup')" style="width: 100%; margin: 5px 0;">🔍 DNS Lookup</button>
         </div>
       </div>
       

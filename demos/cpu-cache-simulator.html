@@ -398,6 +398,29 @@
       <h1>💾 CPU Cache Hierarchy Simulator</h1>
       <p>Interactive visualization of CPU cache behavior, replacement policies, and memory access patterns</p>
       <p><a href="../projects.html" style="color: #1772d0;">← Back to Projects</a></p>
+      
+      <!-- Quick Start Guide -->
+      <div style="background: #e8f5e9; border: 1px solid #4caf50; border-radius: 8px; padding: 15px; margin: 20px 0; text-align: left;">
+        <h3 style="color: #2e7d32; margin: 0 0 10px 0;">🚀 Quick Start Guide</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; font-size: 14px;">
+          <div>
+            <strong>1. Access Memory:</strong><br>
+            Enter an address (0x1000) and click "📖 Read" or "✏️ Write"
+          </div>
+          <div>
+            <strong>2. Try Patterns:</strong><br>
+            Click pattern buttons to simulate different access types
+          </div>
+          <div>
+            <strong>3. Watch Cache:</strong><br>
+            See cache blocks light up on hits (green) and misses (red)
+          </div>
+          <div>
+            <strong>4. View Stats:</strong><br>
+            Monitor hit rates and performance metrics on the right
+          </div>
+        </div>
+      </div>
     </div>
     
     <div class="main-layout">
@@ -407,8 +430,8 @@
         <input type="text" class="access-input" id="address-input" placeholder="Enter address (hex): 0x1234" value="0x1000">
         
         <div class="access-controls">
-          <button class="control-btn" onclick="readAddress()">Read</button>
-          <button class="control-btn write" onclick="writeAddress()">Write</button>
+          <button class="control-btn" onclick="readAddress()">📖 Read</button>
+          <button class="control-btn write" onclick="writeAddress()">✏️ Write</button>
         </div>
         
         <div class="address-breakdown" id="address-breakdown">
@@ -421,10 +444,10 @@
         </div>
         
         <div class="access-pattern-buttons">
-          <button class="pattern-btn" onclick="runPattern('sequential')">Sequential</button>
-          <button class="pattern-btn" onclick="runPattern('stride')">Stride</button>
-          <button class="pattern-btn" onclick="runPattern('random')">Random</button>
-          <button class="pattern-btn" onclick="runPattern('matrix')">Matrix</button>
+          <button class="pattern-btn" onclick="runPattern('sequential')">📶 Sequential</button>
+          <button class="pattern-btn" onclick="runPattern('stride')">🦘 Stride</button>
+          <button class="pattern-btn" onclick="runPattern('random')">🎲 Random</button>
+          <button class="pattern-btn" onclick="runPattern('matrix')">📊 Matrix</button>
         </div>
         
         <div class="cache-config">

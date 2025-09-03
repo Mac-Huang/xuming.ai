@@ -386,6 +386,29 @@
       <h1>🔧 Interactive Compiler Pipeline Visualization</h1>
       <p>Step through each phase of compilation from source code to assembly</p>
       <p><a href="../projects.html" style="color: #1772d0;">← Back to Projects</a></p>
+      
+      <!-- Quick Start Guide -->
+      <div style="background: #e3f2fd; border: 1px solid #1772d0; border-radius: 8px; padding: 15px; margin: 20px 0; text-align: left;">
+        <h3 style="color: #1772d0; margin: 0 0 10px 0;">🚀 Quick Start Guide</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; font-size: 14px;">
+          <div>
+            <strong>1. Choose Example:</strong><br>
+            Click example buttons below to load pre-written code
+          </div>
+          <div>
+            <strong>2. Compile:</strong><br>
+            Hit "▶ Compile" to process all stages at once
+          </div>
+          <div>
+            <strong>3. Step Through:</strong><br>
+            Use "→ Step Through" to see each stage individually
+          </div>
+          <div>
+            <strong>4. Explore:</strong><br>
+            Click tabs to view tokens, AST, symbols, IR, and assembly
+          </div>
+        </div>
+      </div>
     </div>
     
     <div class="pipeline-stages">
@@ -416,11 +439,11 @@
     </div>
     
     <div class="examples">
-      <button class="example-btn" onclick="loadExample('fibonacci')">Fibonacci</button>
-      <button class="example-btn" onclick="loadExample('factorial')">Factorial</button>
-      <button class="example-btn" onclick="loadExample('bubblesort')">Bubble Sort</button>
-      <button class="example-btn" onclick="loadExample('expression')">Complex Expression</button>
-      <button class="example-btn" onclick="loadExample('control')">Control Flow</button>
+      <button class="example-btn" onclick="loadExample('fibonacci')">🔢 Fibonacci</button>
+      <button class="example-btn" onclick="loadExample('factorial')">📈 Factorial</button>
+      <button class="example-btn" onclick="loadExample('bubblesort')">🔄 Bubble Sort</button>
+      <button class="example-btn" onclick="loadExample('expression')">🧮 Complex Expression</button>
+      <button class="example-btn" onclick="loadExample('control')">🔀 Control Flow</button>
     </div>
     
     <div class="main-content">
@@ -437,11 +460,11 @@
           <span>Compilation Output</span>
         </div>
         <div class="tab-buttons">
-          <button class="tab-button active" onclick="showTab('tokens')">Tokens</button>
-          <button class="tab-button" onclick="showTab('ast')">AST</button>
-          <button class="tab-button" onclick="showTab('symbols')">Symbols</button>
-          <button class="tab-button" onclick="showTab('ir')">IR Code</button>
-          <button class="tab-button" onclick="showTab('assembly')">Assembly</button>
+          <button class="tab-button active" onclick="showTab('tokens')">🏷️ Tokens</button>
+          <button class="tab-button" onclick="showTab('ast')">🌳 AST</button>
+          <button class="tab-button" onclick="showTab('symbols')">📋 Symbols</button>
+          <button class="tab-button" onclick="showTab('ir')">🔄 IR Code</button>
+          <button class="tab-button" onclick="showTab('assembly')">⚙️ Assembly</button>
         </div>
         <div class="tab-content" id="output-content">
           <div id="tokens-output">Click "Compile" to see tokens</div>
@@ -459,16 +482,16 @@
     
     <div class="controls">
       <button onclick="compile()">
-        <span>▶</span> Compile
+        ▶️ Compile
       </button>
       <button onclick="stepThrough()">
-        <span>→</span> Step Through
+        👉 Step Through
       </button>
       <button onclick="reset()">
-        <span>↺</span> Reset
+        🔄 Reset
       </button>
       <button onclick="optimize()" id="optimize-btn" disabled>
-        <span>⚡</span> Optimize
+        ⚡ Optimize
       </button>
     </div>
     

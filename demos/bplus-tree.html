@@ -207,35 +207,66 @@
 <body>
   <div class="container">
     <div class="header">
-      <h1>B+ Tree Database Index Simulator</h1>
+      <h1>🌳 B+ Tree Database Index Simulator</h1>
       <p>Interactive visualization of B+ tree operations and database indexing</p>
       <p><a href="../projects.html">← Back to Projects</a></p>
+      
+      <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin: 20px auto; max-width: 800px;">
+        <h3 style="margin-top: 0; color: #1565c0;">⚡ Quick Start</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <div>
+            <strong>Try This Sequence:</strong>
+            <ol style="margin: 5px 0; padding-left: 20px; font-size: 14px;">
+              <li>Click "Sequential Insert" to see splitting</li>
+              <li>Search for key 15 to see path traversal</li>
+              <li>Delete keys to observe merging</li>
+            </ol>
+          </div>
+          <div>
+            <strong>Visual Guide:</strong>
+            <ul style="margin: 5px 0; padding-left: 20px; font-size: 14px;">
+              <li>🔵 Internal nodes (indexes)</li>
+              <li>🟡 Leaf nodes (actual data)</li>
+              <li>🟠 Sibling pointers (range queries)</li>
+            </ul>
+          </div>
+        </div>
+        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #90caf9;">
+          <strong>Tip:</strong> Use Order 3 for clearer visualization of splits and merges
+        </div>
+      </div>
     </div>
     
     <div class="controls">
-      <input type="number" id="key-input" placeholder="Enter key (1-999)" min="1" max="999">
-      <input type="text" id="value-input" placeholder="Enter value" value="data">
-      <button onclick="insertKey()">Insert</button>
-      <button onclick="searchKey()">Search</button>
-      <button onclick="deleteKey()">Delete</button>
-      <button class="secondary" onclick="clearTree()">Clear Tree</button>
-      <select id="order-select" onchange="changeOrder()">
-        <option value="3">Order 3</option>
-        <option value="4" selected>Order 4</option>
-        <option value="5">Order 5</option>
-        <option value="6">Order 6</option>
-      </select>
-      <label>
-        <input type="checkbox" id="show-pointers" checked onchange="updateVisualization()">
-        Show Pointers
-      </label>
+      <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+        <input type="number" id="key-input" placeholder="Key (1-999)" min="1" max="999" style="width: 100px;">
+        <button onclick="insertKey()" style="background: #4caf50;">➕ Insert</button>
+        <button onclick="searchKey()" style="background: #2196f3;">🔍 Search</button>
+        <button onclick="deleteKey()" style="background: #f44336;">➖ Delete</button>
+        <button class="secondary" onclick="clearTree()">🗑️ Clear</button>
+        <div style="margin-left: auto; display: flex; gap: 10px; align-items: center;">
+          <label>
+            Order:
+            <select id="order-select" onchange="changeOrder()" style="padding: 5px;">
+              <option value="3">3 (Best for Demo)</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+            </select>
+          </label>
+          <label>
+            <input type="checkbox" id="show-pointers" checked onchange="updateVisualization()">
+            Pointers
+          </label>
+        </div>
+      </div>
     </div>
     
     <div class="scenarios">
-      <button class="scenario-btn" onclick="runScenario('sequential')">Sequential Insert (1-20)</button>
-      <button class="scenario-btn" onclick="runScenario('random')">Random Insert (20 keys)</button>
-      <button class="scenario-btn" onclick="runScenario('bulk')">Bulk Load (50 keys)</button>
-      <button class="scenario-btn" onclick="runScenario('range')">Range Query Demo</button>
+      <button class="scenario-btn" onclick="runScenario('sequential')">🔢 Sequential (1-20)</button>
+      <button class="scenario-btn" onclick="runScenario('random')">🎲 Random (20)</button>
+      <button class="scenario-btn" onclick="runScenario('demo')" style="background: #ff9800;">▶️ Interactive Demo</button>
+      <button class="scenario-btn" onclick="runScenario('range')">📋 Range Query</button>
     </div>
     
     <div class="stats">
