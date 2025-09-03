@@ -367,6 +367,18 @@
       <h1>🤖 Interactive Transformer Architecture Visualization</h1>
       <p>Step-by-step visualization of transformer models and attention mechanisms</p>
       <p><a href="../projects.html" style="color: #1772d0;">← Back to Projects</a></p>
+      
+      <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin: 20px auto; max-width: 800px;">
+        <h3 style="color: #1565c0; margin: 0 0 10px 0;">🎯 Quick Start Guide</h3>
+        <ol style="margin: 0; padding-left: 20px; color: #424242;">
+          <li>Choose a model type: <strong>Encoder</strong> (BERT), <strong>Decoder</strong> (GPT), or <strong>Encoder-Decoder</strong> (T5)</li>
+          <li>Enter text and click <strong>"Tokenize"</strong> to split into tokens</li>
+          <li>Click <strong>"Process"</strong> to see the full forward pass animation</li>
+          <li>Use <strong>"Step"</strong> to go through one layer at a time</li>
+          <li>Click on attention heads to visualize different attention patterns</li>
+          <li>Hover over components for detailed explanations</li>
+        </ol>
+      </div>
     </div>
     
     <div class="model-selector">
@@ -387,7 +399,7 @@
     <div class="main-layout">
       <div class="input-panel">
         <div class="section-title">Input Sequence</div>
-        <input type="text" class="token-input" id="token-input" placeholder="Enter text (e.g., 'The cat sat on mat')" value="The cat sat on mat">
+        <input type="text" class="token-input" id="token-input" placeholder="Enter text (e.g., 'The cat sat on mat')" value="The cat sat">
         <button onclick="tokenize()" style="width: 100%; padding: 8px; background: #4caf50; color: white; border: none; border-radius: 4px; cursor: pointer;">Tokenize</button>
         
         <div class="token-list" id="token-list"></div>
@@ -413,14 +425,25 @@
         </div>
         
         <div class="controls">
-          <button onclick="processSequence()">Process</button>
-          <button onclick="stepThrough()">Step</button>
-          <button onclick="reset()">Reset</button>
+          <button onclick="processSequence()" title="Run complete forward pass">▶ Process</button>
+          <button onclick="stepThrough()" title="Step through one layer">⏭ Step</button>
+          <button onclick="reset()" title="Reset visualization">🔄 Reset</button>
+        </div>
+        
+        <div style="margin-top: 20px; padding: 10px; background: #fff3e0; border-radius: 4px;">
+          <div style="font-size: 12px; color: #666;">
+            <strong>Current Step:</strong>
+            <div id="current-step-display" style="color: #ff6f00; margin-top: 5px;">Ready to process</div>
+          </div>
         </div>
       </div>
       
       <div class="architecture-view" id="architecture-view">
-        <svg id="architecture-svg" width="100%" height="600">
+        <div style="color: white; margin-bottom: 10px; font-size: 14px; text-align: center;">
+          <strong>Architecture Layers</strong> - Click components to learn more
+        </div>
+        
+        <svg id="architecture-svg" width="100%" height="100" style="margin-bottom: 20px;">
           <defs>
             <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
               <polygon points="0 0, 10 3, 0 6" fill="#4caf50" />
@@ -428,13 +451,15 @@
           </defs>
         </svg>
         
-        <div id="layer-stack"></div>
+        <div id="layer-stack" style="max-height: 450px; overflow-y: auto; padding-right: 10px;"></div>
       </div>
       
       <div class="output-panel">
         <div class="section-title">Attention Visualization</div>
+        <div style="font-size: 11px; color: #666; margin-bottom: 10px;">Click heads to see different attention patterns</div>
         <div id="attention-heads"></div>
         <svg id="attention-matrix" class="attention-matrix"></svg>
+        <div style="font-size: 11px; color: #666; margin-top: 5px; text-align: center;">Darker = Higher Attention</div>
         
         <div class="section-title" style="margin-top: 20px;">Layer Activations</div>
         <div class="activation-display" id="activation-display">
@@ -754,6 +779,11 @@
         tokenize();
       }
       
+      if (tokens.length === 0) {
+        alert('Please enter some text and tokenize it first!');
+        return;
+      }
+      
       const config = {
         d_model: parseInt(document.getElementById('d-model').value),
         n_heads: parseInt(document.getElementById('n-heads').value),
@@ -776,21 +806,43 @@
         tokenize();
       }
       
-      const steps = [
-        'embedding',
-        'positional',
-        'attention-1',
-        'ffn-1',
-        'attention-2',
-        'ffn-2'
-      ];
+      const n_layers = parseInt(document.getElementById('n-layers').value);
+      const steps = ['embedding', 'positional'];
+      
+      for (let i = 1; i <= n_layers; i++) {
+        steps.push(`attention-${i}`);
+        steps.push(`ffn-${i}`);
+      }
       
       if (currentStep < steps.length) {
         animateStep(steps[currentStep]);
+        updateStepDisplay(steps[currentStep]);
         currentStep++;
       } else {
         currentStep = 0;
+        updateStepDisplay('Complete - Ready to restart');
       }
+    }
+    
+    function updateStepDisplay(step) {
+      const display = document.getElementById('current-step-display');
+      const stepNames = {
+        'embedding': 'Token Embedding',
+        'positional': 'Adding Positional Encoding',
+        'attention-1': 'Layer 1: Multi-Head Attention',
+        'ffn-1': 'Layer 1: Feed Forward Network',
+        'attention-2': 'Layer 2: Multi-Head Attention',
+        'ffn-2': 'Layer 2: Feed Forward Network',
+        'attention-3': 'Layer 3: Multi-Head Attention',
+        'ffn-3': 'Layer 3: Feed Forward Network',
+        'attention-4': 'Layer 4: Multi-Head Attention',
+        'ffn-4': 'Layer 4: Feed Forward Network',
+        'attention-5': 'Layer 5: Multi-Head Attention',
+        'ffn-5': 'Layer 5: Feed Forward Network',
+        'attention-6': 'Layer 6: Multi-Head Attention',
+        'ffn-6': 'Layer 6: Feed Forward Network'
+      };
+      display.textContent = stepNames[step] || step;
     }
     
     function reset() {
@@ -801,6 +853,11 @@
       document.querySelectorAll('.sublayer').forEach(layer => {
         layer.classList.remove('processing');
       });
+      updateStepDisplay('Ready to process');
+      
+      // Clear visualizations
+      d3.select('#attention-matrix').selectAll('*').remove();
+      document.getElementById('activation-display').innerHTML = 'Select a layer to see activations';
     }
     
     function updateArchitectureView(type) {
@@ -1001,8 +1058,17 @@
         if (index > 0) blocks[index - 1].classList.remove('active');
         if (index < blocks.length) {
           blocks[index].classList.add('active');
+          
+          // Update step display
+          const layerNames = ['Input Embedding', 'Transformer Layer 1', 'Transformer Layer 2', 
+                             'Transformer Layer 3', 'Transformer Layer 4', 'Transformer Layer 5',
+                             'Transformer Layer 6', 'Output Layer'];
+          updateStepDisplay(`Processing: ${layerNames[index] || 'Layer ' + index}`);
+          
           index++;
           setTimeout(animate, 500);
+        } else {
+          updateStepDisplay('Processing complete!');
         }
       };
       
@@ -1052,7 +1118,24 @@
       tokenize();
       selectModel('encoder');
       updateMetrics();
+      
+      // Add initial help text
+      const display = document.getElementById('activation-display');
+      display.innerHTML = '<em style="color: #999;">Process a sequence to see layer activations here</em>';
     }
+    
+    // Add keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && e.ctrlKey) {
+        processSequence();
+      } else if (e.key === ' ' && e.shiftKey) {
+        e.preventDefault();
+        stepThrough();
+      } else if (e.key === 'r' && e.ctrlKey) {
+        e.preventDefault();
+        reset();
+      }
+    });
     
     init();
   </script>

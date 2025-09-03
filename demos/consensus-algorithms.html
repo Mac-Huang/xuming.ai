@@ -18,11 +18,12 @@
     .control-panel { background: #f8f9fa; border-radius: 8px; padding: 20px; }
     .visualization { background: #263238; border-radius: 8px; padding: 20px; min-height: 600px; }
     .node { cursor: pointer; }
-    .node-circle { fill: #4caf50; stroke: white; stroke-width: 3; }
-    .node-circle.leader { fill: #ffd700; }
+    .node-circle { fill: #4caf50; stroke: white; stroke-width: 3; transition: all 0.3s; }
+    .node-circle.leader { fill: #ffd700; stroke: #ffc107; stroke-width: 4; }
     .node-circle.follower { fill: #2196f3; }
-    .node-circle.candidate { fill: #ff9800; }
+    .node-circle.candidate { fill: #ff9800; animation: candidatePulse 1s infinite; }
     .node-circle.failed { fill: #f44336; opacity: 0.5; }
+    @keyframes candidatePulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
     .node-label { fill: white; text-anchor: middle; font-size: 14px; font-weight: bold; }
     .message { stroke-width: 2; fill: none; stroke-dasharray: 5,5; animation: dash 1s linear infinite; }
     @keyframes dash { to { stroke-dashoffset: -10; } }
@@ -35,6 +36,11 @@
     .log-panel { background: #1e1e1e; color: #aed581; padding: 10px; border-radius: 4px; height: 200px; overflow-y: auto; font-family: monospace; font-size: 12px; }
     .log-entry { padding: 2px 0; }
     .scenario-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0; }
+    .legend { display: flex; gap: 20px; justify-content: center; margin: 15px 0; padding: 10px; background: #f8f9fa; border-radius: 8px; }
+    .legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; }
+    .legend-circle { width: 20px; height: 20px; border-radius: 50%; border: 2px solid white; }
+    .info-box { background: #e3f2fd; padding: 15px; border-radius: 8px; margin: 20px 0; }
+    .tooltip { position: absolute; background: #333; color: white; padding: 8px; border-radius: 4px; font-size: 12px; pointer-events: none; opacity: 0; transition: opacity 0.3s; z-index: 1000; }
   </style>
 </head>
 <body>
@@ -43,6 +49,36 @@
       <h1>🌐 Distributed Systems Consensus Visualizer</h1>
       <p>Interactive visualization of Raft, Paxos, PBFT, and distributed consensus algorithms</p>
       <p><a href="../projects.html">← Back to Projects</a></p>
+      
+      <div class="info-box">
+        <h3 style="margin-top: 0; color: #1565c0;">🎯 How to Use This Visualizer</h3>
+        <ol style="margin: 0; padding-left: 20px;">
+          <li><strong>Select an Algorithm:</strong> Choose between Raft, Paxos, PBFT, or Gossip Protocol</li>
+          <li><strong>Trigger Events:</strong> Use control buttons to simulate real-world scenarios</li>
+          <li><strong>Watch the Animation:</strong> See messages flow between nodes in real-time</li>
+          <li><strong>Monitor the Log:</strong> Track all consensus events in the system log</li>
+          <li><strong>Try Scenarios:</strong> Test split-brain, Byzantine faults, and cascading failures</li>
+        </ol>
+      </div>
+    </div>
+    
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-circle" style="background: #ffd700;"></div>
+        <span>Leader</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-circle" style="background: #2196f3;"></div>
+        <span>Follower</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-circle" style="background: #ff9800;"></div>
+        <span>Candidate</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-circle" style="background: #f44336; opacity: 0.5;"></div>
+        <span>Failed</span>
+      </div>
     </div>
     
     <div class="algorithm-selector">
@@ -56,18 +92,19 @@
       <div class="control-panel">
         <h3>System Controls</h3>
         
-        <button class="control-btn" onclick="startElection()">Trigger Leader Election</button>
-        <button class="control-btn" onclick="sendClientRequest()">Send Client Request</button>
-        <button class="control-btn" onclick="simulateNodeFailure()">Simulate Node Failure</button>
-        <button class="control-btn" onclick="createPartition()">Create Network Partition</button>
-        <button class="control-btn" onclick="healPartition()">Heal Partition</button>
-        <button class="control-btn" onclick="reset()">Reset System</button>
+        <button class="control-btn" onclick="startElection()" title="Start a new leader election process">🎆 Trigger Leader Election</button>
+        <button class="control-btn" onclick="sendClientRequest()" title="Send a client request to the leader">📨 Send Client Request</button>
+        <button class="control-btn" onclick="simulateNodeFailure()" title="Randomly fail a node">⚠️ Simulate Node Failure</button>
+        <button class="control-btn" onclick="createPartition()" title="Split the network into partitions">✂️ Create Network Partition</button>
+        <button class="control-btn" onclick="healPartition()" title="Heal network partitions">🩹 Heal Partition</button>
+        <button class="control-btn" onclick="reset()" title="Reset to initial state">🔄 Reset System</button>
         
+        <h4 style="margin-top: 20px;">Test Scenarios</h4>
         <div class="scenario-buttons">
-          <button class="control-btn" onclick="runScenario('split-brain')">Split Brain</button>
-          <button class="control-btn" onclick="runScenario('byzantine')">Byzantine Fault</button>
-          <button class="control-btn" onclick="runScenario('cascading')">Cascading Failure</button>
-          <button class="control-btn" onclick="runScenario('recovery')">Leader Recovery</button>
+          <button class="control-btn" onclick="runScenario('split-brain')" title="Multiple leaders in partitioned network">🧠 Split Brain</button>
+          <button class="control-btn" onclick="runScenario('byzantine')" title="Node sending conflicting messages">👿 Byzantine Fault</button>
+          <button class="control-btn" onclick="runScenario('cascading')" title="Multiple sequential failures">🌊 Cascading Failure</button>
+          <button class="control-btn" onclick="runScenario('recovery')" title="Recover all failed nodes">💚 Leader Recovery</button>
         </div>
         
         <div class="status-panel">
@@ -97,7 +134,12 @@
       </div>
       
       <div class="visualization">
+        <div style="color: white; text-align: center; margin-bottom: 10px;">
+          <strong id="algorithm-display">RAFT Consensus Algorithm</strong>
+          <div style="font-size: 12px; margin-top: 5px; color: #aaa;">Click on nodes to see details</div>
+        </div>
         <svg id="consensus-svg" width="100%" height="600"></svg>
+        <div class="tooltip" id="tooltip"></div>
       </div>
     </div>
   </div>
@@ -170,12 +212,31 @@
           else classes += ' follower';
           return classes;
         })
-        .attr('r', 30);
+        .attr('r', 30)
+        .on('mouseover', function(event, d) {
+          showNodeTooltip(event, d);
+        })
+        .on('mouseout', hideTooltip)
+        .on('click', function(event, d) {
+          if (!d.failed) {
+            toggleNodeState(d);
+          }
+        });
       
       nodeGroups.append('text')
         .attr('class', 'node-label')
         .attr('dy', 5)
-        .text(d => `N${d.id}`);
+        .text(d => `N${d.id}`)
+        .style('pointer-events', 'none');
+      
+      // Add state label below node
+      nodeGroups.append('text')
+        .attr('class', 'node-state-label')
+        .attr('dy', 50)
+        .attr('text-anchor', 'middle')
+        .attr('fill', 'white')
+        .attr('font-size', '11px')
+        .text(d => d.state.charAt(0).toUpperCase() + d.state.slice(1));
       
       // Draw messages
       messages.forEach(msg => {
@@ -200,6 +261,14 @@
       document.querySelectorAll('.algo-btn').forEach(btn => btn.classList.remove('active'));
       event.target.classList.add('active');
       
+      const algoNames = {
+        'raft': 'RAFT Consensus Algorithm',
+        'paxos': 'PAXOS Consensus Algorithm',
+        'pbft': 'Practical Byzantine Fault Tolerance (PBFT)',
+        'gossip': 'Gossip Protocol'
+      };
+      
+      document.getElementById('algorithm-display').textContent = algoNames[algo];
       addLog(`Switched to ${algo.toUpperCase()} algorithm`);
       reset();
     }
@@ -207,6 +276,13 @@
     function startElection() {
       currentTerm++;
       addLog(`Term ${currentTerm}: Election started`);
+      
+      // Remove current leader
+      nodes.forEach(n => {
+        if (n.state === 'leader' && !n.failed) {
+          n.state = 'follower';
+        }
+      });
       
       // Random candidate
       const candidates = nodes.filter(n => !n.failed && n.state !== 'leader');
@@ -216,41 +292,65 @@
         candidate.votes = 1;
         
         addLog(`Node ${candidate.id} became candidate`);
+        drawNetwork();
         
-        // Request votes
+        // Animated vote requests
+        let voteDelay = 0;
         nodes.forEach(node => {
           if (node.id !== candidate.id && !node.failed) {
-            messages.push({
-              from: candidate,
-              to: node,
-              type: 'vote'
-            });
+            setTimeout(() => {
+              messages.push({
+                from: candidate,
+                to: node,
+                type: 'vote'
+              });
+              drawNetwork();
+            }, voteDelay);
+            voteDelay += 200;
           }
         });
         
-        drawNetwork();
-        
-        // Simulate election result
+        // Simulate voting responses
         setTimeout(() => {
           const activeNodes = nodes.filter(n => !n.failed).length;
           const votesNeeded = Math.floor(activeNodes / 2) + 1;
           
-          if (candidate.votes >= votesNeeded) {
-            nodes.forEach(n => {
-              if (!n.failed) {
-                n.state = n.id === candidate.id ? 'leader' : 'follower';
-              }
-            });
-            leaderId = candidate.id;
-            addLog(`Node ${candidate.id} elected as leader with ${candidate.votes} votes`);
-            updateStatus();
-          } else {
-            addLog(`Election failed - insufficient votes`);
-            candidate.state = 'follower';
-          }
+          // Simulate vote collection
+          let votesReceived = 1; // Self vote
+          nodes.forEach(node => {
+            if (node.id !== candidate.id && !node.failed && Math.random() > 0.3) {
+              votesReceived++;
+              setTimeout(() => {
+                messages.push({
+                  from: node,
+                  to: candidate,
+                  type: 'vote-response'
+                });
+                drawNetwork();
+              }, Math.random() * 500);
+            }
+          });
           
-          drawNetwork();
-        }, 1500);
+          candidate.votes = votesReceived;
+          
+          setTimeout(() => {
+            if (candidate.votes >= votesNeeded) {
+              nodes.forEach(n => {
+                if (!n.failed) {
+                  n.state = n.id === candidate.id ? 'leader' : 'follower';
+                }
+              });
+              leaderId = candidate.id;
+              addLog(`✅ Node ${candidate.id} elected as leader with ${candidate.votes}/${votesNeeded} votes`);
+              updateStatus();
+            } else {
+              addLog(`❌ Election failed - only ${candidate.votes}/${votesNeeded} votes received`);
+              candidate.state = 'follower';
+            }
+            
+            drawNetwork();
+          }, 1000);
+        }, voteDelay + 500);
       }
     }
     
@@ -394,9 +494,62 @@
       logPanel.scrollTop = logPanel.scrollHeight;
     }
     
+    // Helper functions
+    function showNodeTooltip(event, node) {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.innerHTML = `
+        <strong>Node ${node.id}</strong><br>
+        State: ${node.state}<br>
+        Term: ${node.term}<br>
+        Status: ${node.failed ? 'Failed' : 'Active'}<br>
+        ${node.state === 'candidate' ? `Votes: ${node.votes}` : ''}
+      `;
+      tooltip.style.left = (event.pageX + 10) + 'px';
+      tooltip.style.top = (event.pageY - 10) + 'px';
+      tooltip.style.opacity = 1;
+    }
+    
+    function hideTooltip() {
+      document.getElementById('tooltip').style.opacity = 0;
+    }
+    
+    function toggleNodeState(node) {
+      if (node.state === 'follower') {
+        // Make it a candidate
+        node.state = 'candidate';
+        addLog(`Node ${node.id} manually set to candidate`);
+        startElection();
+      } else if (node.state === 'candidate') {
+        node.state = 'follower';
+        addLog(`Node ${node.id} stepped down from candidacy`);
+      }
+      drawNetwork();
+    }
+    
+    // Auto-run demo
+    function runDemo() {
+      setTimeout(() => {
+        addLog('🎬 Starting automated demo...');
+        setTimeout(startElection, 1000);
+        setTimeout(sendClientRequest, 4000);
+        setTimeout(simulateNodeFailure, 6000);
+        setTimeout(() => startElection(), 8000);
+      }, 2000);
+    }
+    
     // Initialize
     initializeNodes();
     updateStatus();
+    
+    // Add keyboard shortcuts info
+    addLog('Tip: Click nodes to change their state!');
+    addLog('Press "D" to run an automated demo');
+    
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'd' || e.key === 'D') {
+        runDemo();
+      }
+    });
   </script>
 </body>
 </html>
