@@ -1,30 +1,5 @@
 // Projects data - simple JavaScript array following publication structure
 const projects = [
-  // Deep Learning Architecture Tutorials
-  {
-    id: 'understanding-transformers',
-    title: 'Understanding Transformers',
-    description: 'Comprehensive tutorial on Transformer architecture with implementations. Covers self-attention, positional encoding, multi-head attention, and complete implementation walkthrough with visualizations.',
-    tech: 'Python, PyTorch, NumPy, Visualization',
-    thumbnail: 'images/projects/transformer-tutorial-thumb.jpg',
-    demo_url: 'tutorials/understanding-transformers.html',
-    code_url: 'https://github.com/Mac-Huang/transformer-tutorial',
-    featured: true,
-    highlighted: true
-  },
-  
-  {
-    id: 'gpt-implementation',
-    title: 'GPT Implementation Guide',
-    description: 'Step-by-step implementation and explanation of GPT models. From tokenization to training loop, understand how autoregressive language models work with practical code examples.',
-    tech: 'Python, PyTorch, Transformers, NLP',
-    thumbnail: 'images/projects/gpt-guide-thumb.jpg',
-    demo_url: 'tutorials/gpt-implementation.html',
-    code_url: 'https://github.com/Mac-Huang/gpt-from-scratch',
-    featured: true,
-    highlighted: true
-  },
-
   // Machine Learning & Systems Projects
   {
     id: 'heap-allocator',
@@ -36,6 +11,17 @@ const projects = [
     code_url: null,
     featured: true,
     highlighted: true
+  },
+
+  {
+    id: 'graph-algorithms',
+    title: 'Graph Algorithms Playground',
+    description: 'Visualize graph traversal algorithms including BFS, DFS, Dijkstra\'s shortest path, and A* pathfinding. Create custom graphs and watch algorithms explore them step by step.',
+    tech: 'JavaScript, D3.js, SVG',
+    thumbnail: 'images/projects/graph-thumb.jpg',
+    demo_url: 'demos/graphs.html',
+    code_url: 'https://github.com/mac-huang/algorithms',
+    featured: false
   },
 
   {
@@ -51,17 +37,6 @@ const projects = [
   },
 
   // Interactive Demos (Original)
-  
-  {
-    id: 'graph-algorithms',
-    title: 'Graph Algorithms Playground',
-    description: 'Visualize graph traversal algorithms including BFS, DFS, Dijkstra\'s shortest path, and A* pathfinding. Create custom graphs and watch algorithms explore them step by step.',
-    tech: 'JavaScript, D3.js, SVG',
-    thumbnail: 'images/projects/graph-thumb.jpg',
-    demo_url: 'demos/graphs.html',
-    code_url: 'https://github.com/mac-huang/algorithms',
-    featured: false
-  },
   
   {
     id: 'hash-collision-analysis',
@@ -84,7 +59,7 @@ const projects = [
     code_url: null,
     featured: true
   },
-  
+
   {
     id: 'neural-network',
     title: 'Neural Network Playground',
@@ -95,27 +70,39 @@ const projects = [
     code_url: null,
     featured: false
   },
-
+  
+  // Deep Learning Architecture Tutorials
   {
-    id: 'word2vec',
-    title: 'Word2Vec Implementation',
-    description: 'Implementation of Word2Vec models including Skip-gram and CBOW architectures for word embeddings. Includes training on custom corpora and visualization of learned embeddings.',
-    tech: 'Python, NumPy, NLP, Word Embeddings',
-    thumbnail: 'images/projects/word2vec-thumb.jpg',
+    id: 'understanding-transformers',
+    title: 'Understanding Transformers',
+    description: 'Comprehensive tutorial on Transformer architecture with implementations. Covers self-attention, positional encoding, multi-head attention, and complete implementation walkthrough with visualizations.',
+    tech: 'Python, PyTorch, NumPy, Visualization',
+    thumbnail: 'images/projects/transformer-tutorial-thumb.jpg',
     demo_url: null,
-    code_url: 'https://github.com/Mac-Huang/Word2Vec',
+    code_url: 'https://github.com/Mac-Huang/Transformer',
     featured: true,
     highlighted: true
   },
-  
+
   {
-    id: 'lstm-tasks',
-    title: 'LSTM Tasks Suite',
-    description: 'Collection of LSTM-based deep learning projects including sequence prediction, text generation, and time series forecasting. Demonstrates various applications of recurrent neural networks.',
-    tech: 'TensorFlow/PyTorch, LSTM, RNNs, Sequence Modeling',
-    thumbnail: 'images/projects/lstm-thumb.jpg',
+    id: 'transformer-architecture',
+    title: 'Interactive Transformer Architecture Visualization',
+    description: 'Deep dive into transformer models with step-by-step visualization of attention mechanisms, positional encoding, and layer operations. Supports encoder-only (BERT), decoder-only (GPT), and encoder-decoder architectures.',
+    tech: 'JavaScript, D3.js, TensorFlow.js, Deep Learning',
+    thumbnail: 'images/projects/transformer-thumb.jpg',
+    demo_url: 'demos/transformer-architecture.html',
+    code_url: null,
+    featured: true
+  },
+
+  {
+    id: 'gpt-implementation',
+    title: 'GPT Implementation Guide',
+    description: 'Step-by-step implementation and explanation of GPT models. From tokenization to training loop, understand how autoregressive language models work with practical code examples.',
+    tech: 'Python, PyTorch, Transformers, NLP',
+    thumbnail: 'images/projects/gpt-guide-thumb.jpg',
     demo_url: null,
-    code_url: 'https://github.com/Mac-Huang/LSTM_Tasks',
+    code_url: 'https://github.com/Mac-Huang/GPT',
     featured: true,
     highlighted: true
   },
@@ -164,18 +151,7 @@ const projects = [
     code_url: null,
     featured: true
   },
-  
-  {
-    id: 'transformer-architecture',
-    title: 'Interactive Transformer Architecture Visualization',
-    description: 'Deep dive into transformer models with step-by-step visualization of attention mechanisms, positional encoding, and layer operations. Supports encoder-only (BERT), decoder-only (GPT), and encoder-decoder architectures.',
-    tech: 'JavaScript, D3.js, TensorFlow.js, Deep Learning',
-    thumbnail: 'images/projects/transformer-thumb.jpg',
-    demo_url: 'demos/transformer-architecture.html',
-    code_url: null,
-    featured: true
-  },
-  
+    
   // Advanced Systems & Networking
   {
     id: 'consensus-algorithms',
@@ -188,6 +164,29 @@ const projects = [
     featured: true
   },
   
+  {
+    id: 'word2vec',
+    title: 'Word2Vec Implementation',
+    description: 'Implementation of Word2Vec models including Skip-gram and CBOW architectures for word embeddings. Includes training on custom corpora and visualization of learned embeddings.',
+    tech: 'Python, NumPy, NLP, Word Embeddings',
+    thumbnail: 'images/projects/word2vec-thumb.jpg',
+    demo_url: null,
+    code_url: 'https://github.com/Mac-Huang/Word2Vec',
+    featured: true,
+    highlighted: true
+  },
+  
+  {
+    id: 'lstm-tasks',
+    title: 'LSTM Tasks Suite',
+    description: 'Collection of LSTM-based deep learning projects including sequence prediction, text generation, and time series forecasting. Demonstrates various applications of recurrent neural networks.',
+    tech: 'TensorFlow/PyTorch, LSTM, RNNs, Sequence Modeling',
+    thumbnail: 'images/projects/lstm-thumb.jpg',
+    demo_url: null,
+    code_url: 'https://github.com/Mac-Huang/LSTM_Tasks',
+    featured: true,
+    highlighted: true
+  },
   {
     id: 'cpu-cache-simulator',
     title: 'CPU Cache Hierarchy Simulator',
