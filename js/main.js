@@ -287,6 +287,11 @@ function addFilterButtons() {
 function createProjectRow(project) {
   const tr = document.createElement('tr');
   
+  // Highlight representative projects with subtle background
+  if (project.featured && project.highlighted) {
+    tr.style.cssText = 'background-color: #f9f9f9;';
+  }
+  
   // Image column (25% width, 160px images)
   const tdImage = document.createElement('td');
   tdImage.style.cssText = 'padding:20px;width:25%;vertical-align:middle';

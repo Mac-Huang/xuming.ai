@@ -15,7 +15,9 @@ Key facts about Xuming:
 - Current courses at UW-Madison: Computer Engineering, Linear Algebra, Discrete Mathematics
 - Interests: Making ML training more efficient through systems optimization
 
-Respond concisely and accurately. For technical questions, provide clear explanations.`;
+IMPORTANT: When appropriate, ask follow-up questions to better understand the user's needs. 
+For example: "What specific aspect of [topic] interests you?" or "Are you working on a project related to this?"
+Be conversational and engaging. Respond concisely but be helpful.`;
 
 // Gemini API caller
 async function callGeminiAPI(userMessage) {
@@ -188,8 +190,32 @@ function shouldUseGemini(message) {
          (message.includes('?') && message.length > 20);
 }
 
-// Add subtle indicator when using Gemini
-const originalAddMessage = window.addMessage;
+// Function to convert markdown to HTML
+function markdownToHtml(text) {
+  return text
+    // Headers
+    .replace(/^### (.*$)/gim, '<h4>$1</h4>')
+    .replace(/^## (.*$)/gim, '<h4>$1</h4>')
+    .replace(/^# (.*$)/gim, '<h3>$1</h3>')
+    // Bold
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/__(.+?)__/g, '<strong>$1</strong>')
+    // Italic
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/_(.+?)_/g, '<em>$1</em>')
+    // Code blocks
+    .replace(/```(.+?)```/gs, '<pre style="background:#f5f5f5;padding:10px;border-radius:4px;overflow-x:auto;">$1</pre>')
+    // Inline code
+    .replace(/`(.+?)`/g, '<code style="background:#e8f5e9;padding:2px 4px;border-radius:3px;">$1</code>')
+    // Lists (simple support)
+    .replace(/^\* (.+)$/gim, '• $1')
+    .replace(/^- (.+)$/gim, '• $1')
+    .replace(/^\d+\. (.+)$/gim, '$1')
+    // Line breaks
+    .replace(/\n/g, '<br>');
+}
+
+// Enhanced message display with markdown support
 window.addMessage = function(text, sender) {
   const messagesDiv = document.getElementById('messages');
   const messageDiv = document.createElement('div');
@@ -202,8 +228,8 @@ window.addMessage = function(text, sender) {
     messageDiv.innerHTML = '<span style="color:#1772d0;"><strong>You:</strong> ' + text + '</span>';
   } else {
     messageDiv.style.textAlign = 'left';
-    // Convert line breaks to <br> for multi-line responses
-    const formattedText = text.replace(/\n/g, '<br>');
+    // Convert markdown to HTML
+    const formattedText = markdownToHtml(text);
     messageDiv.innerHTML = '<strong>Xuming Bot:</strong> ' + formattedText;
   }
   

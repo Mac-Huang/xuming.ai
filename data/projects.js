@@ -1,9 +1,9 @@
 // Projects data - simple JavaScript array following publication structure
 const projects = [
-  // ⭐ HIGHLIGHTED PROJECTS
+  // Machine Learning & Systems Projects
   {
     id: 'heap-allocator',
-    title: '⭐ Heap Allocator Visualization',
+    title: 'Heap Allocator Visualization',
     description: 'Interactive visualization of heap memory allocation strategies. Compare implicit and explicit free-list implementations, observe block splitting and coalescing, understand fragmentation patterns, and explore memory management algorithms.',
     tech: 'JavaScript, D3.js, Systems Programming, Memory Management',
     thumbnail: 'images/projects/heap-allocator-thumb.jpg',
@@ -15,7 +15,7 @@ const projects = [
 
   {
     id: 'sorting-visualizer',
-    title: '⭐ Sorting Algorithm Visualizer',
+    title: 'Sorting Algorithm Visualizer',
     description: 'Interactive visualization of common sorting algorithms including quicksort, mergesort, heapsort, and more. Watch how different algorithms approach the sorting problem with visual feedback for comparisons and swaps.',
     tech: 'Vanilla JavaScript, HTML5 Canvas',
     thumbnail: 'images/projects/sorting-thumb.jpg',
@@ -73,7 +73,7 @@ const projects = [
 
   {
     id: 'word2vec',
-    title: '⭐ Word2Vec Implementation',
+    title: 'Word2Vec Implementation',
     description: 'Implementation of Word2Vec models including Skip-gram and CBOW architectures for word embeddings. Includes training on custom corpora and visualization of learned embeddings.',
     tech: 'Python, NumPy, NLP, Word Embeddings',
     thumbnail: 'images/projects/word2vec-thumb.jpg',
@@ -85,7 +85,7 @@ const projects = [
   
   {
     id: 'lstm-tasks',
-    title: '⭐ LSTM Tasks Suite',
+    title: 'LSTM Tasks Suite',
     description: 'Collection of LSTM-based deep learning projects including sequence prediction, text generation, and time series forecasting. Demonstrates various applications of recurrent neural networks.',
     tech: 'TensorFlow/PyTorch, LSTM, RNNs, Sequence Modeling',
     thumbnail: 'images/projects/lstm-thumb.jpg',
