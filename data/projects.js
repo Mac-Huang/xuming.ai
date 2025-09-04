@@ -1,26 +1,28 @@
 // Projects data - simple JavaScript array following publication structure
 const projects = [
-  // Machine Learning Projects
+  // ⭐ HIGHLIGHTED PROJECTS
   {
     id: 'heap-allocator',
-    title: 'Heap Allocator Visualization',
+    title: '⭐ Heap Allocator Visualization',
     description: 'Interactive visualization of heap memory allocation strategies. Compare implicit and explicit free-list implementations, observe block splitting and coalescing, understand fragmentation patterns, and explore memory management algorithms.',
     tech: 'JavaScript, D3.js, Systems Programming, Memory Management',
     thumbnail: 'images/projects/heap-allocator-thumb.jpg',
     demo_url: 'demos/heap-allocator.html',
     code_url: null,
-    featured: true
+    featured: true,
+    highlighted: true
   },
 
   {
     id: 'sorting-visualizer',
-    title: 'Sorting Algorithm Visualizer',
+    title: '⭐ Sorting Algorithm Visualizer',
     description: 'Interactive visualization of common sorting algorithms including quicksort, mergesort, heapsort, and more. Watch how different algorithms approach the sorting problem with visual feedback for comparisons and swaps.',
     tech: 'Vanilla JavaScript, HTML5 Canvas',
     thumbnail: 'images/projects/sorting-thumb.jpg',
     demo_url: 'demos/sorting.html',
     code_url: 'https://github.com/mac-huang/algorithms',
-    featured: false
+    featured: true,
+    highlighted: true
   },
 
   // Interactive Demos (Original)
@@ -71,24 +73,26 @@ const projects = [
 
   {
     id: 'word2vec',
-    title: 'Word2Vec Implementation',
+    title: '⭐ Word2Vec Implementation',
     description: 'Implementation of Word2Vec models including Skip-gram and CBOW architectures for word embeddings. Includes training on custom corpora and visualization of learned embeddings.',
     tech: 'Python, NumPy, NLP, Word Embeddings',
     thumbnail: 'images/projects/word2vec-thumb.jpg',
     demo_url: null,
     code_url: 'https://github.com/Mac-Huang/Word2Vec',
-    featured: true
+    featured: true,
+    highlighted: true
   },
   
   {
     id: 'lstm-tasks',
-    title: 'LSTM Tasks Suite',
+    title: '⭐ LSTM Tasks Suite',
     description: 'Collection of LSTM-based deep learning projects including sequence prediction, text generation, and time series forecasting. Demonstrates various applications of recurrent neural networks.',
     tech: 'TensorFlow/PyTorch, LSTM, RNNs, Sequence Modeling',
     thumbnail: 'images/projects/lstm-thumb.jpg',
     demo_url: null,
     code_url: 'https://github.com/Mac-Huang/LSTM_Tasks',
-    featured: true
+    featured: true,
+    highlighted: true
   },
   
   {
@@ -177,28 +181,6 @@ const projects = [
     tech: 'WebAssembly, JavaScript, Performance Analysis',
     thumbnail: 'images/projects/wasm-thumb.jpg',
     demo_url: 'demos/wasm-performance.html',
-    code_url: null,
-    featured: true
-  },
-  
-  {
-    id: 'network-protocol',
-    title: 'Network Protocol Analyzer',
-    description: 'Interactive visualization of TCP/IP, HTTP, DNS, and DHCP protocols. Build packets, simulate TCP handshakes, visualize OSI layer encapsulation, and understand network communication patterns.',
-    tech: 'JavaScript, D3.js, Networking, TCP/IP',
-    thumbnail: 'images/projects/network-thumb.jpg',
-    demo_url: 'demos/network-protocol.html',
-    code_url: null,
-    featured: true
-  },
-  
-  {
-    id: 'process-scheduler',
-    title: 'Operating System Process Scheduler',
-    description: 'Simulate various CPU scheduling algorithms including FCFS, SJF, Round Robin, Priority, and MLFQ. Visualize process states, CPU utilization, and performance metrics like turnaround time and throughput.',
-    tech: 'JavaScript, Operating Systems, Process Scheduling',
-    thumbnail: 'images/projects/scheduler-thumb.jpg',
-    demo_url: 'demos/process-scheduler.html',
     code_url: null,
     featured: true
   },
