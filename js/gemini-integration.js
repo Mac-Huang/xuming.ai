@@ -123,8 +123,8 @@ window.sendMessage = async function() {
   const messagesDiv = document.getElementById('messages');
   const typingDiv = document.createElement('div');
   typingDiv.className = 'bot-message typing-indicator';
-  typingDiv.innerHTML = '<strong>Xuming Bot:</strong> <em>Thinking...</em>';
-  typingDiv.style.opacity = '0.6';
+  typingDiv.innerHTML = '<strong>Xuming Bot:</strong> <em style="color: #666;">typing...</em>';
+  typingDiv.style.opacity = '0.7';
   messagesDiv.appendChild(typingDiv);
   
   // Scroll to bottom
@@ -142,7 +142,8 @@ window.sendMessage = async function() {
     typingDiv.remove();
     
     if (geminiResponse) {
-      addMessage(geminiResponse, 'bot');
+      // Add a subtle indicator for AI-enhanced responses
+      addMessage(geminiResponse + '\n\n<small style="color: #999; font-size: 11px;">[AI-enhanced response]</small>', 'bot');
     } else {
       // Fallback to local response
       const localResponse = generateResponse(message);
@@ -163,22 +164,28 @@ function shouldUseGemini(message) {
   const lower = message.toLowerCase();
   
   // Don't use Gemini for simple lookups
-  const simpleQueries = ['email', 'contact', 'github', 'name', 'who are you'];
-  if (simpleQueries.some(q => lower.includes(q))) {
+  const simpleQueries = ['email', 'contact', 'github', 'name', 'who are you', 'hello', 'hi'];
+  if (simpleQueries.some(q => lower.includes(q)) && message.length < 30) {
     return false;
+  }
+  
+  // Always use local for certain Xuming-specific queries
+  if (lower.includes('stanford') && message.length < 40) {
+    return false; // Use local for quick Stanford facts
   }
   
   // Use Gemini for complex questions
   const complexIndicators = [
-    'explain', 'how does', 'why', 'what is the difference',
+    'explain', 'how does', 'how do', 'why', 'what is the difference',
     'compare', 'tell me more', 'elaborate', 'detail',
-    'help me understand', 'can you teach', 'example'
+    'help me understand', 'can you teach', 'example',
+    'describe', 'what are', 'when should', 'best practice'
   ];
   
-  // Use Gemini if message is complex or long
+  // Use Gemini if message is complex, long, or technical
   return complexIndicators.some(indicator => lower.includes(indicator)) || 
-         message.length > 60 ||
-         message.includes('?');
+         message.length > 50 ||
+         (message.includes('?') && message.length > 20);
 }
 
 // Add subtle indicator when using Gemini
