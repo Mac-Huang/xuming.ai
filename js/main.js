@@ -287,9 +287,9 @@ function addFilterButtons() {
 function createProjectRow(project) {
   const tr = document.createElement('tr');
   
-  // Highlight representative projects with subtle background
+  // Highlight representative projects with same color as research page
   if (project.featured && project.highlighted) {
-    tr.style.cssText = 'background-color: #f9f9f9;';
+    tr.style.backgroundColor = '#ffffd0';
   }
   
   // Image column (25% width, 160px images)

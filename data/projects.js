@@ -1,5 +1,30 @@
 // Projects data - simple JavaScript array following publication structure
 const projects = [
+  // Deep Learning Architecture Tutorials
+  {
+    id: 'understanding-transformers',
+    title: 'Understanding Transformers',
+    description: 'Comprehensive tutorial on Transformer architecture with implementations. Covers self-attention, positional encoding, multi-head attention, and complete implementation walkthrough with visualizations.',
+    tech: 'Python, PyTorch, NumPy, Visualization',
+    thumbnail: 'images/projects/transformer-tutorial-thumb.jpg',
+    demo_url: 'tutorials/understanding-transformers.html',
+    code_url: 'https://github.com/Mac-Huang/transformer-tutorial',
+    featured: true,
+    highlighted: true
+  },
+  
+  {
+    id: 'gpt-implementation',
+    title: 'GPT Implementation Guide',
+    description: 'Step-by-step implementation and explanation of GPT models. From tokenization to training loop, understand how autoregressive language models work with practical code examples.',
+    tech: 'Python, PyTorch, Transformers, NLP',
+    thumbnail: 'images/projects/gpt-guide-thumb.jpg',
+    demo_url: 'tutorials/gpt-implementation.html',
+    code_url: 'https://github.com/Mac-Huang/gpt-from-scratch',
+    featured: true,
+    highlighted: true
+  },
+
   // Machine Learning & Systems Projects
   {
     id: 'heap-allocator',
