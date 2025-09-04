@@ -19,7 +19,8 @@ Respond concisely and accurately. For technical questions, provide clear explana
 
 // Gemini API caller
 async function callGeminiAPI(userMessage) {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`;
+  // Use the correct Gemini 1.5 Flash endpoint
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
   
   const requestBody = {
     contents: [{
@@ -32,7 +33,25 @@ async function callGeminiAPI(userMessage) {
       topK: 40,
       topP: 0.95,
       maxOutputTokens: 400,
-    }
+    },
+    safetySettings: [
+      {
+        category: "HARM_CATEGORY_HARASSMENT",
+        threshold: "BLOCK_NONE"
+      },
+      {
+        category: "HARM_CATEGORY_HATE_SPEECH",
+        threshold: "BLOCK_NONE"
+      },
+      {
+        category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+        threshold: "BLOCK_NONE"
+      },
+      {
+        category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+        threshold: "BLOCK_NONE"
+      }
+    ]
   };
 
   try {
@@ -45,7 +64,14 @@ async function callGeminiAPI(userMessage) {
     });
 
     if (!response.ok) {
-      console.error('API Error:', response.status);
+      console.error('API Error:', response.status, response.statusText);
+      // Try to get error details
+      try {
+        const errorData = await response.json();
+        console.error('Error details:', errorData);
+      } catch (e) {
+        console.error('Could not parse error response');
+      }
       return null;
     }
 
