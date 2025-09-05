@@ -30,7 +30,7 @@ const blogPosts = [
     excerpt: 'My internship experience at CoolAI, developing AI products and representing the company at the World Artificial Intelligence Conference (WAIC).',
     url: 'blog/posts/first-internship.html',
     readTime: '5 min',
-    cover: 'images/blog/CoolAI-Cover.jpg'
+    cover: 'images/blog/CoolAI.jpg'
   },
   
   {
