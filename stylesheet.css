@@ -120,55 +120,117 @@ code {
   font-size: 14px;
 }
 
-/* Mobile responsiveness */
-@media screen and (max-width: 800px) {
+/* Mobile responsiveness - iPhone and small screens */
+@media screen and (max-width: 768px) {
+  body, td, th, tr, p, a {
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  
+  name {
+    font-size: 26px;
+  }
+  
+  heading {
+    font-size: 20px;
+    margin: 15px 0 10px 0;
+  }
+  
+  /* Main table container */
+  table {
+    max-width: 100%;
+    width: 100%;
+  }
+  
+  /* Adjust all table cells padding for mobile */
+  td {
+    padding: 10px !important;
+  }
+  
+  /* Navigation links */
+  p[style*="text-align:center;font-size:18px"] {
+    font-size: 14px !important;
+  }
+  
+  /* Stack profile section on mobile */
+  tr[style*="padding:0px"] td[style*="width:63%"],
+  tr[style*="padding:0px"] td[style*="width:40%"] {
+    width: 100% !important;
+    display: block;
+  }
+  
+  /* Center profile image on mobile */
+  td[style*="width:40%"] {
+    text-align: center;
+    padding-bottom: 20px !important;
+  }
+  
+  /* Publication rows - stack image above content */
+  tr td[style*="width:25%"],
+  tr td[style*="width:75%"] {
+    width: 100% !important;
+    display: block;
+    text-align: left;
+  }
+  
+  /* Center publication images */
+  td[style*="width:25%"] {
+    text-align: center;
+    padding-bottom: 10px !important;
+  }
+  
+  /* Project grid - single column on mobile */
+  tr td[style*="width:33%"] {
+    width: 100% !important;
+    display: block;
+    margin-bottom: 15px;
+  }
+  
+  /* Blog cards responsive */
+  .blog-card {
+    margin: 10px 0;
+  }
+  
+  /* Code blocks - allow horizontal scroll */
+  .code-block, pre {
+    overflow-x: auto;
+    font-size: 12px;
+  }
+  
+  /* Assignment navigation on CS400 page */
+  .assignment-nav {
+    padding: 10px 5px;
+  }
+  
+  .assignment-nav a {
+    margin: 5px;
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+}
+
+/* Very small screens (older iPhones, etc) */
+@media screen and (max-width: 375px) {
   body, td, th, tr, p, a {
     font-size: 14px;
   }
   
   name {
-    font-size: 24px;
+    font-size: 22px;
   }
   
   heading {
-    font-size: 20px;
+    font-size: 18px;
   }
   
-  table {
-    max-width: 100%;
-    padding: 0 10px;
+  /* Even smaller padding on very small screens */
+  td {
+    padding: 8px !important;
   }
   
-  /* Stack profile image on mobile */
-  td[style*="width:63%"] {
-    width: 100% !important;
-    display: block;
-  }
-  
-  td[style*="width:40%"] {
-    width: 100% !important;
-    display: block;
-    text-align: center;
-    padding-top: 20px !important;
-  }
-  
-  /* Adjust publication layout on mobile */
-  td[style*="width:25%"] {
-    width: 100% !important;
-    display: block;
-    text-align: center;
-  }
-  
-  td[style*="width:75%"] {
-    width: 100% !important;
-    display: block;
-  }
-  
-  /* Project cards on mobile */
-  td[style*="width:33%"] {
-    width: 100% !important;
-    display: block;
-    margin-bottom: 20px;
+  /* Reduce navigation spacing */
+  p[style*="text-align:center;font-size:18px"] a {
+    margin: 0 2px;
   }
 }
 

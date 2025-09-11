@@ -6,7 +6,7 @@ let currentFilter = 'all';
 
 // Show email function
 function showEmail() {
-  const email = 'xuming' + '@' + 'stanford.edu';
+  const email = 'xuming' + '@' + 'cs.wisc.edu';
   const emailLink = document.getElementById('email-link');
   if (emailLink) {
     emailLink.innerHTML = '<a href="mailto:' + email + '">' + email + '</a>';
