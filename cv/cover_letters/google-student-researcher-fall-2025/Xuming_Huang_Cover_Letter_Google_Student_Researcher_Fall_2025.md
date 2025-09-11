@@ -1,6 +1,6 @@
 # Xuming Huang
 University of Wisconsin–Madison • B.S. Candidate, Computer Science
-Email: xuming@cs.wisc.edu • GitHub: https://github.com/mac-huang • LinkedIn: https://www.linkedin.com/in/xuminghuang/
+Email: xuming@cs.wisc.edu • Website: https://xuming.ai • GitHub: https://github.com/mac-huang • LinkedIn: https://www.linkedin.com/in/xuminghuang/
 
 September 11, 2025
 
@@ -20,6 +20,8 @@ My recent work focuses on ML‑for‑systems and systems‑for‑ML:
 
 To communicate and test ideas, I also build interactive visualizations and teaching tools: a CPU cache hierarchy simulator, a heap allocator visualizer, a compiler pipeline demo, graph and sorting algorithm visualizers, and deep‑dive tutorials on Transformers and GPT. These projects emphasize clear experimental setup, measurement, and explanation—skills I will bring to collaborative research.
 
+In industry, I interned at CoolAI, where I developed product demos for a China Business Network (CBN) interview and represented the company at the World Artificial Intelligence Conference (WAIC). This experience strengthened my ability to turn research ideas into user‑facing artifacts and communicate them to broad audiences.
+
 Academically, I completed Stanford’s CS107 (Computer Organization & Systems, A+) and CS161 (Design & Analysis of Algorithms, A), and I regularly apply algorithmic techniques (graphs, DP), data structures, profiling, and debugging in my projects. I am comfortable with Python, C/C++, CUDA, and JavaScript, and with Git‑based workflows and basic testing for reproducibility.
 
 I am excited by Google’s breadth of research—ML, systems and infrastructure, developer tools, and safety—and I would be happy to contribute to teams working in Machine Learning/Deep Learning, Software Engineering for ML systems, or related areas. I’m open to Mountain View, Ann Arbor, or other listed locations.
@@ -29,4 +31,3 @@ Thank you for your time and consideration. I would welcome the opportunity to di
 Sincerely,
 
 Xuming Huang
-
