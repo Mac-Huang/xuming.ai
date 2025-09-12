@@ -24,6 +24,9 @@
     .controls .secondary { background: #666; }
     .controls .danger { background: #c62828; }
 
+    .toggle { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #444; }
+    .row { display:flex; gap:16px; align-items:center; flex-wrap:wrap; margin-top:8px; }
+
     textarea { width: 100%; min-height: 220px; resize: vertical; font-family: Consolas, Monaco, monospace; font-size: 14px; }
 
     .message { margin-top: 8px; color: #c62828; min-height: 18px; }
@@ -52,6 +55,11 @@
     .block-global { fill: #81c784; }
     .block-text { fill: #90caf9; }
     .freed { fill: #e0e0e0 !important; stroke-dasharray: 4 2; }
+
+    /* Registers */
+    .reg-label { font-size: 12px; fill: #111; font-weight: 700; }
+    .rip-line { stroke: #1565c0; stroke-width: 2; stroke-dasharray: 4 2; }
+    .rsp-line { stroke: #b71c1c; stroke-width: 2; stroke-dasharray: 4 2; }
   </style>
 </head>
 
@@ -65,23 +73,25 @@
 
       <div class="layout">
         <div class="panel">
-          <h3>Program (Tiny DSL)</h3>
-          <p style="color:#555; font-size: 14px;">Syntax examples:
-            <br>- <code>global int g = 42</code>
-            <br>- <code>global int arr[3]</code>
-            <br>- <code>main:</code>
-            <br>- <code>  int x = 1</code>
-            <br>- <code>  int buf[8]</code>
-            <br>- <code>  malloc p 32</code>
-            <br>- <code>  free p</code>
-            <br>- <code>  return</code>
+          <h3>Program (C subset)</h3>
+          <p style="color:#555; font-size: 14px;">C-like subset supported:
+            <br>- Globals: <code>int g = 42;</code> <code>int arr[3];</code>
+            <br>- Entry: <code>int main() { ... }</code>
+            <br>- Locals: <code>int x = 1;</code> <code>int buf[8];</code>
+            <br>- Heap: <code>p = malloc(32);</code> <code>free(p);</code>
+            <br>- Return: <code>return 0;</code>
           </p>
 
           <textarea id="program"></textarea>
           <div class="controls" style="margin-top:10px;">
-            <button id="loadExample">Load Example</button>
+            <button id="loadExample">Load Example C</button>
             <button id="compileBtn">Compile</button>
             <button id="resetBtn" class="secondary">Reset</button>
+          </div>
+          <div class="row">
+            <span class="toggle"><input type="checkbox" id="showAddrs" checked> <label for="showAddrs">Show addresses</label></span>
+            <span class="toggle"><input type="checkbox" id="showRegs" checked> <label for="showRegs">Show RIP/RSP</label></span>
+            <span class="toggle">Speed <input type="range" id="speed" min="100" max="1600" step="100" value="900"></span>
           </div>
           <div class="message" id="message"></div>
         </div>
@@ -154,72 +164,61 @@
         data: { base: ADDR.DATA_BASE, size: comp.dataSize, globals: comp.globals },
         heap: { base: ADDR.HEAP_BASE, size: 0, blocks: [] },
         stack: { base: ADDR.STACK_BASE, size: 0, frames: [] },
+        rip: ADDR.TEXT_BASE
       };
     }
 
     // Compile tiny DSL into structure
-    function compileDSL(src) {
-      const lines = src.split(/\r?\n/).map(l => l.trim()).filter(l => l.length && !l.startsWith('#'));
-      const globals = []; // {name, size}
+    function stripComments(src) {
+      // remove // and /* */ comments (simple)
+      return src
+        .replace(/\/\*[\s\S]*?\*\//g, '')
+        .replace(/(^|\n)\s*\/\/.*(?=\n|$)/g, '$1');
+    }
+
+    function compileC(src) {
+      const code = stripComments(src);
+      const globals = [];
       const main = [];
-      let inMain = false;
 
-      function parseDecl(line, isGlobal) {
-        // global int g = 42
-        // global int arr[3]
-        // int x = 1
-        // int buf[8]
-        const mArr = line.match(/^(?:global\s+)?int\s+([A-Za-z_][A-Za-z0-9_]*)\s*\[(\d+)\]\s*$/);
-        if (mArr) {
-          const name = mArr[1];
-          const len = parseInt(mArr[2], 10);
-          return { type: isGlobal ? 'global_arr' : 'local_arr', name, bytes: 4*len };
-        }
-        const mInit = line.match(/^(?:global\s+)?int\s+([A-Za-z_][A-Za-z0-9_]*)\s*(?:=\s*([^\s]+))?\s*$/);
-        if (mInit) {
-          const name = mInit[1];
-          return { type: isGlobal ? 'global_int' : 'local_int', name, bytes: 4 };
-        }
-        return null;
+      // Extract main body
+      const mainMatch = code.match(/int\s+main\s*\(\s*\)\s*\{([\s\S]*)\}/m);
+      if (!mainMatch) throw new Error('Could not find int main() { ... }');
+      const beforeMain = code.slice(0, mainMatch.index);
+      const mainBody = mainMatch[1];
+
+      // Parse globals (very limited: int name; int name = value; int name[n];)
+      const globalLines = beforeMain.split(/;+/).map(s => s.trim()).filter(Boolean);
+      for (const stmt of globalLines) {
+        const arr = stmt.match(/^int\s+([A-Za-z_][A-Za-z0-9_]*)\s*\[(\d+)\]$/);
+        if (arr) { globals.push({ name: arr[1], bytes: 4 * parseInt(arr[2], 10) }); continue; }
+        const decl = stmt.match(/^int\s+([A-Za-z_][A-Za-z0-9_]*)(\s*=\s*[^;]+)?$/);
+        if (decl) { globals.push({ name: decl[1], bytes: 4 }); continue; }
       }
 
-      for (const line of lines) {
-        if (line.toLowerCase() === 'main:' || line.toLowerCase() === 'function main' || line.toLowerCase() === 'fn main') {
-          inMain = true; continue;
-        }
-        if (!inMain) {
-          if (line.startsWith('global ')) {
-            const decl = parseDecl(line, true);
-            if (!decl) throw new Error(`Unrecognized global declaration: ${line}`);
-            globals.push({ name: decl.name, bytes: decl.bytes });
-          } else {
-            throw new Error(`Only global declarations allowed before main. Found: ${line}`);
-          }
-        } else {
-          // main body statements
-          if (line.startsWith('int ')) {
-            const decl = parseDecl(line, false);
-            if (!decl) throw new Error(`Unrecognized local declaration: ${line}`);
-            main.push({ op: decl.type === 'local_arr' ? 'alloc_local' : 'alloc_local', name: decl.name, bytes: decl.bytes });
-          } else if (line.startsWith('malloc ')) {
-            // malloc p 32
-            const mm = line.match(/^malloc\s+([A-Za-z_][A-Za-z0-9_]*)\s+(\d+)$/);
-            if (!mm) throw new Error(`Malformed malloc: ${line}`);
-            main.push({ op: 'malloc', name: mm[1], bytes: parseInt(mm[2], 10) });
-          } else if (line.startsWith('free ')) {
-            const mf = line.match(/^free\s+([A-Za-z_][A-Za-z0-9_]*)$/);
-            if (!mf) throw new Error(`Malformed free: ${line}`);
-            main.push({ op: 'free', name: mf[1] });
-          } else if (/^return$/i.test(line)) {
-            main.push({ op: 'return' });
-          } else {
-            throw new Error(`Unrecognized statement in main: ${line}`);
-          }
-        }
+      // Parse main body (split by semicolons)
+      const lines = mainBody.split(/;+/).map(s => s.trim()).filter(Boolean);
+      for (let line of lines) {
+        // Remove braces/newlines inside body
+        line = line.replace(/[\n\r\t]/g, ' ').trim();
+        if (!line) continue;
+        // Local arrays/ints
+        let m = line.match(/^int\s+([A-Za-z_][A-Za-z0-9_]*)\s*\[(\d+)\]$/);
+        if (m) { main.push({ op: 'alloc_local', name: m[1], bytes: 4 * parseInt(m[2], 10) }); continue; }
+        m = line.match(/^int\s+([A-Za-z_][A-Za-z0-9_]*)(\s*=\s*.+)?$/);
+        if (m) { main.push({ op: 'alloc_local', name: m[1], bytes: 4 }); continue; }
+        // malloc: p = malloc(32)
+        m = line.match(/^([A-Za-z_][A-Za-z0-9_]*)\s*=\s*malloc\s*\(\s*(\d+)\s*\)$/);
+        if (m) { main.push({ op: 'malloc', name: m[1], bytes: parseInt(m[2], 10) }); continue; }
+        // free(p)
+        m = line.match(/^free\s*\(\s*([A-Za-z_][A-Za-z0-9_]*)\s*\)$/);
+        if (m) { main.push({ op: 'free', name: m[1] }); continue; }
+        // return
+        if (/^return(\s+.+)?$/.test(line)) { main.push({ op: 'return' }); continue; }
+        // ignore other statements for now
       }
 
-      // Derive sizes
-      const textSize = Math.max(256, 16 * (main.length + 4)); // simple model
+      const textSize = Math.max(256, 16 * (main.length + 4));
       const dataSize = globals.reduce((s,g) => s + g.bytes, 0);
       return { globals, main, textSize, dataSize };
     }
@@ -235,6 +234,7 @@
       const frame = { name: 'main', base: ADDR.STACK_BASE, size: 0, locals: [] };
       rt1.stack.frames.push(frame);
       rt1.stack.size += 64; // reserve some space (saved RBP/return)
+      rt1.rip += 16;
       s.push({ desc: 'Enter main: set up stack frame', state: cloneState(rt1) });
 
       // Execute main statements
@@ -249,25 +249,30 @@
           rt.stack.size += size;
           const local = { name: stmt.name, addr: localAddr, bytes: size };
           rt.stack.frames[rt.stack.frames.length - 1].locals.push(local);
+          rt.rip += 16;
           s.push({ desc: `Allocate local ${stmt.name} (${stmt.bytes}B, aligned ${size}B)`, state: cloneState(rt) });
         } else if (stmt.op === 'malloc') {
           const size = alignUp(stmt.bytes, 16);
           const addr = heapTop();
           rt.heap.blocks.push({ name: stmt.name, addr, bytes: size, freed: false });
           rt.heap.size += size;
+          rt.rip += 16;
           s.push({ desc: `malloc ${stmt.name} (${stmt.bytes}B) -> 0x${addr.toString(16)}`, state: cloneState(rt) });
         } else if (stmt.op === 'free') {
           const blk = rt.heap.blocks.find(b => b.name === stmt.name && !b.freed);
           if (blk) {
             blk.freed = true;
+            rt.rip += 16;
             s.push({ desc: `free ${stmt.name}`, state: cloneState(rt) });
           } else {
+            rt.rip += 16;
             s.push({ desc: `free ${stmt.name} (no live block found)`, state: cloneState(rt) });
           }
         } else if (stmt.op === 'return') {
           // Pop frame
           const f = rt.stack.frames.pop();
           if (f) { rt.stack.size = Math.max(0, rt.stack.size - (f.size || 0) - 64); }
+          rt.rip += 16;
           s.push({ desc: 'return: tear down stack frame', state: cloneState(rt) });
         }
       }
@@ -291,11 +296,12 @@
       const rt = step.state;
 
       svg.selectAll('*').remove();
-      // Layout rectangles: bottom-up text, data, heap; top-down stack
+      // Layout: low addresses at bottom — Text, Data beneath Heap; Stack near top
       const y0 = mapY;
-      const textY = y0 + mapH - TEXT_H - DATA_H - HEAP_H_MAX - 10;
-      const dataY = textY + TEXT_H + 5;
-      const heapY = dataY + DATA_H + 5;
+      const bottom = y0 + mapH;
+      const textY = bottom - TEXT_H - 4;
+      const dataY = textY - DATA_H - 4;
+      const heapY = dataY - HEAP_H_MAX - 6;
       const stackY = y0 + 10;
 
       // Text segment
@@ -316,12 +322,15 @@
           .attr('height', h - 2)
           .attr('class', b.freed ? 'freed' : 'block-heap')
           .attr('stroke', '#8d6e63')
-          .attr('stroke-width', 1);
+          .attr('stroke-width', 1)
+          .transition().duration(300);
         svg.append('text')
           .attr('x', mapX + 12)
           .attr('y', heapCursor + h/2 + 4)
           .attr('class', 'block-label')
-          .text(`${b.name} (${b.bytes}B)`);
+          .text(`${b.name} (${b.bytes}B)`)
+          .attr('opacity', 0)
+          .transition().duration(300).attr('opacity', 1);
         heapCursor += h;
       });
 
@@ -340,12 +349,15 @@
           .attr('height', h - 2)
           .attr('class', 'block-local')
           .attr('stroke', '#b71c1c')
-          .attr('stroke-width', 1);
+          .attr('stroke-width', 1)
+          .transition().duration(300);
         svg.append('text')
           .attr('x', mapX + 12)
           .attr('y', stackCursor + h/2 + 4)
           .attr('class', 'block-label')
-          .text(`${l.name} (${l.bytes}B)`);
+          .text(`${l.name} (${l.bytes}B)`)
+          .attr('opacity', 0)
+          .transition().duration(300).attr('opacity', 1);
         stackCursor += h;
       });
 
@@ -369,10 +381,26 @@
           .text(`${g.name} (${g.bytes}B)`);
         gCursor += h;
       });
+
+      // Registers (RIP within Text, RSP within Stack)
+      if (document.getElementById('showRegs').checked) {
+        const ripRel = Math.min(1, Math.max(0, (rt.rip - rt.text.base) / Math.max(1, rt.text.size)));
+        const ripY = textY + (TEXT_H - ripRel * TEXT_H);
+        svg.append('line').attr('x1', mapX).attr('x2', mapX + mapW)
+          .attr('y1', ripY).attr('y2', ripY).attr('class', 'rip-line');
+        svg.append('text').attr('x', mapX + 6).attr('y', ripY - 4).attr('class', 'reg-label').text('RIP');
+
+        const rspRel = Math.min(1, Math.max(0, rt.stack.size / Math.max(256, rt.stack.size)));
+        const rspY = stackY + rspRel * STACK_H_MAX;
+        svg.append('line').attr('x1', mapX).attr('x2', mapX + mapW)
+          .attr('y1', rspY).attr('y2', rspY).attr('class', 'rsp-line');
+        svg.append('text').attr('x', mapX + 6).attr('y', rspY - 4).attr('class', 'reg-label').text('RSP');
+      }
     }
 
     function drawSegment(y, h, name, cls, addrLo, addrHi) {
-      svg.append('rect')
+      const g = svg.append('g');
+      g.append('rect')
         .attr('x', mapX)
         .attr('y', y)
         .attr('width', mapW)
@@ -381,11 +409,14 @@
         .attr('opacity', 0.8)
         .attr('stroke', '#888')
         .attr('stroke-width', 1);
-      svg.append('text').attr('x', mapX + 6).attr('y', y + 16).attr('class', 'segment-label').text(name);
-      svg.append('text').attr('x', mapX + mapW - 6).attr('y', y + 14).attr('text-anchor', 'end').attr('class', 'addr').text('0x' + addrLo.toString(16));
-      svg.append('text').attr('x', mapX + mapW - 6).attr('y', y + h - 6).attr('text-anchor', 'end').attr('class', 'addr').text('0x' + addrHi.toString(16));
+      g.append('text').attr('x', mapX + 6).attr('y', y + 16).attr('class', 'segment-label').text(name);
+      if (document.getElementById('showAddrs').checked) {
+        // Show high address at top, low at bottom (top of diagram = high address)
+        g.append('text').attr('x', mapX + mapW - 6).attr('y', y + 14).attr('text-anchor', 'end').attr('class', 'addr').text('0x' + addrHi.toString(16));
+        g.append('text').attr('x', mapX + mapW - 6).attr('y', y + h - 6).attr('text-anchor', 'end').attr('class', 'addr').text('0x' + addrLo.toString(16));
+      }
       // outline
-      svg.append('rect')
+      g.append('rect')
         .attr('x', mapX)
         .attr('y', y)
         .attr('width', mapW)
@@ -395,16 +426,7 @@
 
     // Controls
     document.getElementById('loadExample').onclick = () => {
-      const example = `# Example: globals, locals, heap
-global int g = 42
-global int arr[3]
-
-main:
-  int x = 1
-  int buf[8]
-  malloc p 48
-  free p
-  return`;
+      const example = `// Example: globals, locals, heap (C subset)\n\nint g = 42;\nint arr[3];\n\nint main() {\n  int x = 1;\n  int buf[8];\n  p = malloc(48);\n  free(p);\n  return 0;\n}`;
       programEl.value = example;
       msgEl.textContent = '';
     };
@@ -412,7 +434,7 @@ main:
     document.getElementById('compileBtn').onclick = () => {
       try {
         msgEl.textContent = '';
-        compiled = compileDSL(programEl.value);
+        compiled = compileC(programEl.value);
         steps = buildSteps(compiled);
         stepIndex = 0;
         renderStep(steps[stepIndex]);
@@ -447,13 +469,14 @@ main:
     document.getElementById('playBtn').onclick = () => {
       if (!steps.length) return;
       if (playTimer) { clearInterval(playTimer); playTimer = null; updateNav(); return; }
+      const speed = parseInt(document.getElementById('speed').value, 10) || 900;
       playTimer = setInterval(() => {
         if (stepIndex < steps.length - 1) {
           stepIndex++; renderStep(steps[stepIndex]); updateNav();
         } else {
           clearInterval(playTimer); playTimer = null; updateNav();
         }
-      }, 900);
+      }, speed);
       updateNav();
     };
 
@@ -462,4 +485,3 @@ main:
   </script>
 </body>
 </html>
-
