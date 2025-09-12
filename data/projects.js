@@ -197,6 +197,18 @@ const projects = [
     code_url: null,
     featured: true
   },
+
+  {
+    id: 'x86-64-memory',
+    title: 'x86-64 Memory Layout Visualizer',
+    description: 'Interactive visualization of a process\'s memory map on x86-64: text (code), data (globals), heap (grows up), and stack (grows down). Enter a tiny program DSL and step through how it is laid out under the hood.',
+    tech: 'JavaScript, D3.js, Systems Programming, x86-64',
+    thumbnail: 'images/projects/heap-allocator-thumb.jpg',
+    demo_url: 'demos/x86-64-memory.html',
+    code_url: null,
+    featured: true,
+    highlighted: true
+  },
   
   {
     id: 'wasm-performance',
