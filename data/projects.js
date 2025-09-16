@@ -2,6 +2,18 @@
 const projects = [
   // Machine Learning & Systems Projects
   {
+    id: 'x86-64-memory',
+    title: 'x86-64 Memory Layout Visualizer - Enhanced',
+    description: 'Interactive visualization of process memory layout on x86-64 architecture. Write C code and watch how text, data, heap, and stack segments are allocated in real-time. Features step-by-step execution, register tracking (RIP/RSP), dynamic memory visualization, and multiple example programs.',
+    tech: 'JavaScript, D3.js, Systems Programming, x86-64 Architecture',
+    thumbnail: 'images/projects/x86-memory-layout-thumb.jpg',
+    demo_url: 'demos/x86-64-memory-enhanced.html',
+    code_url: null,
+    featured: true,
+    highlighted: true
+  },
+
+  {
     id: 'heap-allocator',
     title: 'Heap Allocator Visualization',
     description: 'Interactive visualization of heap memory allocation strategies. Compare implicit and explicit free-list implementations, observe block splitting and coalescing, understand fragmentation patterns, and explore memory management algorithms.',
@@ -129,6 +141,18 @@ const projects = [
     code_url: null,
     featured: true
   },
+
+  {
+    id: 'cs400-bst',
+    title: 'Binary Search Tree Implementation (CS 400)',
+    description: 'Complete implementation of a generic Binary Search Tree with rotation operations for CS 400: Programming III at UW-Madison. Features efficient insertion, deletion, searching with O(log n) average complexity, and tree rotation for balancing operations. Includes comprehensive unit tests and performance benchmarks.',
+    tech: 'Java, Data Structures, Algorithms, JUnit',
+    thumbnail: 'images/projects/bst-thumb.jpg',
+    demo_url: null,
+    code_url: 'https://github.com/mac-huang/cs400-bst',
+    featured: true,
+    highlighted: true
+  },
   
   {
     id: 'garbage-collection',
@@ -198,17 +222,6 @@ const projects = [
     featured: true
   },
 
-  {
-    id: 'x86-64-memory',
-    title: 'x86-64 Memory Layout Visualizer',
-    description: 'Interactive visualization of a process\'s memory map on x86-64: text (code), data (globals), heap (grows up), and stack (grows down). Enter a small C-like program and step through how it is laid out under the hood. Toggle addresses and RIP/RSP registers to animate execution.',
-    tech: 'JavaScript, D3.js, Systems Programming, x86-64',
-    thumbnail: 'images/projects/heap-allocator-thumb.jpg',
-    demo_url: 'demos/x86-64-memory.html',
-    code_url: null,
-    featured: true,
-    highlighted: true
-  },
   
   {
     id: 'wasm-performance',

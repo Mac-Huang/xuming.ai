@@ -1,0 +1,1473 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>x86-64 Memory Layout Visualizer - Interactive Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../stylesheet.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 30px 20px;
+    }
+
+    .main-card {
+      background: rgba(255, 255, 255, 0.98);
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 32px;
+      text-align: center;
+    }
+
+    .header h1 {
+      margin: 0 0 8px 0;
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      color: rgba(255,255,255,0.9);
+      font-size: 16px;
+      font-weight: 400;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 500px 1fr;
+      gap: 0;
+      min-height: 800px;
+    }
+
+    .left-panel {
+      background: #f8f9fa;
+      padding: 24px;
+      border-right: 1px solid #e0e0e0;
+    }
+
+    .right-panel {
+      padding: 24px;
+      background: white;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .section {
+      margin-bottom: 24px;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .code-editor {
+      width: 100%;
+      min-height: 280px;
+      padding: 16px;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      background: #1e1e1e;
+      color: #d4d4d4;
+      border: 1px solid #333;
+      border-radius: 8px;
+      resize: vertical;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .btn {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(102,126,234,0.4);
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+
+    .btn-success {
+      background: #28a745;
+      color: white;
+    }
+
+    .btn:disabled {
+      background: #bbb;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .options {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+      padding: 12px;
+      background: #f1f3f5;
+      border-radius: 8px;
+    }
+
+    .option-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .option-group label {
+      font-size: 13px;
+      color: #495057;
+      font-weight: 500;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 44px;
+      height: 24px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .3s;
+      border-radius: 34px;
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .toggle-slider {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    input:checked + .toggle-slider:before {
+      transform: translateX(20px);
+    }
+
+    .speed-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .speed-control input[type="range"] {
+      width: 100px;
+    }
+
+    .message {
+      margin-top: 12px;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+    }
+
+    .message.error {
+      background: #fee;
+      color: #c00;
+      border: 1px solid #fcc;
+    }
+
+    .message.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .message.empty {
+      background: transparent;
+      border: 1px solid transparent;
+    }
+
+    .step-info {
+      padding: 16px;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+
+    .step-counter {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 4px;
+    }
+
+    .step-desc {
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    /* Memory visualization */
+    .memory-viz {
+      flex: 1;
+      background: white;
+      border-radius: 8px;
+      padding: 16px;
+      position: relative;
+    }
+
+    .legend {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+      padding: 12px;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #495057;
+    }
+
+    .legend-swatch {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      border: 1px solid rgba(0,0,0,0.2);
+    }
+
+    .mem-svg {
+      width: 100%;
+      height: 680px;
+      display: block;
+    }
+
+    /* SVG styles */
+    .segment-label {
+      font-size: 14px;
+      fill: #333;
+      font-weight: 600;
+    }
+
+    .block-label {
+      font-size: 12px;
+      fill: #fff;
+      pointer-events: none;
+      font-weight: 500;
+    }
+
+    .addr {
+      font-family: 'Monaco', monospace;
+      font-size: 11px;
+      fill: #666;
+    }
+
+    .seg-text { fill: #4A90E2; }
+    .seg-data { fill: #7ED321; }
+    .seg-heap { fill: #F5A623; }
+    .seg-stack { fill: #D0021B; }
+    .seg-unused { fill: #E0E0E0; }
+
+    .block-heap { fill: #FF9500; }
+    .block-local { fill: #FF3B30; }
+    .block-global { fill: #4CD964; }
+    .block-code { fill: #007AFF; }
+    .freed {
+      fill: #F0F0F0 !important;
+      stroke-dasharray: 5 3;
+      opacity: 0.7;
+    }
+
+    .reg-marker {
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .rip-marker { stroke: #007AFF; }
+    .rsp-marker { stroke: #FF3B30; }
+    .rbp-marker { stroke: #FF9500; }
+
+    .reg-label {
+      font-size: 11px;
+      font-weight: 700;
+      fill: #333;
+    }
+
+    .playback-controls {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 16px;
+    }
+
+    .playback-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: none;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .playback-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(102,126,234,0.4);
+    }
+
+    .playback-btn:disabled {
+      background: #ddd;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .examples {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .example-btn {
+      padding: 8px 12px;
+      background: white;
+      border: 1px solid #dee2e6;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+    }
+
+    .example-btn:hover {
+      background: #f8f9fa;
+      border-color: #667eea;
+      transform: translateY(-1px);
+    }
+
+    .example-title {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 2px;
+    }
+
+    .example-desc {
+      font-size: 11px;
+      color: #666;
+    }
+
+    .info-box {
+      background: #e3f2fd;
+      border-left: 4px solid #2196f3;
+      padding: 12px;
+      margin-top: 16px;
+      border-radius: 4px;
+    }
+
+    .info-box h4 {
+      margin: 0 0 8px 0;
+      color: #1565c0;
+      font-size: 14px;
+    }
+
+    .info-box ul {
+      margin: 0;
+      padding-left: 20px;
+      font-size: 13px;
+      color: #424242;
+    }
+
+    .info-box li {
+      margin: 4px 0;
+    }
+
+    @media (max-width: 1200px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+      .left-panel {
+        border-right: none;
+        border-bottom: 1px solid #e0e0e0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="main-card">
+      <div class="header">
+        <h1>🖥️ x86-64 Memory Layout Visualizer</h1>
+        <div class="subtitle">Interactive visualization of process memory: text, data, heap, and stack segments</div>
+      </div>
+
+      <div class="layout">
+        <div class="left-panel">
+          <div class="section">
+            <div class="section-title">Program Code</div>
+            <textarea id="program" class="code-editor" placeholder="// Write your C code here..."></textarea>
+
+            <div class="controls" style="margin-top: 12px;">
+              <button id="compileBtn" class="btn btn-primary">
+                <span>▶</span> Compile & Run
+              </button>
+              <button id="resetBtn" class="btn btn-secondary">
+                <span>↺</span> Reset
+              </button>
+            </div>
+
+            <div id="message" class="message empty"></div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Example Programs</div>
+            <div class="examples">
+              <button class="example-btn" data-example="basic">
+                <div class="example-title">Basic Memory</div>
+                <div class="example-desc">Globals, locals, heap</div>
+              </button>
+              <button class="example-btn" data-example="arrays">
+                <div class="example-title">Arrays & Buffers</div>
+                <div class="example-desc">Stack & heap arrays</div>
+              </button>
+              <button class="example-btn" data-example="dynamic">
+                <div class="example-title">Dynamic Memory</div>
+                <div class="example-desc">malloc/free patterns</div>
+              </button>
+              <button class="example-btn" data-example="complex">
+                <div class="example-title">Complex Program</div>
+                <div class="example-desc">Multiple allocations</div>
+              </button>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Visualization Options</div>
+            <div class="options">
+              <div class="option-group">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="showAddrs" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+                <label for="showAddrs">Show Addresses</label>
+              </div>
+              <div class="option-group">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="showRegs" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+                <label for="showRegs">Show Registers</label>
+              </div>
+              <div class="option-group">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="animate" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+                <label for="animate">Animations</label>
+              </div>
+              <div class="speed-control">
+                <label>Speed:</label>
+                <input type="range" id="speed" min="200" max="2000" step="200" value="800">
+                <span id="speedVal">800ms</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="info-box">
+            <h4>📚 Supported C Subset</h4>
+            <ul>
+              <li>Global variables: <code>int g = 42;</code></li>
+              <li>Arrays: <code>int arr[10];</code></li>
+              <li>Main function: <code>int main() { ... }</code></li>
+              <li>Local variables: <code>int x = 1;</code></li>
+              <li>Dynamic allocation: <code>p = malloc(size);</code></li>
+              <li>Memory deallocation: <code>free(p);</code></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="right-panel">
+          <div class="step-info">
+            <div class="step-counter" id="stepCounter">Step 0 of 0</div>
+            <div class="step-desc" id="stepDesc">Ready to compile...</div>
+          </div>
+
+          <div class="memory-viz">
+            <div class="legend">
+              <div class="legend-item">
+                <div class="legend-swatch" style="background: #4A90E2"></div>
+                <span>Text (Code)</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-swatch" style="background: #7ED321"></div>
+                <span>Data (Globals)</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-swatch" style="background: #F5A623"></div>
+                <span>Heap ↑</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-swatch" style="background: #D0021B"></div>
+                <span>Stack ↓</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-swatch" style="background: #E0E0E0"></div>
+                <span>Unused</span>
+              </div>
+            </div>
+
+            <svg id="memSvg" class="mem-svg"></svg>
+
+            <div class="playback-controls">
+              <button id="firstBtn" class="playback-btn" title="First">⏮</button>
+              <button id="prevBtn" class="playback-btn" title="Previous">◀</button>
+              <button id="playBtn" class="playback-btn" title="Play/Pause">▶</button>
+              <button id="nextBtn" class="playback-btn" title="Next">▶</button>
+              <button id="lastBtn" class="playback-btn" title="Last">⏭</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Memory layout constants
+    const MEMORY = {
+      TEXT_BASE: 0x400000,
+      DATA_BASE: 0x600000,
+      HEAP_BASE: 0x700000,
+      STACK_TOP: 0x7fffffffffff,
+      PAGE_SIZE: 4096
+    };
+
+    // Visual constants
+    const VIZ = {
+      width: 900,
+      height: 650,
+      padding: { top: 20, right: 120, bottom: 20, left: 20 },
+      segmentGap: 20,
+      minSegmentHeight: 80,
+      colors: {
+        text: '#4A90E2',
+        data: '#7ED321',
+        heap: '#F5A623',
+        stack: '#D0021B',
+        unused: '#E0E0E0'
+      }
+    };
+
+    // State management
+    let program = null;
+    let steps = [];
+    let currentStep = -1;
+    let playTimer = null;
+    let animationDuration = 300;
+
+    // DOM elements
+    const els = {
+      program: document.getElementById('program'),
+      message: document.getElementById('message'),
+      stepDesc: document.getElementById('stepDesc'),
+      stepCounter: document.getElementById('stepCounter'),
+      speedVal: document.getElementById('speedVal'),
+      svg: d3.select('#memSvg')
+    };
+
+    // Example programs
+    const examples = {
+      basic: `// Basic memory layout example
+int global_var = 42;
+int global_array[5];
+
+int main() {
+    int local_var = 10;
+    int local_array[8];
+
+    ptr = malloc(64);
+    free(ptr);
+
+    return 0;
+}`,
+
+      arrays: `// Arrays and buffers
+int data[10];
+char buffer[256];
+
+int main() {
+    int stack_array[16];
+    int matrix[4];
+
+    large = malloc(1024);
+    small = malloc(16);
+
+    free(large);
+    free(small);
+
+    return 0;
+}`,
+
+      dynamic: `// Dynamic memory management
+int counter = 0;
+
+int main() {
+    int size = 32;
+
+    p1 = malloc(32);
+    p2 = malloc(64);
+    p3 = malloc(128);
+
+    free(p2);
+
+    p4 = malloc(48);
+
+    free(p1);
+    free(p3);
+    free(p4);
+
+    return 0;
+}`,
+
+      complex: `// Complex program
+int global1 = 100;
+int global2 = 200;
+int buffer[32];
+
+int main() {
+    int x = 1;
+    int y = 2;
+    int arr[16];
+
+    node1 = malloc(24);
+    node2 = malloc(24);
+    data = malloc(256);
+
+    free(node1);
+
+    temp = malloc(64);
+
+    free(data);
+    free(node2);
+    free(temp);
+
+    return 0;
+}`
+    };
+
+    // Compiler implementation
+    class Compiler {
+      constructor(source) {
+        this.source = this.removeComments(source);
+        this.globals = [];
+        this.instructions = [];
+      }
+
+      removeComments(src) {
+        return src
+          .replace(/\/\*[\s\S]*?\*\//g, '')
+          .replace(/\/\/.*$/gm, '');
+      }
+
+      compile() {
+        const lines = this.source.split('\n').map(l => l.trim()).filter(Boolean);
+        let inMain = false;
+        let mainBody = [];
+
+        for (const line of lines) {
+          if (line.includes('int main()')) {
+            inMain = true;
+            continue;
+          }
+
+          if (inMain) {
+            if (line === '}') {
+              break;
+            }
+            if (line !== '{') {
+              mainBody.push(line);
+            }
+          } else if (line !== '{' && line !== '}') {
+            // Parse globals
+            this.parseGlobal(line);
+          }
+        }
+
+        // Parse main body
+        for (const stmt of mainBody) {
+          this.parseStatement(stmt);
+        }
+
+        return {
+          globals: this.globals,
+          instructions: this.instructions,
+          textSize: 4096 + this.instructions.length * 16,
+          dataSize: this.globals.reduce((sum, g) => sum + g.size, 0)
+        };
+      }
+
+      parseGlobal(line) {
+        // int var = value;
+        // int array[size];
+        // char array[size];
+
+        const match = line.match(/^(int|char)\s+(\w+)(\[(\d+)\])?/);
+        if (match) {
+          const type = match[1];
+          const name = match[2];
+          const arraySize = match[4] ? parseInt(match[4]) : 0;
+          const typeSize = type === 'char' ? 1 : 4;
+          const size = arraySize > 0 ? typeSize * arraySize : typeSize;
+
+          this.globals.push({
+            name,
+            type,
+            size: this.align(size, 8),
+            isArray: arraySize > 0
+          });
+        }
+      }
+
+      parseStatement(stmt) {
+        stmt = stmt.replace(/;$/, '').trim();
+
+        // Local variable
+        if (stmt.match(/^(int|char)\s+\w+/)) {
+          const match = stmt.match(/^(int|char)\s+(\w+)(\[(\d+)\])?/);
+          if (match) {
+            const type = match[1];
+            const name = match[2];
+            const arraySize = match[4] ? parseInt(match[4]) : 0;
+            const typeSize = type === 'char' ? 1 : 4;
+            const size = arraySize > 0 ? typeSize * arraySize : typeSize;
+
+            this.instructions.push({
+              op: 'alloc_local',
+              name,
+              size: this.align(size, 16),
+              type
+            });
+          }
+        }
+        // malloc
+        else if (stmt.includes('malloc')) {
+          const match = stmt.match(/(\w+)\s*=\s*malloc\((\d+)\)/);
+          if (match) {
+            this.instructions.push({
+              op: 'malloc',
+              name: match[1],
+              size: parseInt(match[2])
+            });
+          }
+        }
+        // free
+        else if (stmt.includes('free')) {
+          const match = stmt.match(/free\((\w+)\)/);
+          if (match) {
+            this.instructions.push({
+              op: 'free',
+              name: match[1]
+            });
+          }
+        }
+        // return
+        else if (stmt.includes('return')) {
+          this.instructions.push({ op: 'return' });
+        }
+      }
+
+      align(size, alignment) {
+        return Math.ceil(size / alignment) * alignment;
+      }
+    }
+
+    // Memory state manager
+    class MemoryState {
+      constructor(compiled) {
+        this.compiled = compiled;
+        this.reset();
+      }
+
+      reset() {
+        this.segments = {
+          text: {
+            base: MEMORY.TEXT_BASE,
+            size: this.compiled.textSize,
+            type: 'text'
+          },
+          data: {
+            base: MEMORY.DATA_BASE,
+            size: Math.max(64, this.compiled.dataSize),
+            type: 'data',
+            blocks: this.compiled.globals.map((g, i) => ({
+              name: g.name,
+              size: g.size,
+              offset: this.compiled.globals.slice(0, i).reduce((s, x) => s + x.size, 0)
+            }))
+          },
+          heap: {
+            base: MEMORY.HEAP_BASE,
+            size: 0,
+            maxSize: 0x100000,
+            type: 'heap',
+            blocks: []
+          },
+          stack: {
+            base: MEMORY.STACK_TOP,
+            size: 0,
+            maxSize: 0x100000,
+            type: 'stack',
+            frames: []
+          }
+        };
+
+        this.registers = {
+          rip: MEMORY.TEXT_BASE,
+          rsp: MEMORY.STACK_TOP,
+          rbp: MEMORY.STACK_TOP
+        };
+      }
+
+      clone() {
+        return JSON.parse(JSON.stringify(this));
+      }
+    }
+
+    // Step builder
+    function buildSteps(compiled) {
+      const state = new MemoryState(compiled);
+      const steps = [];
+
+      // Initial state
+      steps.push({
+        description: 'Program loaded: Text and Data segments mapped',
+        state: state.clone(),
+        highlight: ['text', 'data']
+      });
+
+      // Setup stack frame
+      state.registers.rsp -= 16; // Return address + saved RBP
+      state.segments.stack.size = 16;
+      state.segments.stack.frames.push({
+        name: 'main',
+        locals: [],
+        size: 16
+      });
+      state.registers.rbp = state.registers.rsp;
+      state.registers.rip += 16;
+
+      steps.push({
+        description: 'Enter main(): Stack frame created',
+        state: state.clone(),
+        highlight: ['stack']
+      });
+
+      // Execute instructions
+      for (const inst of compiled.instructions) {
+        if (inst.op === 'alloc_local') {
+          const frame = state.segments.stack.frames[0];
+          state.registers.rsp -= inst.size;
+          state.segments.stack.size += inst.size;
+          frame.size += inst.size;
+          frame.locals.push({
+            name: inst.name,
+            size: inst.size,
+            offset: frame.size - inst.size
+          });
+          state.registers.rip += 8;
+
+          steps.push({
+            description: `Allocate local variable '${inst.name}' (${inst.size} bytes)`,
+            state: state.clone(),
+            highlight: ['stack']
+          });
+        }
+        else if (inst.op === 'malloc') {
+          const alignedSize = Math.ceil(inst.size / 16) * 16;
+          const block = {
+            name: inst.name,
+            size: alignedSize,
+            offset: state.segments.heap.size,
+            freed: false
+          };
+          state.segments.heap.blocks.push(block);
+          state.segments.heap.size += alignedSize;
+          state.registers.rip += 8;
+
+          steps.push({
+            description: `malloc(${inst.size}): Allocate '${inst.name}' on heap (${alignedSize} bytes)`,
+            state: state.clone(),
+            highlight: ['heap']
+          });
+        }
+        else if (inst.op === 'free') {
+          const block = state.segments.heap.blocks.find(b => b.name === inst.name && !b.freed);
+          if (block) {
+            block.freed = true;
+            state.registers.rip += 8;
+            steps.push({
+              description: `free(${inst.name}): Memory marked as freed`,
+              state: state.clone(),
+              highlight: ['heap']
+            });
+          }
+        }
+        else if (inst.op === 'return') {
+          // Clean up stack frame
+          const frame = state.segments.stack.frames.pop();
+          state.segments.stack.size = Math.max(0, state.segments.stack.size - frame.size);
+          state.registers.rsp = state.registers.rbp;
+          state.registers.rbp = MEMORY.STACK_TOP;
+          state.registers.rip += 8;
+
+          steps.push({
+            description: 'return: Stack frame destroyed',
+            state: state.clone(),
+            highlight: ['stack']
+          });
+        }
+      }
+
+      return steps;
+    }
+
+    // Visualization renderer
+    class Visualizer {
+      constructor(svg) {
+        this.svg = svg;
+        this.setupSVG();
+      }
+
+      setupSVG() {
+        this.svg.attr('viewBox', `0 0 ${VIZ.width} ${VIZ.height}`);
+
+        // Create layer groups
+        this.svg.append('g').attr('class', 'segments');
+        this.svg.append('g').attr('class', 'blocks');
+        this.svg.append('g').attr('class', 'registers');
+        this.svg.append('g').attr('class', 'labels');
+      }
+
+      render(step) {
+        const state = step.state;
+        const animate = document.getElementById('animate').checked;
+        const duration = animate ? animationDuration : 0;
+
+        // Calculate layout
+        const layout = this.calculateLayout(state);
+
+        // Render segments
+        this.renderSegments(layout, duration, step.highlight);
+
+        // Render blocks
+        this.renderBlocks(layout, state, duration);
+
+        // Render registers
+        if (document.getElementById('showRegs').checked) {
+          this.renderRegisters(layout, state, duration);
+        }
+
+        // Render addresses
+        if (document.getElementById('showAddrs').checked) {
+          this.renderAddresses(layout, state);
+        }
+      }
+
+      calculateLayout(state) {
+        const totalHeight = VIZ.height - VIZ.padding.top - VIZ.padding.bottom;
+        const x = VIZ.padding.left;
+        const width = VIZ.width - VIZ.padding.left - VIZ.padding.right;
+
+        // Fixed heights for text and data
+        const textHeight = 100;
+        const dataHeight = 80;
+
+        // Dynamic heights for heap and stack
+        const dynamicSpace = totalHeight - textHeight - dataHeight - VIZ.segmentGap * 4;
+        const heapHeight = Math.max(VIZ.minSegmentHeight + 40, dynamicSpace * 0.35);
+        const stackHeight = Math.max(VIZ.minSegmentHeight + 40, dynamicSpace * 0.35);
+        const unusedHeight = Math.max(40, dynamicSpace - heapHeight - stackHeight);
+
+        // Position segments (stack at top, growing down)
+        let y = VIZ.padding.top;
+
+        return {
+          stack: { x, y, width, height: stackHeight },
+          unused: { x, y: y + stackHeight + VIZ.segmentGap, width, height: unusedHeight },
+          heap: { x, y: y + stackHeight + unusedHeight + VIZ.segmentGap * 2, width, height: heapHeight },
+          data: { x, y: y + stackHeight + unusedHeight + heapHeight + VIZ.segmentGap * 3, width, height: dataHeight },
+          text: { x, y: totalHeight - textHeight + VIZ.padding.top, width, height: textHeight }
+        };
+      }
+
+      renderSegments(layout, duration, highlight = []) {
+        const segments = this.svg.select('.segments');
+
+        const segmentData = Object.entries(layout).map(([name, rect]) => ({
+          name,
+          ...rect,
+          color: name === 'unused' ? VIZ.colors.unused : VIZ.colors[name],
+          highlighted: highlight.includes(name)
+        }));
+
+        const rects = segments.selectAll('.segment')
+          .data(segmentData, d => d.name);
+
+        // Enter
+        const enter = rects.enter()
+          .append('g')
+          .attr('class', 'segment');
+
+        enter.append('rect')
+          .attr('x', d => d.x)
+          .attr('y', d => d.y)
+          .attr('width', d => d.width)
+          .attr('height', d => d.height)
+          .attr('fill', d => d.color)
+          .attr('stroke', '#333')
+          .attr('stroke-width', 1)
+          .attr('opacity', 0)
+          .transition().duration(duration)
+          .attr('opacity', d => d.highlighted ? 1 : 0.8);
+
+        enter.append('text')
+          .attr('x', d => d.x + 10)
+          .attr('y', d => d.y + 20)
+          .attr('class', 'segment-label')
+          .text(d => d.name.charAt(0).toUpperCase() + d.name.slice(1))
+          .attr('opacity', 0)
+          .transition().duration(duration)
+          .attr('opacity', 1);
+
+        // Update
+        rects.select('rect')
+          .transition().duration(duration)
+          .attr('opacity', d => d.highlighted ? 1 : 0.8)
+          .attr('stroke-width', d => d.highlighted ? 2 : 1);
+      }
+
+      renderBlocks(layout, state, duration) {
+        const blocks = this.svg.select('.blocks');
+        blocks.selectAll('*').remove();
+
+        // Render data blocks (globals)
+        if (state.segments.data.blocks.length > 0) {
+          const dataBlocks = blocks.selectAll('.data-block')
+            .data(state.segments.data.blocks);
+
+          const blockHeight = Math.max(20, (layout.data.height - 10) / Math.max(1, state.segments.data.blocks.length));
+
+          dataBlocks.enter()
+            .append('g')
+            .attr('class', 'data-block')
+            .each(function(d, i) {
+              const g = d3.select(this);
+              const y = layout.data.y + i * blockHeight;
+
+              g.append('rect')
+                .attr('x', layout.data.x + 5)
+                .attr('y', y + 2)
+                .attr('width', layout.data.width - 10)
+                .attr('height', Math.max(16, blockHeight - 4))
+                .attr('fill', VIZ.colors.data)
+                .attr('stroke', '#4a9018')
+                .attr('stroke-width', 1)
+                .attr('opacity', 0)
+                .transition().duration(duration)
+                .attr('opacity', 0.9);
+
+              g.append('text')
+                .attr('x', layout.data.x + 10)
+                .attr('y', y + blockHeight / 2 + 5)
+                .attr('class', 'block-label')
+                .text(`${d.name} (${d.size}B)`)
+                .attr('opacity', 0)
+                .transition().duration(duration)
+                .attr('opacity', 1);
+            });
+        }
+
+        // Render heap blocks
+        if (state.segments.heap.blocks.length > 0) {
+          const totalHeapSize = Math.max(512, state.segments.heap.size * 1.2); // Add 20% padding
+          let yOffset = 0;
+
+          state.segments.heap.blocks.forEach(block => {
+            const blockHeight = Math.max(20, (block.size / totalHeapSize) * layout.heap.height * 0.9); // Use 90% of space
+            const y = layout.heap.y + layout.heap.height - yOffset - blockHeight - 5; // Add padding
+
+            const g = blocks.append('g');
+
+            g.append('rect')
+              .attr('x', layout.heap.x + 5)
+              .attr('y', y)
+              .attr('width', layout.heap.width - 10)
+              .attr('height', blockHeight - 2)
+              .attr('fill', block.freed ? '#ddd' : VIZ.colors.heap)
+              .attr('stroke', block.freed ? '#999' : '#c67100')
+              .attr('stroke-width', 1)
+              .attr('stroke-dasharray', block.freed ? '5,3' : 'none')
+              .attr('opacity', 0)
+              .transition().duration(duration)
+              .attr('opacity', block.freed ? 0.5 : 0.9);
+
+            g.append('text')
+              .attr('x', layout.heap.x + 10)
+              .attr('y', y + blockHeight / 2 + 5)
+              .attr('class', 'block-label')
+              .text(`${block.name} (${block.size}B)${block.freed ? ' [freed]' : ''}`)
+              .attr('fill', block.freed ? '#666' : '#fff')
+              .attr('opacity', 0)
+              .transition().duration(duration)
+              .attr('opacity', 1);
+
+            yOffset += blockHeight;
+          });
+        }
+
+        // Render stack frames
+        if (state.segments.stack.frames.length > 0) {
+          const frame = state.segments.stack.frames[0];
+          const totalStackSize = Math.max(512, state.segments.stack.size * 1.2); // Add 20% padding
+          let yOffset = 5; // Start with padding
+
+          frame.locals.forEach(local => {
+            const blockHeight = Math.max(20, (local.size / totalStackSize) * layout.stack.height * 0.9); // Use 90% of space
+            const y = layout.stack.y + yOffset;
+
+            const g = blocks.append('g');
+
+            g.append('rect')
+              .attr('x', layout.stack.x + 5)
+              .attr('y', y)
+              .attr('width', layout.stack.width - 10)
+              .attr('height', blockHeight - 2)
+              .attr('fill', VIZ.colors.stack)
+              .attr('stroke', '#a00')
+              .attr('stroke-width', 1)
+              .attr('opacity', 0)
+              .transition().duration(duration)
+              .attr('opacity', 0.9);
+
+            g.append('text')
+              .attr('x', layout.stack.x + 10)
+              .attr('y', y + blockHeight / 2 + 5)
+              .attr('class', 'block-label')
+              .text(`${local.name} (${local.size}B)`)
+              .attr('opacity', 0)
+              .transition().duration(duration)
+              .attr('opacity', 1);
+
+            yOffset += blockHeight;
+          });
+        }
+      }
+
+      renderRegisters(layout, state, duration) {
+        const regs = this.svg.select('.registers');
+        regs.selectAll('*').remove();
+
+        // RIP (instruction pointer) - in text segment
+        const ripOffset = (state.registers.rip - MEMORY.TEXT_BASE) / state.segments.text.size;
+        const ripY = layout.text.y + layout.text.height * (1 - ripOffset);
+
+        regs.append('line')
+          .attr('x1', layout.text.x - 10)
+          .attr('x2', layout.text.x + layout.text.width)
+          .attr('y1', ripY)
+          .attr('y2', ripY)
+          .attr('class', 'reg-marker rip-marker')
+          .attr('stroke-dasharray', '5,3')
+          .attr('opacity', 0)
+          .transition().duration(duration)
+          .attr('opacity', 1);
+
+        regs.append('text')
+          .attr('x', layout.text.x - 15)
+          .attr('y', ripY + 4)
+          .attr('class', 'reg-label')
+          .attr('text-anchor', 'end')
+          .text('RIP')
+          .attr('fill', '#007AFF');
+
+        // RSP (stack pointer)
+        const rspOffset = (MEMORY.STACK_TOP - state.registers.rsp) / Math.max(256, state.segments.stack.size);
+        const rspY = layout.stack.y + layout.stack.height * rspOffset;
+
+        regs.append('line')
+          .attr('x1', layout.stack.x - 10)
+          .attr('x2', layout.stack.x + layout.stack.width)
+          .attr('y1', rspY)
+          .attr('y2', rspY)
+          .attr('class', 'reg-marker rsp-marker')
+          .attr('stroke-dasharray', '5,3')
+          .attr('opacity', 0)
+          .transition().duration(duration)
+          .attr('opacity', 1);
+
+        regs.append('text')
+          .attr('x', layout.stack.x - 15)
+          .attr('y', rspY + 4)
+          .attr('class', 'reg-label')
+          .attr('text-anchor', 'end')
+          .text('RSP')
+          .attr('fill', '#FF3B30');
+      }
+
+      renderAddresses(layout, state) {
+        const labels = this.svg.select('.labels');
+        labels.selectAll('*').remove();
+
+        // Add address labels for each segment
+        const segments = [
+          { name: 'text', base: MEMORY.TEXT_BASE, top: MEMORY.TEXT_BASE + state.segments.text.size },
+          { name: 'data', base: MEMORY.DATA_BASE, top: MEMORY.DATA_BASE + state.segments.data.size },
+          { name: 'heap', base: MEMORY.HEAP_BASE, top: MEMORY.HEAP_BASE + state.segments.heap.size },
+          { name: 'stack', base: state.registers.rsp, top: MEMORY.STACK_TOP }
+        ];
+
+        segments.forEach(seg => {
+          const rect = layout[seg.name];
+          if (!rect) return;
+
+          // Top address
+          labels.append('text')
+            .attr('x', rect.x + rect.width + 5)
+            .attr('y', rect.y + 12)
+            .attr('class', 'addr')
+            .text(`0x${seg.top.toString(16)}`);
+
+          // Bottom address
+          labels.append('text')
+            .attr('x', rect.x + rect.width + 5)
+            .attr('y', rect.y + rect.height - 4)
+            .attr('class', 'addr')
+            .text(`0x${seg.base.toString(16)}`);
+        });
+      }
+    }
+
+    // Initialize visualizer
+    const viz = new Visualizer(els.svg);
+
+    // UI event handlers
+    document.getElementById('compileBtn').addEventListener('click', compile);
+    document.getElementById('resetBtn').addEventListener('click', reset);
+    document.getElementById('firstBtn').addEventListener('click', () => goToStep(0));
+    document.getElementById('lastBtn').addEventListener('click', () => goToStep(steps.length - 1));
+    document.getElementById('prevBtn').addEventListener('click', () => goToStep(currentStep - 1));
+    document.getElementById('nextBtn').addEventListener('click', () => goToStep(currentStep + 1));
+    document.getElementById('playBtn').addEventListener('click', togglePlay);
+
+    document.getElementById('speed').addEventListener('input', (e) => {
+      const speed = e.target.value;
+      document.getElementById('speedVal').textContent = speed + 'ms';
+      animationDuration = parseInt(speed) * 0.375; // Animation is 37.5% of step duration
+    });
+
+    document.getElementById('showAddrs').addEventListener('change', () => {
+      if (currentStep >= 0) viz.render(steps[currentStep]);
+    });
+
+    document.getElementById('showRegs').addEventListener('change', () => {
+      if (currentStep >= 0) viz.render(steps[currentStep]);
+    });
+
+    // Example buttons
+    document.querySelectorAll('.example-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const example = examples[btn.dataset.example];
+        if (example) {
+          els.program.value = example;
+          showMessage('Example loaded. Click "Compile & Run" to visualize.', 'success');
+        }
+      });
+    });
+
+    // Compilation
+    function compile() {
+      try {
+        const source = els.program.value.trim();
+        if (!source) {
+          showMessage('Please write some C code first!', 'error');
+          return;
+        }
+
+        const compiler = new Compiler(source);
+        program = compiler.compile();
+        steps = buildSteps(program);
+
+        if (steps.length === 0) {
+          showMessage('No executable code found.', 'error');
+          return;
+        }
+
+        currentStep = 0;
+        updateUI();
+        viz.render(steps[currentStep]);
+        showMessage('Program compiled successfully!', 'success');
+      } catch (error) {
+        showMessage(`Compilation error: ${error.message}`, 'error');
+        reset();
+      }
+    }
+
+    // Reset
+    function reset() {
+      stopPlay();
+      program = null;
+      steps = [];
+      currentStep = -1;
+      els.svg.selectAll('*').remove();
+      viz.setupSVG();
+      updateUI();
+      els.stepDesc.textContent = 'Ready to compile...';
+      els.stepCounter.textContent = 'Step 0 of 0';
+    }
+
+    // Navigation
+    function goToStep(step) {
+      if (step >= 0 && step < steps.length) {
+        currentStep = step;
+        viz.render(steps[currentStep]);
+        updateUI();
+      }
+    }
+
+    // Playback
+    function togglePlay() {
+      if (playTimer) {
+        stopPlay();
+      } else {
+        startPlay();
+      }
+    }
+
+    function startPlay() {
+      if (currentStep >= steps.length - 1) {
+        goToStep(0); // Restart from beginning
+      }
+
+      const speed = parseInt(document.getElementById('speed').value);
+      playTimer = setInterval(() => {
+        if (currentStep < steps.length - 1) {
+          goToStep(currentStep + 1);
+        } else {
+          stopPlay();
+        }
+      }, speed);
+
+      document.getElementById('playBtn').innerHTML = '⏸';
+      updateUI();
+    }
+
+    function stopPlay() {
+      if (playTimer) {
+        clearInterval(playTimer);
+        playTimer = null;
+      }
+      document.getElementById('playBtn').innerHTML = '▶';
+      updateUI();
+    }
+
+    // UI updates
+    function updateUI() {
+      const hasSteps = steps.length > 0;
+      const isFirst = currentStep <= 0;
+      const isLast = currentStep >= steps.length - 1;
+
+      document.getElementById('firstBtn').disabled = !hasSteps || isFirst;
+      document.getElementById('prevBtn').disabled = !hasSteps || isFirst;
+      document.getElementById('nextBtn').disabled = !hasSteps || isLast;
+      document.getElementById('lastBtn').disabled = !hasSteps || isLast;
+      document.getElementById('playBtn').disabled = !hasSteps || (isLast && !playTimer);
+
+      if (currentStep >= 0 && currentStep < steps.length) {
+        els.stepDesc.textContent = steps[currentStep].description;
+        els.stepCounter.textContent = `Step ${currentStep + 1} of ${steps.length}`;
+      }
+    }
+
+    // Messages
+    function showMessage(text, type) {
+      els.message.textContent = text;
+      els.message.className = `message ${type}`;
+
+      if (type === 'success') {
+        setTimeout(() => {
+          els.message.className = 'message empty';
+          els.message.textContent = '';
+        }, 3000);
+      }
+    }
+
+    // Initialize with basic example
+    els.program.value = examples.basic;
+    showMessage('Click "Compile & Run" to start visualization', 'success');
+  </script>
+</body>
+</html>

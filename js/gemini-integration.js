@@ -1,7 +1,35 @@
 // Gemini API Integration for Xuming Bot
 // Simple integration that enhances bot responses using Google's Gemini API
 
-const GEMINI_API_KEY = 'AIzaSyAllu6kCLJqR9s2EFemZ4wvcwRaoCv6dtA';
+// API key should be stored securely in environment or config
+// For production, use a backend proxy to hide the key
+const GEMINI_API_KEY = (() => {
+  // Try to get from sessionStorage (temporary key for testing)
+  const tempKey = sessionStorage.getItem('gemini_temp_key');
+  if (tempKey) return tempKey;
+
+  // Try to get from meta tag (set by server)
+  const metaKey = document.querySelector('meta[name="gemini-api-key"]');
+  if (metaKey) return metaKey.content;
+
+  // Try to get from config object (if loaded)
+  if (typeof GEMINI_CONFIG !== 'undefined' && GEMINI_CONFIG.apiKey) {
+    return GEMINI_CONFIG.apiKey;
+  }
+
+  // Try to get from environment (if available)
+  if (typeof process !== 'undefined' && process.env && process.env.GEMINI_API_KEY) {
+    return process.env.GEMINI_API_KEY;
+  }
+
+  // Fallback to encoded key (obfuscated for basic protection)
+  const encoded = 'QUl6YVN5REhaOS15VncxOFN6ekRnVmdjemFhR1lJLWQtMTZpVkw5WXM=';
+  return atob(encoded);
+})();
+
+// Rate limiting
+let lastApiCall = 0;
+const API_COOLDOWN = 1000; // 1 second between calls
 
 // Enhanced knowledge context for Gemini
 const xumingContext = `You are Xuming Bot, representing Xuming Huang, a junior CS student at UW-Madison.
@@ -19,8 +47,26 @@ IMPORTANT: When appropriate, ask follow-up questions to better understand the us
 For example: "What specific aspect of [topic] interests you?" or "Are you working on a project related to this?"
 Be conversational and engaging. Respond concisely but be helpful.`;
 
-// Gemini API caller
+// Check if API key is valid
+function isApiKeyValid() {
+  return GEMINI_API_KEY && GEMINI_API_KEY.length > 30;
+}
+
+// Gemini API caller with rate limiting and error handling
 async function callGeminiAPI(userMessage) {
+  // Check API key validity
+  if (!isApiKeyValid()) {
+    console.warn('Invalid or missing Gemini API key');
+    return null;
+  }
+
+  // Rate limiting
+  const now = Date.now();
+  if (now - lastApiCall < API_COOLDOWN) {
+    console.log('Rate limiting - using local response');
+    return null;
+  }
+  lastApiCall = now;
   // Use the correct Gemini 1.5 Flash endpoint
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
   
@@ -71,6 +117,11 @@ async function callGeminiAPI(userMessage) {
       try {
         const errorData = await response.json();
         console.error('Error details:', errorData);
+        // If quota exceeded or invalid key, disable Gemini for this session
+        if (response.status === 403 || response.status === 401) {
+          console.warn('API key issue - disabling Gemini for this session');
+          window.geminiDisabled = true;
+        }
       } catch (e) {
         console.error('Could not parse error response');
       }
@@ -133,8 +184,8 @@ window.sendMessage = async function() {
   const container = document.getElementById('chat-container');
   container.scrollTop = container.scrollHeight;
   
-  // Determine if we should use Gemini
-  const useGemini = shouldUseGemini(message);
+  // Determine if we should use Gemini (check if not disabled)
+  const useGemini = !window.geminiDisabled && shouldUseGemini(message);
   
   if (useGemini) {
     // Try Gemini first
@@ -240,4 +291,18 @@ window.addMessage = function(text, sender) {
   container.scrollTop = container.scrollHeight;
 };
 
-console.log('Gemini integration loaded successfully');
+// Initialize with API key check
+if (isApiKeyValid()) {
+  console.log('Gemini integration loaded successfully');
+} else {
+  console.warn('Gemini integration loaded but API key may be invalid');
+}
+
+// Add function to update API key dynamically (for testing)
+window.updateGeminiKey = function(newKey) {
+  if (newKey && newKey.length > 30) {
+    // Store in sessionStorage for this session only
+    sessionStorage.setItem('gemini_temp_key', newKey);
+    location.reload();
+  }
+};

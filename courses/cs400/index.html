@@ -199,18 +199,112 @@
                     
                     <h3>My Implementation</h3>
                     <div class="assignment-box">
-                      <h4>BinarySearchTree.java</h4>
-                      <div class="placeholder">
-                        Code implementation will be added here
-                      </div>
+                      <h4>Core BST Methods</h4>
+                      <p>Key implementations: insertion with duplicates handling and the critical rotation operation for tree balancing.</p>
+
+                      <h5>Recursive Insert with Duplicate Handling</h5>
+                      <div class="code-block">protected void insertHelper(BinaryNode&lt;T&gt; newNode, BinaryNode&lt;T&gt; subtree) {
+    int comparison = newNode.getData().compareTo(subtree.getData());
+
+    if (comparison &lt;= 0) {
+        // Insert left (duplicates go left)
+        if (subtree.getLeft() == null) {
+            subtree.setLeft(newNode);
+            newNode.setParent(subtree);
+        } else {
+            insertHelper(newNode, subtree.getLeft());
+        }
+    } else {
+        // Insert right
+        if (subtree.getRight() == null) {
+            subtree.setRight(newNode);
+            newNode.setParent(subtree);
+        } else {
+            insertHelper(newNode, subtree.getRight());
+        }
+    }
+}</div>
+
+                      <h5>Tree Rotation (Critical for Balancing)</h5>
+                      <div class="code-block">protected void rotate(BinaryNode&lt;T&gt; child, BinaryNode&lt;T&gt; parent) {
+    // Validate parent-child relationship
+    if (child.getParent() != parent) {
+        throw new IllegalArgumentException();
+    }
+
+    boolean isLeftRotation = child.isRightChild();
+    BinaryNode&lt;T&gt; grandparent = parent.getParent();
+
+    // Update grandparent's reference
+    child.setParent(grandparent);
+    if (grandparent != null) {
+        if (parent.isRightChild()) {
+            grandparent.setRight(child);
+        } else {
+            grandparent.setLeft(child);
+        }
+    } else {
+        this.root = child;
+    }
+
+    // Perform rotation
+    if (isLeftRotation) {
+        // Left rotation
+        BinaryNode&lt;T&gt; childLeft = child.getLeft();
+        parent.setRight(childLeft);
+        if (childLeft != null) childLeft.setParent(parent);
+
+        child.setLeft(parent);
+        parent.setParent(child);
+    } else {
+        // Right rotation
+        BinaryNode&lt;T&gt; childRight = child.getRight();
+        parent.setLeft(childRight);
+        if (childRight != null) childRight.setParent(parent);
+
+        child.setRight(parent);
+        parent.setParent(child);
+    }
+}</div>
+                      <p style="text-align:center;margin-top:15px;">
+                        <a href="data/BinarySearchTree.java" style="color:#1772d0;">📥 Download Full Implementation</a>
+                      </p>
                     </div>
                     
-                    <h3>Test Cases</h3>
+                    <h3>Key Test Cases</h3>
                     <div class="assignment-box">
-                      <h4>Test Methods</h4>
-                      <div class="placeholder">
-                        Test cases will be added here
-                      </div>
+                      <h4>Testing Rotation Correctness</h4>
+                      <div class="code-block">@Test
+public void testRotation() {
+    // Build tree: 10 as root, 5 as left child
+    bst.insert(10);
+    bst.insert(5);
+    bst.insert(15);
+
+    BinaryNode&lt;Integer&gt; root = bst.root;
+    BinaryNode&lt;Integer&gt; leftChild = root.getLeft();
+
+    // Perform right rotation
+    bst.rotate(leftChild, root);
+
+    // Verify: 5 is new root, 10 is right child
+    assertEquals(leftChild, bst.root);
+    assertEquals(root, leftChild.getRight());
+}
+
+@Test
+public void testDuplicateHandling() {
+    bst.insert(5);
+    bst.insert(5);  // Duplicate goes to left
+    bst.insert(5);  // Another duplicate
+
+    assertEquals(3, bst.size());
+    assertTrue(bst.contains(5));
+}</div>
+
+                      <h4>Complexity Analysis</h4>
+                      <p><strong>Time:</strong> O(log n) average for insert/search, O(1) for rotation<br>
+                      <strong>Space:</strong> O(n) for n elements</p>
                     </div>
                   </section>
                   
