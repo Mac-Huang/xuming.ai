@@ -2,3 +2,4 @@
 js/config.js
 .env
 .env.local
+.claude/
