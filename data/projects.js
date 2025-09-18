@@ -2,6 +2,18 @@
 const projects = [
   // Machine Learning & Systems Projects
   {
+    id: 'kmap-visualizer',
+    title: 'K-Map Visualizer - 2D & 3D Interactive',
+    description: 'Advanced Karnaugh Map visualizer with automatic grouping and Boolean expression simplification. Features both traditional 2D K-maps and innovative 3D cube representation for 3+ variables. Interactive 3D visualization allows rotation, zooming, and cell toggling. Supports up to 6 variables with truth tables, minterms, and expression input methods.',
+    tech: 'JavaScript, Three.js, Digital Logic, Boolean Algebra',
+    thumbnail: 'images/projects/kmap-thumb.jpg',
+    demo_url: 'demos/kmap-visualizer-fixed.html',
+    code_url: null,
+    featured: true,
+    highlighted: true
+  },
+
+  {
     id: 'x86-64-memory',
     title: 'x86-64 Memory Layout Visualizer - Enhanced',
     description: 'Interactive visualization of process memory layout on x86-64 architecture. Write C code and watch how text, data, heap, and stack segments are allocated in real-time. Features step-by-step execution, register tracking (RIP/RSP), dynamic memory visualization, and multiple example programs.',
@@ -143,15 +155,27 @@ const projects = [
   },
 
   {
+    id: 'tree-visualizer',
+    title: 'BST & Red-Black Tree Visualizer',
+    description: 'Interactive visualization of Binary Search Tree and Red-Black Tree operations. Features animated insertion, deletion, search, and rotation operations. Visualize self-balancing behavior, color changes in Red-Black trees, and compare performance between BST and Red-Black implementations. Perfect for learning tree data structures.',
+    tech: 'JavaScript, D3.js, Data Structures, Algorithms',
+    thumbnail: 'images/projects/tree-visualizer-thumb.jpg',
+    demo_url: 'demos/bst-tree.html',
+    code_url: null,
+    featured: true,
+    highlighted: true
+  },
+
+  {
     id: 'cs400-bst',
     title: 'Binary Search Tree Implementation (CS 400)',
     description: 'Complete implementation of a generic Binary Search Tree with rotation operations for CS 400: Programming III at UW-Madison. Features efficient insertion, deletion, searching with O(log n) average complexity, and tree rotation for balancing operations. Includes comprehensive unit tests and performance benchmarks.',
     tech: 'Java, Data Structures, Algorithms, JUnit',
-    thumbnail: 'images/projects/bst-thumb.jpg',
-    demo_url: null,
-    code_url: 'https://github.com/mac-huang/cs400-bst',
+    thumbnail: 'images/projects/Binary_search_tree.svg.png',
+    demo_url: 'courses/cs400/index.html#bst',
+    code_url: 'courses/cs400/index.html#bst',
     featured: true,
-    highlighted: true
+    highlighted: false
   },
   
   {

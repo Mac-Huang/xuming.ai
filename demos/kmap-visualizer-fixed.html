@@ -1,0 +1,920 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>K-Map Visualizer - Interactive Karnaugh Map Tool</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: rgba(255, 255, 255, 0.98);
+      border-radius: 16px;
+      padding: 24px 32px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .header h1 {
+      font-size: 32px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #666;
+      font-size: 16px;
+    }
+
+    .main-content {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 24px;
+    }
+
+    .control-panel {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .visualization-panel {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .section {
+      margin-bottom: 24px;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #666;
+      margin-bottom: 12px;
+    }
+
+    .input-group {
+      margin-bottom: 16px;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: #333;
+      margin-bottom: 6px;
+    }
+
+    .input-group input,
+    .input-group select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .variable-inputs {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+      gap: 8px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: #f0f2f5;
+      color: #333;
+      margin-left: 8px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #f0f2f5;
+    }
+
+    .tab {
+      padding: 10px 20px;
+      background: none;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      color: #666;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+    }
+
+    .tab.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* K-Map Styles */
+    .kmap-table {
+      border-collapse: collapse;
+      margin: 20px auto;
+    }
+
+    .kmap-table td,
+    .kmap-table th {
+      width: 60px;
+      height: 60px;
+      text-align: center;
+      border: 1px solid #ddd;
+      font-size: 14px;
+      position: relative;
+    }
+
+    .kmap-table th {
+      background: #f8f9fa;
+      font-size: 12px;
+      color: #666;
+    }
+
+    .kmap-cell {
+      cursor: pointer;
+      font-size: 20px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .kmap-cell.value-1 {
+      background: #e3f2fd;
+      color: #1976d2;
+    }
+
+    .kmap-cell.value-0 {
+      background: #fff;
+      color: #ccc;
+    }
+
+    .kmap-cell.value-x {
+      background: #fff3e0;
+      color: #f57c00;
+    }
+
+    .kmap-cell:hover {
+      transform: scale(1.05);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .cell-index {
+      position: absolute;
+      top: 2px;
+      right: 4px;
+      font-size: 10px;
+      color: #999;
+    }
+
+    .expression-display {
+      background: #f8f9fa;
+      border: 1px solid #e1e4e8;
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 20px;
+    }
+
+    .expression-title {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .expression-text {
+      font-family: 'Monaco', monospace;
+      font-size: 16px;
+      color: #333;
+      line-height: 1.8;
+    }
+
+    .term {
+      display: inline-block;
+      margin: 0 4px;
+      padding: 4px 8px;
+      background: #e3f2fd;
+      border-radius: 4px;
+    }
+
+    .var-not {
+      text-decoration: overline;
+      font-weight: 600;
+    }
+
+    .examples {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .example-btn {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      background: white;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+    }
+
+    .example-btn:hover {
+      background: #f8f9fa;
+      border-color: #667eea;
+    }
+
+    .example-btn strong {
+      display: block;
+      color: #333;
+      margin-bottom: 2px;
+    }
+
+    .example-btn span {
+      color: #666;
+      font-size: 11px;
+    }
+
+    .axes-helper {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      font-size: 12px;
+      color: #666;
+      background: rgba(255,255,255,0.9);
+      padding: 8px;
+      border-radius: 4px;
+    }
+
+    #canvas3d {
+      width: 100%;
+      height: 500px;
+      display: block;
+      background: #f0f0f0;
+      border-radius: 8px;
+    }
+
+    @media (max-width: 1024px) {
+      .main-content {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>K-Map Visualizer</h1>
+      <div class="subtitle">Interactive Karnaugh Map for Boolean Expression Simplification</div>
+    </div>
+
+    <div class="main-content">
+      <div class="control-panel">
+        <div class="section">
+          <div class="section-title">Configuration</div>
+
+          <div class="input-group">
+            <label>Number of Variables</label>
+            <select id="numVars">
+              <option value="2">2 Variables</option>
+              <option value="3" selected>3 Variables</option>
+              <option value="4">4 Variables</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label>Variable Names</label>
+            <div class="variable-inputs" id="varNames">
+              <input type="text" value="A" maxlength="2">
+              <input type="text" value="B" maxlength="2">
+              <input type="text" value="C" maxlength="2">
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label>Minterms (comma-separated)</label>
+            <input type="text" id="mintermsInput" placeholder="0,1,3,7">
+          </div>
+
+          <div class="input-group">
+            <label>Don't Cares (optional)</label>
+            <input type="text" id="dontCaresInput" placeholder="2,5">
+          </div>
+
+          <button class="btn btn-primary" onclick="generateKMap()">Generate K-Map</button>
+          <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Example Functions</div>
+          <div class="examples">
+            <button class="example-btn" onclick="loadExample('xor')">
+              <strong>XOR Gate</strong>
+              <span>A⊕B = A̅B + AB̅</span>
+            </button>
+            <button class="example-btn" onclick="loadExample('majority')">
+              <strong>Majority</strong>
+              <span>F = AB + BC + AC</span>
+            </button>
+            <button class="example-btn" onclick="loadExample('prime')">
+              <strong>Prime Numbers</strong>
+              <span>f(2,3,5,7,11,13)</span>
+            </button>
+            <button class="example-btn" onclick="loadExample('parity')">
+              <strong>Even Parity</strong>
+              <span>3-bit even parity</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="expression-display">
+          <div class="expression-title">Simplified Expression</div>
+          <div class="expression-text" id="simplifiedExpr">
+            Enter minterms and click Generate
+          </div>
+        </div>
+      </div>
+
+      <div class="visualization-panel">
+        <div class="tabs">
+          <button class="tab active" onclick="switchTab('2d')">2D K-Map</button>
+          <button class="tab" onclick="switchTab('3d')" id="3dTab">3D Cube</button>
+        </div>
+
+        <div class="tab-content active" id="2d-content">
+          <div id="kmap2d"></div>
+        </div>
+
+        <div class="tab-content" id="3d-content">
+          <div style="position: relative;">
+            <canvas id="canvas3d"></canvas>
+            <div class="axes-helper">
+              <div style="color: #f44336;">X → A (Red)</div>
+              <div style="color: #4caf50;">Y → B (Green)</div>
+              <div style="color: #2196f3;">Z → C (Blue)</div>
+            </div>
+          </div>
+          <div style="text-align: center; margin-top: 10px; color: #666;">
+            Drag to rotate • Scroll to zoom • Click cells to toggle
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Global variables
+    let numVars = 3;
+    let varNames = ['A', 'B', 'C'];
+    let kmapData = [];
+    let scene3d, camera3d, renderer3d;
+    let cube3d = null;
+    let mouseDown = false;
+    let mouseX = 0, mouseY = 0;
+    let targetRotationX = 0, targetRotationY = 0;
+    let zoom = 5;
+
+    // Update variable count
+    document.getElementById('numVars').addEventListener('change', function() {
+      numVars = parseInt(this.value);
+      const container = document.getElementById('varNames');
+      container.innerHTML = '';
+
+      const names = ['A', 'B', 'C', 'D', 'E', 'F'];
+      varNames = [];
+
+      for (let i = 0; i < numVars; i++) {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = names[i];
+        input.maxLength = 2;
+        container.appendChild(input);
+        varNames.push(names[i]);
+      }
+
+      document.getElementById('3dTab').style.display = numVars >= 3 ? 'block' : 'none';
+    });
+
+    // Generate K-Map
+    function generateKMap() {
+      const minterms = document.getElementById('mintermsInput').value
+        .split(',').map(x => parseInt(x.trim())).filter(x => !isNaN(x));
+      const dontCares = document.getElementById('dontCaresInput').value
+        .split(',').map(x => parseInt(x.trim())).filter(x => !isNaN(x));
+
+      const cells = Math.pow(2, numVars);
+      kmapData = new Array(cells).fill(0);
+
+      for (let m of minterms) {
+        if (m < cells) kmapData[m] = 1;
+      }
+      for (let d of dontCares) {
+        if (d < cells) kmapData[d] = 'X';
+      }
+
+      draw2DKMap();
+      simplifyExpression();
+
+      if (numVars >= 3) {
+        draw3DKMap();
+      }
+    }
+
+    // Draw 2D K-Map
+    function draw2DKMap() {
+      const container = document.getElementById('kmap2d');
+      let html = '<table class="kmap-table">';
+
+      if (numVars === 2) {
+        // 2x2 K-Map
+        html += '<tr><th></th><th>0</th><th>1</th></tr>';
+        for (let i = 0; i < 2; i++) {
+          html += `<tr><th>${i}</th>`;
+          for (let j = 0; j < 2; j++) {
+            const index = i * 2 + j;
+            const value = kmapData[index];
+            const cellClass = value === 'X' ? 'value-x' : `value-${value}`;
+            html += `<td class="kmap-cell ${cellClass}" onclick="toggleCell(${index})">`;
+            html += `<span class="cell-index">${index}</span>`;
+            html += value === 'X' ? 'X' : value;
+            html += '</td>';
+          }
+          html += '</tr>';
+        }
+      } else if (numVars === 3) {
+        // 2x4 K-Map
+        const cols = ['00', '01', '11', '10'];
+        html += '<tr><th></th>';
+        for (let c of cols) html += `<th>${c}</th>`;
+        html += '</tr>';
+
+        for (let i = 0; i < 2; i++) {
+          html += `<tr><th>${i}</th>`;
+          for (let j = 0; j < 4; j++) {
+            const grayJ = [0, 1, 3, 2][j];
+            const index = i * 4 + grayJ;
+            const value = kmapData[index];
+            const cellClass = value === 'X' ? 'value-x' : `value-${value}`;
+            html += `<td class="kmap-cell ${cellClass}" onclick="toggleCell(${index})">`;
+            html += `<span class="cell-index">${index}</span>`;
+            html += value === 'X' ? 'X' : value;
+            html += '</td>';
+          }
+          html += '</tr>';
+        }
+      } else if (numVars === 4) {
+        // 4x4 K-Map
+        const gray = ['00', '01', '11', '10'];
+        html += '<tr><th></th>';
+        for (let c of gray) html += `<th>${c}</th>`;
+        html += '</tr>';
+
+        for (let i = 0; i < 4; i++) {
+          html += `<tr><th>${gray[i]}</th>`;
+          for (let j = 0; j < 4; j++) {
+            const rowMap = [0, 1, 3, 2][i];
+            const colMap = [0, 1, 3, 2][j];
+            const index = rowMap * 4 + colMap;
+            const value = kmapData[index];
+            const cellClass = value === 'X' ? 'value-x' : `value-${value}`;
+            html += `<td class="kmap-cell ${cellClass}" onclick="toggleCell(${index})">`;
+            html += `<span class="cell-index">${index}</span>`;
+            html += value === 'X' ? 'X' : value;
+            html += '</td>';
+          }
+          html += '</tr>';
+        }
+      }
+
+      html += '</table>';
+      container.innerHTML = html;
+    }
+
+    // Toggle cell
+    function toggleCell(index) {
+      if (kmapData[index] === 0) kmapData[index] = 1;
+      else if (kmapData[index] === 1) kmapData[index] = 'X';
+      else kmapData[index] = 0;
+
+      draw2DKMap();
+      simplifyExpression();
+      if (numVars >= 3) draw3DKMap();
+    }
+
+    // Simplify expression with bar notation
+    function simplifyExpression() {
+      const ones = [];
+      for (let i = 0; i < kmapData.length; i++) {
+        if (kmapData[i] === 1) ones.push(i);
+      }
+
+      if (ones.length === 0) {
+        document.getElementById('simplifiedExpr').innerHTML = '0';
+        return;
+      }
+
+      // Find groups and simplify (basic algorithm)
+      const groups = findGroups();
+
+      if (groups.length === 0) {
+        // No groups found, list all minterms
+        const terms = ones.map(m => {
+          let termHtml = '<span class="term">';
+          for (let i = 0; i < numVars; i++) {
+            const bit = (m >> (numVars - i - 1)) & 1;
+            if (bit) {
+              termHtml += varNames[i];
+            } else {
+              termHtml += `<span class="var-not">${varNames[i]}</span>`;
+            }
+          }
+          termHtml += '</span>';
+          return termHtml;
+        });
+        document.getElementById('simplifiedExpr').innerHTML = terms.join(' + ');
+      } else {
+        // Display grouped terms
+        const terms = groups.map(group => {
+          let termHtml = '<span class="term">';
+          const literals = group.literals;
+          if (literals.length === 0) {
+            termHtml += '1';
+          } else {
+            literals.forEach(lit => {
+              if (lit.negated) {
+                termHtml += `<span class="var-not">${lit.var}</span>`;
+              } else {
+                termHtml += lit.var;
+              }
+            });
+          }
+          termHtml += '</span>';
+          return termHtml;
+        });
+        document.getElementById('simplifiedExpr').innerHTML = terms.join(' + ');
+      }
+    }
+
+    // Find groups (simplified Quine-McCluskey)
+    function findGroups() {
+      const ones = [];
+      const dontCares = [];
+
+      for (let i = 0; i < kmapData.length; i++) {
+        if (kmapData[i] === 1) ones.push(i);
+        if (kmapData[i] === 'X') dontCares.push(i);
+      }
+
+      if (ones.length === 0) return [];
+
+      // For simplicity, just identify which variables stay constant
+      const groups = [];
+
+      // Try to find pairs
+      for (let i = 0; i < ones.length; i++) {
+        for (let j = i + 1; j < ones.length; j++) {
+          const diff = ones[i] ^ ones[j];
+          // Check if they differ by one bit (power of 2)
+          if ((diff & (diff - 1)) === 0) {
+            const literals = [];
+            for (let k = 0; k < numVars; k++) {
+              const bit1 = (ones[i] >> (numVars - k - 1)) & 1;
+              const bit2 = (ones[j] >> (numVars - k - 1)) & 1;
+              if (bit1 === bit2) {
+                literals.push({ var: varNames[k], negated: !bit1 });
+              }
+            }
+            groups.push({ minterms: [ones[i], ones[j]], literals });
+          }
+        }
+      }
+
+      // If no pairs found, return individual minterms
+      if (groups.length === 0) {
+        ones.forEach(m => {
+          const literals = [];
+          for (let i = 0; i < numVars; i++) {
+            const bit = (m >> (numVars - i - 1)) & 1;
+            literals.push({ var: varNames[i], negated: !bit });
+          }
+          groups.push({ minterms: [m], literals });
+        });
+      }
+
+      return groups;
+    }
+
+    // Initialize 3D
+    function init3D() {
+      const canvas = document.getElementById('canvas3d');
+      if (!canvas || renderer3d) return;
+
+      scene3d = new THREE.Scene();
+      scene3d.background = new THREE.Color(0xf0f0f0);
+
+      camera3d = new THREE.PerspectiveCamera(75, canvas.clientWidth / 500, 0.1, 1000);
+      camera3d.position.z = 5;
+
+      renderer3d = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+      renderer3d.setSize(canvas.clientWidth, 500);
+
+      // Lighting
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+      scene3d.add(ambientLight);
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.4);
+      directionalLight.position.set(5, 5, 5);
+      scene3d.add(directionalLight);
+
+      // Mouse controls
+      canvas.addEventListener('mousedown', e => {
+        mouseDown = true;
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+      });
+
+      canvas.addEventListener('mousemove', e => {
+        if (!mouseDown) return;
+        targetRotationY += (e.clientX - mouseX) * 0.01;  // Follow mouse direction
+        targetRotationX += (e.clientY - mouseY) * 0.01;  // Follow mouse direction
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+      });
+
+      canvas.addEventListener('mouseup', () => mouseDown = false);
+      canvas.addEventListener('mouseleave', () => mouseDown = false);
+
+      canvas.addEventListener('wheel', e => {
+        e.preventDefault();
+        zoom = Math.max(2, Math.min(10, zoom + e.deltaY * 0.01));
+      });
+
+      animate3D();
+    }
+
+    // Draw 3D K-Map
+    function draw3DKMap() {
+      if (!scene3d) return;
+
+      // Clear previous objects but keep lights
+      while(scene3d.children.length > 2) {
+        scene3d.remove(scene3d.children[scene3d.children.length - 1]);
+      }
+
+      cube3d = new THREE.Group();
+
+      // Create axes group that will rotate with the cube
+      const axesGroup = new THREE.Group();
+
+      // Add coordinate axes to the group
+      const axesHelper = new THREE.AxesHelper(2);
+      axesGroup.add(axesHelper);
+
+      // Add colored lines for better axis visibility
+      const axisMaterial = {
+        x: new THREE.LineBasicMaterial({ color: 0xff0000, linewidth: 3 }),
+        y: new THREE.LineBasicMaterial({ color: 0x00ff00, linewidth: 3 }),
+        z: new THREE.LineBasicMaterial({ color: 0x0000ff, linewidth: 3 })
+      };
+
+      // X axis (A variable)
+      const xPoints = [];
+      xPoints.push(new THREE.Vector3(-2.5, 0, 0));
+      xPoints.push(new THREE.Vector3(2.5, 0, 0));
+      const xGeometry = new THREE.BufferGeometry().setFromPoints(xPoints);
+      const xLine = new THREE.Line(xGeometry, axisMaterial.x);
+      axesGroup.add(xLine);
+
+      // Y axis (B variable)
+      const yPoints = [];
+      yPoints.push(new THREE.Vector3(0, -2.5, 0));
+      yPoints.push(new THREE.Vector3(0, 2.5, 0));
+      const yGeometry = new THREE.BufferGeometry().setFromPoints(yPoints);
+      const yLine = new THREE.Line(yGeometry, axisMaterial.y);
+      axesGroup.add(yLine);
+
+      // Z axis (C variable)
+      const zPoints = [];
+      zPoints.push(new THREE.Vector3(0, 0, -2.5));
+      zPoints.push(new THREE.Vector3(0, 0, 2.5));
+      const zGeometry = new THREE.BufferGeometry().setFromPoints(zPoints);
+      const zLine = new THREE.Line(zGeometry, axisMaterial.z);
+      axesGroup.add(zLine);
+
+      // Add axes to cube group so they rotate together
+      cube3d.add(axesGroup);
+
+      // Add axis labels using sprites
+      const createTextSprite = (text, color, position) => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 64;
+        canvas.height = 64;
+        const context = canvas.getContext('2d');
+
+        context.fillStyle = 'white';
+        context.fillRect(0, 0, 64, 64);
+
+        context.font = 'Bold 40px Arial';
+        context.fillStyle = color;
+        context.textAlign = 'center';
+        context.textBaseline = 'middle';
+        context.fillText(text, 32, 32);
+
+        const texture = new THREE.CanvasTexture(canvas);
+        const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+        const sprite = new THREE.Sprite(spriteMaterial);
+        sprite.scale.set(0.5, 0.5, 1);
+        sprite.position.set(...position);
+
+        return sprite;
+      };
+
+      // Add labels for axes
+      axesGroup.add(createTextSprite('A', '#ff0000', [2.8, 0, 0]));
+      axesGroup.add(createTextSprite('B', '#00ff00', [0, 2.8, 0]));
+      axesGroup.add(createTextSprite('C', '#0000ff', [0, 0, 2.8]));
+
+      if (numVars === 3) {
+        const positions = [
+          [-0.6, -0.6, -0.6], [0.6, -0.6, -0.6],
+          [-0.6, 0.6, -0.6], [0.6, 0.6, -0.6],
+          [-0.6, -0.6, 0.6], [0.6, -0.6, 0.6],
+          [-0.6, 0.6, 0.6], [0.6, 0.6, 0.6]
+        ];
+
+        for (let i = 0; i < 8; i++) {
+          const value = kmapData[i];
+          const geometry = new THREE.BoxGeometry(0.9, 0.9, 0.9);
+
+          const color = value === 1 ? 0x2196f3 : value === 'X' ? 0xffc107 : 0xcccccc;
+          const opacity = value === 0 ? 0.3 : 0.8;
+
+          const material = new THREE.MeshPhongMaterial({
+            color: color,
+            transparent: true,
+            opacity: opacity
+          });
+
+          const box = new THREE.Mesh(geometry, material);
+          box.position.set(...positions[i]);
+
+          const edges = new THREE.EdgesGeometry(geometry);
+          const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x000000 }));
+          box.add(line);
+
+          cube3d.add(box);
+        }
+      }
+
+      scene3d.add(cube3d);
+
+      // Store axes group reference for rotation
+      cube3d.userData.hasAxes = true;
+    }
+
+    // Animate 3D
+    function animate3D() {
+      if (!renderer3d) return;
+      requestAnimationFrame(animate3D);
+
+      // Update camera position based on mouse drag
+      const rotX = targetRotationX;
+      const rotY = targetRotationY;
+
+      // Position camera in spherical coordinates
+      camera3d.position.x = zoom * Math.sin(rotY) * Math.cos(rotX);
+      camera3d.position.y = zoom * Math.sin(rotX);
+      camera3d.position.z = zoom * Math.cos(rotY) * Math.cos(rotX);
+      camera3d.lookAt(0, 0, 0);
+
+      // Auto-rotate cube and axes together
+      if (cube3d) {
+        cube3d.rotation.y += 0.003;
+      }
+
+      renderer3d.render(scene3d, camera3d);
+    }
+
+    // Switch tabs
+    function switchTab(tab) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+      if (tab === '2d') {
+        document.querySelector('.tab').classList.add('active');
+        document.getElementById('2d-content').classList.add('active');
+      } else {
+        document.querySelectorAll('.tab')[1].classList.add('active');
+        document.getElementById('3d-content').classList.add('active');
+        if (!renderer3d) init3D();
+        if (kmapData.length > 0) draw3DKMap();
+      }
+    }
+
+    // Clear all
+    function clearAll() {
+      kmapData = [];
+      document.getElementById('kmap2d').innerHTML = '';
+      document.getElementById('simplifiedExpr').textContent = 'Enter minterms and click Generate';
+      if (cube3d) {
+        scene3d.remove(cube3d);
+        cube3d = null;
+      }
+    }
+
+    // Load examples
+    function loadExample(type) {
+      switch(type) {
+        case 'xor':
+          document.getElementById('numVars').value = '2';
+          document.getElementById('numVars').dispatchEvent(new Event('change'));
+          document.getElementById('mintermsInput').value = '1,2';
+          document.getElementById('dontCaresInput').value = '';
+          break;
+        case 'majority':
+          document.getElementById('numVars').value = '3';
+          document.getElementById('numVars').dispatchEvent(new Event('change'));
+          document.getElementById('mintermsInput').value = '3,5,6,7';
+          document.getElementById('dontCaresInput').value = '';
+          break;
+        case 'prime':
+          document.getElementById('numVars').value = '4';
+          document.getElementById('numVars').dispatchEvent(new Event('change'));
+          document.getElementById('mintermsInput').value = '2,3,5,7,11,13';
+          document.getElementById('dontCaresInput').value = '0,1';
+          break;
+        case 'parity':
+          document.getElementById('numVars').value = '3';
+          document.getElementById('numVars').dispatchEvent(new Event('change'));
+          document.getElementById('mintermsInput').value = '1,2,4,7';
+          document.getElementById('dontCaresInput').value = '';
+          break;
+      }
+      generateKMap();
+    }
+
+    // Initialize
+    window.addEventListener('load', () => {
+      // Load default example
+      loadExample('parity');
+    });
+  </script>
+</body>
+</html>

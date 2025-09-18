@@ -1,0 +1,944 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Binary Search Tree & Red-Black Tree Visualizer</title>
+  <meta name="author" content="Xuming Huang">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: rgba(255, 255, 255, 0.98);
+      border-radius: 16px;
+      padding: 24px 32px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .header h1 {
+      font-size: 32px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #666;
+      font-size: 16px;
+    }
+
+    .author {
+      color: #888;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+
+    .main-content {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 24px;
+    }
+
+    .control-panel {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .visualization-panel {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      min-height: 600px;
+    }
+
+    .section {
+      margin-bottom: 24px;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #666;
+      margin-bottom: 12px;
+    }
+
+    .input-group {
+      margin-bottom: 16px;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: #333;
+      margin-bottom: 6px;
+    }
+
+    .input-group input,
+    .input-group select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .input-group input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: #f0f2f5;
+      color: #333;
+    }
+
+    .btn-danger {
+      background: #dc3545;
+      color: white;
+    }
+
+    .btn-success {
+      background: #28a745;
+      color: white;
+    }
+
+    .btn-info {
+      background: #17a2b8;
+      color: white;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .tree-type-selector {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .tree-type-btn {
+      flex: 1;
+      padding: 12px;
+      border: 2px solid #ddd;
+      background: white;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tree-type-btn.active {
+      border-color: #667eea;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .animation-speed {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .animation-speed input[type="range"] {
+      flex: 1;
+    }
+
+    .stats {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .stat-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .stat-label {
+      color: #666;
+    }
+
+    .stat-value {
+      font-weight: 600;
+      color: #333;
+    }
+
+    /* Tree Visualization */
+    #tree-svg {
+      width: 100%;
+      height: 500px;
+    }
+
+    .node {
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .node circle {
+      stroke-width: 2px;
+      transition: all 0.3s;
+    }
+
+    .node text {
+      font-size: 14px;
+      font-weight: 600;
+      text-anchor: middle;
+      dominant-baseline: middle;
+      fill: white;
+      pointer-events: none;
+    }
+
+    /* BST Node */
+    .node.bst circle {
+      fill: #4A90E2;
+      stroke: #2E5C8A;
+    }
+
+    .node.bst:hover circle {
+      fill: #5BA0F2;
+      stroke-width: 3px;
+    }
+
+    /* Red-Black Tree Nodes */
+    .node.red circle {
+      fill: #dc3545;
+      stroke: #a02530;
+    }
+
+    .node.black circle {
+      fill: #212529;
+      stroke: #000;
+    }
+
+    .node.nil circle {
+      fill: #6c757d;
+      stroke: #495057;
+    }
+
+    /* Highlighting */
+    .node.highlight circle {
+      stroke: #ffc107;
+      stroke-width: 4px;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0% { stroke-opacity: 1; }
+      50% { stroke-opacity: 0.5; }
+      100% { stroke-opacity: 1; }
+    }
+
+    .node.comparing circle {
+      stroke: #28a745;
+      stroke-width: 4px;
+    }
+
+    .link {
+      fill: none;
+      stroke: #999;
+      stroke-width: 2px;
+      transition: all 0.3s;
+    }
+
+    .link.highlight {
+      stroke: #ffc107;
+      stroke-width: 3px;
+    }
+
+    /* Operation Log */
+    .operation-log {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 12px;
+      max-height: 200px;
+      overflow-y: auto;
+      font-family: 'Monaco', monospace;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .log-entry {
+      margin-bottom: 4px;
+      padding: 4px;
+      border-radius: 4px;
+    }
+
+    .log-entry.insert {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .log-entry.delete {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .log-entry.rotate {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .log-entry.recolor {
+      background: #d1ecf1;
+      color: #0c5460;
+    }
+
+    /* Info Box */
+    .info-box {
+      background: #e3f2fd;
+      border-left: 4px solid #2196f3;
+      padding: 12px;
+      margin-top: 16px;
+      border-radius: 4px;
+    }
+
+    .info-box h4 {
+      margin: 0 0 8px 0;
+      color: #1565c0;
+      font-size: 14px;
+    }
+
+    .info-box p {
+      margin: 0;
+      font-size: 13px;
+      color: #424242;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 1024px) {
+      .main-content {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>BST & Red-Black Tree Visualizer</h1>
+      <div class="subtitle">Interactive visualization of Binary Search Tree and Red-Black Tree operations</div>
+      <div class="author">Created by Xuming Huang</div>
+    </div>
+
+    <div class="main-content">
+      <div class="control-panel">
+        <div class="section">
+          <div class="section-title">Tree Type</div>
+          <div class="tree-type-selector">
+            <button class="tree-type-btn active" onclick="setTreeType('bst')">BST</button>
+            <button class="tree-type-btn" onclick="setTreeType('rbt')">Red-Black</button>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Operations</div>
+
+          <div class="input-group">
+            <label>Insert Value</label>
+            <input type="number" id="insertValue" placeholder="Enter a number" onkeypress="if(event.key==='Enter') insert()">
+          </div>
+          <button class="btn btn-success" onclick="insert()">Insert</button>
+
+          <div class="input-group" style="margin-top: 16px;">
+            <label>Delete Value</label>
+            <input type="number" id="deleteValue" placeholder="Enter a number" onkeypress="if(event.key==='Enter') deleteNode()">
+          </div>
+          <button class="btn btn-danger" onclick="deleteNode()">Delete</button>
+
+          <div class="input-group" style="margin-top: 16px;">
+            <label>Search Value</label>
+            <input type="number" id="searchValue" placeholder="Enter a number" onkeypress="if(event.key==='Enter') search()">
+          </div>
+          <button class="btn btn-info" onclick="search()">Search</button>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Quick Actions</div>
+          <div class="btn-group">
+            <button class="btn btn-secondary" onclick="insertRandom()">Random Insert</button>
+            <button class="btn btn-secondary" onclick="buildSample()">Sample Tree</button>
+            <button class="btn btn-secondary" onclick="clearTree()">Clear</button>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Animation Speed</div>
+          <div class="animation-speed">
+            <span>Fast</span>
+            <input type="range" id="animSpeed" min="100" max="2000" value="800">
+            <span>Slow</span>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Tree Statistics</div>
+          <div class="stats">
+            <div class="stat-item">
+              <span class="stat-label">Node Count:</span>
+              <span class="stat-value" id="nodeCount">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Tree Height:</span>
+              <span class="stat-value" id="treeHeight">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Black Height:</span>
+              <span class="stat-value" id="blackHeight">-</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Balance Factor:</span>
+              <span class="stat-value" id="balanceFactor">Balanced</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Operation Log</div>
+          <div class="operation-log" id="operationLog"></div>
+        </div>
+      </div>
+
+      <div class="visualization-panel">
+        <svg id="tree-svg"></svg>
+
+        <div class="info-box">
+          <h4 id="infoTitle">Binary Search Tree</h4>
+          <p id="infoText">
+            A binary search tree maintains sorted order: left child < parent < right child.
+            Average O(log n) for insert, delete, and search operations.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Tree Node Class
+    class TreeNode {
+      constructor(value) {
+        this.value = value;
+        this.left = null;
+        this.right = null;
+        this.parent = null;
+        this.color = 'black'; // For Red-Black tree
+        this.x = 0;
+        this.y = 0;
+      }
+    }
+
+    // BST Class
+    class BST {
+      constructor() {
+        this.root = null;
+        this.nodeCount = 0;
+      }
+
+      insert(value) {
+        const newNode = new TreeNode(value);
+        if (!this.root) {
+          this.root = newNode;
+        } else {
+          this.insertNode(this.root, newNode);
+        }
+        this.nodeCount++;
+        logOperation('insert', `Inserted ${value}`);
+        return newNode;
+      }
+
+      insertNode(node, newNode) {
+        if (newNode.value < node.value) {
+          if (!node.left) {
+            node.left = newNode;
+            newNode.parent = node;
+          } else {
+            this.insertNode(node.left, newNode);
+          }
+        } else {
+          if (!node.right) {
+            node.right = newNode;
+            newNode.parent = node;
+          } else {
+            this.insertNode(node.right, newNode);
+          }
+        }
+      }
+
+      delete(value) {
+        this.root = this.deleteNode(this.root, value);
+        if (this.root) {
+          this.nodeCount--;
+          logOperation('delete', `Deleted ${value}`);
+        }
+      }
+
+      deleteNode(node, value) {
+        if (!node) return null;
+
+        if (value < node.value) {
+          node.left = this.deleteNode(node.left, value);
+        } else if (value > node.value) {
+          node.right = this.deleteNode(node.right, value);
+        } else {
+          // Node with only one child or no child
+          if (!node.left) return node.right;
+          if (!node.right) return node.left;
+
+          // Node with two children
+          node.value = this.minValue(node.right);
+          node.right = this.deleteNode(node.right, node.value);
+        }
+        return node;
+      }
+
+      minValue(node) {
+        let minv = node.value;
+        while (node.left) {
+          minv = node.left.value;
+          node = node.left;
+        }
+        return minv;
+      }
+
+      search(value) {
+        return this.searchNode(this.root, value);
+      }
+
+      searchNode(node, value) {
+        if (!node) return null;
+
+        if (value < node.value) {
+          return this.searchNode(node.left, value);
+        } else if (value > node.value) {
+          return this.searchNode(node.right, value);
+        } else {
+          return node;
+        }
+      }
+
+      rotateLeft(node) {
+        const rightChild = node.right;
+        node.right = rightChild.left;
+
+        if (rightChild.left) {
+          rightChild.left.parent = node;
+        }
+
+        rightChild.parent = node.parent;
+
+        if (!node.parent) {
+          this.root = rightChild;
+        } else if (node === node.parent.left) {
+          node.parent.left = rightChild;
+        } else {
+          node.parent.right = rightChild;
+        }
+
+        rightChild.left = node;
+        node.parent = rightChild;
+
+        logOperation('rotate', `Left rotation at ${node.value}`);
+      }
+
+      rotateRight(node) {
+        const leftChild = node.left;
+        node.left = leftChild.right;
+
+        if (leftChild.right) {
+          leftChild.right.parent = node;
+        }
+
+        leftChild.parent = node.parent;
+
+        if (!node.parent) {
+          this.root = leftChild;
+        } else if (node === node.parent.right) {
+          node.parent.right = leftChild;
+        } else {
+          node.parent.left = leftChild;
+        }
+
+        leftChild.right = node;
+        node.parent = leftChild;
+
+        logOperation('rotate', `Right rotation at ${node.value}`);
+      }
+
+      height(node = this.root) {
+        if (!node) return 0;
+        return 1 + Math.max(this.height(node.left), this.height(node.right));
+      }
+    }
+
+    // Red-Black Tree Class
+    class RedBlackTree extends BST {
+      constructor() {
+        super();
+      }
+
+      insert(value) {
+        const newNode = new TreeNode(value);
+        newNode.color = 'red';
+
+        if (!this.root) {
+          this.root = newNode;
+          this.root.color = 'black';
+        } else {
+          this.insertNode(this.root, newNode);
+          this.fixInsert(newNode);
+        }
+
+        this.nodeCount++;
+        logOperation('insert', `Inserted ${value} (Red-Black)`);
+        return newNode;
+      }
+
+      fixInsert(node) {
+        while (node.parent && node.parent.color === 'red') {
+          if (node.parent === node.parent.parent.left) {
+            const uncle = node.parent.parent.right;
+
+            if (uncle && uncle.color === 'red') {
+              // Case 1: Uncle is red
+              node.parent.color = 'black';
+              uncle.color = 'black';
+              node.parent.parent.color = 'red';
+              node = node.parent.parent;
+              logOperation('recolor', `Recolored nodes`);
+            } else {
+              // Case 2: Uncle is black, node is right child
+              if (node === node.parent.right) {
+                node = node.parent;
+                this.rotateLeft(node);
+              }
+              // Case 3: Uncle is black, node is left child
+              node.parent.color = 'black';
+              node.parent.parent.color = 'red';
+              this.rotateRight(node.parent.parent);
+            }
+          } else {
+            // Mirror cases
+            const uncle = node.parent.parent.left;
+
+            if (uncle && uncle.color === 'red') {
+              node.parent.color = 'black';
+              uncle.color = 'black';
+              node.parent.parent.color = 'red';
+              node = node.parent.parent;
+              logOperation('recolor', `Recolored nodes`);
+            } else {
+              if (node === node.parent.left) {
+                node = node.parent;
+                this.rotateRight(node);
+              }
+              node.parent.color = 'black';
+              node.parent.parent.color = 'red';
+              this.rotateLeft(node.parent.parent);
+            }
+          }
+
+          if (node === this.root) break;
+        }
+
+        this.root.color = 'black';
+      }
+
+      blackHeight(node = this.root) {
+        if (!node) return 0;
+
+        const leftHeight = this.blackHeight(node.left);
+        const rightHeight = this.blackHeight(node.right);
+
+        if (leftHeight === -1 || rightHeight === -1 || leftHeight !== rightHeight) {
+          return -1;
+        }
+
+        return leftHeight + (node.color === 'black' ? 1 : 0);
+      }
+    }
+
+    // Global Variables
+    let currentTree = new BST();
+    let treeType = 'bst';
+    let animationSpeed = 800;
+
+    // D3 Setup
+    const svg = d3.select('#tree-svg');
+    const width = 900;
+    const height = 500;
+    const nodeRadius = 20;
+
+    svg.attr('viewBox', `0 0 ${width} ${height}`);
+
+    const g = svg.append('g');
+
+    // Tree Layout
+    const treeLayout = d3.tree().size([width - 100, height - 100]);
+
+    // Update tree visualization
+    function updateVisualization() {
+      if (!currentTree.root) {
+        g.selectAll('*').remove();
+        updateStats();
+        return;
+      }
+
+      // Convert tree to hierarchy
+      const root = d3.hierarchy(currentTree.root, d => {
+        const children = [];
+        if (d.left) children.push(d.left);
+        if (d.right) children.push(d.right);
+        return children.length ? children : null;
+      });
+
+      // Calculate layout
+      const treeData = treeLayout(root);
+
+      // Update node positions
+      treeData.descendants().forEach(d => {
+        d.x += 50;
+        d.y += 50;
+        d.data.x = d.x;
+        d.data.y = d.y;
+      });
+
+      // Clear and redraw
+      g.selectAll('*').remove();
+
+      // Draw links
+      const links = g.selectAll('.link')
+        .data(treeData.links())
+        .enter().append('line')
+        .attr('class', 'link')
+        .attr('x1', d => d.source.x)
+        .attr('y1', d => d.source.y)
+        .attr('x2', d => d.target.x)
+        .attr('y2', d => d.target.y);
+
+      // Draw nodes
+      const nodes = g.selectAll('.node')
+        .data(treeData.descendants())
+        .enter().append('g')
+        .attr('class', d => {
+          if (treeType === 'bst') return 'node bst';
+          return `node ${d.data.color}`;
+        })
+        .attr('transform', d => `translate(${d.x}, ${d.y})`);
+
+      nodes.append('circle')
+        .attr('r', nodeRadius);
+
+      nodes.append('text')
+        .text(d => d.data.value);
+
+      updateStats();
+    }
+
+    // Animation helpers
+    function highlightNode(node, className = 'highlight') {
+      const nodes = g.selectAll('.node');
+      nodes.each(function(d) {
+        if (d.data === node) {
+          d3.select(this).classed(className, true);
+          setTimeout(() => {
+            d3.select(this).classed(className, false);
+          }, animationSpeed);
+        }
+      });
+    }
+
+    // Operations
+    function insert() {
+      const value = parseInt(document.getElementById('insertValue').value);
+      if (isNaN(value)) return;
+
+      const node = currentTree.insert(value);
+      updateVisualization();
+      highlightNode(node);
+      document.getElementById('insertValue').value = '';
+    }
+
+    function deleteNode() {
+      const value = parseInt(document.getElementById('deleteValue').value);
+      if (isNaN(value)) return;
+
+      currentTree.delete(value);
+      updateVisualization();
+      document.getElementById('deleteValue').value = '';
+    }
+
+    function search() {
+      const value = parseInt(document.getElementById('searchValue').value);
+      if (isNaN(value)) return;
+
+      const node = currentTree.search(value);
+      if (node) {
+        highlightNode(node, 'comparing');
+        logOperation('search', `Found ${value}`);
+      } else {
+        logOperation('search', `${value} not found`);
+      }
+      document.getElementById('searchValue').value = '';
+    }
+
+    function insertRandom() {
+      const value = Math.floor(Math.random() * 100);
+      document.getElementById('insertValue').value = value;
+      insert();
+    }
+
+    function buildSample() {
+      clearTree();
+      const values = treeType === 'bst'
+        ? [50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 45]
+        : [7, 3, 18, 10, 22, 8, 11, 26, 2, 6, 13];
+
+      values.forEach((v, i) => {
+        setTimeout(() => {
+          currentTree.insert(v);
+          updateVisualization();
+        }, i * animationSpeed / 2);
+      });
+    }
+
+    function clearTree() {
+      currentTree = treeType === 'bst' ? new BST() : new RedBlackTree();
+      updateVisualization();
+      document.getElementById('operationLog').innerHTML = '';
+      logOperation('clear', 'Tree cleared');
+    }
+
+    function setTreeType(type) {
+      treeType = type;
+      document.querySelectorAll('.tree-type-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+
+      clearTree();
+
+      if (type === 'bst') {
+        document.getElementById('infoTitle').textContent = 'Binary Search Tree';
+        document.getElementById('infoText').textContent =
+          'A binary search tree maintains sorted order: left child < parent < right child. ' +
+          'Average O(log n) for insert, delete, and search operations.';
+        document.getElementById('blackHeight').parentElement.style.display = 'none';
+      } else {
+        document.getElementById('infoTitle').textContent = 'Red-Black Tree';
+        document.getElementById('infoText').textContent =
+          'A self-balancing BST where each node has a color (red or black). ' +
+          'Guarantees O(log n) worst-case for all operations through color rules and rotations.';
+        document.getElementById('blackHeight').parentElement.style.display = 'flex';
+      }
+    }
+
+    function updateStats() {
+      document.getElementById('nodeCount').textContent = currentTree.nodeCount;
+      document.getElementById('treeHeight').textContent = currentTree.height();
+
+      if (treeType === 'rbt' && currentTree instanceof RedBlackTree) {
+        const bh = currentTree.blackHeight();
+        document.getElementById('blackHeight').textContent = bh === -1 ? 'Invalid' : bh;
+      }
+
+      // Balance factor
+      if (currentTree.root) {
+        const leftHeight = currentTree.height(currentTree.root.left);
+        const rightHeight = currentTree.height(currentTree.root.right);
+        const diff = Math.abs(leftHeight - rightHeight);
+
+        if (diff === 0) {
+          document.getElementById('balanceFactor').textContent = 'Perfectly Balanced';
+        } else if (diff === 1) {
+          document.getElementById('balanceFactor').textContent = 'Balanced';
+        } else {
+          document.getElementById('balanceFactor').textContent = `Unbalanced (diff: ${diff})`;
+        }
+      } else {
+        document.getElementById('balanceFactor').textContent = 'Empty';
+      }
+    }
+
+    function logOperation(type, message) {
+      const log = document.getElementById('operationLog');
+      const entry = document.createElement('div');
+      entry.className = `log-entry ${type}`;
+      entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      log.insertBefore(entry, log.firstChild);
+
+      // Keep only last 10 entries
+      while (log.children.length > 10) {
+        log.removeChild(log.lastChild);
+      }
+    }
+
+    // Animation speed control
+    document.getElementById('animSpeed').addEventListener('input', (e) => {
+      animationSpeed = parseInt(e.target.value);
+    });
+
+    // Initialize with sample tree
+    window.addEventListener('load', () => {
+      buildSample();
+    });
+  </script>
+</body>
+</html>
