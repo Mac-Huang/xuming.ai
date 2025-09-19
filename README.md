@@ -1,75 +1,70 @@
-# Academic Portfolio Template (Minimal, No Frameworks)
+# Hi there, I'm Xuming Huang 👋
 
-A minimal academic portfolio template inspired by Jon Barron’s design philosophy, built with plain HTML, CSS, and JavaScript. Use it as a clean starting point for your own academic homepage.
+[![Portfolio](https://img.shields.io/badge/Portfolio-xuming.ai-blue?style=flat-square&logo=google-chrome)](https://xuming.ai)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-xuminghuang-0077B5?style=flat-square&logo=linkedin)](https://www.linkedin.com/in/xuminghuang/)
+[![GitHub](https://img.shields.io/badge/GitHub-mac--huang-181717?style=flat-square&logo=github)](https://github.com/mac-huang)
+[![Google Scholar](https://img.shields.io/badge/Scholar-Xuming_Huang-4285F4?style=flat-square&logo=google-scholar)](https://scholar.google.com/citations?user=Wd0QQ7kAAAAJ&hl=en)
 
-## Overview
+## 🚀 About Me
 
-This repository contains the website scaffolding only. It intentionally avoids bundling any private or proprietary research/project source code. Replace content with your own details and link out to public repos or papers you choose to share.
+I'm an innovative CS undergrad at **University of Wisconsin-Madison**, exploring the cutting edge where **AI meets Systems**. My research sits at the intersection of **Artificial Intelligence**, **Systems**, and **Security**.
 
-## Demo/Deployment
+Currently advised by [Prof. Remzi Arpaci-Dusseau](https://pages.cs.wisc.edu/~remzi/) and [Vinay Banakar](https://www.vinaybanakar.com/) at [The ADvanced Systems Laboratory](https://research.cs.wisc.edu/adsl/), I'm developing **LinuxGuard**—leveraging LLMs and RAG architectures to automate vulnerability detection in the Linux kernel.
 
-- Local: open `index.html` directly, or run a static server.
-- GitHub Pages: push to a `username.github.io` repo or enable Pages in repository settings.
+## 🔬 Current Research
 
-Example (Python):
+### LinuxGuard
+Transforming months of manual security analysis into hours of automated discovery through:
+- 🤖 Large Language Models for code understanding
+- 🔍 RAG-enhanced vulnerability detection
+- 🛡️ Automated Linux kernel security analysis
 
-```bash
-python -m http.server 8000
-# then visit http://localhost:8000
+## 🎯 Featured Projects
+
+### Interactive Visualizations
+- **[BST & Red-Black Tree Visualizer](https://xuming.ai/demos/bst-tree.html)** - Interactive D3.js visualization of tree operations
+- **[K-Map Visualizer](https://xuming.ai/demos/kmap-visualizer-fixed.html)** - 2D & 3D Karnaugh Map with automatic grouping
+- **[x86-64 Memory Layout](https://xuming.ai/demos/x86-64-memory-enhanced.html)** - Real-time process memory visualization
+- **[Heap Allocator Visualization](https://xuming.ai/demos/heap-allocator.html)** - Memory allocation strategies explorer
+
+### Deep Learning Implementations
+- **[Understanding Transformers](https://github.com/Mac-Huang/Transformer)** - Comprehensive tutorial with implementations
+- **[GPT Implementation Guide](https://github.com/Mac-Huang/GPT)** - Step-by-step GPT model implementation
+- **[Word2Vec](https://github.com/Mac-Huang/Word2Vec)** - Skip-gram and CBOW architectures
+- **[LSTM Tasks](https://github.com/Mac-Huang/LSTM_Tasks)** - Sequence modeling applications
+
+## 🏆 Achievements
+
+- 🎓 **Stanford Summer Session**: A+ in CS107 (Computer Organization & Systems), A in CS161 (Algorithms)
+- 🔐 **Security Research**: Discovered and helped fix critical access control vulnerabilities in Stanford's AFS
+- 💡 **Open Source**: Multiple visualization tools used by students worldwide
+
+## 🛠️ Tech Stack
+
+```python
+languages = ["Python", "Java", "JavaScript", "C/C++", "Go"]
+ml_frameworks = ["PyTorch", "TensorFlow", "JAX"]
+systems = ["Linux Kernel", "LLVM", "WebAssembly", "x86-64"]
+web = ["React", "D3.js", "Three.js", "Node.js"]
 ```
 
-## Features
+## 📊 GitHub Stats
 
-- Research and publications sections with simple, readable layout
-- Optional blog/posts structure for long-form notes
-- Minimal JS (no frameworks) and fast loading
-- Clean typography and accessible color contrast
+![GitHub Stats](https://github-readme-stats.vercel.app/api?username=mac-huang&show_icons=true&theme=gradient&bg_color=0D1117&color=C9D1D9&title_color=58A6FF&icon_color=58A6FF)
 
-## Project Structure
+## 🌱 Currently Learning
 
-```
-.
-├── index.html          # Main landing page
-├── research.html       # Research and publications
-├── projects.html       # Project showcase (you add your own items)
-├── blog.html           # Blog listing (optional)
-├── courses.html        # Courses/teaching (optional)
-├── bot.html            # Simple keyword-based assistant (optional)
-├── stylesheet.css      # Global styles
-├── data/               # Example data files (replace with yours)
-├── demos/              # Example demo pages (can remove or repurpose)
-├── blog/posts/         # Example posts (optional; use or delete)
-├── js/                 # Minimal JS for interactivity
-└── images/             # Assets
-```
+- 🧠 Advanced LLM architectures and optimization
+- 🔒 Automated vulnerability detection techniques
+- ⚡ High-performance computing and distributed systems
 
-Note: Specific files that reference personal projects are placeholders. Feel free to delete folders you don’t need (e.g., `blog/`, `demos/`).
+## 📫 Get in Touch
 
-## Quick Start
+- 🌐 Portfolio: [xuming.ai](https://xuming.ai)
+- 📧 Email: xhuang497 [at] wisc [dot] edu
+- 💼 LinkedIn: [xuminghuang](https://www.linkedin.com/in/xuminghuang/)
 
-1. Use this repo as a template (or clone and remove personal content).
-2. Update text and links in `index.html`, `research.html`, and `projects.html`.
-3. Replace images under `images/` with your own.
-4. Edit colors/typography in `stylesheet.css` (primary color defaults to `#1772d0`).
-5. Update contact info and any email obfuscation logic in `js/main.js`.
+---
 
-## Hiding Private Projects (Important)
-
-This template does not include any private or unpublished project source code. If you showcase projects:
-
-- Describe at a high level; do not embed proprietary code.
-- Link only to public repositories or published artifacts you’re comfortable sharing.
-- Remove or rename any demo pages that might reveal internal code. You can safely delete the `demos/` folder if not needed.
-
-## Design Notes
-
-- Clean, table-style layout inspired by Jon Barron
-- Minimal JavaScript; no build tools required
-- Fast to load, easy to customize
-
-## Attribution
-
-You are free to use and adapt this template for your own academic website. If you reuse substantial portions, a small attribution is appreciated.
-
-— Built for clarity and simplicity —
+*"Transforming bold ideas into rigorous research where AI meets low-level code"*
 
