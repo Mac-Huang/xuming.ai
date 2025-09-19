@@ -1,70 +1,179 @@
-# Hi there, I'm Xuming Huang 👋
+# 🎓 Academic Portfolio Template
 
-[![Portfolio](https://img.shields.io/badge/Portfolio-xuming.ai-blue?style=flat-square&logo=google-chrome)](https://xuming.ai)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-xuminghuang-0077B5?style=flat-square&logo=linkedin)](https://www.linkedin.com/in/xuminghuang/)
-[![GitHub](https://img.shields.io/badge/GitHub-mac--huang-181717?style=flat-square&logo=github)](https://github.com/mac-huang)
-[![Google Scholar](https://img.shields.io/badge/Scholar-Xuming_Huang-4285F4?style=flat-square&logo=google-scholar)](https://scholar.google.com/citations?user=Wd0QQ7kAAAAJ&hl=en)
+A **clean, minimal, and professional** academic portfolio template inspired by [Jon Barron's website](https://jonbarron.info/). Built with vanilla HTML/CSS/JavaScript - no frameworks needed!
 
-## 🚀 About Me
+## ✨ Live Demo
 
-I'm an innovative CS undergrad at **University of Wisconsin-Madison**, exploring the cutting edge where **AI meets Systems**. My research sits at the intersection of **Artificial Intelligence**, **Systems**, and **Security**.
+Check out the live demo: [xuming.ai](https://xuming.ai)
 
-Currently advised by [Prof. Remzi Arpaci-Dusseau](https://pages.cs.wisc.edu/~remzi/) and [Vinay Banakar](https://www.vinaybanakar.com/) at [The ADvanced Systems Laboratory](https://research.cs.wisc.edu/adsl/), I'm developing **LinuxGuard**—leveraging LLMs and RAG architectures to automate vulnerability detection in the Linux kernel.
+## 🚀 Quick Start (< 5 minutes)
 
-## 🔬 Current Research
+### Option 1: Use as GitHub Template
+1. Click the "Use this template" button above
+2. Name your repo `[username].github.io` for automatic hosting
+3. Clone and customize with your content
+4. Push changes - your site will be live at `https://[username].github.io`
 
-### LinuxGuard
-Transforming months of manual security analysis into hours of automated discovery through:
-- 🤖 Large Language Models for code understanding
-- 🔍 RAG-enhanced vulnerability detection
-- 🛡️ Automated Linux kernel security analysis
+### Option 2: Clone and Deploy
+```bash
+# Clone the repository
+git clone https://github.com/Mac-Huang/xuming.ai.git my-portfolio
+cd my-portfolio
 
-## 🎯 Featured Projects
+# Test locally
+python -m http.server 8000
+# Visit http://localhost:8000
 
-### Interactive Visualizations
-- **[BST & Red-Black Tree Visualizer](https://xuming.ai/demos/bst-tree.html)** - Interactive D3.js visualization of tree operations
-- **[K-Map Visualizer](https://xuming.ai/demos/kmap-visualizer-fixed.html)** - 2D & 3D Karnaugh Map with automatic grouping
-- **[x86-64 Memory Layout](https://xuming.ai/demos/x86-64-memory-enhanced.html)** - Real-time process memory visualization
-- **[Heap Allocator Visualization](https://xuming.ai/demos/heap-allocator.html)** - Memory allocation strategies explorer
-
-### Deep Learning Implementations
-- **[Understanding Transformers](https://github.com/Mac-Huang/Transformer)** - Comprehensive tutorial with implementations
-- **[GPT Implementation Guide](https://github.com/Mac-Huang/GPT)** - Step-by-step GPT model implementation
-- **[Word2Vec](https://github.com/Mac-Huang/Word2Vec)** - Skip-gram and CBOW architectures
-- **[LSTM Tasks](https://github.com/Mac-Huang/LSTM_Tasks)** - Sequence modeling applications
-
-## 🏆 Achievements
-
-- 🎓 **Stanford Summer Session**: A+ in CS107 (Computer Organization & Systems), A in CS161 (Algorithms)
-- 🔐 **Security Research**: Discovered and helped fix critical access control vulnerabilities in Stanford's AFS
-- 💡 **Open Source**: Multiple visualization tools used by students worldwide
-
-## 🛠️ Tech Stack
-
-```python
-languages = ["Python", "Java", "JavaScript", "C/C++", "Go"]
-ml_frameworks = ["PyTorch", "TensorFlow", "JAX"]
-systems = ["Linux Kernel", "LLVM", "WebAssembly", "x86-64"]
-web = ["React", "D3.js", "Three.js", "Node.js"]
+# Deploy to GitHub Pages
+git remote set-url origin https://github.com/[your-username]/[your-username].github.io.git
+git push origin main
 ```
 
-## 📊 GitHub Stats
+## 📋 Features
 
-![GitHub Stats](https://github-readme-stats.vercel.app/api?username=mac-huang&show_icons=true&theme=gradient&bg_color=0D1117&color=C9D1D9&title_color=58A6FF&icon_color=58A6FF)
+✅ **Zero Dependencies** - Pure HTML/CSS/JS, no build process needed
+✅ **Responsive Design** - Looks great on all devices
+✅ **Fast Loading** - Minimal and optimized
+✅ **SEO Friendly** - Semantic HTML with proper meta tags
+✅ **Multiple Sections** - Research, Projects, Blog, Teaching, and more
+✅ **Interactive Demos** - Showcase your work with live examples
+✅ **Dark Mode Support** - Easy to add with CSS variables
+✅ **Customizable** - Simple structure, easy to modify
 
-## 🌱 Currently Learning
+## 📁 Project Structure
 
-- 🧠 Advanced LLM architectures and optimization
-- 🔒 Automated vulnerability detection techniques
-- ⚡ High-performance computing and distributed systems
+```
+📦 your-portfolio/
+├── 📄 index.html           # Home page with bio and highlights
+├── 📄 research.html        # Publications and research projects
+├── 📄 projects.html        # Project showcase with filtering
+├── 📄 blog.html            # Blog posts listing
+├── 📄 courses.html         # Teaching and courses
+├── 📄 bot.html             # AI assistant (optional)
+├── 🎨 stylesheet.css       # Main styles (customize colors here!)
+├── 📁 data/
+│   ├── projects.js         # Project data (easy to update)
+│   └── publications.js     # Publication data
+├── 📁 demos/               # Interactive project demos
+├── 📁 blog/posts/          # Blog post HTML files
+├── 📁 js/                  # JavaScript functionality
+├── 📁 images/              # Images and assets
+└── 📁 cv/                  # Resume/CV files
+```
 
-## 📫 Get in Touch
+## 🎨 Customization Guide
 
-- 🌐 Portfolio: [xuming.ai](https://xuming.ai)
-- 📧 Email: xhuang497 [at] wisc [dot] edu
-- 💼 LinkedIn: [xuminghuang](https://www.linkedin.com/in/xuminghuang/)
+### 1️⃣ Personal Information
+Edit `index.html`:
+```html
+<!-- Update your name -->
+<name>Your Name</name>
+
+<!-- Update your bio -->
+<p>Your research interests and current work...</p>
+
+<!-- Update contact links -->
+<a href="your-cv.pdf">CV</a>
+<a href="https://github.com/your-username">GitHub</a>
+```
+
+### 2️⃣ Profile Photo
+Replace `images/profile.jpg` with your photo (square aspect ratio recommended)
+
+### 3️⃣ Projects
+Edit `data/projects.js`:
+```javascript
+const projects = [
+  {
+    id: 'project-id',
+    title: 'Your Project Title',
+    description: 'Project description',
+    tech: 'Python, PyTorch, etc.',
+    thumbnail: 'images/projects/your-thumb.jpg',
+    demo_url: 'demos/your-demo.html',
+    code_url: 'https://github.com/your-repo',
+    featured: true
+  },
+  // Add more projects...
+];
+```
+
+### 4️⃣ Publications
+Edit `data/publications.js` to add your papers
+
+### 5️⃣ Color Scheme
+Edit `stylesheet.css`:
+```css
+:root {
+  --primary-color: #1772d0;  /* Change main color */
+  --text-color: #333;
+  --bg-color: #ffffff;
+}
+```
+
+### 6️⃣ Blog Posts
+Create new HTML files in `blog/posts/` and link them in `blog.html`
+
+## 🔧 Advanced Features
+
+### Adding Interactive Demos
+1. Create demo HTML in `demos/` folder
+2. Include D3.js, Three.js, or any library via CDN
+3. Link from projects.js
+
+### Email Obfuscation
+The template includes JavaScript-based email protection in `js/main.js`
+
+### SEO Optimization
+- Update meta tags in each HTML file
+- Add structured data for better search results
+- Customize Open Graph tags for social sharing
+
+## 🚢 Deployment Options
+
+### GitHub Pages (Recommended)
+1. Push to repo named `[username].github.io`
+2. Enable Pages in Settings → Pages
+3. Select main branch and root folder
+
+### Netlify
+1. Connect your GitHub repo
+2. Auto-deploys on push
+3. Custom domain support
+
+### Vercel
+```bash
+npm i -g vercel
+vercel --prod
+```
+
+## 📝 Tips for Academics
+
+- **Papers First**: Lead with your publications on the homepage
+- **Visual Projects**: Include screenshots/GIFs in project cards
+- **Blog Regularly**: Share research insights and tutorials
+- **Link Everything**: Connect papers, code, slides, and videos
+- **Update Often**: Keep publications and projects current
+
+## 🤝 Contributing
+
+Found a bug or have a feature request? Please open an issue!
+
+Pull requests are welcome. For major changes, please open an issue first.
+
+## 📄 License
+
+MIT License - feel free to use this template for your academic website!
+
+## 🙏 Acknowledgments
+
+- Design inspired by [Jon Barron](https://jonbarron.info/)
+- Icons from [Font Awesome](https://fontawesome.com/)
+- Hosted on [GitHub Pages](https://pages.github.com/)
 
 ---
 
-*"Transforming bold ideas into rigorous research where AI meets low-level code"*
+**⭐ If this template helped you, please consider giving it a star!**
+
+*Built with ❤️ for the academic community*
 
