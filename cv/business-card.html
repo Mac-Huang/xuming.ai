@@ -1,196 +1,134 @@
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Xuming Huang - Business Card</title>
-    <link rel="stylesheet" type="text/css" href="../stylesheet.css">
-    <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Lato', Verdana, Helvetica, sans-serif;
-            background-color: #fdfdfd;
-            margin: 0;
-            padding: 0;
-        }
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Xuming Huang - Business Card</title>
+  <meta name="author" content="Xuming Huang">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../stylesheet.css">
+  <link rel="icon" type="image/png" href="../images/favicon.png">
+  <style>
+    .bio-section {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-        name {
-            font-family: 'Lato', Verdana, Helvetica, sans-serif;
-            font-size: 32px;
-        }
+    @media print {
+      .bio-section {
+        min-height: auto;
+      }
 
-        .card-container {
-            max-width: 1000px;
-            margin: 50px auto;
-            padding: 20px;
-        }
-
-        .business-card {
-            background-color: #ffffff;
-            border-radius: 0px;
-            box-shadow: 0 0 0 0;
-            margin-bottom: 40px;
-        }
-
-        .business-card table {
-            width: 100%;
-            border: 0px;
-            border-spacing: 0px;
-            border-collapse: separate;
-            margin-right: auto;
-            margin-left: auto;
-        }
-
-        .print-instructions {
-            background-color: #f5f5f5;
-            padding: 20px;
-            border-radius: 5px;
-            margin-top: 40px;
-        }
-
-        .print-instructions h3 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .print-instructions p {
-            color: #666;
-            line-height: 1.6;
-        }
-
-        @media print {
-            body {
-                background: white;
-            }
-
-            .card-container {
-                margin: 0;
-                padding: 0;
-            }
-
-            .business-card {
-                page-break-inside: avoid;
-                width: 3.5in;
-                height: 2in;
-                margin: 0 auto;
-                padding: 15px;
-                border: 1px solid #ddd;
-            }
-
-            .print-instructions {
-                display: none;
-            }
-
-            #business-card-back {
-                page-break-before: always;
-            }
-        }
-
-        papertitle {
-            font-family: 'Lato', Verdana, Helvetica, sans-serif;
-            font-size: 14px;
-            font-weight: 700;
-            color: #333;
-        }
-    </style>
-    <script type="text/javascript">
-        function showEmail() {
-            var email = document.getElementById("email-link");
-            email.innerHTML = "xhuang497@wisc.edu";
-            email.href = "mailto:xhuang497@wisc.edu";
-        }
-    </script>
+      .portfolio-links {
+        page-break-before: always;
+      }
+    }
+  </style>
+  <script type="text/javascript">
+    function showEmail() {
+      var email = document.getElementById("email-link");
+      email.innerHTML = "xhuang497@wisc.edu";
+      email.href = "mailto:xhuang497@wisc.edu";
+    }
+  </script>
 </head>
 
 <body>
-    <div class="card-container">
-        <!-- Front of Business Card -->
-        <div class="business-card" id="business-card-front">
-            <table>
-                <tbody>
-                    <tr style="padding:0px">
-                        <td style="padding:2.5%;width:63%;vertical-align:middle">
-                            <p style="text-align:center">
-                                <name>Xuming Huang</name>
-                            </p>
-                            <p style="text-align:center;font-size:16px;color:#666;margin-top:5px;">
-                                AI Systems Researcher
-                            </p>
-                            <p style="text-align:center;font-size:14px;color:#888;margin-top:5px;">
-                                University of Wisconsin-Madison<br>
-                                The ADvanced Systems Laboratory
-                            </p>
-                            <p style="text-align:center;margin-top:20px;">
-                                <strong>Research Focus:</strong><br>
-                                <span style="font-size:13px;">Artificial Intelligence • Systems • Security</span>
-                            </p>
-                            <p style="text-align:center;margin-top:20px;">
-                                <a href="javascript:;" onclick="showEmail()" id="email-link">[show email]</a> /
-                                <a href="https://xuming.ai">Portfolio</a> /
-                                <a href="https://scholar.google.com/citations?user=Wd0QQ7kAAAAJ&hl=en">Scholar</a> /
-                                <a href="https://github.com/mac-huang">GitHub</a> /
-                                <a href="https://www.linkedin.com/in/xuminghuang/">LinkedIn</a>
-                            </p>
-                        </td>
-                        <td style="padding:2.5%;width:40%;max-width:40%">
-                            <img style="width:100%;max-width:100%;border-radius:50%;" alt="profile photo" src="../images/profile.jpg">
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+  <table style="width:100%;max-width:900px;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+    <tbody>
+      <tr style="padding:0px">
+        <td style="padding:0px">
 
-        <!-- Back of Business Card -->
-        <div class="business-card" id="business-card-back">
-            <table>
-                <tbody>
-                    <tr>
-                        <td style="padding:20px;width:100%;vertical-align:middle">
-                            <p style="text-align:center;margin-bottom:30px;">
-                                <papertitle style="font-size:18px;">Current Research: LinuxGuard</papertitle>
-                            </p>
-                            <p style="text-align:center;font-style:italic;color:#666;margin-bottom:30px;">
-                                "Transforming bold ideas into rigorous research<br>
-                                where AI meets low-level code"
-                            </p>
-                            <p style="text-align:center;">
-                                <strong>Key Projects:</strong><br>
-                                <span style="font-size:13px;line-height:1.8;">
-                                    • BST & Red-Black Tree Visualizer<br>
-                                    • K-Map Visualizer (2D & 3D)<br>
-                                    • x86-64 Memory Layout Visualization<br>
-                                    • Understanding Transformers<br>
-                                    • GPT Implementation Guide
-                                </span>
-                            </p>
-                            <p style="text-align:center;margin-top:30px;">
-                                <strong>Stanford Summer Session:</strong><br>
-                                <span style="font-size:13px;">
-                                    CS107: A+ (99/100) • CS161: A (93/100)
-                                </span>
-                            </p>
-                            <p style="text-align:center;margin-top:20px;font-size:24px;color:#1772d0;">
-                                <strong>xuming.ai</strong>
-                            </p>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+          <!-- Bio Section - EXACT COPY FROM INDEX -->
+          <div class="bio-section">
+          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+            <tbody>
+              <tr style="padding:0px">
+                <td style="padding:2.5%;width:63%;vertical-align:middle">
+                  <p style="text-align:center">
+                    <name>Xuming Huang</name>
+                  </p>
+                  <p>
+                    I'm an innovative CS undergrad at University of Wisconsin - Madison, exploring the cutting edge where AI meets systems,
+					passionate about transforming bold ideas into rigorous research.
+					My research interest sits at the intersection of <strong>Artificial Intelligence</strong>, <strong>Systems</strong>, and <strong>Security</strong>.
+                  </p>
+                  <p>
+                    Currently advised by Professor <a href="https://pages.cs.wisc.edu/~remzi/">Remzi Arpaci-Dusseau</a> and
+                    <a href="https://www.vinaybanakar.com/">Vinay Banakar</a> at
+                    <a href="https://research.cs.wisc.edu/adsl/">The ADvanced Systems Laboratory</a>,
+                    I'm developing LinuxGuard—exploring how large language models and RAG-enhanced architectures can automate
+                    vulnerability detection in the Linux kernel, leveraging machine learning to enhance the reliability and security of critical system software.
+                  </p>
+                  <p>
+				  During my <a href="https://xuming.ai/blog/posts/stanford-summer-2025.html">summer in Stanford</a>, I achieved A+ in CS107 Computer Organization & Systems and A in CS161 Algorithms.
+                    While there, I discovered and assisted to fix critical access control misconfigurations in Stanford's AFS directories—world-readable solution binaries
+                    and exposed teaching materials across multiple courses.
+                    <span style="background-color: #ffffcc;">This experience crystallized my commitment to systems security research, directly inspiring my current work on automated vulnerability detection.</span>
+                  </p>
+                  <p style="text-align:center">
+                    <a href="javascript:;" onclick="showEmail()" id="email-link">[show email]</a> /
+                    <a href="https://xuming.ai/cv/Academic_Resume.pdf">CV</a> /
+                    <a href="https://scholar.google.com/citations?user=Wd0QQ7kAAAAJ&hl=en">Google Scholar</a> /
+                    <a href="https://github.com/mac-huang">GitHub</a> /
+                    <a href="https://www.linkedin.com/in/xuminghuang/">LinkedIn</a>
+				  </p>
+                </td>
+                <td style="padding:2.5%;width:40%;max-width:40%">
+                  <img style="width:100%;max-width:100%;border-radius:50%;" alt="profile photo" src="../images/profile.jpg">
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          </div>
 
-        <!-- Print Instructions -->
-        <div class="print-instructions">
-            <h3>📇 Business Card Printing Instructions</h3>
-            <p><strong>Standard Business Card Size:</strong> 3.5" × 2" (89mm × 51mm)</p>
-            <p><strong>To Print:</strong></p>
-            <ol style="margin-left:20px;color:#666;">
-                <li>Press <code>Ctrl+P</code> (Windows) or <code>Cmd+P</code> (Mac) to open print dialog</li>
-                <li>Select "Save as PDF" for digital version</li>
-                <li>For physical cards, use cardstock paper (300gsm recommended)</li>
-                <li>Cut along borders after printing</li>
-                <li>Consider professional printing services for best quality</li>
-            </ol>
-            <p style="margin-top:15px;"><strong>Note:</strong> The cards are designed to be printed double-sided or as two separate cards.</p>
-        </div>
-    </div>
+          <!-- Portfolio Links Section -->
+          <div class="portfolio-links">
+          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+            <tbody>
+              <tr>
+                <td style="padding:20px;width:100%;vertical-align:middle">
+                  <heading>Portfolio Links</heading>
+                  <p style="text-align:center;font-size:18px;margin-top:20px;">
+                    <a href="https://xuming.ai" style="font-weight:700;">Portfolio Home</a> &nbsp;|&nbsp;
+                    <a href="https://xuming.ai/research.html">Research</a> &nbsp;|&nbsp;
+                    <a href="https://xuming.ai/projects.html">Projects</a> &nbsp;|&nbsp;
+                    <a href="https://xuming.ai/blog.html">Blog</a> &nbsp;|&nbsp;
+                    <a href="https://xuming.ai/courses.html">Courses</a> &nbsp;|&nbsp;
+                    <a href="https://xuming.ai/bot.html">Ask Me</a>
+                  </p>
+
+                  <p style="margin-top:30px;"><strong>Featured Projects:</strong></p>
+                  <ul style="margin-left:20px;">
+                    <li><a href="https://xuming.ai/demos/bst-tree.html">BST & Red-Black Tree Visualizer</a> - Interactive tree operations</li>
+                    <li><a href="https://xuming.ai/demos/kmap-visualizer-fixed.html">K-Map Visualizer</a> - 2D & 3D Karnaugh Maps</li>
+                    <li><a href="https://xuming.ai/demos/x86-64-memory-enhanced.html">x86-64 Memory Layout</a> - Process memory visualization</li>
+                    <li><a href="https://xuming.ai/demos/heap-allocator.html">Heap Allocator</a> - Memory allocation strategies</li>
+                    <li><a href="https://xuming.ai/demos/transformer-architecture.html">Transformer Architecture</a> - Interactive deep learning</li>
+                  </ul>
+
+                  <p style="margin-top:30px;"><strong>Deep Learning Implementations:</strong></p>
+                  <ul style="margin-left:20px;">
+                    <li><a href="https://github.com/Mac-Huang/Transformer">Understanding Transformers</a></li>
+                    <li><a href="https://github.com/Mac-Huang/GPT">GPT Implementation Guide</a></li>
+                    <li><a href="https://github.com/Mac-Huang/Word2Vec">Word2Vec</a></li>
+                    <li><a href="https://github.com/Mac-Huang/LSTM_Tasks">LSTM Tasks</a></li>
+                    <li><a href="https://github.com/Mac-Huang/Translator">Neural Machine Translator</a></li>
+                  </ul>
+
+                  <p style="text-align:center;margin-top:40px;font-size:24px;color:#1772d0;">
+                    <strong>xuming.ai</strong>
+                  </p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          </div>
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </body>
 </html>
