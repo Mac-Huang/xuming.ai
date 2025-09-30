@@ -1,0 +1,35 @@
+{
+  "name": "github-repo-visualizer",
+  "version": "1.0.0",
+  "description": "Interactive visualization tool for exploring GitHub repositories",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8080",
+    "test": "echo \"No tests specified yet\"",
+    "build": "echo \"No build process required for standalone HTML\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/github-repo-visualizer.git"
+  },
+  "keywords": [
+    "github",
+    "visualization",
+    "repository",
+    "d3js",
+    "chartjs",
+    "data-visualization",
+    "github-api",
+    "interactive",
+    "commits",
+    "contributors"
+  ],
+  "author": "Xuming Huang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yourusername/github-repo-visualizer/issues"
+  },
+  "homepage": "https://github.com/yourusername/github-repo-visualizer#readme",
+  "dependencies": {},
+  "devDependencies": {}
+}

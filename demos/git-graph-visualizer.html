@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git Graph Visualizer - Interactive Version Control Visualization</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: rgba(26, 26, 46, 0.95);
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: left 0.5s;
+        }
+
+        .btn:hover:before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn.danger {
+            background: linear-gradient(135deg, #f93b1d 0%, #ea1e63 100%);
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .graph-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(circle at center, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+        }
+
+        #gitGraph {
+            width: 100%;
+            height: 100%;
+            cursor: grab;
+        }
+
+        #gitGraph.dragging {
+            cursor: grabbing;
+        }
+
+        .command-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 90%;
+            max-width: 600px;
+        }
+
+        .command-input-wrapper {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .command-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e0e0e0;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .command-input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        .command-input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .quick-commands {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .quick-cmd {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        .quick-cmd:hover {
+            background: rgba(102, 126, 234, 0.2);
+            border-color: #667eea;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .info-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            min-width: 250px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .info-panel h3 {
+            font-size: 14px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 13px;
+        }
+
+        .info-value {
+            color: #fff;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .branch-indicator {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .commit-node {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .commit-node:hover {
+            filter: brightness(1.2);
+        }
+
+        .branch-path {
+            fill: none;
+            stroke-width: 3;
+            opacity: 0.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .merge-path {
+            fill: none;
+            stroke-width: 2;
+            stroke-dasharray: 5, 3;
+            opacity: 0.6;
+        }
+
+        .commit-message {
+            font-size: 12px;
+            fill: rgba(255, 255, 255, 0.7);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        .branch-label {
+            font-size: 11px;
+            font-weight: 600;
+            fill: white;
+        }
+
+        .tooltip {
+            position: absolute;
+            background: rgba(26, 26, 46, 0.98);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            max-width: 300px;
+        }
+
+        .tooltip.visible {
+            opacity: 1;
+        }
+
+        .tooltip h4 {
+            color: #667eea;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .tooltip p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 12px;
+            margin: 4px 0;
+        }
+
+        .tooltip .hash {
+            font-family: 'SF Mono', monospace;
+            color: #f0b90b;
+            font-size: 11px;
+        }
+
+        .zoom-controls {
+            position: absolute;
+            bottom: 100px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .zoom-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.7);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .zoom-btn:hover {
+            background: rgba(102, 126, 234, 0.2);
+            color: white;
+        }
+
+        .legend {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .legend h4 {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 3px;
+            border-radius: 2px;
+        }
+
+        .legend-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Branch colors */
+        .branch-master { stroke: #61afef; }
+        .branch-main { stroke: #61afef; }
+        .branch-develop { stroke: #98c379; }
+        .branch-feature { stroke: #e06c75; }
+        .branch-release { stroke: #d19a66; }
+        .branch-hotfix { stroke: #c678dd; }
+        .branch-bugfix { stroke: #56b6c2; }
+        .branch-default { stroke: #abb2bf; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" stroke="url(#gradient)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <defs>
+                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#667eea" />
+                        <stop offset="100%" style="stop-color:#764ba2" />
+                    </linearGradient>
+                </defs>
+            </svg>
+            Git Graph Visualizer
+        </h1>
+        <div class="controls">
+            <button class="btn secondary" onclick="showHelp()">Help</button>
+            <button class="btn secondary" onclick="loadExample('simple')">Simple</button>
+            <button class="btn secondary" onclick="loadExample('feature')">Feature Branch</button>
+            <button class="btn secondary" onclick="loadExample('gitflow')">Git Flow</button>
+            <button class="btn danger" onclick="resetGraph()">Reset</button>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="graph-container">
+            <svg id="gitGraph"></svg>
+
+            <div class="legend">
+                <h4>Branches</h4>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #61afef;"></div>
+                    <span class="legend-label">master/main</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #98c379;"></div>
+                    <span class="legend-label">develop</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #e06c75;"></div>
+                    <span class="legend-label">feature</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #d19a66;"></div>
+                    <span class="legend-label">release</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #c678dd;"></div>
+                    <span class="legend-label">hotfix</span>
+                </div>
+            </div>
+
+            <div class="info-panel">
+                <h3>Repository Status</h3>
+                <div class="info-item">
+                    <span class="info-label">Current Branch</span>
+                    <span class="info-value branch-indicator" id="currentBranch" style="background: rgba(97, 175, 239, 0.2); color: #61afef;">master</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">HEAD</span>
+                    <span class="info-value" id="headCommit">main</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Commits</span>
+                    <span class="info-value" id="commitCount">1</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Branches</span>
+                    <span class="info-value" id="branchCount">1</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Merges</span>
+                    <span class="info-value" id="mergeCount">0</span>
+                </div>
+            </div>
+
+            <div class="zoom-controls">
+                <button class="zoom-btn" onclick="zoomIn()">+</button>
+                <button class="zoom-btn" onclick="zoomOut()">−</button>
+                <button class="zoom-btn" onclick="resetZoom()">⟲</button>
+            </div>
+        </div>
+
+        <div class="command-panel fade-in">
+            <div class="command-input-wrapper">
+                <input type="text" class="command-input" id="commandInput"
+                       placeholder="Type a git command (e.g., git commit -m 'Initial commit')"
+                       autocomplete="off" />
+                <button class="btn" onclick="executeCommand()">Execute</button>
+            </div>
+            <div class="quick-commands">
+                <span class="quick-cmd" onclick="quickCommand('commit')">commit</span>
+                <span class="quick-cmd" onclick="quickCommand('branch')">branch</span>
+                <span class="quick-cmd" onclick="quickCommand('checkout')">checkout</span>
+                <span class="quick-cmd" onclick="quickCommand('merge')">merge</span>
+                <span class="quick-cmd" onclick="quickCommand('rebase')">rebase</span>
+                <span class="quick-cmd" onclick="quickCommand('cherry-pick')">cherry-pick</span>
+                <span class="quick-cmd" onclick="quickCommand('tag')">tag</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="tooltip" id="tooltip"></div>
+
+    <script>
+        // Enhanced Git Graph State
+        class GitGraph {
+            constructor() {
+                this.commits = [];
+                this.branches = {};
+                this.currentBranch = 'master';
+                this.HEAD = null;
+                this.lanes = {};
+                this.nextLane = 0;
+                this.commitPositions = {};
+                this.scale = 1;
+                this.translateX = 0;
+                this.translateY = 0;
+            }
+
+            init() {
+                // Create initial commit
+                const initialCommit = {
+                    id: this.generateHash(),
+                    message: 'Initial commit',
+                    parent: null,
+                    parents: [],
+                    branch: 'master',
+                    lane: 0,
+                    timestamp: Date.now(),
+                    author: 'You'
+                };
+
+                this.commits.push(initialCommit);
+                this.branches['master'] = initialCommit.id;
+                this.HEAD = initialCommit.id;
+                this.lanes['master'] = 0;
+
+                this.updateVisualization();
+            }
+
+            generateHash() {
+                return Math.random().toString(36).substr(2, 7);
+            }
+
+            commit(message = '') {
+                const currentCommit = this.findCommit(this.HEAD);
+                const lane = this.lanes[this.currentBranch] ?? this.nextLane++;
+
+                const newCommit = {
+                    id: this.generateHash(),
+                    message: message || `Commit on ${this.currentBranch}`,
+                    parent: this.HEAD,
+                    parents: [this.HEAD],
+                    branch: this.currentBranch,
+                    lane: lane,
+                    timestamp: Date.now(),
+                    author: 'You'
+                };
+
+                this.commits.push(newCommit);
+                this.branches[this.currentBranch] = newCommit.id;
+                this.HEAD = newCommit.id;
+                this.lanes[this.currentBranch] = lane;
+
+                this.updateVisualization();
+                return newCommit;
+            }
+
+            createBranch(name) {
+                if (this.branches[name]) {
+                    throw new Error(`Branch '${name}' already exists`);
+                }
+
+                this.branches[name] = this.HEAD;
+                const baseLane = this.lanes[this.currentBranch] ?? 0;
+
+                // Assign a new lane for the branch
+                const usedLanes = Object.values(this.lanes);
+                let newLane = 0;
+                while (usedLanes.includes(newLane)) {
+                    newLane++;
+                }
+                this.lanes[name] = newLane;
+
+                this.updateVisualization();
+                return name;
+            }
+
+            checkout(target) {
+                if (this.branches[target]) {
+                    this.currentBranch = target;
+                    this.HEAD = this.branches[target];
+                } else if (this.findCommit(target)) {
+                    this.HEAD = target;
+                    this.currentBranch = null; // Detached HEAD
+                } else {
+                    throw new Error(`Invalid target: '${target}'`);
+                }
+
+                this.updateVisualization();
+            }
+
+            merge(branchName) {
+                if (!this.branches[branchName]) {
+                    throw new Error(`Branch '${branchName}' not found`);
+                }
+
+                const currentCommit = this.HEAD;
+                const mergeCommit = this.branches[branchName];
+
+                if (currentCommit === mergeCommit) {
+                    throw new Error('Already up to date');
+                }
+
+                const newCommit = {
+                    id: this.generateHash(),
+                    message: `Merge branch '${branchName}' into ${this.currentBranch}`,
+                    parent: currentCommit,
+                    parents: [currentCommit, mergeCommit],
+                    branch: this.currentBranch,
+                    lane: this.lanes[this.currentBranch],
+                    timestamp: Date.now(),
+                    author: 'You',
+                    isMerge: true
+                };
+
+                this.commits.push(newCommit);
+                this.branches[this.currentBranch] = newCommit.id;
+                this.HEAD = newCommit.id;
+
+                this.updateVisualization();
+                return newCommit;
+            }
+
+            findCommit(id) {
+                return this.commits.find(c => c.id === id);
+            }
+
+            calculatePositions() {
+                const spacing = { x: 100, y: 60 };
+                const positions = {};
+
+                // Calculate positions for each commit
+                this.commits.forEach((commit, index) => {
+                    positions[commit.id] = {
+                        x: 100 + index * spacing.x,
+                        y: 200 + commit.lane * spacing.y
+                    };
+                });
+
+                return positions;
+            }
+
+            updateVisualization() {
+                const positions = this.calculatePositions();
+                this.commitPositions = positions;
+                this.render();
+                this.updateStats();
+            }
+
+            render() {
+                const svg = d3.select('#gitGraph');
+                svg.selectAll('*').remove();
+
+                const width = svg.node().parentElement.clientWidth;
+                const height = svg.node().parentElement.clientHeight;
+                svg.attr('width', width).attr('height', height);
+
+                // Create main group for zooming and panning
+                const mainGroup = svg.append('g')
+                    .attr('class', 'main-group')
+                    .attr('transform', `translate(${this.translateX}, ${this.translateY}) scale(${this.scale})`);
+
+                // Draw branch paths
+                this.drawBranchPaths(mainGroup);
+
+                // Draw commits
+                this.drawCommits(mainGroup);
+
+                // Draw branch labels
+                this.drawBranchLabels(mainGroup);
+
+                // Draw HEAD pointer
+                this.drawHEAD(mainGroup);
+            }
+
+            drawBranchPaths(group) {
+                const pathGroup = group.append('g').attr('class', 'paths');
+
+                // Group commits by branch for drawing continuous paths
+                const branchPaths = {};
+                this.commits.forEach(commit => {
+                    if (!branchPaths[commit.branch]) {
+                        branchPaths[commit.branch] = [];
+                    }
+                    branchPaths[commit.branch].push(commit);
+                });
+
+                // Draw branch paths
+                Object.entries(branchPaths).forEach(([branch, commits]) => {
+                    if (commits.length > 1) {
+                        const pathData = commits.map(commit => {
+                            const pos = this.commitPositions[commit.id];
+                            return [pos.x, pos.y];
+                        });
+
+                        const line = d3.line()
+                            .x(d => d[0])
+                            .y(d => d[1])
+                            .curve(d3.curveMonotoneX);
+
+                        pathGroup.append('path')
+                            .datum(pathData)
+                            .attr('class', `branch-path branch-${this.getBranchClass(branch)}`)
+                            .attr('d', line);
+                    }
+                });
+
+                // Draw parent connections
+                this.commits.forEach(commit => {
+                    if (commit.parent) {
+                        const parent = this.findCommit(commit.parent);
+                        if (parent && parent.branch !== commit.branch) {
+                            const startPos = this.commitPositions[parent.id];
+                            const endPos = this.commitPositions[commit.id];
+
+                            pathGroup.append('line')
+                                .attr('class', `branch-path branch-${this.getBranchClass(commit.branch)}`)
+                                .attr('x1', startPos.x)
+                                .attr('y1', startPos.y)
+                                .attr('x2', endPos.x)
+                                .attr('y2', endPos.y);
+                        }
+                    }
+
+                    // Draw merge connections
+                    if (commit.isMerge && commit.parents.length > 1) {
+                        const mergeParent = this.findCommit(commit.parents[1]);
+                        if (mergeParent) {
+                            const startPos = this.commitPositions[mergeParent.id];
+                            const endPos = this.commitPositions[commit.id];
+
+                            // Draw curved merge line
+                            const midX = (startPos.x + endPos.x) / 2;
+                            const path = `M ${startPos.x} ${startPos.y} Q ${midX} ${startPos.y} ${endPos.x} ${endPos.y}`;
+
+                            pathGroup.append('path')
+                                .attr('class', 'merge-path')
+                                .attr('d', path)
+                                .style('stroke', '#888');
+                        }
+                    }
+                });
+            }
+
+            drawCommits(group) {
+                const commitGroup = group.append('g').attr('class', 'commits');
+
+                this.commits.forEach(commit => {
+                    const pos = this.commitPositions[commit.id];
+                    const g = commitGroup.append('g')
+                        .attr('class', 'commit-node')
+                        .attr('transform', `translate(${pos.x}, ${pos.y})`);
+
+                    // Draw commit circle
+                    g.append('circle')
+                        .attr('r', commit.isMerge ? 8 : 6)
+                        .style('fill', this.getBranchColor(commit.branch))
+                        .style('stroke', '#fff')
+                        .style('stroke-width', 2)
+                        .on('mouseenter', (event) => this.showTooltip(event, commit))
+                        .on('mouseleave', () => this.hideTooltip())
+                        .on('click', () => this.selectCommit(commit));
+
+                    // Draw commit hash
+                    g.append('text')
+                        .attr('x', 0)
+                        .attr('y', -15)
+                        .attr('text-anchor', 'middle')
+                        .attr('class', 'commit-hash')
+                        .style('font-size', '10px')
+                        .style('fill', '#f0b90b')
+                        .style('font-family', 'monospace')
+                        .text(commit.id);
+
+                    // Draw commit message (truncated)
+                    g.append('text')
+                        .attr('x', 0)
+                        .attr('y', 25)
+                        .attr('text-anchor', 'middle')
+                        .attr('class', 'commit-message')
+                        .text(commit.message.substring(0, 30) + (commit.message.length > 30 ? '...' : ''));
+                });
+            }
+
+            drawBranchLabels(group) {
+                const labelGroup = group.append('g').attr('class', 'branch-labels');
+
+                Object.entries(this.branches).forEach(([branchName, commitId]) => {
+                    const commit = this.findCommit(commitId);
+                    if (!commit) return;
+
+                    const pos = this.commitPositions[commitId];
+                    const g = labelGroup.append('g')
+                        .attr('transform', `translate(${pos.x + 20}, ${pos.y - 20})`);
+
+                    const rect = g.append('rect')
+                        .attr('x', -5)
+                        .attr('y', -10)
+                        .attr('width', branchName.length * 8 + 10)
+                        .attr('height', 20)
+                        .attr('rx', 10)
+                        .style('fill', this.getBranchColor(branchName))
+                        .style('opacity', 0.9);
+
+                    g.append('text')
+                        .attr('x', branchName.length * 4)
+                        .attr('y', 3)
+                        .attr('text-anchor', 'middle')
+                        .attr('class', 'branch-label')
+                        .text(branchName);
+                });
+            }
+
+            drawHEAD(group) {
+                const headCommit = this.findCommit(this.HEAD);
+                if (!headCommit) return;
+
+                const pos = this.commitPositions[this.HEAD];
+                const g = group.append('g')
+                    .attr('transform', `translate(${pos.x}, ${pos.y - 35})`);
+
+                g.append('path')
+                    .attr('d', 'M 0 0 L -5 -8 L 5 -8 Z')
+                    .style('fill', '#f0b90b');
+
+                g.append('text')
+                    .attr('x', 0)
+                    .attr('y', -15)
+                    .attr('text-anchor', 'middle')
+                    .style('fill', '#f0b90b')
+                    .style('font-size', '11px')
+                    .style('font-weight', 'bold')
+                    .text('HEAD');
+            }
+
+            getBranchClass(branchName) {
+                if (branchName.includes('master') || branchName.includes('main')) return 'master';
+                if (branchName.includes('develop')) return 'develop';
+                if (branchName.includes('feature')) return 'feature';
+                if (branchName.includes('release')) return 'release';
+                if (branchName.includes('hotfix')) return 'hotfix';
+                if (branchName.includes('bugfix')) return 'bugfix';
+                return 'default';
+            }
+
+            getBranchColor(branchName) {
+                const colors = {
+                    'master': '#61afef',
+                    'main': '#61afef',
+                    'develop': '#98c379',
+                    'feature': '#e06c75',
+                    'release': '#d19a66',
+                    'hotfix': '#c678dd',
+                    'bugfix': '#56b6c2',
+                    'default': '#abb2bf'
+                };
+
+                const branchClass = this.getBranchClass(branchName);
+                return colors[branchClass] || colors['default'];
+            }
+
+            showTooltip(event, commit) {
+                const tooltip = document.getElementById('tooltip');
+                const date = new Date(commit.timestamp).toLocaleString();
+
+                tooltip.innerHTML = `
+                    <h4>Commit Details</h4>
+                    <p><strong>Hash:</strong> <span class="hash">${commit.id}</span></p>
+                    <p><strong>Message:</strong> ${commit.message}</p>
+                    <p><strong>Branch:</strong> ${commit.branch}</p>
+                    <p><strong>Author:</strong> ${commit.author}</p>
+                    <p><strong>Date:</strong> ${date}</p>
+                    ${commit.isMerge ? '<p><strong>Type:</strong> Merge commit</p>' : ''}
+                `;
+
+                tooltip.style.left = event.pageX + 10 + 'px';
+                tooltip.style.top = event.pageY - 10 + 'px';
+                tooltip.classList.add('visible');
+            }
+
+            hideTooltip() {
+                document.getElementById('tooltip').classList.remove('visible');
+            }
+
+            selectCommit(commit) {
+                console.log('Selected commit:', commit);
+                // Could implement commit selection logic here
+            }
+
+            updateStats() {
+                document.getElementById('currentBranch').textContent = this.currentBranch || 'detached';
+                document.getElementById('headCommit').textContent = this.HEAD;
+                document.getElementById('commitCount').textContent = this.commits.length;
+                document.getElementById('branchCount').textContent = Object.keys(this.branches).length;
+
+                const mergeCount = this.commits.filter(c => c.isMerge).length;
+                document.getElementById('mergeCount').textContent = mergeCount;
+
+                // Update branch indicator color
+                const branchIndicator = document.getElementById('currentBranch');
+                const color = this.getBranchColor(this.currentBranch);
+                branchIndicator.style.background = color + '20';
+                branchIndicator.style.color = color;
+            }
+        }
+
+        // Initialize graph
+        const gitGraph = new GitGraph();
+
+        // D3.js setup
+        const d3 = {
+            select: function(selector) {
+                const element = document.querySelector(selector);
+                return new D3Selection(element);
+            },
+            line: function() {
+                return {
+                    x: function(fn) { this.xFn = fn; return this; },
+                    y: function(fn) { this.yFn = fn; return this; },
+                    curve: function(curve) { this.curveFn = curve; return this; },
+                    xFn: d => d[0],
+                    yFn: d => d[1]
+                };
+            },
+            curveMonotoneX: 'monotoneX'
+        };
+
+        class D3Selection {
+            constructor(element) {
+                this.element = element;
+            }
+
+            selectAll(selector) {
+                this.element?.querySelectorAll(selector).forEach(el => el.remove());
+                return this;
+            }
+
+            append(tagName) {
+                const newElement = document.createElementNS('http://www.w3.org/2000/svg', tagName);
+                if (this.element) {
+                    this.element.appendChild(newElement);
+                }
+                return new D3Selection(newElement);
+            }
+
+            attr(name, value) {
+                if (this.element) {
+                    this.element.setAttribute(name, value);
+                }
+                return this;
+            }
+
+            style(name, value) {
+                if (this.element) {
+                    this.element.style[name] = value;
+                }
+                return this;
+            }
+
+            text(value) {
+                if (this.element) {
+                    this.element.textContent = value;
+                }
+                return this;
+            }
+
+            on(event, handler) {
+                if (this.element) {
+                    this.element.addEventListener(event, handler);
+                }
+                return this;
+            }
+
+            datum(data) {
+                this.dataItem = data;
+                return this;
+            }
+
+            node() {
+                return this.element;
+            }
+        }
+
+        // Command execution
+        function executeCommand() {
+            const input = document.getElementById('commandInput').value.trim();
+            if (!input) return;
+
+            const parts = input.split(' ');
+            if (parts[0] !== 'git') {
+                alert('Commands must start with "git"');
+                return;
+            }
+
+            try {
+                const command = parts[1];
+                const args = parts.slice(2);
+
+                switch(command) {
+                    case 'commit':
+                        const message = args.join(' ').replace(/^-m\s*['"]?|['"]?$/g, '');
+                        gitGraph.commit(message);
+                        break;
+                    case 'branch':
+                        if (args[0]) {
+                            gitGraph.createBranch(args[0]);
+                        }
+                        break;
+                    case 'checkout':
+                        if (args[0] === '-b' && args[1]) {
+                            gitGraph.createBranch(args[1]);
+                            gitGraph.checkout(args[1]);
+                        } else if (args[0]) {
+                            gitGraph.checkout(args[0]);
+                        }
+                        break;
+                    case 'merge':
+                        if (args[0]) {
+                            gitGraph.merge(args[0]);
+                        }
+                        break;
+                    default:
+                        alert(`Unknown command: ${command}`);
+                }
+
+                document.getElementById('commandInput').value = '';
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        // Quick commands
+        function quickCommand(cmd) {
+            const input = document.getElementById('commandInput');
+            switch(cmd) {
+                case 'commit':
+                    input.value = 'git commit -m "';
+                    break;
+                case 'branch':
+                    input.value = 'git branch ';
+                    break;
+                case 'checkout':
+                    input.value = 'git checkout ';
+                    break;
+                case 'merge':
+                    input.value = 'git merge ';
+                    break;
+                default:
+                    input.value = `git ${cmd} `;
+            }
+            input.focus();
+        }
+
+        // Load examples
+        function loadExample(type) {
+            gitGraph.commits = [];
+            gitGraph.branches = {};
+            gitGraph.lanes = {};
+            gitGraph.nextLane = 0;
+            gitGraph.currentBranch = 'master';
+
+            switch(type) {
+                case 'simple':
+                    gitGraph.init();
+                    gitGraph.commit('Add README');
+                    gitGraph.commit('Initial project setup');
+                    gitGraph.createBranch('feature/login');
+                    gitGraph.checkout('feature/login');
+                    gitGraph.commit('Add login form');
+                    gitGraph.commit('Add authentication');
+                    gitGraph.checkout('master');
+                    gitGraph.commit('Update dependencies');
+                    gitGraph.merge('feature/login');
+                    break;
+
+                case 'feature':
+                    gitGraph.init();
+                    gitGraph.commit('Initial commit');
+                    gitGraph.createBranch('develop');
+                    gitGraph.checkout('develop');
+                    gitGraph.commit('Setup development environment');
+
+                    gitGraph.createBranch('feature/user-auth');
+                    gitGraph.checkout('feature/user-auth');
+                    gitGraph.commit('Add user model');
+                    gitGraph.commit('Add authentication service');
+
+                    gitGraph.checkout('develop');
+                    gitGraph.createBranch('feature/dashboard');
+                    gitGraph.checkout('feature/dashboard');
+                    gitGraph.commit('Create dashboard layout');
+                    gitGraph.commit('Add charts');
+
+                    gitGraph.checkout('develop');
+                    gitGraph.merge('feature/user-auth');
+                    gitGraph.merge('feature/dashboard');
+
+                    gitGraph.checkout('master');
+                    gitGraph.merge('develop');
+                    break;
+
+                case 'gitflow':
+                    gitGraph.init();
+                    gitGraph.commit('Initial commit');
+
+                    gitGraph.createBranch('develop');
+                    gitGraph.checkout('develop');
+                    gitGraph.commit('Development setup');
+
+                    gitGraph.createBranch('feature/payment');
+                    gitGraph.checkout('feature/payment');
+                    gitGraph.commit('Add payment gateway');
+                    gitGraph.commit('Add payment validation');
+
+                    gitGraph.checkout('develop');
+                    gitGraph.createBranch('feature/notifications');
+                    gitGraph.checkout('feature/notifications');
+                    gitGraph.commit('Add email notifications');
+
+                    gitGraph.checkout('develop');
+                    gitGraph.merge('feature/payment');
+                    gitGraph.merge('feature/notifications');
+
+                    gitGraph.createBranch('release/1.0');
+                    gitGraph.checkout('release/1.0');
+                    gitGraph.commit('Bump version to 1.0');
+                    gitGraph.commit('Fix release bugs');
+
+                    gitGraph.checkout('master');
+                    gitGraph.merge('release/1.0');
+                    gitGraph.commit('Tag v1.0.0');
+
+                    gitGraph.createBranch('hotfix/security-patch');
+                    gitGraph.checkout('hotfix/security-patch');
+                    gitGraph.commit('Fix security vulnerability');
+
+                    gitGraph.checkout('master');
+                    gitGraph.merge('hotfix/security-patch');
+
+                    gitGraph.checkout('develop');
+                    gitGraph.merge('hotfix/security-patch');
+                    break;
+            }
+        }
+
+        // Zoom controls
+        let scale = 1;
+        let translateX = 0;
+        let translateY = 0;
+
+        function zoomIn() {
+            gitGraph.scale *= 1.2;
+            gitGraph.updateVisualization();
+        }
+
+        function zoomOut() {
+            gitGraph.scale *= 0.8;
+            gitGraph.updateVisualization();
+        }
+
+        function resetZoom() {
+            gitGraph.scale = 1;
+            gitGraph.translateX = 0;
+            gitGraph.translateY = 0;
+            gitGraph.updateVisualization();
+        }
+
+        function resetGraph() {
+            gitGraph.commits = [];
+            gitGraph.branches = {};
+            gitGraph.lanes = {};
+            gitGraph.nextLane = 0;
+            gitGraph.currentBranch = 'master';
+            gitGraph.init();
+        }
+
+        function showHelp() {
+            alert(`Git Graph Visualizer Commands:
+
+• git commit -m "message" - Create a new commit
+• git branch [name] - Create a new branch
+• git checkout [branch] - Switch to a branch
+• git checkout -b [name] - Create and switch to new branch
+• git merge [branch] - Merge a branch into current
+
+Shortcuts:
+• Click quick command buttons for templates
+• Use mouse to pan and zoom the graph
+• Click commits to see details
+• Try the example scenarios!`);
+        }
+
+        // Pan functionality
+        let isPanning = false;
+        let startX = 0;
+        let startY = 0;
+
+        const svg = document.getElementById('gitGraph');
+        svg.addEventListener('mousedown', (e) => {
+            if (e.target === svg) {
+                isPanning = true;
+                startX = e.clientX - gitGraph.translateX;
+                startY = e.clientY - gitGraph.translateY;
+                svg.classList.add('dragging');
+            }
+        });
+
+        svg.addEventListener('mousemove', (e) => {
+            if (isPanning) {
+                gitGraph.translateX = e.clientX - startX;
+                gitGraph.translateY = e.clientY - startY;
+                gitGraph.updateVisualization();
+            }
+        });
+
+        svg.addEventListener('mouseup', () => {
+            isPanning = false;
+            svg.classList.remove('dragging');
+        });
+
+        svg.addEventListener('mouseleave', () => {
+            isPanning = false;
+            svg.classList.remove('dragging');
+        });
+
+        // Keyboard shortcuts
+        document.getElementById('commandInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                executeCommand();
+            }
+        });
+
+        // Initialize
+        window.addEventListener('load', () => {
+            gitGraph.init();
+        });
+    </script>
+</body>
+</html>

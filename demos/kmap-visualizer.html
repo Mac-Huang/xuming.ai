@@ -1,0 +1,1369 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>K-Map Visualizer - Interactive Karnaugh Map Tool</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: rgba(255, 255, 255, 0.98);
+      border-radius: 16px;
+      padding: 24px 32px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .header h1 {
+      font-size: 32px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #666;
+      font-size: 16px;
+    }
+
+    .main-content {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 24px;
+    }
+
+    .control-panel {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      max-height: calc(100vh - 200px);
+      overflow-y: auto;
+    }
+
+    .visualization-panel {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .section {
+      margin-bottom: 24px;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #666;
+      margin-bottom: 12px;
+    }
+
+    .input-group {
+      margin-bottom: 16px;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: #333;
+      margin-bottom: 6px;
+    }
+
+    .input-group input,
+    .input-group select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .input-group input:focus,
+    .input-group select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .variable-inputs {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .variable-inputs input {
+      padding: 8px;
+      text-align: center;
+      font-family: 'Monaco', monospace;
+      font-size: 13px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: #f0f2f5;
+      color: #333;
+      margin-left: 8px;
+    }
+
+    .btn-secondary:hover {
+      background: #e4e6ea;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .btn-group .btn {
+      flex: 1;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #f0f2f5;
+    }
+
+    .tab {
+      padding: 10px 20px;
+      background: none;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      color: #666;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+    }
+
+    .tab.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+    }
+
+    .tab:hover {
+      color: #667eea;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* K-Map 2D Styles */
+    .kmap-2d {
+      margin: 20px 0;
+    }
+
+    .kmap-table {
+      border-collapse: collapse;
+      margin: 0 auto;
+      background: white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .kmap-table td,
+    .kmap-table th {
+      width: 60px;
+      height: 60px;
+      text-align: center;
+      border: 1px solid #ddd;
+      font-size: 14px;
+      font-weight: 500;
+      position: relative;
+    }
+
+    .kmap-table th {
+      background: #f8f9fa;
+      font-size: 13px;
+      color: #666;
+      padding: 8px;
+    }
+
+    .kmap-cell {
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .kmap-cell.value-1 {
+      background: #e3f2fd;
+      color: #1976d2;
+    }
+
+    .kmap-cell.value-0 {
+      background: #fff;
+      color: #ccc;
+    }
+
+    .kmap-cell.value-x {
+      background: #fff3e0;
+      color: #f57c00;
+    }
+
+    .kmap-cell:hover {
+      transform: scale(1.05);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      z-index: 1;
+    }
+
+    .cell-label {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      font-size: 10px;
+      color: #999;
+      font-family: 'Monaco', monospace;
+    }
+
+    /* Group highlighting */
+    .group-overlay {
+      position: absolute;
+      border: 3px solid;
+      border-radius: 8px;
+      pointer-events: none;
+      z-index: 10;
+      transition: all 0.3s;
+    }
+
+    .group-1 { border-color: #ff4444; background: rgba(255, 68, 68, 0.1); }
+    .group-2 { border-color: #44ff44; background: rgba(68, 255, 68, 0.1); }
+    .group-3 { border-color: #4444ff; background: rgba(68, 68, 255, 0.1); }
+    .group-4 { border-color: #ffff44; background: rgba(255, 255, 68, 0.1); }
+    .group-5 { border-color: #ff44ff; background: rgba(255, 68, 255, 0.1); }
+    .group-6 { border-color: #44ffff; background: rgba(68, 255, 255, 0.1); }
+
+    /* 3D Canvas */
+    #canvas3d {
+      width: 100%;
+      height: 500px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+
+    /* Expression Display */
+    .expression-display {
+      background: #f8f9fa;
+      border: 1px solid #e1e4e8;
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 20px;
+    }
+
+    .expression-title {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .expression-text {
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 16px;
+      color: #333;
+      line-height: 1.6;
+      word-break: break-all;
+    }
+
+    .expression-text .term {
+      display: inline-block;
+      padding: 2px 6px;
+      margin: 2px;
+      background: #e3f2fd;
+      border-radius: 4px;
+    }
+
+    /* Info boxes */
+    .info-box {
+      background: #f0f7ff;
+      border-left: 4px solid #2196f3;
+      padding: 12px;
+      margin-top: 16px;
+      border-radius: 4px;
+    }
+
+    .info-box h4 {
+      margin: 0 0 8px 0;
+      color: #1565c0;
+      font-size: 14px;
+    }
+
+    .info-box p {
+      margin: 0;
+      font-size: 13px;
+      color: #424242;
+      line-height: 1.5;
+    }
+
+    /* Loading spinner */
+    .loader {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .main-content {
+        grid-template-columns: 1fr;
+      }
+
+      .control-panel {
+        max-height: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>K-Map Visualizer</h1>
+      <div class="subtitle">Interactive Karnaugh Map for Boolean Expression Simplification</div>
+    </div>
+
+    <div class="main-content">
+      <div class="control-panel">
+        <div class="section">
+          <div class="section-title">Configuration</div>
+
+          <div class="input-group">
+            <label>Number of Variables</label>
+            <select id="numVars" onchange="updateVariableCount()">
+              <option value="2">2 Variables</option>
+              <option value="3" selected>3 Variables</option>
+              <option value="4">4 Variables</option>
+              <option value="5">5 Variables</option>
+              <option value="6">6 Variables</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label>Variable Names</label>
+            <div class="variable-inputs" id="varNames">
+              <input type="text" value="A" maxlength="2">
+              <input type="text" value="B" maxlength="2">
+              <input type="text" value="C" maxlength="2">
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label>Input Method</label>
+            <select id="inputMethod" onchange="changeInputMethod()">
+              <option value="truth">Truth Table</option>
+              <option value="minterms">Minterms</option>
+              <option value="expression">Boolean Expression</option>
+            </select>
+          </div>
+
+          <div id="inputArea">
+            <!-- Dynamic input based on method -->
+          </div>
+
+          <button class="btn btn-primary" onclick="generateKMap()">Generate K-Map</button>
+          <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Examples</div>
+          <div class="btn-group">
+            <button class="btn btn-secondary" onclick="loadExample('simple')">Simple</button>
+            <button class="btn btn-secondary" onclick="loadExample('complex')">Complex</button>
+          </div>
+        </div>
+
+        <div class="expression-display">
+          <div class="expression-title">Simplified Expression</div>
+          <div class="expression-text" id="simplifiedExpr">
+            Click "Generate K-Map" to see the simplified expression
+          </div>
+        </div>
+
+        <div class="info-box">
+          <h4>How to Use</h4>
+          <p>1. Select the number of variables (2-6)</p>
+          <p>2. Enter your Boolean function using truth table, minterms, or expression</p>
+          <p>3. Click "Generate K-Map" to visualize</p>
+          <p>4. Groups of 1s will be automatically highlighted</p>
+          <p>5. For 3+ variables, switch to 3D view for cube visualization</p>
+        </div>
+      </div>
+
+      <div class="visualization-panel">
+        <div class="tabs">
+          <button class="tab active" onclick="switchTab('2d')">2D K-Map</button>
+          <button class="tab" onclick="switchTab('3d')" id="3dTab">3D Cube</button>
+        </div>
+
+        <div class="tab-content active" id="2d-content">
+          <div id="kmap2d" class="kmap-2d">
+            <!-- 2D K-Map will be generated here -->
+          </div>
+        </div>
+
+        <div class="tab-content" id="3d-content">
+          <canvas id="canvas3d" width="800" height="500"></canvas>
+          <div style="text-align: center; margin-top: 10px; color: #666; font-size: 13px;">
+            🖱️ Drag to rotate • Scroll to zoom • Click cells to toggle
+          </div>
+          <div id="3d-error" style="display:none; color: red; text-align: center; padding: 20px;">
+            3D visualization requires WebGL support. Please use a modern browser.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Global variables
+    let numVars = 3;
+    let varNames = ['A', 'B', 'C'];
+    let kmapData = [];
+    let groups = [];
+    let scene3d, camera3d, renderer3d, controls3d;
+    let cube3d = null;
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      updateVariableCount();
+      changeInputMethod();
+
+      // Initialize 3D after a short delay to ensure canvas is ready
+      setTimeout(function() {
+        init3D();
+        // Generate initial example
+        loadExample('simple');
+      }, 100);
+    });
+
+    // Update variable count
+    function updateVariableCount() {
+      numVars = parseInt(document.getElementById('numVars').value);
+      const varNamesDiv = document.getElementById('varNames');
+      varNamesDiv.innerHTML = '';
+
+      const defaultNames = ['A', 'B', 'C', 'D', 'E', 'F'];
+      varNames = [];
+
+      for (let i = 0; i < numVars; i++) {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = defaultNames[i];
+        input.maxLength = 2;
+        input.onchange = () => updateVarNames();
+        varNamesDiv.appendChild(input);
+        varNames.push(defaultNames[i]);
+      }
+
+      // Show/hide 3D tab based on variable count
+      document.getElementById('3dTab').style.display = numVars >= 3 ? 'block' : 'none';
+
+      changeInputMethod();
+    }
+
+    // Update variable names
+    function updateVarNames() {
+      const inputs = document.querySelectorAll('#varNames input');
+      varNames = Array.from(inputs).map(input => input.value || 'X');
+    }
+
+    // Change input method
+    function changeInputMethod() {
+      const method = document.getElementById('inputMethod').value;
+      const inputArea = document.getElementById('inputArea');
+
+      if (method === 'truth') {
+        generateTruthTableInput();
+      } else if (method === 'minterms') {
+        inputArea.innerHTML = `
+          <div class="input-group">
+            <label>Minterms (comma-separated, e.g., 0,1,3,7)</label>
+            <input type="text" id="mintermsInput" placeholder="0,1,3,7">
+          </div>
+          <div class="input-group">
+            <label>Don't Cares (optional)</label>
+            <input type="text" id="dontCaresInput" placeholder="2,5">
+          </div>
+        `;
+      } else if (method === 'expression') {
+        inputArea.innerHTML = `
+          <div class="input-group">
+            <label>Boolean Expression (use + for OR, * or space for AND, ' for NOT)</label>
+            <input type="text" id="expressionInput" placeholder="A*B + A'*C">
+          </div>
+        `;
+      }
+    }
+
+    // Generate truth table input
+    function generateTruthTableInput() {
+      const inputArea = document.getElementById('inputArea');
+      const rows = Math.pow(2, numVars);
+
+      let html = '<div style="max-height: 300px; overflow-y: auto;">';
+      html += '<table style="width: 100%; border-collapse: collapse;">';
+      html += '<thead><tr>';
+
+      for (let i = 0; i < numVars; i++) {
+        html += `<th style="padding: 8px; border: 1px solid #ddd; background: #f8f9fa;">${varNames[i]}</th>`;
+      }
+      html += '<th style="padding: 8px; border: 1px solid #ddd; background: #f8f9fa;">Output</th>';
+      html += '</tr></thead><tbody>';
+
+      for (let i = 0; i < rows; i++) {
+        html += '<tr>';
+        for (let j = numVars - 1; j >= 0; j--) {
+          const bit = (i >> j) & 1;
+          html += `<td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${bit}</td>`;
+        }
+        html += `<td style="padding: 8px; border: 1px solid #ddd; text-align: center;">
+          <select id="truth_${i}" style="width: 50px;">
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="x">X</option>
+          </select>
+        </td>`;
+        html += '</tr>';
+      }
+
+      html += '</tbody></table></div>';
+      inputArea.innerHTML = html;
+    }
+
+    // Generate K-Map
+    function generateKMap() {
+      const method = document.getElementById('inputMethod').value;
+      const cells = Math.pow(2, numVars);
+      kmapData = new Array(cells).fill(0);
+
+      if (method === 'truth') {
+        for (let i = 0; i < cells; i++) {
+          const select = document.getElementById(`truth_${i}`);
+          if (select) {
+            const value = select.value;
+            kmapData[i] = value === 'x' ? 'X' : parseInt(value);
+          }
+        }
+      } else if (method === 'minterms') {
+        const minterms = document.getElementById('mintermsInput').value
+          .split(',').map(x => parseInt(x.trim())).filter(x => !isNaN(x));
+        const dontCares = document.getElementById('dontCaresInput').value
+          .split(',').map(x => parseInt(x.trim())).filter(x => !isNaN(x));
+
+        for (let minterm of minterms) {
+          if (minterm < cells) kmapData[minterm] = 1;
+        }
+        for (let dc of dontCares) {
+          if (dc < cells) kmapData[dc] = 'X';
+        }
+      } else if (method === 'expression') {
+        // Parse boolean expression (simplified parser)
+        const expr = document.getElementById('expressionInput').value;
+        kmapData = parseExpression(expr);
+      }
+
+      draw2DKMap();
+      findGroups();
+      simplifyExpression();
+
+      if (numVars >= 3) {
+        draw3DKMap();
+      }
+    }
+
+    // Draw 2D K-Map
+    function draw2DKMap() {
+      const container = document.getElementById('kmap2d');
+
+      if (numVars === 2) {
+        draw2VarKMap(container);
+      } else if (numVars === 3) {
+        draw3VarKMap(container);
+      } else if (numVars === 4) {
+        draw4VarKMap(container);
+      } else {
+        drawLargeKMap(container);
+      }
+    }
+
+    // Draw 2-variable K-Map
+    function draw2VarKMap(container) {
+      const grayCode2 = ['0', '1'];
+      let html = '<div style="position: relative; display: inline-block;">';
+      html += '<table class="kmap-table">';
+      html += '<tr><th></th>';
+
+      for (let col of grayCode2) {
+        html += `<th>${varNames[1]}=${col}</th>`;
+      }
+      html += '</tr>';
+
+      for (let i = 0; i < 2; i++) {
+        html += `<tr><th>${varNames[0]}=${grayCode2[i]}</th>`;
+        for (let j = 0; j < 2; j++) {
+          const index = i * 2 + j;
+          const value = kmapData[index];
+          const cellClass = value === 'X' ? 'value-x' : `value-${value}`;
+          html += `<td class="kmap-cell ${cellClass}" onclick="toggleCell(${index})">`;
+          html += `<span class="cell-label">${index}</span>`;
+          html += value === 'X' ? 'X' : value;
+          html += '</td>';
+        }
+        html += '</tr>';
+      }
+
+      html += '</table>';
+      html += '<div id="groupOverlays"></div>';
+      html += '</div>';
+      container.innerHTML = html;
+    }
+
+    // Draw 3-variable K-Map
+    function draw3VarKMap(container) {
+      const grayCode2 = ['00', '01', '11', '10'];
+      const grayCode1 = ['0', '1'];
+
+      let html = '<div style="position: relative; display: inline-block;">';
+      html += '<table class="kmap-table">';
+      html += '<tr><th>' + varNames[0] + '\\' + varNames[1] + varNames[2] + '</th>';
+
+      for (let col of grayCode2) {
+        html += `<th>${col}</th>`;
+      }
+      html += '</tr>';
+
+      for (let i = 0; i < 2; i++) {
+        html += `<tr><th>${grayCode1[i]}</th>`;
+        for (let j = 0; j < 4; j++) {
+          const grayJ = [0, 1, 3, 2][j]; // Gray code mapping
+          const index = i * 4 + grayJ;
+          const value = kmapData[index];
+          const cellClass = value === 'X' ? 'value-x' : `value-${value}`;
+          html += `<td class="kmap-cell ${cellClass}" data-index="${index}" onclick="toggleCell(${index})">`;
+          html += `<span class="cell-label">${index}</span>`;
+          html += value === 'X' ? 'X' : value;
+          html += '</td>';
+        }
+        html += '</tr>';
+      }
+
+      html += '</table>';
+      html += '<div id="groupOverlays"></div>';
+      html += '</div>';
+      container.innerHTML = html;
+    }
+
+    // Draw 4-variable K-Map
+    function draw4VarKMap(container) {
+      const grayCode = ['00', '01', '11', '10'];
+
+      let html = '<div style="position: relative; display: inline-block;">';
+      html += '<table class="kmap-table">';
+      html += '<tr><th>' + varNames[0] + varNames[1] + '\\' + varNames[2] + varNames[3] + '</th>';
+
+      for (let col of grayCode) {
+        html += `<th>${col}</th>`;
+      }
+      html += '</tr>';
+
+      for (let i = 0; i < 4; i++) {
+        html += `<tr><th>${grayCode[i]}</th>`;
+        for (let j = 0; j < 4; j++) {
+          const rowMap = [0, 1, 3, 2][i];
+          const colMap = [0, 1, 3, 2][j];
+          const index = rowMap * 4 + colMap;
+          const value = kmapData[index];
+          const cellClass = value === 'X' ? 'value-x' : `value-${value}`;
+          html += `<td class="kmap-cell ${cellClass}" data-index="${index}" onclick="toggleCell(${index})">`;
+          html += `<span class="cell-label">${index}</span>`;
+          html += value === 'X' ? 'X' : value;
+          html += '</td>';
+        }
+        html += '</tr>';
+      }
+
+      html += '</table>';
+      html += '<div id="groupOverlays"></div>';
+      html += '</div>';
+      container.innerHTML = html;
+    }
+
+    // Draw large K-Map (5-6 variables)
+    function drawLargeKMap(container) {
+      container.innerHTML = '<div class="info-box"><p>For 5-6 variables, please use the 3D visualization for better clarity.</p></div>';
+    }
+
+    // Toggle cell value
+    function toggleCell(index) {
+      const current = kmapData[index];
+      if (current === 0) {
+        kmapData[index] = 1;
+      } else if (current === 1) {
+        kmapData[index] = 'X';
+      } else {
+        kmapData[index] = 0;
+      }
+      draw2DKMap();
+      findGroups();
+      simplifyExpression();
+      if (numVars >= 3) {
+        draw3DKMap();
+      }
+    }
+
+    // Find groups of 1s
+    function findGroups() {
+      groups = [];
+      const ones = [];
+      const dontCares = [];
+
+      for (let i = 0; i < kmapData.length; i++) {
+        if (kmapData[i] === 1) ones.push(i);
+        if (kmapData[i] === 'X') dontCares.push(i);
+      }
+
+      // Find all possible groups (simplified algorithm)
+      const allCells = ones.concat(dontCares);
+      const used = new Set();
+
+      // Try to find groups of sizes: 16, 8, 4, 2, 1
+      for (let size of [16, 8, 4, 2, 1]) {
+        if (size > kmapData.length) continue;
+
+        for (let start of ones) {
+          if (used.has(start)) continue;
+
+          const group = findGroupOfSize(start, size, allCells);
+          if (group.length === size) {
+            groups.push(group);
+            group.forEach(cell => {
+              if (kmapData[cell] === 1) used.add(cell);
+            });
+          }
+        }
+      }
+
+      drawGroups();
+    }
+
+    // Find group of specific size
+    function findGroupOfSize(start, size, validCells) {
+      // Simplified grouping algorithm
+      const group = [start];
+
+      if (size === 1) return group;
+
+      // Check adjacent cells
+      const candidates = validCells.filter(c => c !== start);
+
+      for (let candidate of candidates) {
+        if (group.length >= size) break;
+        if (isAdjacent(start, candidate, numVars)) {
+          group.push(candidate);
+        }
+      }
+
+      return group.slice(0, size);
+    }
+
+    // Check if two cells are adjacent in K-Map
+    function isAdjacent(a, b, vars) {
+      const xorResult = a ^ b;
+      // Adjacent if differ by one bit (power of 2)
+      return (xorResult & (xorResult - 1)) === 0;
+    }
+
+    // Draw group overlays
+    function drawGroups() {
+      const overlaysDiv = document.getElementById('groupOverlays');
+      if (!overlaysDiv) return;
+
+      overlaysDiv.innerHTML = '';
+
+      groups.forEach((group, index) => {
+        const overlay = document.createElement('div');
+        overlay.className = `group-overlay group-${(index % 6) + 1}`;
+
+        // Calculate bounding box for the group
+        // (Simplified - just highlight individual cells for now)
+        const cells = document.querySelectorAll('.kmap-cell');
+        group.forEach(cellIndex => {
+          if (cells[cellIndex]) {
+            cells[cellIndex].style.border = `3px solid var(--group-${(index % 6) + 1})`;
+          }
+        });
+      });
+    }
+
+    // Simplify expression
+    function simplifyExpression() {
+      if (groups.length === 0) {
+        document.getElementById('simplifiedExpr').innerHTML = '0';
+        return;
+      }
+
+      const terms = [];
+
+      for (let group of groups) {
+        const term = getTermForGroup(group);
+        if (term) terms.push(term);
+      }
+
+      const expression = terms.join(' + ');
+      document.getElementById('simplifiedExpr').innerHTML =
+        terms.map(t => `<span class="term">${t}</span>`).join(' + ') || '1';
+    }
+
+    // Get term for a group
+    function getTermForGroup(group) {
+      if (group.length === 0) return '';
+
+      const bits = numVars;
+      const unchangedBits = [];
+
+      // Find which bits don't change in the group
+      for (let bit = 0; bit < bits; bit++) {
+        const bitValues = group.map(cell => (cell >> bit) & 1);
+        const allSame = bitValues.every(v => v === bitValues[0]);
+
+        if (allSame) {
+          const varName = varNames[bits - bit - 1];
+          unchangedBits.push(bitValues[0] ? varName : varName + "'");
+        }
+      }
+
+      return unchangedBits.join('');
+    }
+
+    // Check WebGL support
+    function checkWebGL() {
+      try {
+        const canvas = document.createElement('canvas');
+        return !!(window.WebGLRenderingContext &&
+          (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')));
+      } catch(e) {
+        return false;
+      }
+    }
+
+    // Initialize 3D scene
+    function init3D() {
+      const canvas = document.getElementById('canvas3d');
+      if (!canvas) {
+        console.error('Canvas not found');
+        return;
+      }
+
+      // Check WebGL support
+      if (!checkWebGL()) {
+        document.getElementById('3d-error').style.display = 'block';
+        canvas.style.display = 'none';
+        return;
+      }
+
+      try {
+        scene3d = new THREE.Scene();
+        scene3d.background = new THREE.Color(0xf0f0f0);
+
+        camera3d = new THREE.PerspectiveCamera(
+          75,
+          800 / 500,
+          0.1,
+          1000
+        );
+        camera3d.position.set(5, 5, 5);
+        camera3d.lookAt(0, 0, 0);
+
+        renderer3d = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+        renderer3d.setSize(800, 500);
+
+        // Manual orbit controls implementation
+        setupOrbitControls();
+      } catch(e) {
+        console.error('3D init error:', e);
+      }
+
+      // Add lights
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+      scene3d.add(ambientLight);
+
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.4);
+      directionalLight.position.set(5, 5, 5);
+      scene3d.add(directionalLight);
+
+      // Add axes helper
+      try {
+        const axesHelper = new THREE.AxesHelper(2);
+        scene3d.add(axesHelper);
+
+        // Add a test cube to verify 3D is working
+        const testGeometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+        const testMaterial = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
+        const testCube = new THREE.Mesh(testGeometry, testMaterial);
+        testCube.position.set(0, 0, 0);
+        scene3d.add(testCube);
+
+        console.log('3D scene initialized successfully');
+      } catch(e) {
+        console.error('Error adding helpers:', e);
+      }
+
+      animate3D();
+    }
+
+    // Setup manual orbit controls
+    function setupOrbitControls() {
+      const canvas = document.getElementById('canvas3d');
+      let isMouseDown = false;
+      let mouseX = 0;
+      let mouseY = 0;
+      let targetRotationX = 0;
+      let targetRotationY = 0;
+      let rotationX = 0;
+      let rotationY = 0;
+      let zoom = 5;
+
+      canvas.addEventListener('mousedown', function(event) {
+        isMouseDown = true;
+        mouseX = event.clientX;
+        mouseY = event.clientY;
+      }, false);
+
+      canvas.addEventListener('mousemove', function(event) {
+        if (!isMouseDown) return;
+
+        const deltaX = event.clientX - mouseX;
+        const deltaY = event.clientY - mouseY;
+        mouseX = event.clientX;
+        mouseY = event.clientY;
+
+        targetRotationY += deltaX * 0.01;
+        targetRotationX += deltaY * 0.01;
+      }, false);
+
+      canvas.addEventListener('mouseup', function() {
+        isMouseDown = false;
+      }, false);
+
+      canvas.addEventListener('mouseleave', function() {
+        isMouseDown = false;
+      }, false);
+
+      canvas.addEventListener('wheel', function(event) {
+        event.preventDefault();
+        zoom += event.deltaY * 0.01;
+        zoom = Math.min(Math.max(zoom, 2), 10);
+      }, false);
+
+      // Update camera in animation loop
+      window.updateCamera3D = function() {
+        rotationX += (targetRotationX - rotationX) * 0.1;
+        rotationY += (targetRotationY - rotationY) * 0.1;
+
+        camera3d.position.x = zoom * Math.sin(rotationY) * Math.cos(rotationX);
+        camera3d.position.y = zoom * Math.sin(rotationX);
+        camera3d.position.z = zoom * Math.cos(rotationY) * Math.cos(rotationX);
+        camera3d.lookAt(0, 0, 0);
+      };
+    }
+
+    // Draw 3D K-Map
+    function draw3DKMap() {
+      if (!scene3d) {
+        console.error('Scene not initialized');
+        return;
+      }
+
+      // Remove all objects except lights and axes
+      const toRemove = [];
+      scene3d.traverse((child) => {
+        if (child.type === 'Group' || child.type === 'Mesh') {
+          if (child !== scene3d) toRemove.push(child);
+        }
+      });
+      toRemove.forEach(obj => scene3d.remove(obj));
+
+      cube3d = new THREE.Group();
+
+      try {
+        if (numVars === 3) {
+          // 2x2x2 cube
+          const positions = [
+            [-0.6, -0.6, -0.6], [0.6, -0.6, -0.6],
+            [-0.6, 0.6, -0.6], [0.6, 0.6, -0.6],
+            [-0.6, -0.6, 0.6], [0.6, -0.6, 0.6],
+            [-0.6, 0.6, 0.6], [0.6, 0.6, 0.6]
+          ];
+
+          // Gray code mapping for proper K-map ordering
+          const grayCodeMap = [0, 1, 3, 2, 4, 5, 7, 6];
+
+          for (let i = 0; i < 8; i++) {
+            const dataIndex = grayCodeMap[i];
+            const value = kmapData[dataIndex] || 0;
+            const geometry = new THREE.BoxGeometry(0.9, 0.9, 0.9);
+
+            let material;
+            if (value === 1) {
+              material = new THREE.MeshPhongMaterial({
+                color: 0x2196f3,
+                transparent: true,
+                opacity: 0.8
+              });
+            } else if (value === 'X') {
+              material = new THREE.MeshPhongMaterial({
+                color: 0xffc107,
+                transparent: true,
+                opacity: 0.8
+              });
+            } else {
+              material = new THREE.MeshPhongMaterial({
+                color: 0xcccccc,
+                transparent: true,
+                opacity: 0.3
+              });
+            }
+
+            const cube = new THREE.Mesh(geometry, material);
+            cube.position.set(...positions[i]);
+            cube.userData = { index: dataIndex, value: value };
+
+            // Add edges
+            const edges = new THREE.EdgesGeometry(geometry);
+            const line = new THREE.LineSegments(
+              edges,
+              new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 2 })
+            );
+            cube.add(line);
+
+            cube3d.add(cube);
+
+            // Add text label using sprite
+            const canvas = document.createElement('canvas');
+            canvas.width = 64;
+            canvas.height = 64;
+            const context = canvas.getContext('2d');
+            context.fillStyle = 'white';
+            context.fillRect(0, 0, 64, 64);
+            context.font = 'Bold 36px Arial';
+            context.fillStyle = 'black';
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
+            context.fillText(dataIndex.toString(), 32, 32);
+
+            const texture = new THREE.CanvasTexture(canvas);
+            const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+            const sprite = new THREE.Sprite(spriteMaterial);
+            sprite.scale.set(0.3, 0.3, 1);
+            sprite.position.set(...positions[i]);
+            sprite.position.y += 0.6;
+
+            cube3d.add(sprite);
+          }
+
+          // Add connection lines
+          const lineMaterial = new THREE.LineBasicMaterial({ color: 0x666666, opacity: 0.3, transparent: true });
+          const connections = [
+            [0, 1], [2, 3], [4, 5], [6, 7],
+            [0, 2], [1, 3], [4, 6], [5, 7],
+            [0, 4], [1, 5], [2, 6], [3, 7]
+          ];
+
+          for (let conn of connections) {
+            const points = [];
+            points.push(new THREE.Vector3(...positions[conn[0]]));
+            points.push(new THREE.Vector3(...positions[conn[1]]));
+            const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+            const line = new THREE.Line(lineGeometry, lineMaterial);
+            cube3d.add(line);
+          }
+        }
+      } else if (numVars === 4) {
+        // 2x2x2x2 hypercube projection
+        // Simplified: show as two 2x2x2 cubes
+        drawHypercube();
+      }
+
+        scene3d.add(cube3d);
+        console.log('3D K-Map drawn successfully');
+      } catch(e) {
+        console.error('Error drawing 3D K-Map:', e);
+      }
+    }
+
+    // Create text canvas for labels
+    function createTextCanvas(text) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 64;
+      canvas.height = 64;
+      const context = canvas.getContext('2d');
+
+      context.fillStyle = 'white';
+      context.fillRect(0, 0, 64, 64);
+
+      context.font = 'Bold 32px Arial';
+      context.fillStyle = 'black';
+      context.textAlign = 'center';
+      context.textBaseline = 'middle';
+      context.fillText(text, 32, 32);
+
+      return canvas;
+    }
+
+    // Handle 3D click
+    function on3DClick(event) {
+      const canvas = document.getElementById('canvas3d');
+      const rect = canvas.getBoundingClientRect();
+
+      const mouse = new THREE.Vector2();
+      mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+      const raycaster = new THREE.Raycaster();
+      raycaster.setFromCamera(mouse, camera3d);
+
+      const intersects = raycaster.intersectObjects(cube3d.children.filter(c => c.type === 'Mesh'));
+
+      if (intersects.length > 0) {
+        const obj = intersects[0].object;
+        const index = obj.userData.index;
+
+        toggleCell(index);
+      }
+    }
+
+    // Animate 3D scene
+    function animate3D() {
+      if (!renderer3d || !scene3d || !camera3d) {
+        requestAnimationFrame(animate3D);
+        return;
+      }
+
+      requestAnimationFrame(animate3D);
+
+      if (window.updateCamera3D) {
+        window.updateCamera3D();
+      }
+
+      if (cube3d) {
+        cube3d.rotation.y += 0.002; // Slow rotation for visual appeal
+      }
+
+      try {
+        renderer3d.render(scene3d, camera3d);
+      } catch(e) {
+        console.error('Render error:', e);
+      }
+    }
+
+    // Switch tabs
+    function switchTab(tab) {
+      const tabs = document.querySelectorAll('.tab');
+      const contents = document.querySelectorAll('.tab-content');
+
+      tabs.forEach(t => t.classList.remove('active'));
+      contents.forEach(c => c.classList.remove('active'));
+
+      if (tab === '2d') {
+        tabs[0].classList.add('active');
+        document.getElementById('2d-content').classList.add('active');
+      } else {
+        tabs[1].classList.add('active');
+        document.getElementById('3d-content').classList.add('active');
+
+        // Reinitialize 3D if needed
+        if (!renderer3d) {
+          init3D();
+        }
+
+        // Redraw 3D if data exists
+        if (kmapData.length > 0) {
+          draw3DKMap();
+        }
+      }
+    }
+
+    // Load example
+    function loadExample(type) {
+      if (type === 'simple') {
+        document.getElementById('numVars').value = '3';
+        updateVariableCount();
+        document.getElementById('inputMethod').value = 'minterms';
+        changeInputMethod();
+        document.getElementById('mintermsInput').value = '1,3,5,7';
+        document.getElementById('dontCaresInput').value = '';
+      } else if (type === 'complex') {
+        document.getElementById('numVars').value = '4';
+        updateVariableCount();
+        document.getElementById('inputMethod').value = 'minterms';
+        changeInputMethod();
+        document.getElementById('mintermsInput').value = '0,1,4,5,8,9,12,13';
+        document.getElementById('dontCaresInput').value = '2,6,10,14';
+      }
+
+      generateKMap();
+    }
+
+    // Clear all
+    function clearAll() {
+      kmapData = [];
+      groups = [];
+      document.getElementById('kmap2d').innerHTML = '<div class="info-box"><p>Enter your Boolean function and click "Generate K-Map"</p></div>';
+      document.getElementById('simplifiedExpr').textContent = 'Click "Generate K-Map" to see the simplified expression';
+
+      if (cube3d) {
+        scene3d.remove(cube3d);
+        cube3d = null;
+      }
+    }
+
+    // Parse boolean expression (simplified)
+    function parseExpression(expr) {
+      const cells = Math.pow(2, numVars);
+      const result = new Array(cells).fill(0);
+
+      // This is a simplified parser - in production, use a proper parser
+      // For now, evaluate each minterm
+      for (let i = 0; i < cells; i++) {
+        const values = [];
+        for (let j = 0; j < numVars; j++) {
+          values.push((i >> (numVars - j - 1)) & 1);
+        }
+
+        // Check if this minterm satisfies the expression
+        // (Simplified evaluation)
+        if (evaluateExpression(expr, values)) {
+          result[i] = 1;
+        }
+      }
+
+      return result;
+    }
+
+    // Evaluate expression for given values (simplified)
+    function evaluateExpression(expr, values) {
+      // This is a placeholder - implement proper expression evaluation
+      return Math.random() > 0.5;
+    }
+
+    // Draw hypercube for 4 variables
+    function drawHypercube() {
+      // Simplified 4D representation
+      const scale = 0.4;
+
+      // Create two 2x2x2 cubes offset in the 4th dimension
+      for (let w = 0; w < 2; w++) {
+        const offset = w ? 2 : -2;
+
+        for (let i = 0; i < 8; i++) {
+          const index = w * 8 + i;
+          const value = kmapData[index];
+
+          const x = (i & 1) ? scale : -scale;
+          const y = (i & 2) ? scale : -scale;
+          const z = (i & 4) ? scale : -scale;
+
+          const geometry = new THREE.BoxGeometry(scale * 1.5, scale * 1.5, scale * 1.5);
+
+          let material;
+          if (value === 1) {
+            material = new THREE.MeshPhongMaterial({
+              color: 0x2196f3,
+              transparent: true,
+              opacity: 0.8
+            });
+          } else if (value === 'X') {
+            material = new THREE.MeshPhongMaterial({
+              color: 0xffc107,
+              transparent: true,
+              opacity: 0.8
+            });
+          } else {
+            material = new THREE.MeshPhongMaterial({
+              color: 0xcccccc,
+              transparent: true,
+              opacity: 0.3
+            });
+          }
+
+          const cube = new THREE.Mesh(geometry, material);
+          cube.position.set(x + offset, y, z);
+          cube.userData = { index: index, value: value };
+
+          const edges = new THREE.EdgesGeometry(geometry);
+          const line = new THREE.LineSegments(
+            edges,
+            new THREE.LineBasicMaterial({ color: 0x000000 })
+          );
+          cube.add(line);
+
+          cube3d.add(cube);
+        }
+      }
+    }
+  </script>
+</body>
+</html>

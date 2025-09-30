@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git Visualizer - Learn Git Interactively</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: #2d2d30;
+            padding: 10px 20px;
+            border-bottom: 1px solid #3e3e42;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 300;
+            color: #cccccc;
+        }
+
+        .header .controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            background: #0e639c;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: #1177bb;
+        }
+
+        .btn.secondary {
+            background: #3c3c3c;
+        }
+
+        .btn.secondary:hover {
+            background: #4a4a4a;
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: #252526;
+            border-right: 1px solid #3e3e42;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 15px;
+            border-bottom: 1px solid #3e3e42;
+        }
+
+        .sidebar-header h2 {
+            font-size: 14px;
+            text-transform: uppercase;
+            color: #969696;
+            font-weight: normal;
+            margin-bottom: 10px;
+        }
+
+        .scenario-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .scenario-item {
+            padding: 8px 12px;
+            margin-bottom: 4px;
+            background: #2d2d30;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .scenario-item:hover {
+            background: #37373d;
+        }
+
+        .scenario-item.active {
+            background: #094771;
+        }
+
+        .scenario-item .title {
+            font-size: 14px;
+            color: #cccccc;
+            margin-bottom: 4px;
+        }
+
+        .scenario-item .description {
+            font-size: 12px;
+            color: #858585;
+        }
+
+        .visualization-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .git-graph {
+            flex: 1;
+            background: #1e1e1e;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #gitCanvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .command-area {
+            background: #2d2d30;
+            border-top: 1px solid #3e3e42;
+            padding: 20px;
+        }
+
+        .command-input-wrapper {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .command-input {
+            flex: 1;
+            background: #3c3c3c;
+            border: 1px solid #3e3e42;
+            color: #cccccc;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        .command-input:focus {
+            outline: none;
+            border-color: #007acc;
+        }
+
+        .command-history {
+            max-height: 120px;
+            overflow-y: auto;
+            background: #1e1e1e;
+            border-radius: 4px;
+            padding: 10px;
+        }
+
+        .command-entry {
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 12px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .command-entry .prompt {
+            color: #608b4e;
+        }
+
+        .command-entry .command {
+            color: #dcdcaa;
+        }
+
+        .command-entry.error {
+            color: #f48771;
+        }
+
+        .commit-node {
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .commit-node:hover {
+            transform: scale(1.1);
+        }
+
+        .commit-node circle {
+            stroke-width: 2px;
+        }
+
+        .commit-node.master circle {
+            fill: #61afef;
+            stroke: #4d8cbf;
+        }
+
+        .commit-node.feature circle {
+            fill: #98c379;
+            stroke: #7ea362;
+        }
+
+        .commit-node.develop circle {
+            fill: #e06c75;
+            stroke: #c45a63;
+        }
+
+        .commit-node.hotfix circle {
+            fill: #d19a66;
+            stroke: #b58451;
+        }
+
+        .branch-line {
+            stroke-width: 2px;
+            fill: none;
+        }
+
+        .branch-line.master {
+            stroke: #61afef;
+        }
+
+        .branch-line.feature {
+            stroke: #98c379;
+        }
+
+        .branch-line.develop {
+            stroke: #e06c75;
+        }
+
+        .branch-line.hotfix {
+            stroke: #d19a66;
+        }
+
+        .branch-label {
+            fill: #cccccc;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .branch-label rect {
+            stroke-width: 1px;
+        }
+
+        .branch-label.master rect {
+            fill: #61afef;
+            stroke: #4d8cbf;
+        }
+
+        .branch-label.feature rect {
+            fill: #98c379;
+            stroke: #7ea362;
+        }
+
+        .info-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(45, 45, 48, 0.95);
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid #3e3e42;
+            min-width: 200px;
+        }
+
+        .info-panel h3 {
+            font-size: 14px;
+            color: #cccccc;
+            margin-bottom: 10px;
+            font-weight: normal;
+        }
+
+        .info-panel .info-item {
+            font-size: 12px;
+            color: #969696;
+            margin-bottom: 6px;
+        }
+
+        .info-panel .info-item strong {
+            color: #cccccc;
+        }
+
+        .tutorial-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .tutorial-overlay.active {
+            display: flex;
+        }
+
+        .tutorial-content {
+            background: #2d2d30;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 500px;
+            border: 1px solid #3e3e42;
+        }
+
+        .tutorial-content h2 {
+            color: #cccccc;
+            margin-bottom: 15px;
+        }
+
+        .tutorial-content p {
+            color: #969696;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .tutorial-content .command-example {
+            background: #1e1e1e;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            color: #dcdcaa;
+            margin: 10px 0;
+        }
+
+        .help-text {
+            font-size: 12px;
+            color: #858585;
+            margin-top: 10px;
+        }
+
+        .help-text code {
+            background: #3c3c3c;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 Git Visualizer - Learn Git Interactively</h1>
+        <div class="controls">
+            <button class="btn secondary" onclick="showHelp()">Help</button>
+            <button class="btn secondary" onclick="resetVisualization()">Reset</button>
+            <button class="btn" onclick="toggleMode()">Switch Mode</button>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>Scenarios</h2>
+                <select id="modeSelect" onchange="changeMode()" style="width: 100%; padding: 5px; background: #3c3c3c; color: #ccc; border: 1px solid #3e3e42; border-radius: 4px;">
+                    <option value="tutorial">Tutorial Mode</option>
+                    <option value="sandbox">Sandbox Mode</option>
+                </select>
+            </div>
+            <div class="scenario-list" id="scenarioList">
+                <div class="scenario-item active" onclick="loadScenario('basic')">
+                    <div class="title">Basic Commands</div>
+                    <div class="description">Learn commit, branch, and merge</div>
+                </div>
+                <div class="scenario-item" onclick="loadScenario('branching')">
+                    <div class="title">Branching Strategy</div>
+                    <div class="description">Master feature branches</div>
+                </div>
+                <div class="scenario-item" onclick="loadScenario('rebasing')">
+                    <div class="title">Rebasing</div>
+                    <div class="description">Clean up your history</div>
+                </div>
+                <div class="scenario-item" onclick="loadScenario('cherrypick')">
+                    <div class="title">Cherry-pick</div>
+                    <div class="description">Select specific commits</div>
+                </div>
+                <div class="scenario-item" onclick="loadScenario('stash')">
+                    <div class="title">Stashing</div>
+                    <div class="description">Save work temporarily</div>
+                </div>
+                <div class="scenario-item" onclick="loadScenario('reset')">
+                    <div class="title">Reset & Revert</div>
+                    <div class="description">Undo changes safely</div>
+                </div>
+                <div class="scenario-item" onclick="loadScenario('tags')">
+                    <div class="title">Tags & Releases</div>
+                    <div class="description">Mark important points</div>
+                </div>
+                <div class="scenario-item" onclick="loadScenario('conflicts')">
+                    <div class="title">Merge Conflicts</div>
+                    <div class="description">Resolve conflicts</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="visualization-area">
+            <div class="git-graph">
+                <svg id="gitCanvas"></svg>
+                <div class="info-panel">
+                    <h3>Current State</h3>
+                    <div class="info-item">Branch: <strong id="currentBranch">master</strong></div>
+                    <div class="info-item">HEAD: <strong id="currentHead">c1</strong></div>
+                    <div class="info-item">Commits: <strong id="commitCount">1</strong></div>
+                    <div class="info-item">Branches: <strong id="branchCount">1</strong></div>
+                </div>
+            </div>
+            <div class="command-area">
+                <div class="command-input-wrapper">
+                    <input type="text" class="command-input" id="commandInput" placeholder="Enter git command (e.g., git commit, git branch feature, git merge feature)" />
+                    <button class="btn" onclick="executeCommand()">Execute</button>
+                </div>
+                <div class="help-text">
+                    Available commands: <code>git commit</code>, <code>git branch [name]</code>, <code>git checkout [branch]</code>,
+                    <code>git merge [branch]</code>, <code>git rebase [branch]</code>, <code>git reset [commit]</code>,
+                    <code>git cherry-pick [commit]</code>, <code>git tag [name]</code>
+                </div>
+                <div class="command-history" id="commandHistory"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tutorial-overlay" id="tutorialOverlay">
+        <div class="tutorial-content">
+            <h2 id="tutorialTitle">Welcome to Git Visualizer!</h2>
+            <p id="tutorialText">
+                This interactive tool helps you understand how Git commands work by visualizing their effects on the repository structure.
+            </p>
+            <div class="command-example" id="tutorialCommand"></div>
+            <button class="btn" onclick="closeTutorial()">Got it!</button>
+        </div>
+    </div>
+
+    <script>
+        // Git repository state
+        let gitState = {
+            commits: [],
+            branches: {},
+            currentBranch: 'master',
+            HEAD: null,
+            tags: {},
+            stash: []
+        };
+
+        // Visualization settings
+        const config = {
+            nodeRadius: 20,
+            commitSpacing: 80,
+            branchSpacing: 60,
+            animationDuration: 500
+        };
+
+        // Initialize the visualization
+        function init() {
+            resetVisualization();
+            setupEventListeners();
+            showTutorial('Welcome!', 'Start by typing commands like "git commit" or "git branch feature" in the command input below.');
+        }
+
+        // Reset to initial state
+        function resetVisualization() {
+            gitState = {
+                commits: [{
+                    id: 'c0',
+                    message: 'Initial commit',
+                    parent: null,
+                    branch: 'master',
+                    x: 100,
+                    y: 200
+                }],
+                branches: {
+                    'master': 'c0'
+                },
+                currentBranch: 'master',
+                HEAD: 'c0',
+                tags: {},
+                stash: []
+            };
+            updateVisualization();
+            clearCommandHistory();
+            updateInfoPanel();
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            document.getElementById('commandInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    executeCommand();
+                }
+            });
+        }
+
+        // Execute git command
+        function executeCommand() {
+            const input = document.getElementById('commandInput').value.trim();
+            if (!input) return;
+
+            addToHistory(input);
+
+            const parts = input.split(' ');
+            if (parts[0] !== 'git') {
+                addToHistory('Error: Commands must start with "git"', true);
+                return;
+            }
+
+            const command = parts[1];
+            const args = parts.slice(2);
+
+            try {
+                switch(command) {
+                    case 'commit':
+                        gitCommit(args);
+                        break;
+                    case 'branch':
+                        if (args.length > 0) {
+                            gitBranch(args[0]);
+                        } else {
+                            listBranches();
+                        }
+                        break;
+                    case 'checkout':
+                        gitCheckout(args[0]);
+                        break;
+                    case 'merge':
+                        gitMerge(args[0]);
+                        break;
+                    case 'rebase':
+                        gitRebase(args[0]);
+                        break;
+                    case 'reset':
+                        gitReset(args[0], args[1]);
+                        break;
+                    case 'cherry-pick':
+                        gitCherryPick(args[0]);
+                        break;
+                    case 'tag':
+                        gitTag(args[0]);
+                        break;
+                    case 'stash':
+                        gitStash(args[0]);
+                        break;
+                    case 'log':
+                        gitLog();
+                        break;
+                    default:
+                        addToHistory(`Error: Unknown command "${command}"`, true);
+                }
+            } catch (error) {
+                addToHistory(`Error: ${error.message}`, true);
+            }
+
+            document.getElementById('commandInput').value = '';
+            updateVisualization();
+            updateInfoPanel();
+        }
+
+        // Git command implementations
+        function gitCommit(args) {
+            const message = args.join(' ') || `Commit ${gitState.commits.length}`;
+            const parentId = gitState.branches[gitState.currentBranch];
+            const parent = gitState.commits.find(c => c.id === parentId);
+
+            const newCommit = {
+                id: `c${gitState.commits.length}`,
+                message: message,
+                parent: parentId,
+                branch: gitState.currentBranch,
+                x: parent ? parent.x + config.commitSpacing : 100,
+                y: getBranchY(gitState.currentBranch)
+            };
+
+            gitState.commits.push(newCommit);
+            gitState.branches[gitState.currentBranch] = newCommit.id;
+            gitState.HEAD = newCommit.id;
+
+            addToHistory(`Created commit ${newCommit.id}: ${message}`);
+        }
+
+        function gitBranch(name) {
+            if (gitState.branches[name]) {
+                throw new Error(`Branch '${name}' already exists`);
+            }
+            gitState.branches[name] = gitState.HEAD;
+            addToHistory(`Created branch '${name}'`);
+        }
+
+        function gitCheckout(target) {
+            if (gitState.branches[target]) {
+                gitState.currentBranch = target;
+                gitState.HEAD = gitState.branches[target];
+                addToHistory(`Switched to branch '${target}'`);
+            } else if (gitState.commits.find(c => c.id === target)) {
+                gitState.HEAD = target;
+                gitState.currentBranch = null; // Detached HEAD
+                addToHistory(`HEAD is now at ${target}`);
+            } else {
+                throw new Error(`Invalid target: '${target}'`);
+            }
+        }
+
+        function gitMerge(branch) {
+            if (!gitState.branches[branch]) {
+                throw new Error(`Branch '${branch}' does not exist`);
+            }
+
+            const currentCommit = gitState.HEAD;
+            const mergeCommit = gitState.branches[branch];
+
+            const newCommit = {
+                id: `c${gitState.commits.length}`,
+                message: `Merge branch '${branch}' into ${gitState.currentBranch}`,
+                parent: currentCommit,
+                parent2: mergeCommit, // Second parent for merge commit
+                branch: gitState.currentBranch,
+                x: gitState.commits[gitState.commits.length - 1].x + config.commitSpacing,
+                y: getBranchY(gitState.currentBranch)
+            };
+
+            gitState.commits.push(newCommit);
+            gitState.branches[gitState.currentBranch] = newCommit.id;
+            gitState.HEAD = newCommit.id;
+
+            addToHistory(`Merged '${branch}' into '${gitState.currentBranch}'`);
+        }
+
+        function gitRebase(branch) {
+            if (!gitState.branches[branch]) {
+                throw new Error(`Branch '${branch}' does not exist`);
+            }
+
+            // Simplified rebase visualization
+            addToHistory(`Rebased '${gitState.currentBranch}' onto '${branch}'`);
+
+            // Find commits to rebase
+            const currentBranchCommits = gitState.commits.filter(c => c.branch === gitState.currentBranch);
+            const targetHead = gitState.branches[branch];
+            const targetCommit = gitState.commits.find(c => c.id === targetHead);
+
+            // Update positions to show rebase effect
+            let lastX = targetCommit.x;
+            currentBranchCommits.forEach(commit => {
+                lastX += config.commitSpacing;
+                commit.x = lastX;
+                commit.parent = targetHead;
+            });
+        }
+
+        function gitReset(target, mode = '--mixed') {
+            const commit = gitState.commits.find(c => c.id === target);
+            if (!commit) {
+                throw new Error(`Commit '${target}' not found`);
+            }
+
+            gitState.HEAD = target;
+            gitState.branches[gitState.currentBranch] = target;
+
+            addToHistory(`Reset to ${target} (${mode})`);
+        }
+
+        function gitCherryPick(commitId) {
+            const commit = gitState.commits.find(c => c.id === commitId);
+            if (!commit) {
+                throw new Error(`Commit '${commitId}' not found`);
+            }
+
+            const parent = gitState.commits.find(c => c.id === gitState.HEAD);
+            const newCommit = {
+                id: `c${gitState.commits.length}`,
+                message: `${commit.message} (cherry-picked)`,
+                parent: gitState.HEAD,
+                branch: gitState.currentBranch,
+                x: parent.x + config.commitSpacing,
+                y: getBranchY(gitState.currentBranch),
+                cherryPicked: true
+            };
+
+            gitState.commits.push(newCommit);
+            gitState.branches[gitState.currentBranch] = newCommit.id;
+            gitState.HEAD = newCommit.id;
+
+            addToHistory(`Cherry-picked commit ${commitId}`);
+        }
+
+        function gitTag(name) {
+            if (!name) {
+                // List tags
+                const tags = Object.keys(gitState.tags);
+                addToHistory(`Tags: ${tags.length > 0 ? tags.join(', ') : 'none'}`);
+            } else {
+                gitState.tags[name] = gitState.HEAD;
+                addToHistory(`Created tag '${name}' at ${gitState.HEAD}`);
+            }
+        }
+
+        function gitStash(action) {
+            if (!action || action === 'push') {
+                gitState.stash.push({
+                    branch: gitState.currentBranch,
+                    commit: gitState.HEAD,
+                    message: `WIP on ${gitState.currentBranch}`
+                });
+                addToHistory('Saved working directory to stash');
+            } else if (action === 'pop') {
+                if (gitState.stash.length === 0) {
+                    throw new Error('No stash entries');
+                }
+                const stashed = gitState.stash.pop();
+                addToHistory(`Applied stash: ${stashed.message}`);
+            } else if (action === 'list') {
+                addToHistory(`Stash entries: ${gitState.stash.length}`);
+            }
+        }
+
+        function gitLog() {
+            const log = gitState.commits
+                .slice()
+                .reverse()
+                .slice(0, 5)
+                .map(c => `${c.id}: ${c.message}`)
+                .join('\n');
+            addToHistory(`Recent commits:\n${log}`);
+        }
+
+        function listBranches() {
+            const branches = Object.keys(gitState.branches)
+                .map(b => b === gitState.currentBranch ? `* ${b}` : `  ${b}`)
+                .join('\n');
+            addToHistory(`Branches:\n${branches}`);
+        }
+
+        // Helper functions
+        function getBranchY(branchName) {
+            const branchNames = Object.keys(gitState.branches);
+            const index = branchNames.indexOf(branchName);
+            return 200 + (index * config.branchSpacing);
+        }
+
+        function addToHistory(text, isError = false) {
+            const history = document.getElementById('commandHistory');
+            const entry = document.createElement('div');
+            entry.className = isError ? 'command-entry error' : 'command-entry';
+
+            if (!isError && !text.includes('\n')) {
+                entry.innerHTML = `<span class="prompt">$</span> <span class="command">${text}</span>`;
+            } else {
+                entry.innerHTML = `<span class="${isError ? 'error' : 'command'}">${text.replace(/\n/g, '<br>')}</span>`;
+            }
+
+            history.appendChild(entry);
+            history.scrollTop = history.scrollHeight;
+        }
+
+        function clearCommandHistory() {
+            document.getElementById('commandHistory').innerHTML = '';
+            addToHistory('Repository initialized');
+        }
+
+        function updateInfoPanel() {
+            document.getElementById('currentBranch').textContent = gitState.currentBranch || 'detached';
+            document.getElementById('currentHead').textContent = gitState.HEAD;
+            document.getElementById('commitCount').textContent = gitState.commits.length;
+            document.getElementById('branchCount').textContent = Object.keys(gitState.branches).length;
+        }
+
+        // Visualization with D3.js
+        function updateVisualization() {
+            const svg = d3.select('#gitCanvas');
+            svg.selectAll('*').remove();
+
+            const width = svg.node().parentElement.clientWidth;
+            const height = svg.node().parentElement.clientHeight;
+            svg.attr('width', width).attr('height', height);
+
+            const g = svg.append('g');
+
+            // Draw branch lines
+            const branches = Object.keys(gitState.branches);
+            branches.forEach(branchName => {
+                const branchCommits = gitState.commits.filter(c => c.branch === branchName);
+                if (branchCommits.length > 1) {
+                    const line = d3.line()
+                        .x(d => d.x)
+                        .y(d => d.y)
+                        .curve(d3.curveLinear);
+
+                    g.append('path')
+                        .datum(branchCommits)
+                        .attr('class', `branch-line ${branchName}`)
+                        .attr('d', line);
+                }
+            });
+
+            // Draw parent-child connections
+            gitState.commits.forEach(commit => {
+                if (commit.parent) {
+                    const parent = gitState.commits.find(c => c.id === commit.parent);
+                    if (parent) {
+                        g.append('line')
+                            .attr('class', `branch-line ${commit.branch}`)
+                            .attr('x1', parent.x)
+                            .attr('y1', parent.y)
+                            .attr('x2', commit.x)
+                            .attr('y2', commit.y);
+                    }
+                }
+
+                // Draw merge connections
+                if (commit.parent2) {
+                    const parent2 = gitState.commits.find(c => c.id === commit.parent2);
+                    if (parent2) {
+                        g.append('line')
+                            .attr('class', 'branch-line')
+                            .style('stroke', '#888')
+                            .style('stroke-dasharray', '5,5')
+                            .attr('x1', parent2.x)
+                            .attr('y1', parent2.y)
+                            .attr('x2', commit.x)
+                            .attr('y2', commit.y);
+                    }
+                }
+            });
+
+            // Draw commit nodes
+            const nodes = g.selectAll('.commit-node')
+                .data(gitState.commits)
+                .enter().append('g')
+                .attr('class', d => `commit-node ${d.branch}`)
+                .attr('transform', d => `translate(${d.x}, ${d.y})`);
+
+            nodes.append('circle')
+                .attr('r', config.nodeRadius)
+                .style('cursor', 'pointer')
+                .on('click', function(event, d) {
+                    showCommitDetails(d);
+                });
+
+            nodes.append('text')
+                .attr('text-anchor', 'middle')
+                .attr('dy', '0.35em')
+                .style('fill', 'white')
+                .style('font-size', '12px')
+                .style('font-weight', 'bold')
+                .style('pointer-events', 'none')
+                .text(d => d.id);
+
+            // Draw commit messages
+            nodes.append('text')
+                .attr('text-anchor', 'middle')
+                .attr('dy', '40px')
+                .style('fill', '#969696')
+                .style('font-size', '11px')
+                .style('pointer-events', 'none')
+                .text(d => d.message.substring(0, 20) + (d.message.length > 20 ? '...' : ''));
+
+            // Draw branch labels
+            branches.forEach(branchName => {
+                const headCommit = gitState.commits.find(c => c.id === gitState.branches[branchName]);
+                if (headCommit) {
+                    const label = g.append('g')
+                        .attr('class', `branch-label ${branchName}`)
+                        .attr('transform', `translate(${headCommit.x}, ${headCommit.y - 35})`);
+
+                    const rect = label.append('rect')
+                        .attr('x', -30)
+                        .attr('y', -10)
+                        .attr('width', 60)
+                        .attr('height', 20)
+                        .attr('rx', 10);
+
+                    label.append('text')
+                        .attr('text-anchor', 'middle')
+                        .attr('dy', '0.35em')
+                        .style('fill', 'white')
+                        .style('font-size', '11px')
+                        .style('font-weight', 'bold')
+                        .text(branchName);
+                }
+            });
+
+            // Draw HEAD pointer
+            const headCommit = gitState.commits.find(c => c.id === gitState.HEAD);
+            if (headCommit) {
+                g.append('text')
+                    .attr('x', headCommit.x)
+                    .attr('y', headCommit.y - 50)
+                    .attr('text-anchor', 'middle')
+                    .style('fill', '#ffcc00')
+                    .style('font-size', '14px')
+                    .style('font-weight', 'bold')
+                    .text('HEAD →');
+            }
+
+            // Draw tags
+            Object.entries(gitState.tags).forEach(([tagName, commitId]) => {
+                const commit = gitState.commits.find(c => c.id === commitId);
+                if (commit) {
+                    const tag = g.append('g')
+                        .attr('transform', `translate(${commit.x + 35}, ${commit.y})`);
+
+                    tag.append('rect')
+                        .attr('x', -20)
+                        .attr('y', -8)
+                        .attr('width', 40)
+                        .attr('height', 16)
+                        .attr('rx', 8)
+                        .style('fill', '#ff9800')
+                        .style('stroke', '#e68900');
+
+                    tag.append('text')
+                        .attr('text-anchor', 'middle')
+                        .attr('dy', '0.35em')
+                        .style('fill', 'white')
+                        .style('font-size', '10px')
+                        .text(tagName);
+                }
+            });
+        }
+
+        // D3.js setup
+        function setupD3() {
+            window.d3 = {
+                select: function(selector) {
+                    const element = document.querySelector(selector);
+                    return {
+                        node: () => element,
+                        selectAll: function(sel) {
+                            return {
+                                remove: function() {
+                                    element.querySelectorAll(sel).forEach(el => el.remove());
+                                }
+                            };
+                        },
+                        append: function(tagName) {
+                            const newEl = document.createElementNS('http://www.w3.org/2000/svg', tagName);
+                            element.appendChild(newEl);
+                            return d3.select(`#${newEl.id || 'temp'}`);
+                        },
+                        attr: function(name, value) {
+                            if (element) element.setAttribute(name, value);
+                            return this;
+                        }
+                    };
+                },
+                line: function() {
+                    return {
+                        x: function() { return this; },
+                        y: function() { return this; },
+                        curve: function() { return this; }
+                    };
+                }
+            };
+        }
+
+        // UI functions
+        function showHelp() {
+            showTutorial('Git Commands Help',
+                'Available commands:\n' +
+                '• git commit - Create a new commit\n' +
+                '• git branch [name] - Create a new branch\n' +
+                '• git checkout [branch/commit] - Switch branches or commits\n' +
+                '• git merge [branch] - Merge a branch\n' +
+                '• git rebase [branch] - Rebase current branch\n' +
+                '• git reset [commit] - Reset to a commit\n' +
+                '• git cherry-pick [commit] - Apply a specific commit\n' +
+                '• git tag [name] - Create a tag\n' +
+                '• git log - Show commit history'
+            );
+        }
+
+        function showTutorial(title, text, command = '') {
+            document.getElementById('tutorialTitle').textContent = title;
+            document.getElementById('tutorialText').textContent = text;
+            document.getElementById('tutorialCommand').textContent = command;
+            document.getElementById('tutorialCommand').style.display = command ? 'block' : 'none';
+            document.getElementById('tutorialOverlay').classList.add('active');
+        }
+
+        function closeTutorial() {
+            document.getElementById('tutorialOverlay').classList.remove('active');
+        }
+
+        function showCommitDetails(commit) {
+            showTutorial(`Commit ${commit.id}`,
+                `Message: ${commit.message}\n` +
+                `Branch: ${commit.branch}\n` +
+                `Parent: ${commit.parent || 'none'}\n` +
+                (commit.parent2 ? `Merge parent: ${commit.parent2}\n` : '') +
+                (commit.cherryPicked ? 'This commit was cherry-picked\n' : '')
+            );
+        }
+
+        function loadScenario(scenario) {
+            // Update active state
+            document.querySelectorAll('.scenario-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.closest('.scenario-item').classList.add('active');
+
+            // Load scenario-specific setup
+            resetVisualization();
+
+            switch(scenario) {
+                case 'basic':
+                    showTutorial('Basic Commands',
+                        'Learn the fundamentals of Git:\n' +
+                        '1. Create commits with "git commit"\n' +
+                        '2. Create branches with "git branch feature"\n' +
+                        '3. Switch branches with "git checkout feature"\n' +
+                        '4. Merge branches with "git merge feature"',
+                        'git commit'
+                    );
+                    break;
+
+                case 'branching':
+                    // Pre-setup some commits and branches
+                    gitCommit(['Initial setup']);
+                    gitBranch('develop');
+                    gitCheckout('develop');
+                    gitCommit(['Add feature A']);
+                    gitBranch('feature/login');
+                    gitCheckout('feature/login');
+                    gitCommit(['Add login form']);
+                    updateVisualization();
+                    showTutorial('Branching Strategy',
+                        'Practice feature branch workflow. Try merging the feature branch back to develop.',
+                        'git checkout develop && git merge feature/login'
+                    );
+                    break;
+
+                case 'rebasing':
+                    gitCommit(['Initial commit']);
+                    gitBranch('feature');
+                    gitCommit(['Master commit 1']);
+                    gitCheckout('feature');
+                    gitCommit(['Feature commit 1']);
+                    updateVisualization();
+                    showTutorial('Rebasing',
+                        'Rebase rewrites history to create a linear timeline. Try "git rebase master" to move feature commits.',
+                        'git rebase master'
+                    );
+                    break;
+
+                // Add more scenarios...
+            }
+
+            updateInfoPanel();
+        }
+
+        function toggleMode() {
+            const select = document.getElementById('modeSelect');
+            select.value = select.value === 'tutorial' ? 'sandbox' : 'tutorial';
+            changeMode();
+        }
+
+        function changeMode() {
+            const mode = document.getElementById('modeSelect').value;
+            if (mode === 'sandbox') {
+                resetVisualization();
+                showTutorial('Sandbox Mode',
+                    'Free exploration mode! Try any git command and see how it affects the repository structure.',
+                    'git commit'
+                );
+            } else {
+                loadScenario('basic');
+            }
+        }
+
+        // Simple D3 replacement for basic SVG operations
+        const d3 = {
+            select: function(selector) {
+                const element = document.querySelector(selector);
+                return new D3Selection(element);
+            }
+        };
+
+        class D3Selection {
+            constructor(element) {
+                this.element = element;
+            }
+
+            selectAll(selector) {
+                return new D3Selection(this.element);
+            }
+
+            remove() {
+                if (this.element) {
+                    while (this.element.firstChild) {
+                        this.element.removeChild(this.element.firstChild);
+                    }
+                }
+                return this;
+            }
+
+            append(tagName) {
+                const newElement = document.createElementNS('http://www.w3.org/2000/svg', tagName);
+                if (this.element) {
+                    this.element.appendChild(newElement);
+                }
+                return new D3Selection(newElement);
+            }
+
+            attr(name, value) {
+                if (this.element) {
+                    this.element.setAttribute(name, value);
+                }
+                return this;
+            }
+
+            style(name, value) {
+                if (this.element) {
+                    this.element.style[name] = value;
+                }
+                return this;
+            }
+
+            text(value) {
+                if (this.element) {
+                    this.element.textContent = value;
+                }
+                return this;
+            }
+
+            on(event, handler) {
+                if (this.element) {
+                    this.element.addEventListener(event, handler);
+                }
+                return this;
+            }
+
+            node() {
+                return this.element;
+            }
+
+            data(data) {
+                this.dataArray = data;
+                return this;
+            }
+
+            enter() {
+                return this;
+            }
+
+            datum(data) {
+                this.dataItem = data;
+                return this;
+            }
+        }
+
+        d3.line = function() {
+            return {
+                x: function() { return this; },
+                y: function() { return this; },
+                curve: function() { return this; }
+            };
+        };
+
+        // Initialize on load
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

@@ -3,7 +3,7 @@ const publications = [
   // Current Research Projects (2025)
   {
     id: 'linuxguard-2025',
-    title: 'LinuxGuard: AI-Powered Kernel Security Analysis',
+    title: 'LinuxGuard: Automated Static Analyzer Generation from Kernel Bug Fixes',
     authors: '<strong>Xuming Huang</strong> (advised by Remzi Arpaci-Dusseau, Vinay Banakar)',
     venue: 'Ongoing Research Project',
     year: 2025,
@@ -14,24 +14,9 @@ const publications = [
     bibtex: null,
     selected: true,
     category: 'ongoing',
-    abstract: 'Building AI pipeline processing Linux commits to generate static analyzers. Developed RAG-enhanced LLM system achieving 72% precision in kernel vulnerability detection. Applied ML clustering (K-means, TF-IDF) to derive high-confidence vulnerability anti-patterns.'
+    abstract: 'Developing an LLM-powered system that automatically converts Linux kernel bug fixes into clang-tidy static analyzers. By learning from historical commit patterns, LinuxGuard generates checkers that detect similar vulnerabilities across different kernel versions, effectively transforming every patched bug into a preventive tool. The system leverages RAG-enhanced architectures and program analysis techniques to achieve high-precision vulnerability detection while reducing manual effort in kernel security maintenance.'
   },
   
-  {
-    id: 'heterogeneous-scheduler-2025',
-    title: 'Heterogeneous Task Scheduler for CPU-GPU Systems',
-    authors: '<strong>Xuming Huang</strong>',
-    venue: 'Independent Research Project',
-    year: 2025,
-    image: 'images/papers/scheduler.jpg',
-    paper_url: null,
-    code_url: null,
-    project_url: null,
-    bibtex: null,
-    selected: true,
-    category: 'ongoing',
-    abstract: 'Building C runtime system auto-scheduling computational tasks between CPU/GPU. Implementing CUDA kernels with cuBLAS optimization and memory pooling for efficient heterogeneous computing.'
-  },
   
   {
     id: 'cifar10-classification-2024',

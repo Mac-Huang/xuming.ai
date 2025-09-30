@@ -1,0 +1,32 @@
+{
+  "name": "git-visualizer",
+  "version": "1.0.0",
+  "description": "Interactive Git learning tool that visualizes version control operations in real-time",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8080",
+    "test": "echo \"No tests specified yet\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xuming-huang/git-visualizer.git"
+  },
+  "keywords": [
+    "git",
+    "visualization",
+    "version-control",
+    "learning",
+    "interactive",
+    "tutorial",
+    "education",
+    "git-commands",
+    "branching",
+    "merging"
+  ],
+  "author": "Xuming Huang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/xuming-huang/git-visualizer/issues"
+  },
+  "homepage": "https://github.com/xuming-huang/git-visualizer#readme"
+}

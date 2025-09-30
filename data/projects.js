@@ -38,6 +38,30 @@ const projects = [
   },
 
   {
+    id: 'git-visualizer',
+    title: 'Git Visualizer - Interactive Git Learning Tool',
+    description: 'Learn Git commands interactively through visualization. Type real git commands and watch how they affect the repository structure in real-time. Features tutorial mode with step-by-step scenarios, sandbox mode for free exploration, and support for all major git operations including commit, branch, merge, rebase, cherry-pick, and more. Perfect for understanding version control concepts visually.',
+    tech: 'JavaScript, SVG, Git Concepts, Interactive Learning',
+    thumbnail: 'images/projects/git-visualizer-thumb.jpg',
+    demo_url: 'demos/git-visualizer.html',
+    code_url: 'https://github.com/xuming-huang/git-visualizer',
+    featured: true,
+    highlighted: false
+  },
+
+  {
+    id: 'tenant-sos',
+    title: 'TenantSOS - Legal Information iOS App',
+    description: 'iOS application providing location-based legal information for tenants across U.S. states. Features automatic GPS-based state law detection, comprehensive legal database covering tenant rights, traffic laws, employment regulations, and consumer protections. Includes 10+ legal document templates, smart notifications for law changes, and offline law access. Built with Swift 5.9 and SwiftUI, powered by Firebase backend with Core Location for state detection. Implements freemium model with basic free tier and pro subscription for unlimited features across all 50 states.',
+    tech: 'Swift 5.9, SwiftUI, Firebase, Core Location, Core Data, CloudKit',
+    thumbnail: 'images/projects/tenant-sos-thumb.jpg',
+    demo_url: null,
+    code_url: 'https://github.com/Mac-Huang/Tenant-SOS',
+    featured: true,
+    highlighted: false
+  },
+
+  {
     id: 'graph-algorithms',
     title: 'Graph Algorithms Playground',
     description: 'Visualize graph traversal algorithms including BFS, DFS, Dijkstra\'s shortest path, and A* pathfinding. Create custom graphs and watch algorithms explore them step by step.',
