@@ -191,18 +191,6 @@ const projects = [
   },
 
   {
-    id: 'cs400-bst',
-    title: 'Binary Search Tree Implementation (CS 400)',
-    description: 'Complete implementation of a generic Binary Search Tree with rotation operations for CS 400: Programming III at UW-Madison. Features efficient insertion, deletion, searching with O(log n) average complexity, and tree rotation for balancing operations. Includes comprehensive unit tests and performance benchmarks.',
-    tech: 'Java, Data Structures, Algorithms, JUnit',
-    thumbnail: 'images/projects/Binary_search_tree.svg.png',
-    demo_url: 'courses/cs400/index.html#bst',
-    code_url: 'courses/cs400/index.html#bst',
-    featured: true,
-    highlighted: false
-  },
-  
-  {
     id: 'garbage-collection',
     title: 'Garbage Collection Algorithm Visualizer',
     description: 'Comprehensive visualization of memory management and GC algorithms including Mark & Sweep, Reference Counting, Generational GC, and Copying Collector. Shows heap regions, reference graphs, and real-time performance metrics.',

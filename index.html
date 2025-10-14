@@ -15,17 +15,85 @@
       align-items: center;
       justify-content: center;
     }
+
+    /* Left Navigation Styles */
+    .nav-sidebar {
+      position: fixed;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 150px;
+      z-index: 100;
+    }
+
+    .nav-sidebar ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .nav-sidebar li {
+      margin-bottom: 8px;
+    }
+
+    .nav-sidebar a {
+      color: #999;
+      text-decoration: none;
+      font-size: 13px;
+      display: block;
+      padding: 5px 10px;
+      border-left: 2px solid transparent;
+      transition: all 0.3s ease;
+    }
+
+    .nav-sidebar a:hover {
+      color: #1772d0;
+      border-left-color: #1772d0;
+      padding-left: 15px;
+    }
+
+    .nav-sidebar a.active {
+      color: #1772d0;
+      border-left-color: #1772d0;
+      font-weight: 600;
+    }
+
+    /* Adjust main content for sidebar */
+    @media (min-width: 1200px) {
+      body {
+        padding-left: 180px;
+      }
+    }
+
+    /* Hide sidebar on smaller screens */
+    @media (max-width: 1199px) {
+      .nav-sidebar {
+        display: none;
+      }
+    }
   </style>
 </head>
 
 <body>
+  <!-- Left Navigation Directory -->
+  <nav class="nav-sidebar">
+    <ul>
+      <li><a href="#bio" class="active">About</a></li>
+      <li><a href="#research">Research</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#teaching">Teaching</a></li>
+      <li><a href="#apps">Apps</a></li>
+      <li><a href="#service">Service</a></li>
+    </ul>
+  </nav>
+
   <table style="width:100%;max-width:900px;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
     <tbody>
       <tr style="padding:0px">
         <td style="padding:0px">
           
           <!-- Bio Section -->
-          <div class="bio-section">
+          <div class="bio-section" id="bio">
           <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
             <tbody>
               <tr style="padding:0px">
@@ -87,7 +155,7 @@
           </table>
           
           <!-- Research Section -->
-          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+          <table id="research" style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
             <tbody>
               <tr>
                 <td style="padding:20px;width:100%;vertical-align:middle">
@@ -122,7 +190,7 @@
           </table>
           
           <!-- Projects Preview -->
-          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+          <table id="projects" style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
             <tbody>
               <tr>
                 <td style="padding:20px;width:100%;vertical-align:middle">
@@ -171,7 +239,7 @@
           </table>
           
           <!-- Teaching -->
-          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+          <table id="teaching" style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
             <tbody>
               <tr>
                 <td style="padding:20px;width:100%;vertical-align:middle">
@@ -191,7 +259,7 @@
           </table>
           
           <!-- Apps -->
-          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+          <table id="apps" style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
             <tbody>
               <tr>
                 <td style="padding:20px;width:100%;vertical-align:middle">
@@ -227,7 +295,7 @@
           </table>
 
           <!-- Service -->
-          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+          <table id="service" style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
             <tbody>
               <tr>
                 <td style="padding:20px;width:100%;vertical-align:middle">
@@ -263,5 +331,58 @@
   
   <script src="data/publications.js"></script>
   <script src="js/main.js"></script>
+
+  <!-- Navigation Active State Script -->
+  <script>
+    // Update active navigation item based on scroll position
+    function updateActiveNav() {
+      const sections = ['bio', 'research', 'projects', 'teaching', 'apps', 'service'];
+      const scrollPosition = window.scrollY + 100;
+
+      for (let section of sections) {
+        const element = document.getElementById(section);
+        if (element) {
+          const top = element.offsetTop;
+          const height = element.offsetHeight;
+
+          if (scrollPosition >= top && scrollPosition < top + height) {
+            // Remove active class from all links
+            document.querySelectorAll('.nav-sidebar a').forEach(link => {
+              link.classList.remove('active');
+            });
+
+            // Add active class to current section link
+            const activeLink = document.querySelector(`.nav-sidebar a[href="#${section}"]`);
+            if (activeLink) {
+              activeLink.classList.add('active');
+            }
+            break;
+          }
+        }
+      }
+    }
+
+    // Smooth scrolling for navigation links
+    document.querySelectorAll('.nav-sidebar a').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        const targetElement = document.getElementById(targetId);
+
+        if (targetElement) {
+          targetElement.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
+    // Update active state on scroll
+    window.addEventListener('scroll', updateActiveNav);
+
+    // Update on page load
+    window.addEventListener('load', updateActiveNav);
+  </script>
 </body>
 </html>
