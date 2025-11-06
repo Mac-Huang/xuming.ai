@@ -66,6 +66,27 @@
               </tr>
             </tbody>
           </table>
+
+          <!-- Featured Research -->
+          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+            <tbody>
+              <tr>
+                <td style="padding:20px;width:100%;vertical-align:middle">
+                  <heading>Featured Research: LinuxGuard</heading>
+                  <p>
+                    My primary focus is <a href="linuxguard.html">LinuxGuard</a>, a pipeline that learns from Linux kernel bug fixes to generate custom
+                    clang-tidy checkers. By mining commit history, the system builds AST matchers that flag unchecked error paths across
+                    kernels v3.0 through v6.0, turning each fixed vulnerability into a proactive safeguard.
+                  </p>
+                  <ul>
+                    <li>End-to-end automation: bug mining, checker synthesis, LLVM build, and multi-version scans.</li>
+                    <li>Flagship checker: <code>linuxkernel-must-check-errs</code> catches missing error handling at scale.</li>
+                    <li>200+ unchecked error flows surfaced per kernel release, revealing long-lived anti-patterns.</li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
           
           <!-- Publications -->
           <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">

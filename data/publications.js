@@ -8,7 +8,7 @@ const publications = [
     venue: 'Ongoing Research Project',
     year: 2025,
     image: 'images/papers/linuxguard.jpg',
-    paper_url: null,
+    paper_url: 'linuxguard.html',
     code_url: null,
     project_url: null,
     bibtex: null,
