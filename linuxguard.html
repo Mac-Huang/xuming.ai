@@ -1,22 +1,173 @@
 <!DOCTYPE HTML>
 <html lang="en">
+
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>Xuming Huang - LinuxGuard</title>
+  <title>LinuxGuard - Xuming Huang</title>
   <meta name="author" content="Xuming Huang">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" type="text/css" href="stylesheet.css">
   <link rel="icon" type="image/png" href="images/favicon.png">
+  <style>
+    /* Custom styles for the narrative layout */
+    .narrative-section {
+      margin-bottom: 60px;
+    }
+
+    .narrative-text {
+      font-size: 16px;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    .caption {
+      text-align: center;
+      font-size: 13px;
+      color: #666;
+      margin-top: 8px;
+      margin-bottom: 25px;
+      font-style: italic;
+    }
+
+    .image-container {
+      text-align: center;
+      margin: 30px 0;
+    }
+
+    .image-container img {
+      max-width: 100%;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border: 1px solid #eee;
+    }
+
+    /* Fixed height class to keep pipeline diagrams consistent */
+    .fixed-height-img {
+      height: 560px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    h3 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      color: #000;
+      font-weight: 700;
+    }
+
+    .highlight-box {
+      background-color: #f8f9fa;
+      border-left: 4px solid #444;
+      padding: 15px 20px;
+      margin: 20px 0;
+      font-style: italic;
+      color: #555;
+    }
+
+    /* Sub-headers for the solution section */
+    .solution-header {
+      font-size: 18px;
+      font-weight: 600;
+      margin-top: 30px;
+      color: #1772d0;
+    }
+
+    /* Code block styles */
+    .code-window {
+      background: #1e1e1e;
+      /* Dark background */
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      margin: 25px 0;
+      overflow: hidden;
+      border: 1px solid #333;
+    }
+
+    .code-header {
+      background: #252526;
+      padding: 10px 15px;
+      border-bottom: 1px solid #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .code-title {
+      color: #cccccc;
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .code-content {
+      max-height: 600px;
+      overflow-y: auto;
+      padding: 20px;
+      margin: 0;
+      background-color: #1e1e1e;
+    }
+
+    .code-content code {
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+      font-size: 13.5px;
+      /* Increased size for readability */
+      line-height: 1.6;
+      /* Better line spacing */
+      color: #e0e0e0;
+      /* Brighter base text color */
+      background: transparent;
+      padding: 0;
+      border: none;
+      white-space: pre;
+      display: block;
+      font-weight: 500;
+      /* Thicker font weight */
+    }
+
+    /* Improved Syntax Highlighting - More Vibrant Colors */
+    .k {
+      color: #569cd6;
+      /* Keyword: Bright Blue */
+      font-weight: bold;
+    }
+
+    .s {
+      color: #ce9178;
+      /* String: Soft Orange */
+    }
+
+    .c {
+      color: #6a9955;
+      /* Comment: Green */
+      font-style: italic;
+    }
+
+    .f {
+      color: #dcdcaa;
+      /* Function: Pale Yellow */
+    }
+
+    .t {
+      color: #4ec9b0;
+      /* Type/Class: Teal */
+    }
+
+    .n {
+      color: #9cdcfe;
+      /* Variable/Property: Light Blue */
+    }
+  </style>
 </head>
 
 <body>
-  <table style="width:100%;max-width:900px;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+  <table
+    style="width:100%;max-width:900px;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
     <tbody>
       <tr style="padding:0px">
         <td style="padding:0px">
 
-          <!-- Header -->
-          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+          <table
+            style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
             <tbody>
               <tr>
                 <td style="padding:20px;width:100%;vertical-align:middle">
@@ -24,1135 +175,246 @@
                     <name>LinuxGuard</name>
                   </p>
                   <p style="text-align:center;color:#666;margin-top:5px;">
-                    Automated detection of Linux kernel security anti-patterns with learned clang-tidy checkers
+                    Turning Commit History into Security Checkers via LLMs
                   </p>
-                  <p style="text-align:center;font-size:14px;">
-                    <a href="research.html">&larr; Back to Research Overview</a>
-                  </p>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-          <!-- Navigation -->
-          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
-            <tbody>
-              <tr>
-                <td style="padding:20px;width:100%;vertical-align:middle">
-                  <p style="text-align:center;font-size:18px;">
-                    <a href="index.html">Home</a> &nbsp;|&nbsp;
-                    <a href="research.html" style="font-weight:700;">Research</a> &nbsp;|&nbsp;
-                    <a href="projects.html">Projects</a> &nbsp;|&nbsp;
-                    <a href="blog.html">Blog</a> &nbsp;|&nbsp;
-                    <a href="courses.html">Courses</a> &nbsp;|&nbsp;
-                    <a href="bot.html">Ask Me</a>
+                  <p style="text-align:center;font-size:16px;">
+                    <a href="index.html">Home</a> &nbsp;/&nbsp;
+                    <a href="research.html">Research</a> &nbsp;/&nbsp;
+                    <a href="blog/posts/linuxguard-journey.html">Read the Retrospective Blog</a>
                   </p>
                 </td>
               </tr>
             </tbody>
           </table>
 
-          <section id="lg-viz" aria-labelledby="lg-title">
-            <div class="lg-header">
-              <div>
-                <h2 id="lg-title">LinuxGuard</h2>
-                <p class="lg-tagline">Learned clang-tidy checkers for Linux kernel security anti-patterns.</p>
-              </div>
-            </div>
-            <div class="lg-columns">
-              <article class="lg-panel lg-pipeline-panel" aria-labelledby="lg-pipeline-heading">
-                <h3 id="lg-pipeline-heading" class="lg-panel-title">How it works</h3>
-                <div class="lg-pipeline-wrap" role="group" aria-labelledby="lg-pipeline-heading">
-                  <span id="lg-pipeline-title" class="lg-visually-hidden">LinuxGuard multi-stage synthesis, validation, and triage loop.</span>
-                  <svg id="lg-pipeline-svg" class="lg-pipeline-svg" role="img" aria-labelledby="lg-pipeline-title"></svg>
-                  <div id="lg-pipeline-tooltips" class="lg-tooltips" aria-hidden="true"></div>
-                </div>
-              </article>
-              <div class="lg-stat-grid" role="list">
-                <div class="lg-stat-card" role="listitem">
-                  <span class="lg-stat-label">Alerts</span>
-                  <span class="lg-stat-value" data-metric="alerts">--</span>
-                </div>
-                <div class="lg-stat-card" role="listitem">
-                  <span class="lg-stat-label">Precision</span>
-                  <span class="lg-stat-value" data-metric="precision">--</span>
-                </div>
-                <div class="lg-stat-card" role="listitem">
-                  <span class="lg-stat-label">Kernel versions scanned</span>
-                  <span class="lg-stat-value" data-metric="versions">--</span>
-                </div>
-                <div class="lg-stat-card" role="listitem">
-                  <span class="lg-stat-label">Files scanned</span>
-                  <span class="lg-stat-value" data-metric="files">--</span>
-                </div>
-              </div>
-            </div>
-            <div class="lg-card lg-chart-card">
-              <div class="lg-card-header">
-                <h3 class="lg-panel-title">Alerts by kernel version</h3>
-                <p class="lg-card-subhead">Stacked true/false positive counts per release.</p>
-              </div>
-              <div class="lg-chart-area">
-                <canvas id="lg-chart" role="img" aria-label="Stacked chart showing LinuxGuard true positives and false positives by kernel version"></canvas>
-                <table id="lg-chart-fallback" class="lg-chart-fallback" hidden>
-                  <caption class="lg-visually-hidden">LinuxGuard alerts by kernel version</caption>
-                  <thead>
-                    <tr>
-                      <th scope="col">Version</th>
-                      <th scope="col">True positives</th>
-                      <th scope="col">False positives</th>
-                      <th scope="col">Alerts</th>
-                    </tr>
-                  </thead>
-                  <tbody></tbody>
-                </table>
-              </div>
-            </div>
-            <article class="lg-card lg-checker-card" aria-labelledby="lg-checker-title">
-              <div class="lg-card-header">
-                <h3 id="lg-checker-title" class="lg-panel-title">Flagship checker</h3>
-                <p class="lg-card-subhead" data-fill="checker-desc">--</p>
-              </div>
-              <p class="lg-checker-name"><code data-fill="checker-name">--</code></p>
-              <pre class="lg-checker-snippet" tabindex="0"><code data-fill="checker-snippet"></code></pre>
-              <p class="lg-run-hint" data-fill="checker-run"></p>
-            </article>
-            <div class="lg-cta">
-              <a class="lg-button" data-fill="github-link" href="#" target="_blank" rel="noopener noreferrer">GitHub repository</a>
-            </div>
-          </section>
+          <div class="highlight-box">
+            <strong>Status Update:</strong> We concluded development in November 2025 following the publication
+            of <em>KNighter</em> (SOSP '24), which validated a similar approach. <a
+              href="blog/posts/linuxguard-journey.html">Read
+              my full retrospective here.</a>
+          </div>
 
-          <style>
-            #lg-viz {
-              --lg-bg: #f8fafc;
-              --lg-fg: #111827;
-              --lg-muted: #4b5563;
-              --lg-border: #e5e7eb;
-              --lg-accent: #2563eb;
-              --lg-good: #16a34a;
-              --lg-warn: #f97316;
-              --lg-surface: #ffffff;
-              --lg-shadow: 0 18px 36px rgba(15, 23, 42, 0.08);
-              font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-              color: var(--lg-fg);
-              background: var(--lg-bg);
-              max-width: min(100%, 700px);
-              margin: 0 auto 32px;
-              padding: 28px 28px 32px;
-              border-radius: 16px;
-              border: 1px solid var(--lg-border);
-              box-shadow: var(--lg-shadow);
-            }
-            #lg-viz * {
-              box-sizing: border-box;
-            }
-            #lg-viz .lg-header {
-              display: flex;
-              justify-content: space-between;
-              align-items: flex-start;
-              gap: 16px;
-            }
-            #lg-viz h2 {
-              font-size: clamp(1.6rem, 2vw + 1rem, 2.1rem);
-              margin: 0;
-            }
-            #lg-viz .lg-tagline {
-              margin: 6px 0 0;
-              color: var(--lg-muted);
-              font-size: 0.95rem;
-              line-height: 1.4;
-            }
-            #lg-viz .lg-columns {
-              display: grid;
-              grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
-              gap: 24px;
-              margin-top: 24px;
-              align-items: stretch;
-            }
-            #lg-viz .lg-panel {
-              background: var(--lg-surface);
-              border: 1px solid var(--lg-border);
-              border-radius: 14px;
-              padding: 20px;
-              box-shadow: 0 8px 16px rgba(15, 23, 42, 0.05);
-            }
-            #lg-viz .lg-panel-title {
-              margin: 0;
-              font-size: 1.05rem;
-              letter-spacing: 0.01em;
-            }
-            #lg-viz .lg-card-header {
-              display: flex;
-              flex-direction: column;
-              gap: 4px;
-            }
-            #lg-viz .lg-card-subhead {
-              margin: 6px 0 0;
-              font-size: 0.85rem;
-              color: var(--lg-muted);
-            }
-            #lg-viz .lg-pipeline-wrap {
-              margin-top: 18px;
-              position: relative;
-              padding: 16px 12px 28px;
-              border: 1px dashed var(--lg-border);
-              border-radius: 12px;
-              background: var(--lg-bg);
-              overflow: hidden;
-            }
-            #lg-viz .lg-pipeline-svg {
-              width: 100%;
-              height: 220px;
-              display: block;
-            }
-            #lg-viz .lg-pipeline-svg text {
-              font-family: inherit;
-              pointer-events: none;
-            }
-            #lg-viz .lg-visually-hidden {
-              position: absolute;
-              width: 1px;
-              height: 1px;
-              padding: 0;
-              margin: -1px;
-              overflow: hidden;
-              clip: rect(0, 0, 0, 0);
-              white-space: nowrap;
-              border: 0;
-            }
-            #lg-viz .lg-tooltips {
-              position: absolute;
-              inset: 0;
-              pointer-events: none;
-            }
-            #lg-viz .lg-tooltip {
-              position: absolute;
-              max-width: 200px;
-              background: var(--lg-fg);
-              color: var(--lg-bg);
-              padding: 10px 12px;
-              border-radius: 10px;
-              font-size: 0.8rem;
-              line-height: 1.4;
-              box-shadow: 0 10px 20px rgba(15, 23, 42, 0.18);
-              opacity: 0;
-              transform: translateY(-4px);
-              transition: opacity 160ms ease, transform 160ms ease;
-            }
-            #lg-viz .lg-tooltip[data-visible="true"] {
-              opacity: 1;
-              transform: translateY(0);
-            }
-            #lg-viz .lg-stat-grid {
-              display: grid;
-              grid-template-columns: repeat(2, minmax(0, 1fr));
-              gap: 16px;
-            }
-            #lg-viz .lg-stat-card {
-              background: var(--lg-surface);
-              border: 1px solid var(--lg-border);
-              border-radius: 12px;
-              padding: 16px;
-              display: flex;
-              flex-direction: column;
-              gap: 8px;
-              box-shadow: 0 8px 16px rgba(15, 23, 42, 0.05);
-            }
-            #lg-viz .lg-stat-label {
-              font-size: 0.85rem;
-              color: var(--lg-muted);
-              text-transform: uppercase;
-              letter-spacing: 0.08em;
-            }
-            #lg-viz .lg-stat-value {
-              font-size: clamp(1.4rem, 2.5vw + 0.5rem, 1.9rem);
-              font-weight: 600;
-              color: var(--lg-fg);
-            }
-            #lg-viz .lg-card {
-              margin-top: 28px;
-              background: var(--lg-surface);
-              border: 1px solid var(--lg-border);
-              border-radius: 14px;
-              padding: 20px;
-              box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
-            }
-            #lg-viz .lg-chart-area {
-              margin-top: 18px;
-            }
-            #lg-viz .lg-chart-area canvas {
-              width: 100%;
-              max-height: 260px;
-            }
-            #lg-viz .lg-chart-fallback {
-              width: 100%;
-              border-collapse: collapse;
-              margin-top: 12px;
-              font-size: 0.9rem;
-            }
-            #lg-viz .lg-chart-fallback th,
-            #lg-viz .lg-chart-fallback td {
-              border: 1px solid var(--lg-border);
-              padding: 8px 10px;
-              text-align: left;
-            }
-            #lg-viz .lg-checker-card {
-              display: flex;
-              flex-direction: column;
-              gap: 16px;
-            }
-            #lg-viz pre,
-            #lg-viz code {
-              font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-            }
-            #lg-viz .lg-checker-name {
-              font-size: 1rem;
-              margin: 0;
-            }
-            #lg-viz .lg-checker-snippet {
-              margin: 0;
-              background: #0f172a;
-              color: #f8fafc;
-              border-radius: 10px;
-              padding: 14px;
-              max-height: 7.5em;
-              overflow: auto;
-              font-size: 0.85rem;
-              line-height: 1.5;
-              border: none;
-            }
-            #lg-viz .lg-checker-snippet code {
-              display: block;
-              white-space: pre;
-            }
-            #lg-viz .lg-checker-snippet:focus {
-              outline: 2px solid var(--lg-accent);
-              outline-offset: 2px;
-            }
-            #lg-viz .lg-run-hint {
-              margin: 0;
-              color: var(--lg-muted);
-              font-size: 0.9rem;
-            }
-            #lg-viz .lg-cta {
-              margin-top: 24px;
-              text-align: right;
-            }
-            #lg-viz .lg-button {
-              display: inline-flex;
-              align-items: center;
-              gap: 8px;
-              padding: 10px 18px;
-              border-radius: 999px;
-              background: var(--lg-accent);
-              color: #ffffff;
-              font-weight: 600;
-              text-decoration: none;
-              transition: transform 150ms ease, box-shadow 150ms ease;
-              box-shadow: 0 10px 20px rgba(37, 99, 235, 0.25);
-            }
-            #lg-viz .lg-button:focus,
-            #lg-viz .lg-button:hover {
-              transform: translateY(-1px);
-              box-shadow: 0 14px 24px rgba(37, 99, 235, 0.3);
-            }
-            #lg-viz .lg-button:focus {
-              outline: 2px solid transparent;
-              box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.35);
-            }
-            #lg-viz .lg-button:active {
-              transform: translateY(0);
-            }
-            #lg-viz .lg-pipeline-svg .lg-step-number {
-              font-size: 0.85rem;
-              font-weight: 600;
-              fill: var(--lg-accent);
-            }
-            #lg-viz .lg-pipeline-svg .lg-step-label {
-              font-size: 0.85rem;
-              fill: var(--lg-muted);
-            }
-            #lg-viz .lg-pipeline-svg .lg-node circle {
-              transition: stroke-width 160ms ease, transform 160ms ease;
-              cursor: pointer;
-            }
-            #lg-viz .lg-node:focus circle,
-            #lg-viz .lg-node:hover circle {
-              stroke-width: 3.5;
-            }
-            #lg-viz .lg-node:focus {
-              outline: none;
-            }
-            @media (max-width: 820px) {
-              #lg-viz {
-                padding: 24px;
-              }
-              #lg-viz .lg-columns {
-                grid-template-columns: 1fr;
-              }
-              #lg-viz .lg-stat-grid {
-                grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-              }
-            }
-            @media (max-width: 540px) {
-              #lg-viz .lg-stat-grid {
-                grid-template-columns: 1fr;
-              }
-              #lg-viz .lg-button {
-                width: 100%;
-                justify-content: center;
-              }
-              #lg-viz .lg-chart-area canvas {
-                max-height: 220px;
-              }
-            }
-            @media (prefers-color-scheme: dark) {
-              #lg-viz {
-                --lg-bg: #0f172a;
-                --lg-fg: #f9fafb;
-                --lg-muted: #94a3b8;
-                --lg-border: #1f2937;
-                --lg-accent: #60a5fa;
-                --lg-good: #34d399;
-                --lg-warn: #fb923c;
-                --lg-surface: #111c34;
-                --lg-shadow: 0 18px 36px rgba(0, 0, 0, 0.55);
-              }
-              #lg-viz .lg-checker-snippet {
-                background: #020617;
-                color: #e2e8f0;
-              }
-            }
-            @media (prefers-reduced-motion: reduce) {
-              #lg-viz *,
-              #lg-viz .lg-node circle {
-                transition: none !important;
-                animation: none !important;
-              }
-            }
-          </style>
-          <script>
-            (function () {
-              'use strict';
-
-              var defaultData = {
-                metrics: {
-                  alerts_total: 76,
-                  files_scanned: 95660,
-                  tp: 36,
-                  fp: 40
-                },
-                by_version: [
-                  { version: 'v6.0', alerts: 68, tp: 34, fp: 34 },
-                  { version: 'v5.0', alerts: 8, tp: 2, fp: 6 },
-                  { version: 'v4.0', alerts: 0, tp: 0, fp: 0 },
-                  { version: 'v3.0', alerts: 0, tp: 0, fp: 0 }
-                ],
-                checker: {
-                  name: 'linuxkernel-must-check-errs',
-                  desc: 'Flags unchecked error flows involving helpers like ERR_PTR/IS_ERR and related patterns in kernel code.',
-                  snippet: 'auto ErrFn = functionDecl(hasAnyName("ERR_PTR","IS_ERR"));\nFinder->addMatcher(callExpr(callee(ErrFn)), this);'
-                },
-                links: {
-                  github: 'https://github.com/Mac-Huang/LinuxGuard'
-                }
-              };
-
-              var pipelineSteps = [
-                {
-                  title: 'Mine Fixes',
-                  description: 'Collect real Linux kernel bug fixes to spot repeating mistakes.'
-                },
-                {
-                  title: 'Synthesize Matchers',
-                  description: 'Use LLM guidance to turn those fixes into clang-tidy matchers.'
-                },
-                {
-                  title: 'Build clang-tidy',
-                  description: 'Compile the generated rules into a clang-tidy build for large scans.'
-                },
-                {
-                  title: 'Scan Kernels',
-                  description: 'Scan the chosen kernel trees with that build to surface risky error paths.'
-                },
-                {
-                  title: 'Triage Reports',
-                  description: 'Review alerts to confirm bugs, mark false alarms, and capture feedback.'
-                },
-                {
-                  title: 'Refine Checker',
-                  description: 'Apply the review lessons to tighten the matcher before the next cycle.'
-                }
-              ];
-
-              var activeChart = null;
-              var themeWatcherAttached = false;
-              var pipelineResizeHandler = null;
-
-              function init() {
-                var section = document.getElementById('lg-viz');
-                if (!section) {
-                  return;
-                }
-
-                var data = mergeData(defaultData, getOverrideData());
-                populateStats(section, data);
-                populateChecker(section, data);
-                buildPipeline(section);
-                buildFallbackTable(section, data);
-                initChart(section, data);
-              }
-
-              function getOverrideData() {
-                var scriptEl = document.getElementById('linuxguard-data');
-                if (!scriptEl) {
-                  return null;
-                }
-                var text = scriptEl.textContent || scriptEl.innerText || '';
-                if (!text || !text.trim()) {
-                  return null;
-                }
-                try {
-                  return JSON.parse(text);
-                } catch (error) {
-                  console.warn('LinuxGuard Viz: failed to parse linuxguard-data JSON. Using defaults.', error);
-                  return null;
-                }
-              }
-
-              function mergeData(defaults, overrides) {
-                var merged = JSON.parse(JSON.stringify(defaults));
-                if (!overrides || typeof overrides !== 'object') {
-                  return merged;
-                }
-                if (overrides.metrics && typeof overrides.metrics === 'object') {
-                  merged.metrics = Object.assign({}, merged.metrics, overrides.metrics);
-                }
-                if (Array.isArray(overrides.by_version)) {
-                  merged.by_version = overrides.by_version;
-                }
-                if (overrides.checker && typeof overrides.checker === 'object') {
-                  merged.checker = Object.assign({}, merged.checker, overrides.checker);
-                }
-                if (overrides.links && typeof overrides.links === 'object') {
-                  merged.links = Object.assign({}, merged.links, overrides.links);
-                }
-                return merged;
-              }
-
-              function formatNumber(value) {
-                var number = Number(value);
-                if (!Number.isFinite(number)) {
-                  return '0';
-                }
-                return number.toLocaleString();
-              }
-
-              function populateStats(section, dataset) {
-                var metrics = dataset.metrics || {};
-                var totalAlerts = Number(metrics.alerts_total);
-                if (!Number.isFinite(totalAlerts)) {
-                  totalAlerts = (dataset.by_version || []).reduce(function (acc, entry) {
-                    return acc + (Number(entry.alerts) || 0);
-                  }, 0);
-                }
-                var totalTp = Number(metrics.tp);
-                var totalFp = Number(metrics.fp);
-                if (!Number.isFinite(totalTp) || !Number.isFinite(totalFp)) {
-                  totalTp = 0;
-                  totalFp = 0;
-                  (dataset.by_version || []).forEach(function (entry) {
-                    totalTp += Number(entry.tp) || 0;
-                    totalFp += Number(entry.fp) || 0;
-                  });
-                }
-                var denom = totalTp + totalFp;
-                var precisionText = denom > 0 ? ((totalTp / denom) * 100).toFixed(1) + '%' : 'N/A';
-                var versionsScanned = Array.isArray(dataset.by_version) ? dataset.by_version.length : 0;
-                var filesScanned = Number(metrics.files_scanned);
-
-                var statValues = {
-                  alerts: totalAlerts,
-                  precision: precisionText,
-                  versions: versionsScanned,
-                  files: filesScanned
-                };
-
-                section.querySelectorAll('[data-metric]').forEach(function (el) {
-                  var key = el.getAttribute('data-metric');
-                  if (key === 'precision') {
-                    el.textContent = statValues.precision;
-                    el.setAttribute('title', 'TP ' + formatNumber(totalTp) + ' / FP ' + formatNumber(totalFp));
-                  } else if (Object.prototype.hasOwnProperty.call(statValues, key)) {
-                    el.textContent = formatNumber(statValues[key]);
-                  }
-                });
-              }
-
-              function populateChecker(section, dataset) {
-                var checker = dataset.checker || {};
-                var descEl = section.querySelector('[data-fill="checker-desc"]');
-                var nameEl = section.querySelector('[data-fill="checker-name"]');
-                var snippetEl = section.querySelector('[data-fill="checker-snippet"]');
-                var runEl = section.querySelector('[data-fill="checker-run"]');
-                var ctaEl = section.querySelector('[data-fill="github-link"]');
-
-                var baseName = checker.name || defaultData.checker.name;
-                if (nameEl) {
-                  nameEl.textContent = baseName;
-                }
-
-                if (descEl) {
-                  var baseDesc = (checker.desc || defaultData.checker.desc || '').trim();
-                  if (!baseDesc) {
-                    baseDesc = defaultData.checker.desc;
-                  }
-                  var sentenceBreaks = baseDesc.match(/[.!?]\s+/g);
-                  if (!sentenceBreaks || sentenceBreaks.length < 1) {
-                    if (baseDesc && !/[.!?]$/.test(baseDesc)) {
-                      baseDesc += '.';
-                    }
-                    baseDesc += ' Validated through iterative triage to keep signal high.';
-                  }
-                  descEl.textContent = baseDesc;
-                }
-
-                if (snippetEl) {
-                  var snippet = checker.snippet || defaultData.checker.snippet;
-                  snippetEl.textContent = snippet;
-                }
-
-                if (runEl) {
-                  runEl.textContent = 'clang-tidy -checks="-*,' + baseName + '" -p <compile_commands_path> <file>';
-                }
-
-                if (ctaEl) {
-                  var href = (dataset.links && dataset.links.github) || defaultData.links.github;
-                  ctaEl.setAttribute('href', href);
-                }
-              }
-
-              function buildPipeline(section) {
-                var svg = section.querySelector('#lg-pipeline-svg');
-                var tooltipContainer = section.querySelector('#lg-pipeline-tooltips');
-                var wrap = section.querySelector('.lg-pipeline-wrap');
-                if (!svg || !tooltipContainer || !wrap) {
-                  return;
-                }
-
-                svg.innerHTML = '';
-                tooltipContainer.innerHTML = '';
-
-                var ns = 'http://www.w3.org/2000/svg';
-                var svgWidth = 720;
-                var svgHeight = 160;
-                var margin = 60;
-                var radius = 32;
-                var centerY = 60;
-                var labelY = 132;
-                var spacing = (svgWidth - margin * 2) / (pipelineSteps.length - 1);
-
-                svg.setAttribute('viewBox', '0 0 ' + svgWidth + ' ' + svgHeight);
-                svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-
-                var defs = document.createElementNS(ns, 'defs');
-                var marker = document.createElementNS(ns, 'marker');
-                marker.setAttribute('id', 'lg-arrowhead');
-                marker.setAttribute('markerWidth', '12');
-                marker.setAttribute('markerHeight', '12');
-                marker.setAttribute('refX', '6');
-                marker.setAttribute('refY', '3');
-                marker.setAttribute('orient', 'auto');
-                marker.setAttribute('markerUnits', 'strokeWidth');
-                var markerPath = document.createElementNS(ns, 'path');
-                markerPath.setAttribute('d', 'M0,0 L6,3 L0,6 z');
-                markerPath.setAttribute('fill', 'var(--lg-accent)');
-                marker.appendChild(markerPath);
-                defs.appendChild(marker);
-                svg.appendChild(defs);
-
-                var tooltipNodes = [];
-
-                function hideAllTooltips() {
-                  tooltipNodes.forEach(function (node) {
-                    node.setAttribute('data-visible', 'false');
-                  });
-                  tooltipContainer.setAttribute('aria-hidden', 'true');
-                }
-
-                if (typeof pipelineResizeHandler === 'function') {
-                  window.removeEventListener('resize', pipelineResizeHandler);
-                }
-                pipelineResizeHandler = hideAllTooltips;
-                window.addEventListener('resize', pipelineResizeHandler);
-
-                pipelineSteps.forEach(function (step, index) {
-                  var cx = margin + spacing * index;
-                  var tooltipId = 'lg-tooltip-' + index;
-                  var nextCx = margin + spacing * (index + 1);
-
-                  if (index < pipelineSteps.length - 1) {
-                    var connector = document.createElementNS(ns, 'line');
-                    connector.setAttribute('x1', cx + radius);
-                    connector.setAttribute('y1', centerY);
-                    connector.setAttribute('x2', nextCx - radius);
-                    connector.setAttribute('y2', centerY);
-                    connector.setAttribute('stroke', 'var(--lg-accent)');
-                    connector.setAttribute('stroke-width', '2.4');
-                    connector.setAttribute('stroke-linecap', 'round');
-                    connector.setAttribute('marker-end', 'url(#lg-arrowhead)');
-                    svg.appendChild(connector);
-                  }
-
-                  var group = document.createElementNS(ns, 'g');
-                  group.setAttribute('class', 'lg-node');
-                  group.setAttribute('tabindex', '0');
-                  group.setAttribute('role', 'button');
-                  group.setAttribute('aria-describedby', tooltipId);
-                  group.setAttribute('title', step.description);
-
-                  var circle = document.createElementNS(ns, 'circle');
-                  circle.setAttribute('cx', cx);
-                  circle.setAttribute('cy', centerY);
-                  circle.setAttribute('r', radius);
-                  circle.setAttribute('fill', 'var(--lg-accent)');
-                  circle.setAttribute('fill-opacity', '0.14');
-                  circle.setAttribute('stroke', 'var(--lg-accent)');
-                  circle.setAttribute('stroke-width', '2.4');
-
-                  var number = document.createElementNS(ns, 'text');
-                  number.setAttribute('x', cx);
-                  number.setAttribute('y', centerY + 5);
-                  number.setAttribute('text-anchor', 'middle');
-                  number.setAttribute('class', 'lg-step-number');
-                  number.textContent = String(index + 1);
-
-                  var label = document.createElementNS(ns, 'text');
-                  label.setAttribute('x', cx);
-                  label.setAttribute('y', labelY);
-                  label.setAttribute('text-anchor', 'middle');
-                  label.setAttribute('class', 'lg-step-label');
-                  label.textContent = step.title;
-
-                  group.appendChild(circle);
-                  group.appendChild(number);
-                  group.appendChild(label);
-                  svg.appendChild(group);
-
-                  var tooltip = document.createElement('div');
-                  tooltip.className = 'lg-tooltip';
-                  tooltip.id = tooltipId;
-                  tooltip.setAttribute('role', 'tooltip');
-                  tooltip.setAttribute('data-visible', 'false');
-                  tooltip.textContent = step.description;
-                  tooltipContainer.appendChild(tooltip);
-                  tooltipNodes.push(tooltip);
-
-                  function showTooltip(target) {
-                    hideAllTooltips();
-                    var wrapRect = wrap.getBoundingClientRect();
-                    var targetRect = target.getBoundingClientRect();
-                    tooltip.setAttribute('data-visible', 'true');
-                    tooltipContainer.setAttribute('aria-hidden', 'false');
-                    var tooltipRect = tooltip.getBoundingClientRect();
-                    var left = targetRect.left + targetRect.width / 2 - tooltipRect.width / 2 - wrapRect.left;
-                    var top = targetRect.top - wrapRect.top - tooltipRect.height - 12;
-                    if (left < 0) {
-                      left = 0;
-                    }
-                    var maxLeft = wrapRect.width - tooltipRect.width;
-                    if (left > maxLeft) {
-                      left = maxLeft;
-                    }
-                    if (top < 0) {
-                      top = targetRect.bottom - wrapRect.top + 12;
-                    }
-                    tooltip.style.left = left + 'px';
-                    tooltip.style.top = top + 'px';
-                  }
-
-                  group.addEventListener('mouseenter', function (event) {
-                    showTooltip(event.currentTarget);
-                  });
-                  group.addEventListener('mouseleave', hideAllTooltips);
-                  group.addEventListener('focus', function (event) {
-                    showTooltip(event.currentTarget);
-                  });
-                  group.addEventListener('blur', hideAllTooltips);
-                  group.addEventListener('keydown', function (event) {
-                    if (event.key === 'Enter' || event.key === ' ') {
-                      event.preventDefault();
-                      showTooltip(event.currentTarget);
-                    }
-                    if (event.key === 'Escape') {
-                      event.preventDefault();
-                      hideAllTooltips();
-                      event.currentTarget.blur();
-                    }
-                  });
-                });
-              }
-
-              function buildFallbackTable(section, dataset) {
-                var table = section.querySelector('#lg-chart-fallback');
-                if (!table) {
-                  return;
-                }
-                var tbody = table.querySelector('tbody');
-                if (!tbody) {
-                  return;
-                }
-                tbody.innerHTML = '';
-                (dataset.by_version || []).forEach(function (entry) {
-                  var row = document.createElement('tr');
-                  var versionCell = document.createElement('th');
-                  versionCell.setAttribute('scope', 'row');
-                  versionCell.textContent = entry.version || '—';
-                  row.appendChild(versionCell);
-
-                  var tpCell = document.createElement('td');
-                  tpCell.textContent = formatNumber(entry.tp || 0);
-                  row.appendChild(tpCell);
-
-                  var fpCell = document.createElement('td');
-                  fpCell.textContent = formatNumber(entry.fp || 0);
-                  row.appendChild(fpCell);
-
-                  var alertCell = document.createElement('td');
-                  alertCell.textContent = formatNumber(entry.alerts || 0);
-                  row.appendChild(alertCell);
-
-                  tbody.appendChild(row);
-                });
-              }
-
-              function initChart(section, dataset) {
-                var canvas = section.querySelector('#lg-chart');
-                var fallback = section.querySelector('#lg-chart-fallback');
-                if (!canvas) {
-                  return;
-                }
-
-                loadChartJs().then(function (Chart) {
-                  canvas.style.display = 'block';
-                  canvas.removeAttribute('aria-hidden');
-                  if (fallback) {
-                    fallback.hidden = true;
-                    fallback.setAttribute('aria-hidden', 'true');
-                  }
-                  renderChart(section, Chart, canvas, dataset);
-                }).catch(function (error) {
-                  if (fallback) {
-                    fallback.hidden = false;
-                    fallback.setAttribute('aria-hidden', 'false');
-                  }
-                  canvas.setAttribute('aria-hidden', 'true');
-                  canvas.style.display = 'none';
-                  console.warn('LinuxGuard Viz: Chart.js unavailable, using table fallback.', error);
-                });
-              }
-
-              function loadChartJs() {
-                return new Promise(function (resolve, reject) {
-                  if (window.Chart) {
-                    resolve(window.Chart);
-                    return;
-                  }
-                  var script = document.createElement('script');
-                  script.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js';
-                  script.async = true;
-                  script.onload = function () {
-                    if (window.Chart) {
-                      resolve(window.Chart);
-                    } else {
-                      reject(new Error('Chart.js failed to load'));
-                    }
-                  };
-                  script.onerror = function () {
-                    reject(new Error('Chart.js failed to load'));
-                  };
-                  document.head.appendChild(script);
-                });
-              }
-
-              function renderChart(section, Chart, canvas, dataset) {
-                var ctx = canvas.getContext('2d');
-                var labels = [];
-                var tpValues = [];
-                var fpValues = [];
-                (dataset.by_version || []).forEach(function (entry) {
-                  labels.push(entry.version || '');
-                  tpValues.push(Number(entry.tp) || 0);
-                  fpValues.push(Number(entry.fp) || 0);
-                });
-
-                canvas.height = 260;
-
-                if (activeChart) {
-                  activeChart.destroy();
-                  activeChart = null;
-                }
-
-                var styles = getComputedStyle(section);
-
-                activeChart = new Chart(ctx, {
-                  type: 'bar',
-                  data: {
-                    labels: labels,
-                    datasets: [
-                      {
-                        label: 'True positives',
-                        data: tpValues,
-                        backgroundColor: styles.getPropertyValue('--lg-good').trim() || '#16a34a',
-                        borderRadius: 6,
-                        stack: 'alerts'
-                      },
-                      {
-                        label: 'False positives',
-                        data: fpValues,
-                        backgroundColor: styles.getPropertyValue('--lg-warn').trim() || '#f97316',
-                        borderRadius: 6,
-                        stack: 'alerts'
-                      }
-                    ]
-                  },
-                  options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                      x: {
-                        stacked: true,
-                        ticks: {
-                          color: styles.getPropertyValue('--lg-muted').trim() || '#4b5563'
-                        },
-                        grid: {
-                          color: styles.getPropertyValue('--lg-border').trim() || '#e5e7eb'
-                        }
-                      },
-                      y: {
-                        stacked: true,
-                        beginAtZero: true,
-                        ticks: {
-                          color: styles.getPropertyValue('--lg-muted').trim() || '#4b5563'
-                        },
-                        grid: {
-                          color: styles.getPropertyValue('--lg-border').trim() || '#e5e7eb'
-                        }
-                      }
-                    },
-                    plugins: {
-                      legend: {
-                        position: 'bottom',
-                        labels: {
-                          color: styles.getPropertyValue('--lg-fg').trim() || '#111827',
-                          usePointStyle: true,
-                          pointStyle: 'rounded'
-                        }
-                      },
-                      tooltip: {
-                        mode: 'index',
-                        intersect: false
-                      }
-                    }
-                  }
-                });
-
-                updateChartColors(section, activeChart);
-                setupThemeWatcher(section);
-              }
-
-              function updateChartColors(section, chart) {
-                if (!chart) {
-                  return;
-                }
-                var styles = getComputedStyle(section);
-                var goodColor = styles.getPropertyValue('--lg-good').trim() || '#16a34a';
-                var warnColor = styles.getPropertyValue('--lg-warn').trim() || '#f97316';
-                var mutedColor = styles.getPropertyValue('--lg-muted').trim() || '#4b5563';
-                var borderColor = styles.getPropertyValue('--lg-border').trim() || '#e5e7eb';
-                var fgColor = styles.getPropertyValue('--lg-fg').trim() || '#111827';
-
-                if (chart.data && chart.data.datasets) {
-                  if (chart.data.datasets[0]) {
-                    chart.data.datasets[0].backgroundColor = goodColor;
-                  }
-                  if (chart.data.datasets[1]) {
-                    chart.data.datasets[1].backgroundColor = warnColor;
-                  }
-                }
-                if (chart.options) {
-                  if (chart.options.plugins && chart.options.plugins.legend && chart.options.plugins.legend.labels) {
-                    chart.options.plugins.legend.labels.color = fgColor;
-                  }
-                  if (chart.options.scales && chart.options.scales.x && chart.options.scales.y) {
-                    chart.options.scales.x.ticks.color = mutedColor;
-                    chart.options.scales.y.ticks.color = mutedColor;
-                    chart.options.scales.x.grid.color = borderColor;
-                    chart.options.scales.y.grid.color = borderColor;
-                  }
-                }
-                chart.update();
-              }
-
-              function setupThemeWatcher(section) {
-                if (!window.matchMedia || themeWatcherAttached) {
-                  return;
-                }
-                var mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-                var listener = function () {
-                  updateChartColors(section, activeChart);
-                };
-                if (typeof mediaQuery.addEventListener === 'function') {
-                  mediaQuery.addEventListener('change', listener);
-                } else if (typeof mediaQuery.addListener === 'function') {
-                  mediaQuery.addListener(listener);
-                }
-                themeWatcherAttached = true;
-              }
-
-              if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', init);
-              } else {
-                init();
-              }
-            })();
-          </script>
-
-          <!-- Repository Layout -->
-          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+          <table
+            style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
             <tbody>
               <tr>
                 <td style="padding:20px;width:100%;vertical-align:middle">
-                  <heading>Repository Layout</heading>
-                  <p>
-                    Everything lives under <code>~/private/linux-guard/</code> with dedicated spaces for LLVM integration,
-                    generated checkers, kernel snapshots, and experiment results.
-                  </p>
-                  <p style="text-align:center;margin-top:20px;">
-                    <img src="images/papers/linuxguard_LLVM_struct.jpg" alt="LinuxGuard LLVM integration structure" style="width:100%;max-width:650px;border-radius:5px;border:1px solid #ddd;">
-                  </p>
-                  <p style="text-align:center;color:#666;font-size:14px;margin-top:5px;">
-                    LLVM integration structure showing custom clang-tidy modules layered into the build.
-                  </p>
-                  <pre style="background-color:#f5f5f5;padding:15px;border-radius:4px;overflow-x:auto;font-size:14px;line-height:1.4;">~/private/linux-guard/
-|-- llvm-project/                 # LLVM/Clang build with clang-tidy
-|   |-- build/
-|   |   \-- bin/clang-tidy        # Binary with custom checkers
-|   \-- clang-tools-extra/
-|       \-- clang-tidy/
-|           \-- linuxkernel/      # Checker module sources
-|-- kernels/                      # Versioned Linux kernels (v3.0 - v6.0)
-|-- checkers/                     # Templates and generated checkers
-|-- results/                      # Scan reports and metrics
-\-- scripts/                      # Automation pipeline</pre>
-                </td>
-              </tr>
-            </tbody>
-          </table>
 
+                  <div class="narrative-section">
+                    <heading>The Vision</heading>
+                    <p class="narrative-text">
+                      The Linux kernel is a massive, living codebase. Every day, developers fix bugs, but often these
+                      bugs follow repetitive "anti-patterns"—missing locks, incorrect error handling, or uninitialized
+                      variables.
+                      <strong>LinuxGuard</strong> began with a simple question: <em>Can we teach an AI to read a bug-fix
+                        commit and write a static analysis tool to prevent that bug forever?</em>
+                    </p>
+                    <div class="image-container">
+                      <img src="images/papers/linuxguard_paradigm.jpg" alt="LinuxGuard Paradigm">
+                      <div class="caption">Figure 1: The Vision. Utilizing LLMs to bridge the gap between unstructured
+                        commit messages and structured AST Matchers.</div>
+                    </div>
+                  </div>
 
-          <!-- Running the Checker -->
-          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
-            <tbody>
-              <tr>
-                <td style="padding:20px;width:100%;vertical-align:middle">
-                  <heading>Running the Checker</heading>
-                  <p>
-                    LinuxGuard supports both targeted translation-unit analysis and full kernel sweeps. Commands below assume
-                    the custom clang-tidy binary lives at <code>llvm-project/build/bin/clang-tidy</code>.
-                  </p>
-                  <p style="margin-bottom:5px;"><em>Single translation unit:</em></p>
-                  <pre style="background-color:#f5f5f5;padding:15px;border-radius:4px;overflow-x:auto;font-size:14px;line-height:1.4;">~/private/linux-guard/llvm-project/build/bin/clang-tidy \
-  -checks="-*,linuxkernel-must-check-errs" \
-  -p ~/private/linux-guard/kernels/linux-v6.0 \
-  test.c</pre>
-                  <p style="margin-bottom:5px;"><em>Full kernel sweep (4-way parallel):</em></p>
-                  <pre style="background-color:#f5f5f5;padding:15px;border-radius:4px;overflow-x:auto;font-size:14px;line-height:1.4;">cd ~/private/linux-guard/kernels/linux-v6.0
-python3 ~/private/linux-guard/llvm-project/clang-tools-extra/clang-tidy/tool/run-clang-tidy.py \
-  -clang-tidy-binary=~/private/linux-guard/llvm-project/build/bin/clang-tidy \
-  -checks="-*,linuxkernel-must-check-errs" \
-  -p . -j 4</pre>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                  <hr>
 
-          <!-- Research Objectives -->
-          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
-            <tbody>
-              <tr>
-                <td style="padding:20px;width:100%;vertical-align:middle">
-                  <heading>Research Objectives</heading>
-                  <p>
-                    LinuxGuard enables security studies that span more than a decade of kernel history:
-                  </p>
+                  <div class="narrative-section">
+                    <heading>Phase 1: The Hurdle</heading>
+                    <p class="narrative-text">
+                      Our initial attempt was straightforward (the "Naive Pipeline"). We fed the diff and commit message
+                      directly into an LLM (like GPT-4) and asked it to "write a Clang AST Matcher."
+                    </p>
+                    <div class="image-container">
+                      <img class="fixed-height-img" src="images/papers/Prototype-Pipeline.jpg" alt="Prototype Pipeline">
+                      <div class="caption">Figure 2: The Naive Pipeline. A simple single-pass prompt that often led to
+                        compilation errors.</div>
+                    </div>
+                    <p class="narrative-text">
+                      <strong>The Result? Failure.</strong> The generated C++ code rarely compiled. The LLM would
+                      hallucinate Clang APIs that didn't exist or write matchers that were syntactically correct but
+                      semantically meaningless. We realized that a single inference step was insufficient for the
+                      complexity of the Clang AST.
+                    </p>
+                  </div>
+
+                  <div class="narrative-section" style="background-color: #f9f9f9; padding: 20px; border-radius: 8px;">
+                    <heading>The Pivot: Strategic Evolution</heading>
+                    <p class="narrative-text">
+                      Faced with these failures, we had to rethink our approach. We analyzed <em>why</em> the model was
+                      failing and realized there was a <strong>reasoning gap</strong>. A human developer doesn't just
+                      "output code"; they analyze the bug, formulate a logic, and then iteratively refine their code.
+                    </p>
+                    <p class="narrative-text">
+                      We decided to restructure the pipeline to mimic this cognitive process. The diagram below
+                      illustrates our thought process: moving from "direct generation" to a layered approach that
+                      integrates <strong>reasoning (Chain-of-Thought)</strong> and <strong>feedback
+                        (Self-Correction)</strong>.
+                    </p>
+                    <div class="image-container">
+                      <img class="fixed-height-img" img src="images/papers/TraceBack.jpg"
+                        alt="Strategic Evolution Process">
+                      <div class="caption">Figure 3: Strategic Evolution. Our reasoning process for evolving the
+                        pipeline from simple prompting to a robust, multi-agent system.</div>
+                    </div>
+                  </div>
+
+                  <div class="narrative-section">
+                    <heading>The Solution: An Intelligent Pipeline</heading>
+                    <p class="narrative-text">
+                      Guided by the strategy above, we implemented two key architectural improvements that transformed
+                      LinuxGuard into a working tool.
+                    </p>
+
+                    <div class="solution-header">1. Chain-of-Thought Synthesis</div>
+                    <p class="narrative-text">
+                      We decoupled analysis from generation. We forced the model to "think" before it coded: first,
+                      explain <em>why</em> the code is buggy; second, describe the pattern in plain English; and only
+                      then, generate the C++ matcher code.
+                    </p>
+                    <div class="image-container">
+                      <img class="fixed-height-img" src="images/papers/EnhancedPipeline.jpg"
+                        alt="Enhanced Pipeline with CoT">
+                      <div class="caption">Figure 4: Chain-of-Thought. By explicitly separating reasoning from coding,
+                        we significantly improved semantic accuracy.</div>
+                    </div>
+
+                    <div class="solution-header">2. The Self-Healing Loop</div>
+                    <p class="narrative-text">
+                      To handle syntax errors, we introduced a <strong>Repair Agent</strong>. When the Clang compiler
+                      throws an error, we capture the `stderr` output and feed it back to the LLM, creating a
+                      closed-loop system that iterates until the checker compiles successfully.
+                    </p>
+                    <div class="image-container">
+                      <img class="fixed-height-img" src="images/papers/repair-overview.jpg" alt="Repair Loop">
+                      <div class="caption">Figure 5: Self-Healing. The system automatically fixes compilation errors
+                        without human intervention.</div>
+                    </div>
+                  </div>
+
+                  <div class="narrative-section">
+                    <heading>System Integration</heading>
+                    <p class="narrative-text">
+                      Finally, the generated checkers were not just theoretical. We built a harness that injects these
+                      dynamically generated matchers into the standard Linux kernel build process as full
+                      <code>clang-tidy</code> plugins, enabling us to scan historical kernel versions.
+                    </p>
+                    <div class="image-container">
+                      <img src="images/papers/linuxguard_LLVM_struct.jpg" alt="LLVM Structure">
+                      <div class="caption">Figure 6: Real-world Integration. Embedding our AI-generated tools into the
+                        LLVM/Clang ecosystem.</div>
+                    </div>
+                  </div>
+
+                  <div class="narrative-section">
+                    <heading>The Engine: Pipeline Orchestrator</heading>
+                    <p class="narrative-text">
+                      At the heart of LinuxGuard lies the <strong>Orchestrator</strong>, a Python-based engine that
+                      manages the entire lifecycle of a checker. The excerpt below highlights the core
+                      <code>generate_checker</code> loop, which drives the Chain-of-Thought generation and manages the
+                      self-healing compilation process.
+                    </p>
+
+                    <div class="code-window">
+                      <div class="code-header">
+                        <span class="code-title">pipeline_orchestrator.py (Core Logic Excerpt)</span>
+                      </div>
+                      <pre class="code-content"><code><span class="k">class</span> <span class="t">PipelineOrchestrator</span>:
+    <span class="c">"""Orchestrates the complete pipeline with iterative generation and repair."""</span>
+
+    <span class="k">def</span> <span class="f">generate_checker</span>(<span class="s">self</span>, <span class="n">commit_hash</span>: <span class="t">str</span>) -> <span class="t">Optional</span>[<span class="t">Dict</span>]:
+        <span class="c"># ... [Initial setup and context loading omitted] ...</span>
+
+        <span class="k">for</span> <span class="n">iteration</span> <span class="k">in</span> <span class="f">range</span>(1, <span class="s">self</span>.<span class="n">max_iterations</span> + 1):
+            <span class="f">print</span>(<span class="s">f"━━━ Iteration {iteration}/{self.max_iterations} ━━━"</span>)
+
+            <span class="c"># Stage 1: Multi-commit Pattern Extraction</span>
+            <span class="c"># We aggregate insights from multiple similar commits to avoid overfitting</span>
+            <span class="n">candidate_commits</span> = <span class="s">self</span>.<span class="f">collect_candidate_commits</span>(<span class="n">commit_hash</span>)
+            <span class="n">analysis_result</span> = <span class="s">self</span>.<span class="f">analyze_commits</span>(<span class="n">candidate_commits</span>)
+            
+            <span class="k">if not</span> <span class="n">analysis_result</span>:
+                <span class="k">continue</span>
+
+            <span class="n">pattern</span>, <span class="n">guidance</span> = <span class="n">analysis_result</span>
+            
+            <span class="c"># Stage 2 & 3: Synthesis & Implementation (Chain-of-Thought)</span>
+            <span class="c"># The model first plans the logic (Module 1) then writes the C++ (Module 2)</span>
+            <span class="n">checker_info</span> = <span class="s">self</span>.<span class="f">implement_checker</span>(<span class="n">pattern</span>, <span class="n">guidance</span>)
+
+            <span class="c"># Stage 4: Build & Repair Loop (Self-Healing)</span>
+            <span class="n">build_success</span> = <span class="k">False</span>
+            <span class="k">for</span> <span class="n">attempt</span> <span class="k">in</span> <span class="f">range</span>(1, <span class="s">self</span>.<span class="n">max_repair_attempts</span> + 1):
+                
+                <span class="c"># Try to compile the generated Clang plugin</span>
+                <span class="n">build_success</span>, <span class="n">errors</span> = <span class="s">self</span>.<span class="f">build_checker</span>(<span class="n">checker_info</span>)
+
+                <span class="k">if</span> <span class="n">build_success</span>:
+                    <span class="k">break</span> 
+
+                <span class="c"># If build fails, feed stderr back to the LLM for repair</span>
+                <span class="f">print</span>(<span class="s">f"🔧 Attempting repair ({attempt}/{self.max_repair_attempts})..."</span>)
+                <span class="n">repaired</span> = <span class="s">self</span>.<span class="f">repair_checker</span>(<span class="n">checker_info</span>, <span class="n">errors</span>, <span class="n">pattern</span>)
+                
+                <span class="k">if not</span> <span class="n">repaired</span>:
+                    <span class="k">break</span>
+
+            <span class="k">if not</span> <span class="n">build_success</span>:
+                <span class="k">continue</span> <span class="c"># Retry with a fresh generation if repair fails</span>
+
+            <span class="c"># Stage 5: Validation</span>
+            <span class="c"># Run the compiled checker on historical kernels to verify findings</span>
+            <span class="n">is_valid</span> = <span class="s">self</span>.<span class="f">validate_checker</span>(<span class="n">checker_info</span>, <span class="n">commit_hash</span>)
+
+            <span class="k">if</span> <span class="n">is_valid</span>:
+                <span class="f">print</span>(<span class="s">"✓ SUCCESS: Valid checker generated!"</span>)
+                <span class="k">return</span> <span class="n">checker_info</span>
+
+        <span class="k">return</span> <span class="k">None</span>
+
+    <span class="k">def</span> <span class="f">repair_checker</span>(<span class="s">self</span>, <span class="n">checker_info</span>: <span class="t">Dict</span>, <span class="n">errors</span>: <span class="t">str</span>, <span class="n">pattern</span>: <span class="t">Dict</span>) -> <span class="t">bool</span>:
+        <span class="c">"""Use LLM to repair compilation errors by analyzing clang diagnostic output."""</span>
+        
+        <span class="c"># Load current (broken) source code</span>
+        <span class="n">h_code</span>, <span class="n">cpp_code</span> = <span class="s">self</span>.<span class="f">load_checker_source</span>(<span class="n">checker_info</span>)
+
+        <span class="c"># Create repair prompt with the specific compiler errors</span>
+        <span class="n">prompt</span> = <span class="f">build_repair_prompt</span>(
+            <span class="n">code</span>=(<span class="n">h_code</span>, <span class="n">cpp_code</span>),
+            <span class="n">compiler_errors</span>=<span class="n">errors</span>,
+            <span class="n">context</span>=<span class="n">pattern</span>
+        )
+
+        <span class="c"># Ask LLM to fix the syntax/API issues</span>
+        <span class="n">response</span> = <span class="s">self</span>.<span class="n">repair_model</span>.<span class="f">generate_content</span>(<span class="n">prompt</span>)
+        
+        <span class="c"># ... [Code extraction and file saving omitted] ...</span>
+
+        <span class="k">return</span> <span class="k">True</span></code></pre>
+                    </div>
+                  </div>
+
+                  <heading>Resources</heading>
                   <ul>
-                    <li><strong>Temporal analysis:</strong> surface lingering vulnerabilities across older releases.</li>
-                    <li><strong>Spatial analysis:</strong> compare subsystem adoption of safe error handling patterns.</li>
-                    <li><strong>Pattern learning:</strong> turn fresh CVE patches into new, reusable checkers.</li>
-                    <li><strong>Proactive prevention:</strong> catch regressions before they become production issues.</li>
+                    <li><a href="https://github.com/Mac-Huang/LinuxGuard"><strong>GitHub Repository</strong></a>: Source
+                      code for the pipeline and LLVM integration.</li>
+                    <li><a
+                        href="https://docs.google.com/presentation/d/1C7oh9bZH-TeVXoMrKA4UIXCeDggZuWJuFwzy2lfoKWE/edit?usp=sharing"><strong>Weekly
+                          Research Logs</strong></a>: A slide deck documenting our experiments and progress.</li>
                   </ul>
+
                 </td>
               </tr>
             </tbody>
           </table>
 
-          <!-- Current Status -->
-          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
-            <tbody>
-              <tr>
-                <td style="padding:20px;width:100%;vertical-align:middle">
-                  <heading>Where the Pipeline Stands</heading>
-                  <p>
-                    The end-to-end system is running and already delivering high-signal findings:
-                  </p>
-                  <ul>
-                    <li>Custom LLVM/clang-tidy toolchain compiled with the <code>linuxkernel</code> module.</li>
-                    <li>Kernel versions v3.0, v4.0, v5.0, and v6.0 prepared with compilation databases.</li>
-                    <li><strong>MustCheckErrsCheck</strong> implemented, integrated, and exercised across datasets.</li>
-                  </ul>
-                  <p>
-                    Explore the implementation on <a href="https://github.com/Mac-Huang/LinuxGuard">GitHub</a>; the repository contains checker templates,
-                    automation scripts, and instructions for reproducing kernel scans.
-                  </p>
-                  <p>
-                    Early scans surface more than 200 unchecked error flows per major release, revealing persistent anti-patterns
-                    that cut across drivers, networking, and filesystem subsystems. Automating this inspection compresses what
-                    used to be weeks of manual auditing into an overnight, reproducible run.
-                  </p>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-          <!-- Insights -->
-          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
-            <tbody>
-              <tr>
-                <td style="padding:20px;width:100%;vertical-align:middle">
-                  <heading>Key Insights</heading>
-                  <ul>
-                    <li>Anti-patterns repeat across kernel generations, revealing systemic knowledge gaps.</li>
-                    <li>LLM-generated checkers encode nuanced security heuristics that scale beyond manual review.</li>
-                    <li>Automated triage lets experts focus on the highest risk findings rather than rote auditing.</li>
-                  </ul>
-                  <p>
-                    Upcoming milestones include growing the checker catalog, measuring precision with developer feedback,
-                    and integrating diff-aware scanning so new contributions are evaluated pre-merge.
-                  </p>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-          <!-- Footer -->
-          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+          <table
+            style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
             <tbody>
               <tr>
                 <td style="padding:0px">
                   <br>
                   <p style="text-align:center;font-size:14px;color:#999;padding:20px;">
-                    Feel free to clone my template <a href="https://github.com/Mac-Huang/xuming.ai.git" style="color:#999;">Xuming Huang</a>
+                    &copy; 2025 Xuming Huang.
                   </p>
                 </td>
               </tr>
@@ -1164,4 +426,5 @@ python3 ~/private/linux-guard/llvm-project/clang-tools-extra/clang-tidy/tool/run
     </tbody>
   </table>
 </body>
+
 </html>

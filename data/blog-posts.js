@@ -1,6 +1,17 @@
 // Blog posts data - simple and clean
 const blogPosts = [
   {
+    id: 'linuxguard-journey',
+    title: 'My Journey with LinuxGuard',
+    date: 'November 19, 2025',
+    category: 'education',
+    excerpt: 'Reflecting on 6 months of research: building LLM-driven kernel checkers, learning from Vinay Banakar, and the hard reality of being scooped by SOSP.',
+    url: 'blog/posts/linuxguard-journey.html',
+    readTime: '6 min',
+    cover: 'images/papers/LinuxGuard_Cover.jpg'
+  },
+
+  {
     id: 'stanford-summer',
     title: 'Stanford Summer: Where Systems Meet Algorithms',
     date: 'August 15, 2025',
@@ -10,7 +21,7 @@ const blogPosts = [
     readTime: '10 min',
     cover: 'images/blog/Stanford-Cover.jpg'
   },
-  
+
   {
     id: 'new-chapter-madison',
     title: 'A New Chapter in Madison',
@@ -21,7 +32,7 @@ const blogPosts = [
     readTime: '4 min',
     cover: 'images/blog/Madison_Cover.jpg'
   },
-  
+
   {
     id: 'first-internship',
     title: 'Diving into AI: My Transformative First Week at CoolAI',
@@ -32,7 +43,7 @@ const blogPosts = [
     readTime: '5 min',
     cover: 'images/blog/CoolAI.jpg'
   },
-  
+
   {
     id: 'hello-world',
     title: 'Hello World',
@@ -43,7 +54,7 @@ const blogPosts = [
     readTime: '2 min',
     cover: 'images/blog/HelloWorld-Cover.jpg'
   },
-  
+
   {
     id: 'nfl-flag-football',
     title: 'Champions Unleashed: USST Earthmoving Vehicles Triumph!',

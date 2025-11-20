@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Journey with LinuxGuard - Xuming Huang</title>
+    <meta name="author" content="Xuming Huang">
+
+    <link rel="stylesheet" type="text/css" href="../../stylesheet.css">
+    <link rel="icon" type="image/png" href="../../images/favicon.png">
+
+    <style>
+        /* --- Global Variables --- */
+        :root {
+            --primary-color: #1772d0;
+            --text-color: #333;
+            --bg-color: #fff;
+            --border-color: #eaeaea;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.8;
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+        }
+
+        /* --- Layout Container --- */
+        .container {
+            width: 100%;
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* --- Navigation --- */
+        .nav-top {
+            margin-bottom: 40px;
+        }
+
+        .nav-top a {
+            text-decoration: none;
+            color: #666;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-top a:hover {
+            color: var(--primary-color);
+            text-decoration: underline;
+        }
+
+        /* --- Header & Typography --- */
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+            color: #111;
+            font-weight: 800;
+        }
+
+        .meta-date {
+            color: #666;
+            font-style: italic;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        h2 {
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #222;
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+            font-size: 1.05rem;
+        }
+
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Images */
+        img {
+            width: 100%;
+            height: auto;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            /* Reduced margin slightly to sit closer to caption/link */
+            display: block;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        /* --- The Integrated Project Link (Clean Style) --- */
+        .project-link-wrapper {
+            margin-bottom: 35px;
+            font-size: 1.05rem;
+        }
+
+        .project-link {
+            color: var(--primary-color);
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .project-link:hover {
+            text-decoration: underline;
+            opacity: 0.9;
+        }
+
+        /* Blockquotes */
+        blockquote {
+            border-left: 4px solid var(--primary-color);
+            margin: 30px 0;
+            padding: 10px 25px;
+            color: #555;
+            background: #fafafa;
+            font-style: italic;
+        }
+
+        /* --- Footer --- */
+        hr {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 50px 0 30px 0;
+        }
+
+        .footer-links {
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .footer-links a {
+            margin: 0 10px;
+            color: #666;
+        }
+
+        /* Mobile Tweak */
+        @media (max-width: 500px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="container">
+
+        <nav class="nav-top">
+            <a href="../../blog.html">← Back to Blog</a>
+        </nav>
+
+        <header>
+            <h1>My Journey with LinuxGuard</h1>
+            <p class="meta-date">November 19, 2025 · 6 min read</p>
+        </header>
+
+        <article class="blog-content">
+
+            <img src="../../images/papers/LinuxGuard_Cover.jpg" alt="LinuxGuard Project Banner" loading="lazy">
+
+            <div class="project-link-wrapper">
+                <a href="../../linuxguard.html" class="project-link">
+                    View the LinuxGuard Project Page →
+                </a>
+            </div>
+
+            <p>
+                Over the past six months (since May 2025), I have been working with <a
+                    href="https://www.vinaybanakar.com/">Vinay Banakar</a> on the
+                <strong>LinuxGuard</strong> project.
+                It was a journey that took me deep into the intersection of Large Language Models and
+                Systems security, taught me the rigors of academic research,
+                and ultimately ended with a valuable lesson on the fast-paced nature of computer science.
+            </p>
+
+            <h2>The Spark</h2>
+            <p>
+                LinuxGuard started from a simple observation about the Linux kernel: today, the kernel
+                suffers from many performance anti‑patterns and logical bugs.
+                There are entire releases that focus almost entirely on bug fixes—missing defaults in switch
+                cases, failure to return 0 on success, and so on.
+            </p>
+            <p>
+                Our core idea was: <strong>Can an LLM learn the kernel‑specific "DOs and DON’Ts" from commit
+                    history, and then help us create a set of checkers to automatically detect
+                    them?</strong>
+            </p>
+            <p>
+                Because the kernel uses its own C coding style that does not fully conform to typical C
+                anti‑pattern definitions, standard tools often miss these nuances.
+                We wanted to build a system that could "read" a fix and "write" a tool to prevent that bug
+                forever.
+            </p>
+
+            <h2>Building the Pipeline</h2>
+            <img src="../../images/papers/linuxguard.jpg" alt="LinuxGuard Paradigm Architecture" loading="lazy">
+
+            <p>
+                To make this concrete, I began by diving into LLVM and compilers. I discovered we could
+                generate checkers as plug‑ins, compiled directly into the Linux module of
+                <code>clang‑tidy</code>.
+                This became our vehicle for turning LinuxGuard into a practical tool.
+            </p>
+            <p>
+                However, it wasn't as simple as asking ChatGPT to "write a checker."
+            </p>
+            <ul>
+                <li><strong>Chain-of-Thought Prompting:</strong> I realized that a single API call couldn't
+                    reliably synthesize correct checkers. I built a pipeline that first analyzes the
+                    anti‑pattern and <em>then</em> generates the checker, using a one‑shot example for
+                    guidance.</li>
+                <li><strong>Self-Correction:</strong> Generated checkers often failed to compile. We
+                    introduced a self‑check, repair, and reset mechanism to handle this automatically.</li>
+                <li><strong>Agentic Validation:</strong> The trickiest part was precision. To fight false
+                    positives, we experimented with calling a second agent—an advanced, web‑based LLM—to act
+                    as a "reviewer" for the issues found by our checkers.</li>
+            </ul>
+
+            <h2>The "KNighter" Discovery</h2>
+            <p>
+                Research is a race. Ultimately and unfortunately, in early November we discovered a paper
+                published at SOSP called <strong>KNighter</strong>.
+                They proposed almost exactly the same idea and had already implemented it effectively.
+            </p>
+            <p>
+                I tried to identify critical improvements or new angles we could bring to build on KNighter,
+                but given the uncertainty and the strength of their implementation,
+                we eventually chose to stop the project. It was frustrating to stop a project we had
+                invested so much time in, but it is part of the game.
+            </p>
+
+            <h2>Lessons Learned</h2>
+            <p>
+                Despite the outcome, I learned a great deal from Vinay throughout this process. We met
+                weekly without interruption, using a <a
+                    href="https://docs.google.com/document/d/1cwJw9KlTuhgbNSuN0JI3OT4YfW48OxQOw-IPgc2bEyg/edit?usp=sharing">shared
+                    doc</a>
+                and <a
+                    href="https://docs.google.com/presentation/d/1C7oh9bZH-TeVXoMrKA4UIXCeDggZuWJuFwzy2lfoKWE/edit?usp=sharing">slide
+                    deck</a> to stay aligned.
+            </p>
+            <p>
+                Vinay shared one piece of advice that really shaped how I view research:
+            </p>
+            <blockquote>
+                "Don’t overthink or try to impress your mentor—that’s not what research is supposed to do.
+                Research is conducted through solid steps and incremental developments. So your goal should
+                be to keep moving at a steady pace."
+            </blockquote>
+            <p>
+                This helped me understand the difference between industry and academia. We scaled up from
+                highly specific pattern‑matching to general checkers,
+                and discovered that simply merging commits doesn't work—you need clustering and selection.
+            </p>
+            <p>
+                Throughout all of this, Vinay has been both a mentor and a friend, always finding time for
+                our meetings voluntarily, even when his schedule was already full.
+                LinuxGuard may be over, but the skills I gained—in LLMs, compilers, and research
+                methodology—are just beginning to pay off.
+            </p>
+        </article>
+
+        <hr>
+
+        <footer class="footer-links">
+            <a href="../../index.html">Home</a> |
+            <a href="../../blog.html">Blog</a> |
+            <a href="../../research.html">Research</a>
+        </footer>
+
+    </main>
+</body>
+
+</html>

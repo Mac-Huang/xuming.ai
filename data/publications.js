@@ -7,24 +7,24 @@ const publications = [
     authors: '<strong>Xuming Huang</strong> (advised by Remzi Arpaci-Dusseau, Vinay Banakar)',
     venue: 'Ongoing Research Project',
     year: 2025,
-    image: 'images/papers/linuxguard.jpg',
+    image: 'images/papers/linuxguard_paradigm.jpg',
     paper_url: 'linuxguard.html',
-    code_url: null,
+    code_url: "https://github.com/Mac-Huang/LinuxGuard.git",
     project_url: null,
     bibtex: null,
     selected: true,
     category: 'ongoing',
     abstract: 'Developing an LLM-powered system that automatically converts Linux kernel bug fixes into clang-tidy static analyzers. By learning from historical commit patterns, LinuxGuard generates checkers that detect similar vulnerabilities across different kernel versions, effectively transforming every patched bug into a preventive tool. The system leverages RAG-enhanced architectures and program analysis techniques to achieve high-precision vulnerability detection while reducing manual effort in kernel security maintenance.'
   },
-  
-  
+
+
   {
     id: 'cifar10-classification-2024',
     title: 'Image Classification Algorithm Analysis: A Comparative Study of Traditional ML and Deep Learning Approaches',
     authors: '<strong>Xuming Huang</strong> (supervised by Prof. Dunlu Peng)',
     venue: 'Shanghai Research Project',
     year: 2024,
-	image: 'images/papers/ResMacNet.jpg',
+    image: 'images/papers/ResMacNet.jpg',
     paper_url: null,
     code_url: 'https://github.com/Mac-Huang/CIFAR10-Image-Classification',
     project_url: null,
@@ -33,7 +33,7 @@ const publications = [
     category: 'research',
     abstract: 'Comprehensive analysis comparing traditional ML methods with CNN architectures on CIFAR-10 dataset. Implemented custom architectures achieving 81.3% accuracy. Developed 2-stage inference using ResMacNet, achieving 13% improvement over baseline.'
   },
-  
+
   {
     id: 'multispectral-unet-2024',
     title: 'Multispectral U-Net Segmentation Research',
