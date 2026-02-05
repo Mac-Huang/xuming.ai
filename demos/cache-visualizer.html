@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Cache Mechanics Visualizer</title>
+    <style>
+        :root {
+            --bg-color: #1e1e1e;
+            --panel-bg: #2d2d2d;
+            --text-color: #e0e0e0;
+            --accent-cyan: #00bcd4;
+            /* Index */
+            --accent-magenta: #e91e63;
+            /* Tag */
+            --accent-yellow: #ffeb3b;
+            /* Offset */
+            --success: #4caf50;
+            --danger: #f44336;
+            --border-color: #444;
+            --font-mono: 'Consolas', 'Monaco', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Layout */
+        header {
+            padding: 15px 20px;
+            background: var(--panel-bg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .viz-area {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            border-right: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .controls-area {
+            flex: 1;
+            min-width: 300px;
+            max-width: 400px;
+            background: var(--panel-bg);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+        }
+
+        /* Top Decoder Section */
+        .decoder-section {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        input[type="text"] {
+            background: #333;
+            border: 1px solid #555;
+            color: #fff;
+            padding: 8px 12px;
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            border-radius: 4px;
+            width: 150px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn-primary {
+            background: #2196f3;
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .bit-visualizer {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .bit-bar {
+            display: flex;
+            height: 30px;
+            border-radius: 4px;
+            overflow: hidden;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+        }
+
+        .bit-segment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #111;
+            font-weight: bold;
+            transition: width 0.3s ease;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .seg-tag {
+            background: var(--accent-magenta);
+        }
+
+        .seg-index {
+            background: var(--accent-cyan);
+        }
+
+        .seg-offset {
+            background: var(--accent-yellow);
+        }
+
+        .bit-labels {
+            display: flex;
+            font-size: 0.75rem;
+            color: #aaa;
+        }
+
+        .label-segment {
+            text-align: center;
+            transition: width 0.3s ease;
+        }
+
+        /* Canvas Area */
+        .canvas-wrapper {
+            flex: 1;
+            background: #111;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Controls */
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+
+        select {
+            background: #333;
+            color: #fff;
+            border: 1px solid #555;
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        .stats-panel {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .stat-val {
+            font-family: var(--font-mono);
+            font-weight: bold;
+        }
+
+        .log-panel {
+            flex: 1;
+            background: #111;
+            border: 1px solid #444;
+            border-radius: 4px;
+            padding: 10px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            overflow-y: auto;
+            max-height: 200px;
+        }
+
+        .log-entry {
+            margin-bottom: 4px;
+            border-bottom: 1px solid #222;
+            padding-bottom: 2px;
+        }
+
+        .log-hit {
+            color: var(--success);
+        }
+
+        .log-miss {
+            color: var(--danger);
+        }
+
+        .log-info {
+            color: #aaa;
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            gap: 15px;
+            margin-top: 5px;
+            font-size: 0.8rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>💾 Interactive Cache Mechanics Visualizer</h1>
+        <div class="legend">
+            <div class="legend-item">
+                <div class="dot" style="background:var(--accent-magenta)"></div> Tag
+            </div>
+            <div class="legend-item">
+                <div class="dot" style="background:var(--accent-cyan)"></div> Index
+            </div>
+            <div class="legend-item">
+                <div class="dot" style="background:var(--accent-yellow)"></div> Offset
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="viz-area">
+            <div class="decoder-section">
+                <div class="input-group">
+                    <input type="text" id="addrInput" value="0x01A4" placeholder="Hex Address">
+                    <button class="btn btn-primary" id="btnRead">Read</button>
+                    <button class="btn btn-success" id="btnWrite">Write</button>
+                </div>
+
+                <div class="bit-visualizer">
+                    <div class="bit-bar" id="bitBar">
+                    </div>
+                    <div class="bit-labels" id="bitLabels">
+                    </div>
+                </div>
+                <div style="margin-top:5px; font-size:0.8rem; color:#888; text-align:right;" id="addrBinary">
+                    Binary: 0000...
+                </div>
+            </div>
+
+            <div class="canvas-wrapper" id="canvasContainer">
+                <canvas id="cacheCanvas"></canvas>
+            </div>
+        </div>
+
+        <div class="controls-area">
+            <h3>Configuration</h3>
+
+            <div class="control-group">
+                <label>Cache Size (Total Bytes)</label>
+                <select id="selCacheSize">
+                    <option value="64">64 Bytes</option>
+                    <option value="128" selected>128 Bytes</option>
+                    <option value="256">256 Bytes</option>
+                    <option value="512">512 Bytes</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>Block Size (Bytes)</label>
+                <select id="selBlockSize">
+                    <option value="8">8 Bytes</option>
+                    <option value="16" selected>16 Bytes</option>
+                    <option value="32">32 Bytes</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>Associativity</label>
+                <select id="selAssoc">
+                    <option value="1" selected>Direct Mapped (1-way)</option>
+                    <option value="2">2-way Set Associative</option>
+                    <option value="4">4-way Set Associative</option>
+                    <option value="8">Fully Associative (N-way)</option>
+                </select>
+            </div>
+
+            <button class="btn btn-danger" id="btnFlush" style="margin-top:10px;">Flush Cache</button>
+
+            <h3>Statistics</h3>
+            <div class="stats-panel">
+                <div class="stat-row"><span>Accesses:</span> <span class="stat-val" id="statTotal">0</span></div>
+                <div class="stat-row"><span>Hits:</span> <span class="stat-val" style="color:var(--success)"
+                        id="statHits">0</span></div>
+                <div class="stat-row"><span>Misses:</span> <span class="stat-val" style="color:var(--danger)"
+                        id="statMisses">0</span></div>
+                <div class="stat-row"><span>Hit Rate:</span> <span class="stat-val" id="statRate">0%</span></div>
+            </div>
+
+            <h3>Event Log</h3>
+            <div class="log-panel" id="logPanel">
+                <div class="log-entry log-info">System Ready.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * ------------------------------------------------------------------
+         * Domain Logic: Cache Models
+         * ------------------------------------------------------------------
+         */
+
+        class CacheLine {
+            constructor() {
+                this.valid = false;
+                this.dirty = false;
+                this.tag = 0;
+                this.data = 0; // Simulated data (just a random hex byte)
+                this.lastAccess = 0; // For LRU
+            }
+        }
+
+        class CacheSet {
+            constructor(ways) {
+                this.ways = Array.from({ length: ways }, () => new CacheLine());
+            }
+
+            findHit(tag) {
+                return this.ways.findIndex(line => line.valid && line.tag === tag);
+            }
+
+            findVictim() {
+                // Find invalid first (Cold miss)
+                const invalidIdx = this.ways.findIndex(line => !line.valid);
+                if (invalidIdx !== -1) return { index: invalidIdx, type: 'cold' };
+
+                // Else find LRU (Conflict miss)
+                // Min lastAccess is the oldest
+                let lruIdx = 0;
+                let minTime = this.ways[0].lastAccess;
+                for (let i = 1; i < this.ways.length; i++) {
+                    if (this.ways[i].lastAccess < minTime) {
+                        minTime = this.ways[i].lastAccess;
+                        lruIdx = i;
+                    }
+                }
+                return { index: lruIdx, type: 'conflict' };
+            }
+
+            // Helper to identify the LRU line for visualization
+            getLRUIndex() {
+                const invalidIdx = this.ways.findIndex(line => !line.valid);
+                if (invalidIdx !== -1) return invalidIdx; // Next to fill
+
+                let lruIdx = 0;
+                let minTime = this.ways[0].lastAccess;
+                for (let i = 1; i < this.ways.length; i++) {
+                    if (this.ways[i].lastAccess < minTime) {
+                        minTime = this.ways[i].lastAccess;
+                        lruIdx = i;
+                    }
+                }
+                return lruIdx;
+            }
+        }
+
+        class CacheSystem {
+            constructor(sizeBytes, blockSizeBytes, associativity) {
+                this.size = sizeBytes;
+                this.blockSize = blockSizeBytes;
+                this.assoc = associativity;
+
+                // Handling Fully Associative case where assoc > numBlocks potentially
+                const totalBlocks = this.size / this.blockSize;
+                if (this.assoc > totalBlocks) this.assoc = totalBlocks; // Cap at max blocks
+
+                this.numSets = totalBlocks / this.assoc;
+                this.sets = Array.from({ length: this.numSets }, () => new CacheSet(this.assoc));
+
+                this.globalClock = 0;
+
+                // Stats
+                this.hits = 0;
+                this.misses = 0;
+                this.accesses = 0;
+            }
+
+            // Returns breakdown of address
+            decode(addr) {
+                const offsetBits = Math.log2(this.blockSize);
+                const indexBits = Math.log2(this.numSets);
+                const tagBits = 32 - indexBits - offsetBits;
+
+                // Masks
+                const offsetMask = (1 << offsetBits) - 1;
+                const indexMask = ((1 << indexBits) - 1);
+
+                const offset = addr & offsetMask;
+                const index = (addr >> offsetBits) & indexMask;
+                const tag = (addr >>> (offsetBits + indexBits)); // unsigned shift
+
+                return { tag, index, offset, tagBits, indexBits, offsetBits };
+            }
+
+            access(addr, isWrite) {
+                this.globalClock++;
+                this.accesses++;
+                const { tag, index } = this.decode(addr);
+                const set = this.sets[index];
+
+                const hitIdx = set.findHit(tag);
+                let result = { hit: false, msg: '', setIndex: index, wayIndex: -1 };
+
+                if (hitIdx !== -1) {
+                    // Hit
+                    this.hits++;
+                    set.ways[hitIdx].lastAccess = this.globalClock;
+                    if (isWrite) set.ways[hitIdx].dirty = true;
+                    result.hit = true;
+                    result.wayIndex = hitIdx;
+                    result.msg = `Hit in Set ${index}, Way ${hitIdx}`;
+                } else {
+                    // Miss
+                    this.misses++;
+                    const victim = set.findVictim();
+                    const way = set.ways[victim.index];
+
+                    // Replace
+                    way.valid = true;
+                    way.tag = tag;
+                    way.data = Math.floor(Math.random() * 255); // Fake data
+                    way.dirty = isWrite; // If write miss, we assume write-allocate
+                    way.lastAccess = this.globalClock;
+
+                    result.wayIndex = victim.index;
+                    result.msg = victim.type === 'cold'
+                        ? `Cold Miss. Loaded into Set ${index}, Way ${victim.index}.`
+                        : `Conflict Miss. Evicted Way ${victim.index} in Set ${index}.`;
+                }
+
+                return result;
+            }
+
+            flush() {
+                this.sets.forEach(s => s.ways.forEach(w => {
+                    w.valid = false;
+                    w.dirty = false;
+                    w.tag = 0;
+                }));
+                this.hits = 0; this.misses = 0; this.accesses = 0;
+            }
+        }
+
+        /**
+         * ------------------------------------------------------------------
+         * UI & Visualization Engine
+         * ------------------------------------------------------------------
+         */
+
+        const canvas = document.getElementById('cacheCanvas');
+        const ctx = canvas.getContext('2d');
+        let cacheSys = null;
+        let animState = { active: false, step: 0, targetSet: -1, targetWay: -1, isHit: false };
+
+        // UI Elements
+        const els = {
+            addrInput: document.getElementById('addrInput'),
+            bitBar: document.getElementById('bitBar'),
+            bitLabels: document.getElementById('bitLabels'),
+            addrBinary: document.getElementById('addrBinary'),
+            log: document.getElementById('logPanel'),
+            sSize: document.getElementById('selCacheSize'),
+            sBlock: document.getElementById('selBlockSize'),
+            sAssoc: document.getElementById('selAssoc'),
+            statTotal: document.getElementById('statTotal'),
+            statHits: document.getElementById('statHits'),
+            statMisses: document.getElementById('statMisses'),
+            statRate: document.getElementById('statRate')
+        };
+
+        // Colors
+        const COL = {
+            BG: '#111',
+            GRID: '#333',
+            TEXT: '#eee',
+            TAG: '#e91e63',
+            INDEX: '#00bcd4',
+            OFFSET: '#ffeb3b',
+            VALID: '#4caf50',
+            DIRTY: '#ff9800',
+            VICTIM: '#777' // Grey out for victim
+        };
+
+        // Initialize
+        function init() {
+            updateConfig();
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            draw();
+        }
+
+        function updateConfig() {
+            const s = parseInt(els.sSize.value);
+            const b = parseInt(els.sBlock.value);
+            const a = parseInt(els.sAssoc.value);
+
+            // Validation: Assoc cannot imply more sets than possible
+            // We recreate the cache object
+            cacheSys = new CacheSystem(s, b, a);
+            updateDecoderUI();
+            draw();
+            log("Cache Configuration Updated", "info");
+        }
+
+        function updateDecoderUI() {
+            const val = parseInt(els.addrInput.value, 16) || 0;
+            const { tagBits, indexBits, offsetBits, tag, index, offset } = cacheSys.decode(val);
+
+            // Calculate Percentages for Bar
+            const total = 32;
+            const tagPct = (tagBits / total) * 100;
+            const idxPct = (indexBits / total) * 100;
+            const offPct = (offsetBits / total) * 100;
+
+            // Update Bar
+            els.bitBar.innerHTML = `
+        <div class="bit-segment seg-tag" style="width:${tagPct}%" title="Tag: ${tagBits} bits">Tag</div>
+        <div class="bit-segment seg-index" style="width:${idxPct}%" title="Index: ${indexBits} bits">Index</div>
+        <div class="bit-segment seg-offset" style="width:${offPct}%" title="Offset: ${offsetBits} bits">Offset</div>
+    `;
+
+            // Update Labels below bar (show values)
+            els.bitLabels.innerHTML = `
+        <div class="label-segment" style="width:${tagPct}%; color:var(--accent-magenta)">0x${tag.toString(16).toUpperCase()}</div>
+        <div class="label-segment" style="width:${idxPct}%; color:var(--accent-cyan)">0x${index.toString(16).toUpperCase()}</div>
+        <div class="label-segment" style="width:${offPct}%; color:var(--accent-yellow)">0x${offset.toString(16).toUpperCase()}</div>
+    `;
+
+            // Full Binary
+            let bin = val.toString(2).padStart(32, '0');
+            // Colorize binary string
+            const tagS = bin.substring(0, tagBits);
+            const idxS = bin.substring(tagBits, tagBits + indexBits);
+            const offS = bin.substring(tagBits + indexBits);
+
+            els.addrBinary.innerHTML = `
+        <span style="color:var(--accent-magenta)">${tagS}</span><span style="color:var(--accent-cyan)">${idxS}</span><span style="color:var(--accent-yellow)">${offS}</span>
+    `;
+        }
+
+        // Canvas Drawing
+        function resizeCanvas() {
+            const parent = document.getElementById('canvasContainer');
+            canvas.width = parent.clientWidth;
+            canvas.height = parent.clientHeight;
+            draw();
+        }
+
+        function draw() {
+            // Clear
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = COL.BG;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            if (!cacheSys) return;
+
+            // Layout Calc
+            const pad = 20;
+            const setHeight = (canvas.height - pad * 2) / cacheSys.numSets;
+            const wayWidth = (canvas.width - 100 - pad * 2) / cacheSys.assoc; // 100px for Label
+
+            // Draw Sets
+            for (let i = 0; i < cacheSys.numSets; i++) {
+                const y = pad + i * setHeight;
+                const set = cacheSys.sets[i];
+
+                // Row Highlight (Animation)
+                if (animState.active && animState.step >= 1 && animState.targetSet === i) {
+                    ctx.fillStyle = 'rgba(0, 188, 212, 0.2)'; // Cyan glow
+                    ctx.fillRect(0, y, canvas.width, setHeight - 4);
+                }
+
+                // Label
+                ctx.fillStyle = COL.TEXT;
+                ctx.font = '12px monospace';
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(`Set ${i.toString(16).toUpperCase()}`, 10, y + setHeight / 2);
+
+                // Draw Ways (Blocks)
+                for (let j = 0; j < cacheSys.assoc; j++) {
+                    const x = 80 + j * wayWidth;
+                    const h = setHeight - 8;
+                    const w = wayWidth - 5;
+                    const block = set.ways[j];
+
+                    // Victim Identification (LRU)
+                    const lruIdx = set.getLRUIndex();
+                    const isVictim = (j === lruIdx);
+
+                    // Base Block
+                    ctx.strokeStyle = COL.GRID;
+                    ctx.lineWidth = 1;
+
+                    // Animation Highlight Target
+                    if (animState.active && animState.step >= 2 && animState.targetSet === i && animState.targetWay === j) {
+                        if (animState.step === 3) {
+                            // Result Flash
+                            ctx.fillStyle = animState.isHit ? COL.VALID : COL.danger; // Green or Red logic handled by var
+                            if (!animState.isHit) ctx.fillStyle = '#f44336'; // Explicit Red for miss
+                        } else {
+                            // Comparing
+                            ctx.fillStyle = '#444';
+                            ctx.strokeStyle = COL.TAG; // Magenta border comparing tag
+                            ctx.lineWidth = 2;
+                        }
+                    } else {
+                        // Normal State
+                        ctx.fillStyle = block.valid ? '#2a2a2a' : '#1a1a1a';
+                        if (isVictim && block.valid && cacheSys.assoc > 1) {
+                            ctx.fillStyle = '#221a1a'; // Slight red tint for victim
+                            ctx.strokeStyle = '#522';
+                        }
+                    }
+
+                    ctx.fillRect(x, y + 4, w, h);
+                    ctx.strokeRect(x, y + 4, w, h);
+
+                    // Block Content
+                    if (block.valid) {
+                        // Bits
+                        const bitsY = y + 15;
+
+                        // Valid Dot
+                        ctx.beginPath();
+                        ctx.arc(x + 10, bitsY, 3, 0, Math.PI * 2);
+                        ctx.fillStyle = COL.VALID;
+                        ctx.fill();
+
+                        // Dirty Dot
+                        if (block.dirty) {
+                            ctx.beginPath();
+                            ctx.arc(x + 20, bitsY, 3, 0, Math.PI * 2);
+                            ctx.fillStyle = COL.DIRTY;
+                            ctx.fill();
+                        }
+
+                        // Tag Text
+                        ctx.fillStyle = COL.TAG;
+                        ctx.font = '10px monospace';
+                        ctx.fillText(`T:${block.tag.toString(16).toUpperCase()}`, x + 30, bitsY);
+
+                        // Data Text
+                        ctx.fillStyle = '#aaa';
+                        ctx.font = '10px monospace';
+                        ctx.fillText(`D:0x${block.data.toString(16).toUpperCase()}`, x + 10, y + h - 10);
+                    } else {
+                        ctx.fillStyle = '#444';
+                        ctx.font = '10px monospace';
+                        ctx.fillText("Empty", x + w / 2 - 15, y + h / 2);
+                    }
+
+                    // LRU Label
+                    if (isVictim && cacheSys.assoc > 1 && block.valid) {
+                        ctx.fillStyle = '#777';
+                        ctx.font = '9px sans-serif';
+                        ctx.fillText("(LRU)", x + w - 25, y + 12);
+                    }
+                }
+            }
+
+            // Animation Overlay: Moving particle
+            if (animState.active && animState.step === 0) {
+                // Draw particle moving from top (decoder) to target set
+                // Just simplistic visualization of "control"
+                ctx.fillStyle = COL.INDEX;
+                ctx.beginPath();
+                // This visual would ideally be calculated based on DOM positions, 
+                // but for self-contained canvas, we simulate the "flow"
+                ctx.arc(40, 10, 5, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        // Animation Controller
+        async function animateAccess(setIdx, wayIdx, isHit) {
+            animState = { active: true, step: 0, targetSet: setIdx, targetWay: wayIdx, isHit: isHit };
+
+            // Step 1: Decode & Move to Set (Highlight Index)
+            animState.step = 1;
+            draw();
+            await wait(300);
+
+            // Step 2: Compare Tags (Highlight Block)
+            animState.step = 2;
+            draw();
+            await wait(400);
+
+            // Step 3: Result (Flash)
+            animState.step = 3;
+            draw();
+            await wait(400);
+
+            // Done
+            animState.active = false;
+            draw();
+        }
+
+        function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+        /**
+         * ------------------------------------------------------------------
+         * Interaction
+         * ------------------------------------------------------------------
+         */
+
+        function handleAccess(isWrite) {
+            const hex = els.addrInput.value;
+            const addr = parseInt(hex, 16);
+            if (isNaN(addr)) { alert("Invalid Hex Address"); return; }
+
+            updateDecoderUI();
+            const res = cacheSys.access(addr, isWrite);
+
+            // Log
+            log(`${isWrite ? "Write" : "Read"} ${hex} -> ${res.msg}`, res.hit ? 'log-hit' : 'log-miss');
+
+            // Stats
+            els.statTotal.innerText = cacheSys.accesses;
+            els.statHits.innerText = cacheSys.hits;
+            els.statMisses.innerText = cacheSys.misses;
+            const rate = cacheSys.accesses === 0 ? 0 : Math.round((cacheSys.hits / cacheSys.accesses) * 100);
+            els.statRate.innerText = rate + "%";
+
+            // Trigger Animation
+            animateAccess(res.setIndex, res.wayIndex, res.hit);
+        }
+
+        function log(msg, cls) {
+            const div = document.createElement('div');
+            div.className = `log-entry ${cls || ''}`;
+            div.innerText = msg;
+            els.log.prepend(div);
+        }
+
+        // Listeners
+        els.addrInput.addEventListener('keyup', updateDecoderUI);
+        els.sSize.addEventListener('change', init);
+        els.sBlock.addEventListener('change', init);
+        els.sAssoc.addEventListener('change', init);
+
+        document.getElementById('btnRead').addEventListener('click', () => handleAccess(false));
+        document.getElementById('btnWrite').addEventListener('click', () => handleAccess(true));
+        document.getElementById('btnFlush').addEventListener('click', () => {
+            cacheSys.flush();
+            log("Cache Flushed.", "log-info");
+            init(); // redraw
+        });
+
+        // Boot
+        init();
+
+    </script>
+</body>
+
+</html>

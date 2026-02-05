@@ -2,6 +2,18 @@
 const projects = [
   // Machine Learning & Systems Projects
   {
+    id: 'memory-architecture',
+    title: 'Interactive Memory Architecture',
+    description: 'Zoomable, bottom-up visualization of computer memory systems. Start from basic Logic Gates to build D-Latches and Flip-Flops, combine them into Registers, and finally construct a functional RAM block. Features interactive bit toggling and manual clock control to understand data flow and storage mechanisms.',
+    tech: 'Vanilla JavaScript, HTML5 Canvas, Digital Logic',
+    thumbnail: 'images/projects/memory-thumb.jpg', // Placeholder, system will use default if missing
+    demo_url: 'demos/memory-architecture.html',
+    code_url: null,
+    featured: true,
+    highlighted: true
+  },
+
+  {
     id: 'kmap-visualizer',
     title: 'K-Map Visualizer - 2D & 3D Interactive',
     description: 'Advanced Karnaugh Map visualizer with automatic grouping and Boolean expression simplification. Features both traditional 2D K-maps and innovative 3D cube representation for 3+ variables. Interactive 3D visualization allows rotation, zooming, and cell toggling. Supports up to 6 variables with truth tables, minterms, and expression input methods.',
@@ -85,7 +97,7 @@ const projects = [
   },
 
   // Interactive Demos (Original)
-  
+
   {
     id: 'hash-collision-analysis',
     title: 'Hash Function & Collision Analysis',
@@ -96,7 +108,7 @@ const projects = [
     code_url: null,
     featured: true
   },
-  
+
   {
     id: 'tensor-operations',
     title: 'Interactive Tensor Operations Visualizer',
@@ -118,7 +130,7 @@ const projects = [
     code_url: null,
     featured: false
   },
-  
+
   // Deep Learning Architecture Tutorials
   {
     id: 'understanding-transformers',
@@ -154,7 +166,7 @@ const projects = [
     featured: true,
     highlighted: true
   },
-  
+
   {
     id: 'neural-translator',
     title: 'Neural Machine Translator',
@@ -165,7 +177,7 @@ const projects = [
     code_url: 'https://github.com/Mac-Huang/Translator',
     featured: true
   },
-  
+
   // Advanced Systems Visualizations
   {
     id: 'bplus-tree',
@@ -200,7 +212,7 @@ const projects = [
     code_url: null,
     featured: true
   },
-  
+
   {
     id: 'compiler-pipeline',
     title: 'Interactive Compiler Pipeline Visualization',
@@ -211,7 +223,7 @@ const projects = [
     code_url: null,
     featured: true
   },
-    
+
   // Advanced Systems & Networking
   {
     id: 'consensus-algorithms',
@@ -223,7 +235,7 @@ const projects = [
     code_url: null,
     featured: true
   },
-  
+
   {
     id: 'word2vec',
     title: 'Word2Vec Implementation',
@@ -235,7 +247,7 @@ const projects = [
     featured: true,
     highlighted: true
   },
-  
+
   {
     id: 'lstm-tasks',
     title: 'LSTM Tasks Suite',
@@ -258,7 +270,7 @@ const projects = [
     featured: true
   },
 
-  
+
   {
     id: 'wasm-performance',
     title: 'WebAssembly Performance Analyzer',
@@ -277,7 +289,7 @@ function getFeaturedProjects() {
 }
 
 function getProjectsByTech(tech) {
-  return projects.filter(project => 
+  return projects.filter(project =>
     project.tech.toLowerCase().includes(tech.toLowerCase())
   );
 }

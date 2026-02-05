@@ -1,0 +1,799 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Memory Architecture Visualizer - Xuming Huang</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="../stylesheet.css">
+    <style>
+        body {
+            background: #f8f9fa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .main-card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .header h1 {
+            margin: 6px 0;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 16px;
+        }
+
+        /* Navigation & Controls */
+        .controls-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f1f3f4;
+            border-radius: 8px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .level-selector {
+            display: flex;
+            gap: 8px;
+        }
+
+        .level-btn {
+            padding: 8px 16px;
+            border: 1px solid #ccc;
+            background: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .level-btn:hover {
+            background: #e8f0fe;
+            border-color: #1772d0;
+            color: #1772d0;
+        }
+
+        .level-btn.active {
+            background: #1772d0;
+            color: white;
+            border-color: #1772d0;
+        }
+
+        .action-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .action-btn {
+            padding: 8px 20px;
+            background: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .action-btn:active {
+            background: #135abc;
+        }
+
+        .action-btn.secondary {
+            background: #fff;
+            color: #5f6368;
+            border: 1px solid #dadce0;
+        }
+
+        /* Canvas */
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            cursor: crosshair;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        /* Instructions / Explainer Overlay */
+        .explainer {
+            margin-top: 15px;
+            padding: 15px;
+            background: #e8f0fe;
+            border-radius: 4px;
+            color: #174ea6;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .explainer strong {
+            font-weight: 600;
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #555;
+            justify-content: center;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            display: inline-block;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="main-card">
+            <div class="header">
+                <h1>Interactive Memory Architecture</h1>
+                <div class="subtitle">From Logic Gates to RAM: A Bottom-Up Visualization</div>
+            </div>
+
+            <div class="controls-area">
+                <div class="level-selector" id="levelSelector">
+                    <button class="level-btn active" data-level="1">1. D-Latch</button>
+                    <button class="level-btn" data-level="2">2. Flip-Flop</button>
+                    <button class="level-btn" data-level="3">3. Register</button>
+                    <button class="level-btn" data-level="4">4. RAM Block</button>
+                </div>
+                <div class="action-controls">
+                    <button class="action-btn" id="clockBtn">Tick Clock (C)</button>
+                    <button class="action-btn secondary" id="resetBtn">Reset</button>
+                </div>
+            </div>
+
+            <div class="canvas-container" id="canvasContainer">
+                <canvas id="simCanvas"></canvas>
+            </div>
+
+            <div class="legend">
+                <span><span class="dot" style="background:#4caf50"></span>High (1)</span>
+                <span><span class="dot" style="background:#9e9e9e"></span>Low (0)</span>
+                <span><span class="dot" style="background:#1a73e8"></span>Selection</span>
+            </div>
+
+            <div class="explainer" id="explainerText">
+                <strong>Level 1: The Gated D-Latch.</strong> This is the fundamental building block of memory.
+                <br>• Toggle <strong>D (Data)</strong> to change the input.
+                <br>• Toggle <strong>E (Enable)</strong> to "open" the latch. When Enable is High, Q follows D. When
+                Enable is Low, the value is "latched" and remembered.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * ARCHITECTURE VISUALIZER ENGINE
+         * Modular, Component-Based System
+         */
+
+        // --- Constants & Config ---
+        const COLORS = {
+            HIGH: '#4caf50', // Green
+            LOW: '#9e9e9e',  // Gray
+            WIRE_HIGH: '#81c784',
+            WIRE_LOW: '#e0e0e0',
+            COMPONENT_BG: '#ffffff',
+            COMPONENT_STROKE: '#333',
+            TEXT: '#212121'
+        };
+
+        const GRID_SIZE = 20;
+
+        // --- Base Component Class ---
+        class Component {
+            constructor(x, y, w, h, label = "") {
+                this.x = x;
+                this.y = y;
+                this.w = w;
+                this.h = h;
+                this.label = label;
+                this.inputs = {};  // Map of input name -> value (0 or 1)
+                this.outputs = {}; // Map of output name -> value
+                this.hovered = false;
+                this.isClickable = false;
+            }
+
+            isMouseOver(mx, my) {
+                return mx >= this.x && mx <= this.x + this.w && my >= this.y && my <= this.y + this.h;
+            }
+
+            tick() {
+                // Override in subclasses to define logic
+            }
+
+            draw(ctx) {
+                // Basic rectangle drawing (Override for specific shapes)
+                ctx.beginPath();
+                ctx.rect(this.x, this.y, this.w, this.h);
+                ctx.fillStyle = COLORS.COMPONENT_BG;
+                ctx.fill();
+                ctx.strokeStyle = this.hovered ? '#1a73e8' : COLORS.COMPONENT_STROKE;
+                ctx.lineWidth = this.hovered ? 2 : 1;
+                ctx.stroke();
+
+                if (this.label) {
+                    ctx.fillStyle = COLORS.TEXT;
+                    ctx.font = '14px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(this.label, this.x + this.w / 2, this.y + this.h / 2 + 5);
+                }
+            }
+        }
+
+        // --- Specific Components ---
+
+        class Pin extends Component {
+            constructor(x, y, label, isInput = true) {
+                super(x, y, 30, 30, label);
+                this.value = 0;
+                this.isInput = isInput;
+                this.isClickable = isInput; // Only inputs are toggleable
+            }
+
+            toggle() {
+                this.value = 1 - this.value;
+            }
+
+            draw(ctx) {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 15, 0, Math.PI * 2);
+                ctx.fillStyle = this.value ? COLORS.HIGH : COLORS.COMPONENT_BG;
+                ctx.fill();
+                ctx.strokeStyle = this.hovered && this.isClickable ? '#1a73e8' : '#555';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                ctx.fillStyle = this.value ? '#fff' : '#333';
+                ctx.font = 'bold 12px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(this.value, this.x, this.y + 4);
+
+                // Label outside
+                ctx.fillStyle = '#333';
+                ctx.fillText(this.label, this.x, this.y - 20);
+            }
+        }
+
+        class LogicGate extends Component {
+            constructor(x, y, type) {
+                super(x, y, 60, 40, type);
+                this.type = type; // 'AND', 'OR', 'NOT', 'NAND'
+                this.inputs = { A: 0, B: 0 };
+                this.outputs = { Q: 0 };
+            }
+
+            tick() {
+                const a = this.inputs.A;
+                const b = this.inputs.B;
+                if (this.type === 'AND') this.outputs.Q = (a && b) ? 1 : 0;
+                else if (this.type === 'OR') this.outputs.Q = (a || b) ? 1 : 0;
+                else if (this.type === 'NOT') this.outputs.Q = (!a) ? 1 : 0;
+                else if (this.type === 'NAND') this.outputs.Q = !(a && b) ? 1 : 0;
+            }
+
+            draw(ctx) {
+                // Draw simplified gate box with symbol
+                super.draw(ctx);
+
+                // Draw input stubs
+                ctx.strokeStyle = '#555';
+                if (this.type === 'NOT') {
+                    this.drawStub(ctx, this.x, this.y + this.h / 2, -10, this.inputs.A);
+                } else {
+                    this.drawStub(ctx, this.x, this.y + 10, -10, this.inputs.A);
+                    this.drawStub(ctx, this.x, this.y + 30, -10, this.inputs.B);
+                }
+                // Output stub
+                this.drawStub(ctx, this.x + this.w, this.y + this.h / 2, 10, this.outputs.Q);
+            }
+
+            drawStub(ctx, x, y, len, val) {
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(x + len, y);
+                ctx.strokeStyle = val ? COLORS.HIGH : COLORS.LOW;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+        }
+
+        class DLatch extends Component {
+            constructor(x, y) {
+                super(x, y, 100, 80, "D Latch");
+                this.inputs = { D: 0, E: 0 };
+                this.outputs = { Q: 0, Q_inv: 1 };
+                this.internalVal = 0;
+            }
+
+            tick() {
+                if (this.inputs.E === 1) {
+                    this.internalVal = this.inputs.D;
+                }
+                this.outputs.Q = this.internalVal;
+                this.outputs.Q_inv = 1 - this.internalVal;
+            }
+
+            draw(ctx) {
+                super.draw(ctx);
+                // Visual indicators for pins
+                ctx.font = '12px sans-serif';
+                ctx.fillStyle = '#666';
+                ctx.fillText("D", this.x + 10, this.y + 25);
+                ctx.fillText("E", this.x + 10, this.y + 65);
+                ctx.fillText("Q", this.x + this.w - 15, this.y + 25);
+                ctx.fillText("Q'", this.x + this.w - 15, this.y + 65);
+            }
+        }
+
+        class DFlipFlop extends Component {
+            constructor(x, y) {
+                super(x, y, 120, 100, "D Flip-Flop");
+                this.inputs = { D: 0, Clk: 0 };
+                this.outputs = { Q: 0 };
+                this.lastClk = 0;
+                this.internalVal = 0;
+            }
+
+            tick() {
+                // Rising edge trigger
+                if (this.inputs.Clk === 1 && this.lastClk === 0) {
+                    this.internalVal = this.inputs.D;
+                }
+                this.lastClk = this.inputs.Clk;
+                this.outputs.Q = this.internalVal;
+            }
+
+            draw(ctx) {
+                super.draw(ctx);
+                // Draw triangle for clock
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y + 70);
+                ctx.lineTo(this.x + 10, this.y + 75);
+                ctx.lineTo(this.x, this.y + 80);
+                ctx.strokeStyle = '#333';
+                ctx.stroke();
+
+                ctx.fillStyle = '#666';
+                ctx.fillText("D", this.x + 10, this.y + 25);
+                ctx.fillText("Q", this.x + this.w - 15, this.y + 50);
+            }
+        }
+
+        class Register4Bit extends Component {
+            constructor(x, y) {
+                super(x, y, 140, 160, "4-bit Register");
+                this.inputs = { D0: 0, D1: 0, D2: 0, D3: 0, Clk: 0, Write: 0 };
+                this.outputs = { Q0: 0, Q1: 0, Q2: 0, Q3: 0 };
+                this.data = [0, 0, 0, 0];
+                this.lastClk = 0;
+            }
+
+            tick() {
+                // Edge triggered write
+                if (this.inputs.Clk === 1 && this.lastClk === 0 && this.inputs.Write === 1) {
+                    this.data[0] = this.inputs.D0;
+                    this.data[1] = this.inputs.D1;
+                    this.data[2] = this.inputs.D2;
+                    this.data[3] = this.inputs.D3;
+                }
+                this.lastClk = this.inputs.Clk;
+
+                this.outputs.Q0 = this.data[0];
+                this.outputs.Q1 = this.data[1];
+                this.outputs.Q2 = this.data[2];
+                this.outputs.Q3 = this.data[3];
+            }
+
+            draw(ctx) {
+                super.draw(ctx);
+                // Show internal bits
+                ctx.fillStyle = '#333';
+                ctx.font = '16px monospace';
+                const binaryStr = this.data.slice().reverse().join('');
+                ctx.fillText(binaryStr, this.x + this.w / 2, this.y + this.h / 2 + 20);
+                ctx.font = '12px sans-serif';
+                ctx.fillText("Stored Value", this.x + this.w / 2, this.y + this.h / 2);
+            }
+        }
+
+        // --- Wire Class ---
+        class Wire {
+            constructor(sourceComp, sourcePin, destComp, destPin) {
+                this.sourceComp = sourceComp;
+                this.sourcePin = sourcePin; // string key
+                this.destComp = destComp;
+                this.destPin = destPin;     // string key
+                this.points = []; // Optional routing points
+            }
+
+            draw(ctx) {
+                // Determine start and end coordinates based on component type/slots
+                // Simplified for this demo: Calculates approximate pin positions
+                const start = this.getPinPos(this.sourceComp, this.sourcePin, true);
+                const end = this.getPinPos(this.destComp, this.destPin, false);
+
+                // Logic Transfer
+                const val = (this.sourceComp instanceof Pin) ? this.sourceComp.value : this.sourceComp.outputs[this.sourcePin];
+
+                // Update Destination
+                if (this.destComp instanceof Pin) {
+                    // Output pin visualization not fully implemented in this simplified model
+                } else {
+                    this.destComp.inputs[this.destPin] = val;
+                }
+
+                // Draw Wire
+                ctx.beginPath();
+                ctx.moveTo(start.x, start.y);
+
+                // Simple Manhattan routing (midpoint)
+                const midX = (start.x + end.x) / 2;
+                ctx.lineTo(midX, start.y);
+                ctx.lineTo(midX, end.y);
+                ctx.lineTo(end.x, end.y);
+
+                ctx.strokeStyle = val ? COLORS.WIRE_HIGH : COLORS.WIRE_LOW;
+                ctx.lineWidth = 3;
+                ctx.stroke();
+            }
+
+            getPinPos(comp, pinName, isOutput) {
+                // Heuristic layout based on component type
+                if (comp instanceof Pin) return { x: comp.x, y: comp.y };
+
+                const h = comp.h;
+                const w = comp.w;
+
+                if (comp instanceof LogicGate) {
+                    if (isOutput) return { x: comp.x + w, y: comp.y + h / 2 };
+                    // Inputs
+                    if (pinName === 'A') return { x: comp.x, y: comp.y + 10 };
+                    if (pinName === 'B') return { x: comp.x, y: comp.y + 30 };
+                    // NOT gate special case
+                    return { x: comp.x, y: comp.y + h / 2 };
+                }
+
+                if (comp instanceof DLatch) {
+                    if (isOutput) {
+                        return pinName === 'Q' ? { x: comp.x + w, y: comp.y + 25 } : { x: comp.x + w, y: comp.y + 65 };
+                    } else {
+                        return pinName === 'D' ? { x: comp.x, y: comp.y + 25 } : { x: comp.x, y: comp.y + 65 };
+                    }
+                }
+
+                if (comp instanceof DFlipFlop) {
+                    if (isOutput) return { x: comp.x + w, y: comp.y + 50 };
+                    if (pinName === 'D') return { x: comp.x, y: comp.y + 25 };
+                    if (pinName === 'Clk') return { x: comp.x, y: comp.y + 75 };
+                }
+
+                if (comp instanceof Register4Bit) {
+                    if (isOutput) {
+                        const idx = parseInt(pinName.replace('Q', ''));
+                        return { x: comp.x + w, y: comp.y + 30 + idx * 30 };
+                    } else {
+                        if (pinName === 'Clk') return { x: comp.x, y: comp.y + 140 };
+                        if (pinName === 'Write') return { x: comp.x + 70, y: comp.y }; // Top
+                        const idx = parseInt(pinName.replace('D', ''));
+                        return { x: comp.x, y: comp.y + 30 + idx * 30 };
+                    }
+                }
+
+                // Default center
+                return { x: comp.x + w / 2, y: comp.y + h / 2 };
+            }
+        }
+
+        // --- Main Engine ---
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+        const components = [];
+        const wires = [];
+        let currentLevel = 1;
+
+        // Setup Canvas Size
+        function resize() {
+            const container = document.getElementById('canvasContainer');
+            canvas.width = container.offsetWidth;
+            canvas.height = container.offsetHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // --- Level Builders ---
+
+        function buildLevel1() {
+            components.length = 0; wires.length = 0;
+            // Gated D-Latch Construction
+            const dPin = new Pin(100, 200, "Data (D)");
+            const ePin = new Pin(100, 350, "Enable (E)");
+
+            // Abstracting the internal gates for clarity in visual placement
+            // In a full gate simulation, we would place 4 NAND gates.
+            // For "Level 1", we show the pins connecting to the "Black Box" Latch to understand functionality first,
+            // OR we show the gates. Let's show the Box for clarity, then detailed gates.
+            // Let's implement the 'Gated' logic visually with a component.
+
+            const latch = new DLatch(350, 240);
+
+            const qPin = new Pin(600, 260, "Out (Q)", false);
+
+            components.push(dPin, ePin, latch, qPin);
+
+            wires.push(new Wire(dPin, null, latch, 'D'));
+            wires.push(new Wire(ePin, null, latch, 'E'));
+            wires.push(new Wire(latch, 'Q', qPin, null));
+
+            updateExplainer("Level 1: Gated D-Latch",
+                "The latch passes Data to Output when Enable is High (Transparent mode).<br>When Enable goes Low, the Output freezes and remembers the last value (Memory mode).");
+        }
+
+        function buildLevel2() {
+            components.length = 0; wires.length = 0;
+            // D Flip-Flop (Master-Slave edge trigger concept)
+            const dPin = new Pin(100, 250, "Data");
+            const clkPin = new Pin(100, 400, "Clock");
+
+            const dff = new DFlipFlop(350, 250);
+            const qPin = new Pin(600, 300, "Out (Q)", false);
+
+            components.push(dPin, clkPin, dff, qPin);
+
+            wires.push(new Wire(dPin, null, dff, 'D'));
+            wires.push(new Wire(clkPin, null, dff, 'Clk'));
+            wires.push(new Wire(dff, 'Q', qPin, null));
+
+            updateExplainer("Level 2: D Flip-Flop",
+                "A Flip-Flop is edge-triggered. Data is only captured at the exact moment the Clock signal goes from Low to High (Rising Edge).<br>Try setting Data to 1, then click 'Tick Clock'.");
+        }
+
+        function buildLevel3() {
+            components.length = 0; wires.length = 0;
+            // 4-bit Register
+            const reg = new Register4Bit(400, 200);
+            const clkPin = new Pin(250, 450, "Clock");
+            const writePin = new Pin(470, 100, "Write En");
+
+            components.push(reg, clkPin, writePin);
+
+            // Data Pins
+            for (let i = 0; i < 4; i++) {
+                const p = new Pin(200, 230 + i * 30, `D${i}`);
+                components.push(p);
+                wires.push(new Wire(p, null, reg, `D${i}`));
+            }
+
+            // Output Pins
+            for (let i = 0; i < 4; i++) {
+                const p = new Pin(650, 230 + i * 30, `Q${i}`, false);
+                components.push(p);
+                wires.push(new Wire(reg, `Q${i}`, p, null));
+            }
+
+            wires.push(new Wire(clkPin, null, reg, 'Clk'));
+            wires.push(new Wire(writePin, null, reg, 'Write'));
+
+            updateExplainer("Level 3: 4-Bit Register",
+                "Registers group Flip-Flops to store multiple bits (like a number).<br>Set the <b>Write Enable</b> to 1, set your data bits, then tick the Clock to store the value.");
+        }
+
+        function buildLevel4() {
+            components.length = 0; wires.length = 0;
+            // Simple RAM Visualization (Abstracted Grid)
+            // We will draw a custom RAM grid component here directly for simplicity
+
+            // Controller Pins
+            const addr0 = new Pin(150, 200, "Addr 0");
+            const addr1 = new Pin(150, 260, "Addr 1");
+            const writeEn = new Pin(150, 350, "Write En");
+            const dataIn = new Pin(150, 450, "Data In (1-bit)");
+            const clk = new Pin(150, 520, "Clock");
+
+            // RAM Component (Custom Mock)
+            const ramX = 400, ramY = 150;
+            const ram = new Component(ramX, ramY, 200, 250, "4x1 RAM");
+            ram.mem = [0, 0, 0, 0];
+            ram.lastClk = 0;
+
+            ram.tick = function () {
+                // Decode Address
+                const addr = (addr1.value << 1) | addr0.value;
+                this.selectedRow = addr;
+
+                // Write Logic
+                if (clk.value === 1 && this.lastClk === 0 && writeEn.value === 1) {
+                    this.mem[addr] = dataIn.value;
+                }
+                this.lastClk = clk.value;
+
+                // Output Logic
+                outPin.value = this.mem[addr];
+            };
+
+            ram.draw = function (ctx) {
+                // Draw Container
+                ctx.beginPath();
+                ctx.rect(this.x, this.y, this.w, this.h);
+                ctx.fillStyle = '#fff';
+                ctx.fill();
+                ctx.strokeStyle = '#333';
+                ctx.stroke();
+
+                // Draw Cells
+                for (let i = 0; i < 4; i++) {
+                    const cellY = this.y + 50 + i * 40;
+                    ctx.fillStyle = (i === this.selectedRow) ? '#e8f0fe' : '#f9f9f9';
+                    ctx.fillRect(this.x + 20, cellY, 160, 30);
+                    ctx.strokeRect(this.x + 20, cellY, 160, 30);
+
+                    ctx.fillStyle = '#333';
+                    ctx.font = '14px monospace';
+                    ctx.textAlign = 'left';
+                    ctx.fillText(`Addr ${i.toString(2).padStart(2, '0')}: ${this.mem[i]}`, this.x + 40, cellY + 20);
+
+                    if (i === this.selectedRow) {
+                        ctx.beginPath();
+                        ctx.arc(this.x + 10, cellY + 15, 4, 0, Math.PI * 2);
+                        ctx.fillStyle = '#1a73e8';
+                        ctx.fill();
+                    }
+                }
+
+                ctx.fillStyle = '#000';
+                ctx.textAlign = 'center';
+                ctx.font = 'bold 14px sans-serif';
+                ctx.fillText("RAM 4x1", this.x + this.w / 2, this.y + 30);
+            }
+
+            const outPin = new Pin(700, 300, "Data Out", false);
+
+            components.push(addr0, addr1, writeEn, dataIn, clk, ram, outPin);
+
+            // Wires (Visual only for this custom component)
+            wires.push(new Wire(addr0, null, ram, 'A0')); // Logic handled in ram.tick
+            wires.push(new Wire(addr1, null, ram, 'A1'));
+            wires.push(new Wire(writeEn, null, ram, 'WE'));
+            wires.push(new Wire(dataIn, null, ram, 'DIN'));
+            wires.push(new Wire(clk, null, ram, 'CLK'));
+
+            updateExplainer("Level 4: Tiny RAM Block",
+                "Memory is just a grid of Registers addressed by a Decoder.<br>1. Select an address using the <b>Addr</b> pins.<br>2. Set <b>Write Enable</b> and <b>Data In</b>.<br>3. Tick <b>Clock</b> to save data to that specific address.");
+        }
+
+        function updateExplainer(title, html) {
+            const el = document.getElementById('explainerText');
+            el.innerHTML = `<strong>${title}</strong><br>${html}`;
+        }
+
+        // --- Interaction Loop ---
+
+        function loadLevel(n) {
+            currentLevel = parseInt(n);
+            if (n == 1) buildLevel1();
+            if (n == 2) buildLevel2();
+            if (n == 3) buildLevel3();
+            if (n == 4) buildLevel4();
+
+            // UI Update
+            document.querySelectorAll('.level-btn').forEach(b => {
+                b.classList.toggle('active', parseInt(b.dataset.level) === currentLevel);
+            });
+        }
+
+        function loop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Logic Tick
+            components.forEach(c => c.tick());
+
+            // Draw Wires
+            wires.forEach(w => w.draw(ctx));
+
+            // Draw Components
+            components.forEach(c => c.draw(ctx));
+
+            requestAnimationFrame(loop);
+        }
+
+        // Inputs
+        canvas.addEventListener('mousemove', e => {
+            const rect = canvas.getBoundingClientRect();
+            const mx = e.clientX - rect.left;
+            const my = e.clientY - rect.top;
+
+            components.forEach(c => {
+                c.hovered = c.isMouseOver(mx, my);
+            });
+        });
+
+        canvas.addEventListener('click', e => {
+            const rect = canvas.getBoundingClientRect();
+            const mx = e.clientX - rect.left;
+            const my = e.clientY - rect.top;
+
+            components.forEach(c => {
+                if (c.hovered && c.isClickable && c instanceof Pin) {
+                    c.toggle();
+                }
+            });
+        });
+
+        document.querySelectorAll('.level-btn').forEach(btn => {
+            btn.addEventListener('click', () => loadLevel(btn.dataset.level));
+        });
+
+        // Global Clock Control
+        document.getElementById('clockBtn').addEventListener('mousedown', () => {
+            // Find clock pins and set high
+            components.forEach(c => {
+                if (c instanceof Pin && c.label.includes('Clock')) c.value = 1;
+            });
+        });
+        document.getElementById('clockBtn').addEventListener('mouseup', () => {
+            // Find clock pins and set low
+            components.forEach(c => {
+                if (c instanceof Pin && c.label.includes('Clock')) c.value = 0;
+            });
+        });
+        // Keyboard shortcut 'c' for clock
+        window.addEventListener('keydown', e => {
+            if (e.key === 'c' || e.key === 'C') {
+                components.forEach(c => { if (c instanceof Pin && c.label.includes('Clock')) c.value = 1; });
+                document.getElementById('clockBtn').style.backgroundColor = '#135abc';
+            }
+        });
+        window.addEventListener('keyup', e => {
+            if (e.key === 'c' || e.key === 'C') {
+                components.forEach(c => { if (c instanceof Pin && c.label.includes('Clock')) c.value = 0; });
+                document.getElementById('clockBtn').style.backgroundColor = '';
+            }
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            loadLevel(currentLevel);
+        });
+
+        // Init
+        loadLevel(1);
+        loop();
+
+    </script>
+</body>
+
+</html>
