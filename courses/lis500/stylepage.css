@@ -1,0 +1,171 @@
+/* LIS 500: Code and Power - Shared Styles */
+
+body {
+    font-family: 'EB Garamond', 'TeX Gyre Termes', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.6;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    background-color: #fff;
+}
+
+table.main-container {
+    width: 100%;
+    max-width: 900px;
+    border: 0;
+    border-spacing: 0;
+    border-collapse: separate;
+    margin: 0 auto;
+}
+
+.content-padding {
+    padding: 20px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.nav-links {
+    text-align: center;
+    font-size: 18px;
+    margin: 20px 0;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #1772d0;
+    margin: 0 10px;
+}
+
+.nav-links a:hover {
+    text-decoration: underline;
+}
+
+.active-link {
+    font-weight: 700;
+}
+
+.assignment-nav {
+    background: #f9f9f9;
+    padding: 15px;
+    margin: 20px 0;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.assignment-nav a {
+    margin: 0 10px;
+    padding: 8px 15px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #333;
+    display: inline-block;
+}
+
+.assignment-nav a.active {
+    background: #1772d0;
+    color: white;
+    border-color: #1772d0;
+    font-weight: 700;
+}
+
+.assignment-nav a:hover:not(.active) {
+    background: #f0f0f0;
+}
+
+.reflection-box {
+    background: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 30px;
+    margin: 20px 0;
+    line-height: 1.8;
+}
+
+.reflection-box p {
+    margin-bottom: 20px;
+}
+
+.video-container {
+    background: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    text-align: center;
+}
+
+.video-container iframe {
+    width: 100%;
+    max-width: 560px;
+    height: 315px;
+    border: none;
+    border-radius: 4px;
+}
+
+.tech-hero-img {
+    width: 100%;
+    max-width: 400px;
+    border-radius: 8px;
+    display: block;
+    margin: 0 auto 20px auto;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+heading {
+    font-size: 28px;
+    font-weight: 400;
+    display: block;
+    margin: 30px 0 15px 0;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+name {
+    font-size: 36px;
+    font-weight: 400;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.footer {
+    text-align: center;
+    font-size: 14px;
+    color: #999;
+    padding: 40px 20px;
+}
+
+/* Resource Guide Styles */
+.resource-guide {
+    border-left: 5px solid #1772d0;
+    padding-left: 20px;
+    margin: 20px 0;
+}
+
+.resource-item {
+    margin-bottom: 25px;
+}
+
+.resource-title {
+    font-weight: 700;
+    font-size: 20px;
+    color: #1772d0;
+}
+
+.resource-desc {
+    font-style: italic;
+    color: #555;
+    margin-top: 5px;
+}
+
+.lib-guide-header {
+    background-color: #1772d0;
+    color: white;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}

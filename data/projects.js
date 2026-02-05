@@ -2,18 +2,6 @@
 const projects = [
   // Machine Learning & Systems Projects
   {
-    id: 'memory-architecture',
-    title: 'Interactive Memory Architecture',
-    description: 'Zoomable, bottom-up visualization of computer memory systems. Start from basic Logic Gates to build D-Latches and Flip-Flops, combine them into Registers, and finally construct a functional RAM block. Features interactive bit toggling and manual clock control to understand data flow and storage mechanisms.',
-    tech: 'Vanilla JavaScript, HTML5 Canvas, Digital Logic',
-    thumbnail: 'images/projects/memory-thumb.jpg', // Placeholder, system will use default if missing
-    demo_url: 'demos/memory-architecture.html',
-    code_url: null,
-    featured: true,
-    highlighted: true
-  },
-
-  {
     id: 'kmap-visualizer',
     title: 'K-Map Visualizer - 2D & 3D Interactive',
     description: 'Advanced Karnaugh Map visualizer with automatic grouping and Boolean expression simplification. Features both traditional 2D K-maps and innovative 3D cube representation for 3+ variables. Interactive 3D visualization allows rotation, zooming, and cell toggling. Supports up to 6 variables with truth tables, minterms, and expression input methods.',
