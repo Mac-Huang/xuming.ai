@@ -118,16 +118,45 @@ table.main-container {
 
 heading {
     font-size: 28px;
-    font-weight: 400;
+    font-weight: 600; /* Increased from 400 for better hierarchy */
     display: block;
-    margin: 30px 0 15px 0;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 10px;
+    margin: 40px 0 20px 0; /* Increased margins for better spacing */
+    border-bottom: 2px solid #eee; /* Slightly thicker line */
+    padding-bottom: 12px;
+}
+
+.version-notice {
+    background: #e1f5fe;
+    border: 1px solid #b3e5fc;
+    color: #0277bd;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 20px 0;
+    font-size: 16px;
+    text-align: center;
+}
+
+.version-notice a {
+    font-weight: 700;
+    color: #01579b;
+}
+
+.resource-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin: 20px 0;
+}
+
+@media (max-width: 600px) {
+    .resource-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 name {
     font-size: 36px;
-    font-weight: 400;
+    font-weight: 700; /* Increased from 400 for better impact */
     display: block;
     margin-bottom: 10px;
 }
