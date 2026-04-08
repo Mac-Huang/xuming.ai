@@ -3,3 +3,4 @@ js/config.js
 .env
 .env.local
 .claude/
+courses/lis500/ml-project/venv/
