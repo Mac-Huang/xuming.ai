@@ -166,9 +166,14 @@
             <heading>Our Algorithm at Work</heading>
             <p>Watch a demonstration of our neural network processing images and making real-time identity classifications.</p>
             <div class="video-container">
-              <!-- Placeholder for the project video -->
-              <iframe src="./data/Introduction.mp4" allowfullscreen></iframe>
-              <p style="margin-top:10px; color:#666; font-size: 14px; font-style:italic;">Demonstrating the training and inference pipeline.</p>
+              <video width="100%" controls>
+                <source src="./ml-project/data/video.mov" type="video/quicktime">
+                Your browser does not support the video tag.
+              </video>
+              <p style="margin-top:10px; color:#666; font-size: 14px; font-style:italic;">
+                Demonstrating the training and inference pipeline.
+                <a href="https://github.com/Mac-Huang/xuming.ai/tree/main/courses/lis500/ml-project/data" target="_blank">[View Dataset on GitHub]</a>
+              </p>
             </div>
           </section>
 
@@ -205,8 +210,8 @@
               </div>
 
               <div class="image-selector">
-                <img src="./data/Anisha.jpeg" class="sample-img" onclick="predictStaticImage(this)" alt="Anisha Sample">
-                <img src="../../images/profile.jpg" class="sample-img" onclick="predictStaticImage(this)" alt="Xuming Sample">
+                <img src="./ml-project/data/Anisha/0.jpg" class="sample-img" onclick="predictStaticImage(this)" alt="Anisha Sample">
+                <img src="./ml-project/data/Xuming/0.jpg" class="sample-img" onclick="predictStaticImage(this)" alt="Xuming Sample">
               </div>
               
               <div style="margin-top: 20px;">
@@ -222,6 +227,7 @@
               <h3>1. Methodology & Data Preprocessing</h3>
               <p>
                 Our experiment involved creating a dataset of 200 high-resolution images (100 for each individual). 
+                You can explore the full dataset here: <a href="https://github.com/Mac-Huang/xuming.ai/tree/main/courses/lis500/ml-project/data" target="_blank"><strong>[Dataset on GitHub]</strong></a>.
                 To optimize the model, we performed <strong>Data Augmentation</strong> by rotating and flipping source images, 
                 effectively doubling our dataset's diversity. 
               </p>
