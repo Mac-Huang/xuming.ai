@@ -264,14 +264,17 @@
       const metadataURL = URL + "metadata.json";
 
       try {
+        document.getElementById('status').innerText = 'Loading model...';
         // Load model and metadata
         model = await tmImage.load(modelURL, metadataURL);
         maxPredictions = model.getTotalClasses();
+        console.log("Model loaded successfully");
 
+        document.getElementById('status').innerText = 'Requesting camera...';
         // Setup webcam
         const flip = true;
         webcam = new tmImage.Webcam(300, 300, flip);
-        await webcam.setup();
+        await webcam.setup(); // request access to the webcam
         await webcam.play();
         window.requestAnimationFrame(loop);
 
@@ -285,9 +288,15 @@
           row.className = "label-row";
           labelContainer.appendChild(row);
         }
+        document.getElementById('status').innerText = 'System Live';
       } catch (e) {
-        console.error("Camera or model failed to load", e);
-        alert("Model not yet uploaded to server. Static demo still works!");
+        console.error("Initialization failed", e);
+        if (e.message && e.message.includes("camera")) {
+          alert("Camera access denied or not found. Please check your browser permissions.");
+        } else {
+          alert("Failed to load model files from: " + modelURL + "\n\nIf you are viewing this locally (file://), you must use a local web server (like Live Server) because browsers block loading local files for security.");
+        }
+        document.getElementById('status').innerText = 'Init Failed';
       }
     }
 
@@ -355,8 +364,5 @@
       document.getElementById('progress-bar').style.background = isXuming ? '#6366f1' : '#f59e0b';
     }
   </script>
-</body>
-</html>
-
 </body>
 </html>
