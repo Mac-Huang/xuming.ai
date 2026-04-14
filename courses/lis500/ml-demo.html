@@ -166,6 +166,7 @@
             <heading>Our Algorithm at Work</heading>
             <p>Watch a demonstration of our neural network processing images and making real-time identity classifications.</p>
             <div class="video-container">
+              <!-- Using provided video source -->
               <video width="100%" controls preload="metadata">
                 <source src="./ml-project/data/video.mov" type="video/mp4">
                 <source src="./ml-project/data/video.mov" type="video/quicktime">
@@ -173,14 +174,13 @@
               </video>
               <p style="margin-top:10px; color:#666; font-size: 14px; font-style:italic;">
                 Demonstrating the training and inference pipeline.
-                <a href="https://github.com/Mac-Huang/xuming.ai/tree/main/courses/lis500/ml-project/data" target="_blank">[View Dataset on GitHub]</a>
               </p>
             </div>
           </section>
 
           <section id="demo">
             <heading>Live Teachable Machine Demo</heading>
-            <p>Start your webcam to see the model distinguish between Xuming and Anisha in real-time.</p>
+            <p>Start your webcam to see the model distinguish between identity features in real-time. You can view our full <a href="https://github.com/iyihsam/xuming-portfolio/tree/main/courses/lis500/ml-project/data" target="_blank" style="color: var(--primary-color); font-weight: bold;">[Dataset on GitHub]</a>.</p>
             
             <div class="demo-container">
               <div class="live-camera-box">
@@ -211,8 +211,8 @@
               </div>
 
               <div class="image-selector">
-                <img src="./ml-project/data/Anisha/0.jpg" class="sample-img" onclick="predictStaticImage(this)" alt="Anisha Sample">
-                <img src="./ml-project/data/Xuming/0.jpg" class="sample-img" onclick="predictStaticImage(this)" alt="Xuming Sample">
+                <img src="./data/Anisha.jpeg" class="sample-img" onclick="predictStaticImage(this)" alt="Anisha Sample">
+                <img src="../../images/profile.jpg" class="sample-img" onclick="predictStaticImage(this)" alt="Xuming Sample">
               </div>
               
               <div style="margin-top: 20px;">
@@ -222,32 +222,38 @@
             </div>
           </section>
 
-          <section id="report">
-            <heading>Technical Report</heading>
+          <section id="statement">
+            <heading>Project Statement</heading>
             <div class="reflection-box">
-              <h3>1. Methodology & Data Preprocessing</h3>
               <p>
-                Our experiment involved creating a dataset of 200 high-resolution images (100 for each individual). 
-                You can explore the full dataset here: <a href="https://github.com/Mac-Huang/xuming.ai/tree/main/courses/lis500/ml-project/data" target="_blank"><strong>[Dataset on GitHub]</strong></a>.
-                To optimize the model, we performed <strong>Data Augmentation</strong> by rotating and flipping source images, 
-                effectively doubling our dataset's diversity. 
+                Creating this project, our team was challenged to think more critically about exactly how AI systems are tested, trained, evaluated, and created. To begin, we wanted to test something that is a part of our everyday lives. We came up with the thought of testing common hand gestures that we all use and could be evaluated in different ways. Using the application teachable machine, we each took many different pictures of us holding an open palm, a peace sign, a thumbs down, and a thumbs up gesture.
               </p>
-
-              <h3>2. Neural Network Architecture</h3>
               <p>
-                We utilized <strong>Teachable Machine</strong> (built on TensorFlow.js) which employs a <strong>MobileNetV2</strong> backbone. 
-                This model uses depthwise separable convolutions to stay lightweight while maintaining high accuracy for facial recognition tasks.
+                While posing for these images, we began to think about the ideas presented in <em>Unmasking AI</em> by <strong>Joy Buolamwini</strong> regarding bias, limitations, and other issues caused by AI systems and how these ideas may be present in our own machine. Like I stated before, we started by each collecting our own images and uploading them into our data set. We specifically wanted our machine to focus on the different hand gestures we presented it with. The uniqueness to our dataset came naturally. Each of us are in a different environment, under different lighting, surrounded by different furniture, and of course different hands.
               </p>
-              <div class="network-viz">
-                Input (224, 224, 3) &rarr; MobileNetV2 (Base) &rarr; Pooling &rarr; Dense (Softmax) &rarr; Output (Xuming/Anisha)
+              <p>
+                The more pictures we had that were different was incredibly important for our data set, in order to ensure we could have different varieties of many objectives in the photos. We wanted the variety of photos because of one of the main messages in <em>Unmasking AI</em> which states that limited datasets can lead to biased or inaccurate outcomes. While we are only three people, we tried our best to upload as many photos as we could to ensure some sort of diversity and variety. However, although we took as many photos individually as we could, we realized our dataset would not be as diverse as we would like it.
+              </p>
+              <p>
+                Due to the fact that there are only three of us, our dataset is biased in itself. We cannot provide every race, gender, or background in our dataset. Therefore, we realized that there is a large chance that although the machine works well on us, someone in a differently lighted room, in a different environment, even with different skin could have completely inaccurate results due to our limited number of participants for our data set. When we all tested our machine, we noticed these differences almost immediately, seeing just how much the environment, lighting, and other factors affected our results.
+              </p>
+              <p>
+                This observation led us to realize just how easy bias can be embedded into an AI system, no matter how unintentional our efforts were. We clearly did not want to create a model that was biased or inaccurate in any way, but due to our dataset being limited to only our group and our own experiences, our model only had those experiences to mirror. This perfectly highlights limitations made in AI systems and because of these limitations, how these systems can fail to accurately represent diverse populations.
+              </p>
+              <p>
+                Although we just used silly hand gestures, we see AI systems used in important factors such as facial recognition to get into your phone, or even as far as scanning passports. When these systems have bias in aspects such as facial recognition, there are serious consequences and highlights the underlying problem of how bias AI systems can become. This project also made us realize the importance of testing systems in general. Our system was only accurate after we all uploaded more than 100 photos. This process emphasizes how important it is for these systems to constantly be tested and edited to ensure we can provide the most accurate information and attempt to have the fairest form of AI.
+              </p>
+              <p>
+                The inconsistency of the machine showcased limitations and warnings when working with very small datasets. It also emphasized how these systems should not be trusted blindly. Throughout this course and our college careers, we all discussed how many of our acquaintances and even at times ourselves, blindly trust AI without batting an eye. However this course consistently showcases the hidden biases and inaccurate information AI can produce, forcing us to constantly question the accuracy and meaning behind AI’s answers. 
+              </p>
+              <p>
+                Overall, this project allowed us to see firsthand just how biased AI applications and programs can be. Although none of us had the intention of our machine being biased, it easily became that due to our small dataset and limitations we encountered. Although AI is a useful tool and can be rewarding, it is incredibly important to remain cautious of these applications due to its limitations that can hurt large aspects such as diversity and equality. As we continue, we know that there is most likely not a world where AI will not exist, however, we hope that projects like this and educational content such as <em>Unmasking AI</em> can provide individuals with the knowledge of how AI can be used as a tool, but never as an application to rely on.
+              </p>
+              
+              <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-color); font-size: 16px; color: #64748b;">
+                <strong>Citations:</strong><br>
+                Buolamwini, J. (2023). <em>Unmasking AI: My Mission to Protect What Is Human in a World of Machines</em>. Random House.
               </div>
-
-              <h3>3. Identity & Power in ML</h3>
-              <p>
-                This application serves as an experiment in <strong>biometric classification</strong>. 
-                Through this project, we explored how neural networks "see" identity through patterns of light and color, 
-                and how the data we provide (or omit) defines the model's understanding of personal identity.
-              </p>
             </div>
           </section>
 
