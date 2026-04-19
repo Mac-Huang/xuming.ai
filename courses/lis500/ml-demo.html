@@ -180,11 +180,18 @@
 
           <section id="demo">
             <heading>Live Teachable Machine Demo</heading>
+            
+            <div style="background: #fff4e5; border-left: 4px solid #f59e0b; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
+              <p style="margin: 0; font-size: 14px; color: #92400e;">
+                <strong>⚠️ Transparency Note:</strong> This experimental model is trained exclusively to distinguish between Xuming and Anisha. It is not a general-purpose facial recognition system and will likely produce unreliable results for other individuals. All biometric processing occurs locally on your device and is never uploaded to a server.
+              </p>
+            </div>
+
             <p>Start your webcam to see the model distinguish between identity features in real-time. You can view our full <a href="https://github.com/iyihsam/xuming-portfolio/tree/main/courses/lis500/ml-project/data" target="_blank" style="color: var(--primary-color); font-weight: bold;">[Dataset on GitHub]</a>.</p>
             
             <div class="demo-container">
               <div class="live-camera-box">
-                <button type="button" class="start-btn" onclick="init()">Start Camera</button>
+                <button type="button" id="camera-btn" class="start-btn" onclick="toggleCamera()">Start Camera</button>
                 <div id="webcam-container"></div>
                 <div id="label-container"></div>
               </div>
@@ -225,21 +232,32 @@
           <section id="statement">
             <heading>Project Statement: Biometric Classification and Algorithmic Bias</heading>
             <div class="reflection-box">
+              <p><strong>1. Introduction to Biometric Classification</strong></p>
               <p>
                 Whether it’s app authentication or for criminal investigation, facial recognition has many applications in the real world and continues to grow in popularity as technology continues advancing. Therefore, for this machine learning assignment, we decided to design an experimental biometric classification system designed to distinguish two different identities. The purpose of this project was to explore and account for the intersection between identity and algorithmic bias. By building a custom facial recognition model, the project investigates how neural networks "see" human features and how the quality and diversity of training data directly impact the model's confidence and fairness.
               </p>
+              
+              <p><strong>2. Inspiration: Unmasking AI</strong></p>
               <p>
                 When designing our project, we were heavily inspired by the ideas of Joy Buolamwini and her work, <em>Unmasking AI</em>. Joy Buolamwini is a leading activist previously based at the MIT Media lab, focusing her efforts towards bridging social gaps in the technology world. The book delves into her journey in exposing bias present in artificial intelligence and she works hard to fight for more ethical technology overall. During the introduction section of her book, she explains the concept of the coded gaze, which “describes the ways in which the priorities, preferences, and prejudices of those who have the power to shape technology can propagate harm, such as discrimination and erasure” (Buolamwini xiii). Similar to the idea of the male gaze, the coded gaze is just as important as it highlights the unjust social dynamics that take place digitally, especially considering that we live in a heavily connected society today. Buolamwini developed this theory based on her unfair experiences with a facial recognition project, known as Aspire Mirror. The detection capabilities of the system was only limited to recognizing white individuals and completely stopped working when Buolamwini’s face came into frame until she placed a white mask in front of her. This underscores the sheer amount of bias instilled into technology based on present biases in many of the predominantly white circle of technology leaders across the globe. As a result of Buolamwini’s alarming concerns with facial recognition and other similar technologies, our group felt determined to build an effective teachable machine that works accurately despite the color of someone’s skin.
               </p>
+
+              <p><strong>3. Building a Diverse Dataset</strong></p>
               <p>
                 Combining Buolamwini’s story with our objective, we kept the ideas of transparency and equality in mind as we proceeded. To ensure the model is robust and capable of generalization, rather than just memorizing a single look, the dataset was intentionally built with high diversity. The dataset consists of two hundred individual images, one hundred for Xuming and another hundred for Anisha. Using the Teachable Machine tool, hosted by Google, we collected one hundred samples of each person’s face, including those from different angles to train the model better. This compensates for the "pose-variance" problem in machine learning, ensuring the model recognizes the individual regardless of how they hold the camera. Further, the model is then deployed via TensorFlow.js, allowing for zero-latency inference directly in the browser using the user's webcam, allowing for real-time classification. From the end of users, they can upload custom images to see a "deep-dive" into the confidence scores, visualizing exactly how certain the model is about its classification. Upon training the model and testing several times, we were able to get 90% accuracy or higher between the both of us, demonstrating the reliability and diversity that comes with building with fairness.
               </p>
+
+              <p><strong>4. Privacy through Edge Computing</strong></p>
               <p>
                 Launching our model via TensorFlow.js represents an emphasis placed on technical efficiency and digital ethics. Compared to other cloud-based AI platforms, which typically require user data to be uploaded to a central server to be processed, TensorFlow.js integrates client-side inference. This phenomenon is when the classification of individuals happens locally within the user’s browser using their hardware, allowing for zero-latency classification or the real-time feeling of the webcam interface. Furthermore, this platform keeps all the biometric data collected on the user’s device, representing the importance placed on privacy of sensitive information and mitigating any risk of data breaches.
               </p>
+
+              <p><strong>5. Findings and Environmental Bias</strong></p>
               <p>
                 Moving into the findings, despite its somewhat high accuracy in facial recognition, there were several instances where the model was unsure or glitched in deciding whose face was present in the webcam. It did not necessarily struggle to predict someone based on their identity but rather due to the position of the webcam and the lighting in the area. Therefore, these glitches were a byproduct of environmental noise. Since a neural network relies on contrasts between pixels to identify edges, it struggled to find the identifiers of our faces in areas that had too harsh or low-level lighting levels. This highlights a critical issue discussed in <em>Unmasking AI</em>, as the Aspire Mirror model worked more effectively in a perfectly lit environment rather than a dim one. The mathematical input does not match the training data anymore during location changes, causing reliability to also decline. It is also important to note that the trained model was based on a limited dataset and is therefore subject to recognition errors. The model has been programmed to only decide between two people–Xuming or Anisha–which is a bias in itself, as it will not work well with people other than the project leaders. Nevertheless, we are satisfied with the speed and accuracy of the model we have created so far and look forward to implementing improvements to continue diversifying the model and making it more fair for all users.
               </p>
+
+              <p><strong>6. Conclusion: Algorithmic Justice</strong></p>
               <p>
                 Overall, this project was extremely eye-opening in understanding the implications of biased algorithms in facial recognition. Throughout the entire process, we continuously referred to Buolamwini’s book and used it as a guiding tool when deciding the features of our machine. It is easy for a machine like this to fall victim to becoming biased if you are not taking into account the perspectives of all technology users. This experiment truly underscored that technical efficiency is insufficient in being a determinant for success, especially if the accuracy is built upon the values of exclusion. By intentionally attempting to diversify our data-set with 200 multi-angle photos taken from the webcam, we practiced what Buolamwini referred to as “algorithmic justice”. Ultimately, even though artificial intelligence has the power to classify, it is essentially the humans behind the systems who are responsible for ensuring effectiveness combined with inclusivity in order to truly thrive. Unmasking our biases is the key to unlocking a more fair-minded digital future.
               </p>
@@ -265,6 +283,36 @@
     // --- Teachable Machine Logic ---
     const URL = "./ml-project/model/"; // Local TM model
     let model, webcam, labelContainer, maxPredictions;
+    let isCameraRunning = false;
+    let animationId;
+
+    async function toggleCamera() {
+      const btn = document.getElementById('camera-btn');
+      if (!isCameraRunning) {
+        await init();
+        if (isCameraRunning) {
+          btn.innerText = 'Stop Camera';
+          btn.style.background = '#ef4444'; // Red for stop
+        }
+      } else {
+        stopCamera();
+        btn.innerText = 'Start Camera';
+        btn.style.background = ''; // Reset to default
+      }
+    }
+
+    async function stopCamera() {
+      if (webcam) {
+        await webcam.stop();
+      }
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
+      isCameraRunning = false;
+      document.getElementById("webcam-container").innerHTML = "";
+      document.getElementById("label-container").innerHTML = "";
+      document.getElementById('status').innerText = 'System Offline';
+    }
 
     async function init() {
       const modelURL = URL + "model.json";
@@ -283,7 +331,8 @@
         webcam = new tmImage.Webcam(300, 300, flip);
         await webcam.setup(); // request access to the webcam
         await webcam.play();
-        window.requestAnimationFrame(loop);
+        isCameraRunning = true;
+        animationId = window.requestAnimationFrame(loop);
 
         // UI Setup
         document.getElementById("webcam-container").innerHTML = ""; // Clear existing
@@ -298,19 +347,21 @@
         document.getElementById('status').innerText = 'System Live';
       } catch (e) {
         console.error("Initialization failed", e);
+        isCameraRunning = false;
         if (e.message && e.message.includes("camera")) {
           alert("Camera access denied or not found. Please check your browser permissions.");
         } else {
-          alert("Failed to load model files from: " + modelURL + "\n\nIf you are viewing this locally (file://), you must use a local web server (like Live Server) because browsers block loading local files for security.");
+          alert("Failed to load model files. If viewing locally, please use a web server (e.g., Live Server).");
         }
         document.getElementById('status').innerText = 'Init Failed';
       }
     }
 
     async function loop() {
+      if (!isCameraRunning) return;
       webcam.update();
       await predict();
-      window.requestAnimationFrame(loop);
+      animationId = window.requestAnimationFrame(loop);
     }
 
     async function predict() {
