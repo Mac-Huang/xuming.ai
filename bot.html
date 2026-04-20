@@ -52,9 +52,23 @@
               <tr>
                 <td style="padding:20px;width:100%;vertical-align:middle">
                   <p>
-                    Ask me about my research, publications, projects, or academic experience. 
-                    I'm here to help you understand my work in machine learning systems and computer science.
+                    Ask me about my research, publications, projects, or academic experience.
+                    This page runs a small language model <strong>entirely in your browser</strong>
+                    (no server, no API key) with retrieval over the content of this site.
+                    First visit downloads the model once (cached afterwards). WebGPU required.
                   </p>
+                  <div id="bot-status" style="margin-top:10px;padding:10px;background:#f5f5f5;border-radius:4px;font-size:14px;color:#555;">
+                    <div id="status-text">Initializing…</div>
+                    <div style="margin-top:6px;height:6px;background:#eee;border-radius:3px;overflow:hidden;">
+                      <div id="status-bar" style="height:100%;width:0%;background:#1772d0;transition:width 0.3s;"></div>
+                    </div>
+                    <div style="margin-top:8px;">
+                      <label style="font-size:13px;color:#666;">Model:
+                        <select id="model-select" style="font-family:inherit;font-size:13px;margin-left:4px;"></select>
+                      </label>
+                      <button id="reset-btn" style="margin-left:10px;font-size:13px;padding:3px 8px;">Reset chat</button>
+                    </div>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -163,9 +177,130 @@
   <script src="data/projects.js"></script>
   <script src="data/blog-posts.js"></script>
   <script src="js/main.js"></script>
-  <script src="js/bot.js"></script>
-  <!-- Config should be loaded before gemini integration -->
-  <script src="js/config.js"></script>
-  <script src="js/gemini-integration.js"></script>
+
+  <!-- In-browser RAG bot: WebLLM + transformers.js embeddings -->
+  <script type="module" src="js/rag-bot.js"></script>
+  <script type="module">
+    const statusText = document.getElementById("status-text");
+    const statusBar  = document.getElementById("status-bar");
+    const modelSel   = document.getElementById("model-select");
+    const resetBtn   = document.getElementById("reset-btn");
+    const input      = document.getElementById("message-input");
+    const messagesEl = document.getElementById("messages");
+    const container  = document.getElementById("chat-container");
+
+    // Wait until RagBot is registered on window (module load order-safe).
+    async function waitForBot() {
+      while (!window.RagBot) await new Promise(r => setTimeout(r, 30));
+      return window.RagBot;
+    }
+
+    function setStatus(text, pct) {
+      statusText.textContent = text;
+      if (typeof pct === "number") statusBar.style.width = pct + "%";
+    }
+
+    function appendMessage(html, sender) {
+      const div = document.createElement("div");
+      div.className = sender + "-message";
+      div.style.margin = "10px 0";
+      div.style.padding = "8px";
+      if (sender === "user") {
+        div.style.textAlign = "right";
+        div.innerHTML = '<span style="color:#1772d0;"><strong>You:</strong> ' + html + '</span>';
+      } else {
+        div.innerHTML = '<strong>Xuming Bot:</strong> <span class="bot-body">' + html + '</span>';
+      }
+      messagesEl.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+      return div;
+    }
+
+    function escapeHtml(s) {
+      return s.replace(/[&<>"']/g, c => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+      }[c]));
+    }
+
+    function renderSources(sources) {
+      if (!sources?.length) return "";
+      const items = sources.slice(0, 4).map(s => {
+        const label = escapeHtml(`${s.source}: ${s.title || ""}`.trim());
+        return s.url
+          ? `<a href="${escapeHtml(s.url)}" style="color:#777;">${label}</a>`
+          : label;
+      }).join(" · ");
+      return `<div style="margin-top:6px;font-size:11px;color:#999;">Sources: ${items}</div>`;
+    }
+
+    const RagBot = await waitForBot();
+
+    // Populate model selector.
+    for (const m of RagBot.listModels()) {
+      const opt = document.createElement("option");
+      opt.value = m.id;
+      opt.textContent = m.label;
+      modelSel.appendChild(opt);
+    }
+
+    async function boot(modelId) {
+      setStatus("Starting up…", 0);
+      if (!navigator.gpu) {
+        setStatus("WebGPU is not available in this browser. Try Chrome/Edge on desktop.", 0);
+        return;
+      }
+      try {
+        await RagBot.init(modelId, ({ text, pct }) => setStatus(text, pct));
+        setStatus("Ready. Ask me anything.", 100);
+      } catch (e) {
+        console.error(e);
+        setStatus("Failed to load model: " + (e?.message || e), 0);
+      }
+    }
+
+    modelSel.addEventListener("change", () => boot(modelSel.value));
+    resetBtn.addEventListener("click", () => {
+      RagBot.reset();
+      messagesEl.innerHTML = '<div class="bot-message"><strong>Xuming Bot:</strong> Chat reset. What would you like to know?</div>';
+    });
+
+    // Override global sendMessage / askQuestion used by existing UI hooks.
+    window.sendMessage = async function () {
+      const message = input.value.trim();
+      if (!message) return;
+      if (!RagBot.isReady()) {
+        appendMessage(escapeHtml(message), "user");
+        appendMessage("<em>Still loading the model — please wait a moment.</em>", "bot");
+        return;
+      }
+      appendMessage(escapeHtml(message), "user");
+      input.value = "";
+
+      const botDiv = appendMessage('<em style="color:#888;">thinking…</em>', "bot");
+      const body = botDiv.querySelector(".bot-body");
+      let first = true;
+
+      try {
+        const { sources } = await RagBot.ask(message, {
+          onToken: (_delta, full) => {
+            if (first) { body.innerHTML = ""; first = false; }
+            body.textContent = full;
+            container.scrollTop = container.scrollHeight;
+          },
+        });
+        body.innerHTML = escapeHtml(body.textContent) + renderSources(sources);
+      } catch (e) {
+        console.error(e);
+        body.innerHTML = '<span style="color:#b00;">Error: ' + escapeHtml(e.message || String(e)) + '</span>';
+      }
+    };
+
+    window.askQuestion = function (q) {
+      input.value = q;
+      window.sendMessage();
+    };
+
+    boot(modelSel.value);
+  </script>
 </body>
 </html>
