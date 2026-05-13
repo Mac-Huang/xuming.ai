@@ -74,7 +74,7 @@
                 <td style="padding:20px;width:100%;vertical-align:middle">
                   <heading>Featured Research: LinuxGuard</heading>
                   <p>
-                    My primary focus is <a href="linuxguard.html">LinuxGuard</a>, a pipeline that learns from Linux kernel bug fixes to generate custom
+                    My primary focus at ADSL is <a href="linuxguard.html">LinuxGuard</a>, a pipeline that learns from Linux kernel bug fixes to generate custom
                     clang-tidy checkers. By mining commit history, the system builds AST matchers that flag unchecked error paths across
                     kernels v3.0 through v6.0, turning each fixed vulnerability into a proactive safeguard.
                   </p>
@@ -83,6 +83,107 @@
                     <li>Flagship checker: <code>linuxkernel-must-check-errs</code> catches missing error handling at scale.</li>
                     <li>200+ unchecked error flows surfaced per kernel release, revealing long-lived anti-patterns.</li>
                   </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- WukLab Research Banner -->
+          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+            <tbody>
+              <tr>
+                <td style="padding:20px;width:100%;vertical-align:middle">
+                  <heading>WukLab @ UCSD — Prof. Yiying Zhang</heading>
+                  <p>
+                    As a remote research intern at <a href="https://wuklab.io/">WukLab</a>, I work with
+                    Professor <a href="https://cseweb.ucsd.edu/~yiying/">Yiying Zhang</a> on two complementary threads at the LLM-systems
+                    interface: using LLMs to <em>produce</em> better low-level code, and using <em>systems measurement</em> to understand
+                    what really limits LLM serving on commodity edge hardware.
+                  </p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- WukLab Project 1: LLM-driven low-level code optimization -->
+          <table style="width:100%;border:0px;border-spacing:0px 10px;border-collapse:separate;margin-right:auto;margin-left:auto;background:#fafaf7;border-radius:6px;">
+            <tbody>
+              <tr>
+                <td style="padding:20px;width:30%;vertical-align:middle">
+                  <a href="demos/openclaw-workflow.html">
+                    <img src="images/papers/wuklab/openclaw_turn_gantt.png" alt="LLM kernel generation pipeline" style="width:100%;max-width:240px;border:1px solid #ddd;border-radius:4px;">
+                  </a>
+                </td>
+                <td style="padding:20px;width:70%;vertical-align:middle">
+                  <papertitle>LLM-driven Low-level Code Optimization</papertitle>
+                  <br>
+                  <em><strong>Xuming Huang</strong>, advised by Yiying Zhang &mdash; WukLab, UC San Diego</em>
+                  <br>
+                  <em style="color:#666;">2025–present &middot; <span class="highlight">Ongoing</span></em>
+                  <p style="margin-top:10px;">
+                    Building an agent loop that takes a reference kernel, proposes compiler-grade transformations
+                    (vectorization, tiling, register-pressure reduction), then <em>verifies</em> each candidate by
+                    running it against the original and benchmarking the survivors. The goal: close the gap between
+                    LLM-suggested code edits and the kind of optimizations a production compiler engineer would accept.
+                  </p>
+                  <ul>
+                    <li>Pipeline: <strong>propose &rarr; sandbox-execute &rarr; differential-test &rarr; profile</strong>, fully closed-loop.</li>
+                    <li>Targets numerical and memory-bound kernels where the search space is too large for hand tuning.</li>
+                    <li>Co-designed with the edge-inference workload below so the optimized kernels can be shipped to the same M-series device profile.</li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- WukLab Project 2: System Optimization for Edge Device Inference -->
+          <table style="width:100%;border:0px;border-spacing:0px 10px;border-collapse:separate;margin-right:auto;margin-left:auto;background:#fafaf7;border-radius:6px;margin-top:14px;">
+            <tbody>
+              <tr>
+                <td style="padding:20px;width:30%;vertical-align:middle">
+                  <a href="demos/openclaw-workflow.html">
+                    <img src="images/papers/wuklab/mem_budget_summary.png" alt="Peak RSS and decode throughput vs scenario" style="width:100%;max-width:240px;border:1px solid #ddd;border-radius:4px;">
+                  </a>
+                </td>
+                <td style="padding:20px;width:70%;vertical-align:middle">
+                  <papertitle>System Optimization for Edge Device Inference</papertitle>
+                  <br>
+                  <em><strong>Xuming Huang</strong>, advised by Yiying Zhang &mdash; WukLab, UC San Diego</em>
+                  <br>
+                  <em style="color:#666;">2025–present &middot; <span class="highlight">Ongoing</span></em>
+                  <p style="margin-top:10px;">
+                    A measurement-first study of what actually governs latency for agentic LLMs running entirely on-device.
+                    We drive <code>ollama</code> serving <code>qwen2.5</code> (3B / 7B / 14B at q4_K_M) on a 24 GB M3 MacBook Air through an
+                    11-scenario sweep that walks the model-vs-KV-cache budget, and through an 8-scenario suite that exercises
+                    OpenClaw's prefix cache under cold prime, plain append, retrieval-inlined, session growth, and auto-compaction
+                    workloads.
+                  </p>
+                  <ul>
+                    <li>Memory-budget model: <code>RSS &asymp; model_GB + parallel &times; num_ctx &times; KV_q8_bytes + 0.3 GB</code>, mean abs. error <strong>10.2 %</strong> across 11 scenarios.</li>
+                    <li>Found a <strong>page-compressor cliff</strong> at <code>parallel=3</code> on 14B / 32k ctx where observed RSS stops tracking predicted by 20–28 %.</li>
+                    <li>Quantified a <strong>35&times; prefill spike</strong> caused by auto-compaction breaking the ollama prefix cache between two consecutive turns.</li>
+                    <li>Showed decode is bandwidth-bound: 3B &asymp; 35 tok/s, 7B &asymp; 5 tok/s, 14B &asymp; 2.5 tok/s, near-constant across context length.</li>
+                  </ul>
+                  <p style="margin-top:8px;">
+                    <a href="demos/openclaw-workflow.html">[Interactive workflow demo]</a>
+                    &nbsp; <a href="demos/memory-hierarchy.html">[Memory hierarchy demo]</a>
+                  </p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- WukLab figures -->
+          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;margin-top:18px;">
+            <tbody>
+              <tr>
+                <td style="padding:10px;width:50%;vertical-align:top;text-align:center;">
+                  <img src="images/papers/wuklab/kv_cache_scenarios.png" alt="KV cache scenarios" style="width:100%;max-width:380px;border:1px solid #ddd;border-radius:4px;">
+                  <p style="font-size:13px;color:#666;margin-top:6px;">KV prefix-cache hit / miss / surprise-miss behavior across 8 OpenClaw workloads. Auto-compaction (scenario 8) drives the longest prefill bar.</p>
+                </td>
+                <td style="padding:10px;width:50%;vertical-align:top;text-align:center;">
+                  <img src="images/papers/wuklab/append_vs_prefill.png" alt="Append vs prefill trend" style="width:100%;max-width:380px;border:1px solid #ddd;border-radius:4px;">
+                  <p style="font-size:13px;color:#666;margin-top:6px;">Append-token count vs. next call's prefill latency across 39 partial-hit data points &mdash; the cache-miss event sits ~24&times; off the trend.</p>
                 </td>
               </tr>
             </tbody>

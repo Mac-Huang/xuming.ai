@@ -1,5 +1,38 @@
 // Publications data - actual research experience and ongoing work
 const publications = [
+  // WukLab @ UCSD — Prof. Yiying Zhang (2025–present)
+  {
+    id: 'wuklab-llm-codegen-2025',
+    title: 'LLM-driven Low-level Code Optimization',
+    authors: '<strong>Xuming Huang</strong> (advised by Prof. Yiying Zhang, WukLab @ UCSD)',
+    venue: 'WukLab Research Internship — Ongoing',
+    year: 2025,
+    image: 'images/papers/wuklab/openclaw_turn_gantt.png',
+    paper_url: 'research.html#wuklab',
+    code_url: null,
+    project_url: null,
+    bibtex: null,
+    selected: true,
+    category: 'ongoing',
+    abstract: 'Building a closed-loop agent that proposes compiler-grade transformations on low-level numerical and memory-bound kernels, then verifies each candidate through differential testing and on-device profiling. The pipeline pairs an LLM proposer with a sandboxed executor and a benchmarking harness, aiming to close the gap between LLM-suggested edits and the kind of optimizations a production compiler engineer would accept.'
+  },
+
+  {
+    id: 'wuklab-edge-inference-2025',
+    title: 'System Optimization for Edge Device Inference',
+    authors: '<strong>Xuming Huang</strong> (advised by Prof. Yiying Zhang, WukLab @ UCSD)',
+    venue: 'WukLab Research Internship — Ongoing',
+    year: 2025,
+    image: 'images/papers/wuklab/mem_budget_summary.png',
+    paper_url: 'research.html#wuklab',
+    code_url: null,
+    project_url: 'demos/openclaw-workflow.html',
+    bibtex: null,
+    selected: true,
+    category: 'ongoing',
+    abstract: 'A measurement-first characterization of agentic LLM serving on a 24 GB M3 MacBook Air via OpenClaw on ollama (qwen2.5 3B/7B/14B q4_K_M). An 11-scenario memory-budget sweep yields a first-order RSS model with 10.2% mean absolute error, exposes a page-compressor cliff at parallel=3 on 14B/32k context, and isolates a 35x prefill spike caused by auto-compaction breaking the prefix cache between consecutive turns.'
+  },
+
   // Current Research Projects (2025)
   {
     id: 'linuxguard-2025',

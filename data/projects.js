@@ -1,5 +1,30 @@
 // Projects data - simple JavaScript array following publication structure
 const projects = [
+  // WukLab / Systems Visualizations
+  {
+    id: 'memory-hierarchy-vivt-pipt-vipt',
+    title: 'Memory Hierarchy & Cache Indexing — VIVT / PIPT / VIPT',
+    description: 'End-to-end visualization of a 32-bit virtual address travelling through the TLB, three flavors of L1 cache (VIVT, PIPT, VIPT), L2/L3, DRAM, and disk. Animates the address-bit layout for each scheme, walks scenarios from L1 hit to full page fault, and shows where the TLB sits on the critical path. Built around the cache-indexing intuition behind why most modern L1s are VIPT.',
+    tech: 'JavaScript, SVG, Computer Architecture, Virtual Memory, Caches',
+    thumbnail: 'images/projects/cache-thumb.jpg',
+    demo_url: 'demos/memory-hierarchy.html',
+    code_url: null,
+    featured: true,
+    highlighted: true
+  },
+
+  {
+    id: 'openclaw-edge-workflow',
+    title: 'OpenClaw Edge Workflow — Prompt Cache, KV Cache, and a Turn End-to-End',
+    description: 'Interactive walkthrough of an agentic LLM turn running on a 24 GB M3 MacBook Air: the five phases of a turn (Node boot → plugin load → lane admission → prompt setup → LLM), what the prefix cache and KV cache each store, and the eight measured workload scenarios that exercise them. Includes the 35x prefill spike caused by auto-compaction breaking the prefix cache between consecutive turns. Numbers come from the WukLab edge-inference suite.',
+    tech: 'JavaScript, SVG, LLM Serving, KV Cache, Edge Inference',
+    thumbnail: 'images/papers/wuklab/mem_budget_summary.png',
+    demo_url: 'demos/openclaw-workflow.html',
+    code_url: null,
+    featured: true,
+    highlighted: true
+  },
+
   // Machine Learning & Systems Projects
   {
     id: 'kmap-visualizer',

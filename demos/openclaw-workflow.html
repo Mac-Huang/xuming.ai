@@ -1,0 +1,564 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>OpenClaw on Edge — Prompt Cache, KV Cache, and a Turn End-to-End — Xuming Huang</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../stylesheet.css">
+  <style>
+    :root {
+      --ink: #1c1c1e;
+      --muted: #5e5e63;
+      --rule: #dcdcd6;
+      --accent: #1772d0;
+      --warm: #b45309;
+      --hit: #2f8f3f;
+      --miss: #c0392b;
+      --surprise: #d97706;
+      --panel: #ffffff;
+      --sys: #3b6fa8;
+      --user: #4d8b46;
+      --asst: #a26ba3;
+      --tool: #d99049;
+      --hit-fill: #c9e6c8;
+      --miss-fill: #f5c7c4;
+      --surprise-fill: #fbe1b5;
+    }
+    body {
+      font-family: "Inter", "Lato", system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 24px;
+      background: linear-gradient(135deg, #2c5364 0%, #203a43 50%, #0f2027 100%);
+      min-height: 100vh;
+      color: var(--ink);
+    }
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      background: var(--panel);
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      padding: 28px 32px 40px;
+    }
+    h1 { color: var(--accent); margin: 0 0 6px; font-size: 1.9rem; letter-spacing:-0.02em;}
+    .subtitle { color: var(--muted); margin: 0 0 22px; font-size: 1.05rem; }
+    h2 { margin: 30px 0 10px; font-size: 1.25rem; border-bottom: 1px solid var(--rule); padding-bottom: 6px; }
+    h3 { margin: 22px 0 6px; font-size: 1.05rem; color: var(--warm); }
+    p { line-height: 1.55; }
+    code { background: #efece4; padding: 0.1em 0.35em; border-radius: 3px; font-family: "SF Mono", Menlo, monospace; font-size: 0.9em; }
+    a.back { color: var(--accent); text-decoration: none; font-size: 0.92rem; }
+    a.back:hover { text-decoration: underline; }
+
+    /* Phases gantt */
+    .phase-box {
+      background: #1a1d24;
+      color: #f0ede6;
+      border-radius: 10px;
+      padding: 22px;
+      margin: 16px 0 22px;
+      overflow-x: auto;
+    }
+
+    /* Scenarios */
+    .scenario-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin: 16px 0; }
+    .scenario {
+      background: #f9f7f1;
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+    .scenario h4 { margin: 0 0 4px; font-size: 1rem; }
+    .scenario .meta { font-size: 0.84rem; color: var(--muted); margin-bottom: 8px; }
+    .seq { display: flex; gap: 4px; flex-wrap: wrap; align-items: flex-end; }
+    .seq .blk { padding: 4px 8px; font-size: 0.78rem; color: white; border-radius: 3px; font-family: "SF Mono", Menlo, monospace; }
+    .blk.hit { background: var(--hit); }
+    .blk.miss { background: var(--miss); }
+    .blk.surprise { background: var(--surprise); }
+    .blk.append { background: #69707a; }
+    .blk.system { background: var(--sys); }
+    .blk.user { background: var(--user); }
+    .blk.tool { background: var(--tool); }
+    .blk.asst { background: var(--asst); }
+
+    /* Cache layout viz */
+    .kv-layout {
+      background: #1a1d24;
+      color: #f0ede6;
+      border-radius: 10px;
+      padding: 22px;
+      margin: 14px 0;
+    }
+
+    /* Controls */
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .ctrl {
+      background: #f8f9fa;
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+      padding: 12px;
+    }
+    .ctrl label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 6px; font-weight: 600; }
+    .ctrl select, .ctrl input { width: 100%; box-sizing: border-box; padding: 7px 9px; border-radius: 4px; border: 1px solid var(--rule); font-family: "SF Mono", Menlo, monospace; font-size: 0.9rem; }
+    button {
+      background: var(--accent);
+      color: white;
+      border: 0;
+      padding: 9px 18px;
+      border-radius: 5px;
+      font-size: 0.92rem;
+      cursor: pointer;
+      margin-right: 8px;
+      margin-top: 8px;
+    }
+    button:hover { filter: brightness(1.07); }
+    button.alt { background: #6c757d; }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .metric {
+      background: #f1efe9;
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+    }
+    .metric .v { font-size: 1.5rem; font-weight: 700; color: var(--accent); }
+    .metric .l { font-size: 0.78rem; color: var(--muted); }
+
+    table.data { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.92rem; }
+    table.data th, table.data td { border: 1px solid var(--rule); padding: 7px 9px; text-align: left; }
+    table.data th { background: #f1efe9; }
+    table.data td.n { text-align: right; font-family: "SF Mono", Menlo, monospace; }
+
+    .callout {
+      background: #fef6ea;
+      border-left: 4px solid var(--warm);
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin: 14px 0;
+      font-size: 0.95rem;
+    }
+    .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; font-size: 0.85rem; color: var(--muted); }
+    .legend .sw { display: inline-block; width: 14px; height: 14px; border-radius: 3px; margin-right: 6px; vertical-align: middle; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../projects.html">← Back to Projects</a>
+    <h1>Inside an OpenClaw Turn</h1>
+    <p class="subtitle">
+      Edge LLM serving, from the moment a user message lands to the moment a token streams back &mdash;
+      with the prompt cache, the KV cache, and the auto-compaction event that breaks them.
+    </p>
+    <p style="font-size:0.92rem;color:var(--muted);">
+      Workload: <code>OpenClaw agent --local</code> driving <code>ollama</code> with <code>qwen2.5:7b-instruct-q4_K_M</code>
+      on a 24 GB M3 MacBook Air. Numbers below come from real traces collected as part of my WukLab edge-inference work.
+    </p>
+
+    <h2>1. The five phases of a single turn</h2>
+    <p>
+      A turn isn't just a forward pass. The bulk of the wall-clock budget on the first invocation lives
+      <em>outside</em> the model: Node startup, plugin load, provider discovery, auth, lane admission,
+      session deserialization, prompt assembly. The Gantt below is from a real cold-prime trace.
+    </p>
+
+    <div class="phase-box">
+      <svg viewBox="0 0 1180 280" width="100%" style="max-width:1180px;">
+        <!-- Axis -->
+        <line x1="160" y1="240" x2="1140" y2="240" stroke="#5e6770" stroke-width="1"/>
+        <g font-size="10" fill="#9bb3c9" text-anchor="middle">
+          <text x="160"  y="258">0</text>
+          <text x="313"  y="258">20</text>
+          <text x="466"  y="258">40</text>
+          <text x="619"  y="258">80</text>
+          <text x="772"  y="258">120</text>
+          <text x="925"  y="258">160</text>
+          <text x="1078" y="258">192.8 s</text>
+        </g>
+        <text x="650" y="276" font-size="11" fill="#9bb3c9" text-anchor="middle">wall-clock seconds</text>
+
+        <!-- Phases -->
+        <!-- Phase 1: 0 - 6.1s (one-time process boot) -->
+        <rect x="160" y="40"  width="47"  height="30" fill="#3b6fa8" rx="3"/>
+        <text x="183" y="60" text-anchor="middle" font-size="11" fill="#fff" font-weight="600">1</text>
+        <text x="60" y="60"  font-size="11" fill="#cfd9e1">plugin / auth boot</text>
+        <text x="216" y="60" font-size="10" fill="#aac4d6">6.1 s</text>
+
+        <!-- gap 6.1 → 13.7 = 7.6s -->
+        <rect x="207" y="40" width="58"  height="30" fill="#3c434c" rx="3"/>
+        <text x="236" y="60" text-anchor="middle" font-size="10" fill="#9bb3c9">CLI parse</text>
+
+        <!-- Phase 2: 13.7 → 16.9 lane admission ~3.2s -->
+        <rect x="265" y="80" width="25" height="30" fill="#4d8b46" rx="3"/>
+        <text x="60"  y="100" font-size="11" fill="#cfd9e1">lane admission</text>
+        <text x="295" y="100" font-size="10" fill="#aac4d6">3.2 s</text>
+
+        <!-- Phase 3: 17.0 → 20.7 ~3.7 -->
+        <rect x="290" y="120" width="29"  height="30" fill="#a26ba3" rx="3"/>
+        <text x="60"  y="140" font-size="11" fill="#cfd9e1">pre-prompt setup</text>
+        <text x="324" y="140" font-size="10" fill="#aac4d6">3.7 s</text>
+
+        <!-- Phase 4: 20.7 → 192.8 ~172.1 -->
+        <rect x="319" y="160" width="765" height="30" fill="#b45309" rx="3"/>
+        <text x="60"  y="180" font-size="11" fill="#cfd9e1">LLM (load + decode)</text>
+        <text x="701" y="180" font-size="10" fill="#fff8eb" font-weight="600">172.1 s &mdash; prefill 15.7k tok, decode 240 tok</text>
+
+        <!-- Phase 5: 192.83 → 192.84 ~10 ms -->
+        <rect x="1084" y="200" width="2" height="30" fill="#69707a" rx="3"/>
+        <text x="60"   y="220" font-size="11" fill="#cfd9e1">teardown</text>
+        <text x="1092" y="220" font-size="10" fill="#aac4d6">10 ms</text>
+
+        <!-- Legend -->
+        <g font-size="11" fill="#cfd9e1">
+          <text x="160" y="25" font-weight="600">turn 0 — cold prime (qwen2.5:7B, 15.7k-tok prompt)</text>
+        </g>
+      </svg>
+      <div class="legend">
+        <span><span class="sw" style="background:#3b6fa8"></span>process-scoped (Node boot, plugin load)</span>
+        <span><span class="sw" style="background:#4d8b46"></span>request-scoped (lane admission)</span>
+        <span><span class="sw" style="background:#a26ba3"></span>prompt-scoped (session load, template render)</span>
+        <span><span class="sw" style="background:#b45309"></span>model-scoped (LLM prefill + decode)</span>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>The framework residual.</strong> Phase 1 alone is ~6 s every time the CLI starts &mdash; because every
+      turn is a fresh Node process. A daemon-mode invocation (channel inside the long-lived gateway)
+      collapses the framework overhead to <strong>~400–650 ms</strong> per turn. That delta is one of the levers
+      the edge-inference work optimizes against.
+    </div>
+
+    <h2>2. What the LLM phase actually does</h2>
+    <p>
+      Inside Phase 4, ollama itself splits the work into three sub-phases. The KV cache is built during prefill
+      and is what makes every subsequent token cheap.
+    </p>
+
+    <div class="phase-box">
+      <svg viewBox="0 0 1100 280" width="100%" style="max-width:1100px;">
+        <!-- LOAD -->
+        <rect x="40"  y="40" width="100" height="60" fill="#2c3540" stroke="#3b6fa8" rx="6"/>
+        <text x="90" y="68" text-anchor="middle" fill="#fff" font-size="13" font-weight="600">model load</text>
+        <text x="90" y="86" text-anchor="middle" fill="#aac4d6" font-size="11">mmap weights</text>
+
+        <!-- prompt cache match -->
+        <rect x="180" y="40" width="160" height="60" fill="#2c3540" stroke="#d97706" rx="6"/>
+        <text x="260" y="64" text-anchor="middle" fill="#fff" font-size="13" font-weight="600">prefix-cache match</text>
+        <text x="260" y="82" text-anchor="middle" fill="#f3c264" font-size="11">longest common prefix vs.</text>
+        <text x="260" y="96" text-anchor="middle" fill="#f3c264" font-size="11">last run's KV cache</text>
+
+        <!-- PREFILL -->
+        <rect x="380" y="40" width="200" height="60" fill="#3a3122" stroke="#b45309" rx="6"/>
+        <text x="480" y="64" text-anchor="middle" fill="#fff" font-size="13" font-weight="600">prefill (new tokens)</text>
+        <text x="480" y="82" text-anchor="middle" fill="#ffd7a3" font-size="11">compute K, V for the suffix</text>
+        <text x="480" y="96" text-anchor="middle" fill="#ffd7a3" font-size="11">7B → ~80 tok/s prefill</text>
+
+        <!-- DECODE -->
+        <rect x="620" y="40" width="240" height="60" fill="#1f4029" stroke="#4caf50" rx="6"/>
+        <text x="740" y="60" text-anchor="middle" fill="#fff" font-size="13" font-weight="600">decode (loop)</text>
+        <text x="740" y="78" text-anchor="middle" fill="#cdebd0" font-size="11">stream output tokens</text>
+        <text x="740" y="94" text-anchor="middle" fill="#cdebd0" font-size="11">7B → ~5 tok/s (bandwidth-bound)</text>
+
+        <!-- KV cache box -->
+        <rect x="380" y="140" width="480" height="100" fill="#2c3540" stroke="#a26ba3" rx="6"/>
+        <text x="620" y="165" text-anchor="middle" fill="#fff" font-size="13" font-weight="600">KV cache (per layer × head)</text>
+        <text x="620" y="184" text-anchor="middle" fill="#cda4e1" font-size="11">qwen2.5-7B, q8_0 KV: ~140 KB / token / sequence</text>
+        <text x="620" y="202" text-anchor="middle" fill="#cda4e1" font-size="11">written by prefill, read every decode step</text>
+        <text x="620" y="220" text-anchor="middle" fill="#cda4e1" font-size="11">at num_ctx=32k: ~4.6 GB resident</text>
+
+        <!-- Arrows -->
+        <defs>
+          <marker id="arr2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#aac4d6"/>
+          </marker>
+        </defs>
+        <line x1="140" y1="70" x2="180" y2="70" stroke="#aac4d6" stroke-width="2" marker-end="url(#arr2)"/>
+        <line x1="340" y1="70" x2="380" y2="70" stroke="#aac4d6" stroke-width="2" marker-end="url(#arr2)"/>
+        <line x1="580" y1="70" x2="620" y2="70" stroke="#aac4d6" stroke-width="2" marker-end="url(#arr2)"/>
+        <line x1="480" y1="100" x2="480" y2="140" stroke="#a26ba3" stroke-width="2" marker-end="url(#arr2)"/>
+        <line x1="740" y1="140" x2="740" y2="100" stroke="#a26ba3" stroke-width="2" marker-end="url(#arr2)"/>
+        <text x="500" y="125" fill="#cda4e1" font-size="10">writes</text>
+        <text x="755" y="125" fill="#cda4e1" font-size="10">reads</text>
+      </svg>
+    </div>
+
+    <h2>3. Two caches, one frame</h2>
+    <table class="data">
+      <thead><tr><th>Cache</th><th>What it stores</th><th>Granularity</th><th>Hit means</th><th>Miss costs</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Prompt cache</strong> <em style="color:var(--muted);">(a.k.a. prefix cache)</em></td>
+          <td>Last run's token sequence + the KV it produced, in DRAM</td>
+          <td>Per <em>position</em> &mdash; matches the longest common prefix between the new prompt and the cached one</td>
+          <td>Skip prefill for the matched prefix entirely (0 ms for that range)</td>
+          <td>Recompute K, V for every diverging token (prefill at ~80 tok/s on 7B)</td>
+        </tr>
+        <tr>
+          <td><strong>KV cache</strong></td>
+          <td>K and V tensors for every layer / head / position, in DRAM (q8 quantized here)</td>
+          <td>Per <em>token × layer × head</em></td>
+          <td>Decode step reads existing K, V instead of recomputing attention from scratch</td>
+          <td>Without it, decode is O(L²) instead of O(L) &mdash; not deployable</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>4. Eight scenarios — when does the prefix cache survive?</h2>
+    <p>
+      These come from a real measurement suite: same model, same 15 700-token base prompt, vary <em>only</em>
+      what changes between turns. Each row's bar shows the call sequence's cache outcomes left-to-right.
+    </p>
+
+    <div class="scenario-grid">
+      <div class="scenario">
+        <h4>1. Cold prime (warm residual after unload)</h4>
+        <div class="meta">model just loaded, KV empty &mdash; baseline</div>
+        <div class="seq">
+          <span class="blk miss">MISS 82 s</span>
+        </div>
+      </div>
+
+      <div class="scenario">
+        <h4>2. Plain chat append (3 turns, same session)</h4>
+        <div class="meta">fresh Node each turn, ollama keeps KV warm</div>
+        <div class="seq">
+          <span class="blk hit">HIT 445 ms</span>
+          <span class="blk hit">HIT 482 ms</span>
+          <span class="blk hit">HIT 442 ms</span>
+        </div>
+      </div>
+
+      <div class="scenario">
+        <h4>3. Tool-turn attempt</h4>
+        <div class="meta">main agent has no tool bindings &mdash; emits text only</div>
+        <div class="seq">
+          <span class="blk hit">HIT 442 ms</span>
+        </div>
+      </div>
+
+      <div class="scenario">
+        <h4>4. Retrieval inlined into the user message (RAG)</h4>
+        <div class="meta">prompt grows by ~4 KB of retrieved context</div>
+        <div class="seq">
+          <span class="blk hit">HIT 232 ms</span>
+        </div>
+      </div>
+
+      <div class="scenario">
+        <h4>5. Session growth — 6 turns piling up</h4>
+        <div class="meta">does the framework residual grow with session size?</div>
+        <div class="seq">
+          <span class="blk hit">HIT</span><span class="blk hit">HIT</span><span class="blk hit">HIT</span>
+          <span class="blk hit">HIT</span><span class="blk hit">HIT</span><span class="blk hit">HIT 133 ms</span>
+        </div>
+      </div>
+
+      <div class="scenario">
+        <h4>6. Retrieval at system msg (template late-insert)</h4>
+        <div class="meta">RAG snippet inserted into the system message instead of the user turn</div>
+        <div class="seq">
+          <span class="blk surprise">SURPRISE 129 s</span>
+        </div>
+      </div>
+
+      <div class="scenario">
+        <h4>7. Search + fetch + write (multi-tool agent)</h4>
+        <div class="meta">5 LLM calls + 4 tool calls, each call extends the suffix</div>
+        <div class="seq">
+          <span class="blk hit">HIT</span><span class="blk tool">tool</span>
+          <span class="blk hit">HIT</span><span class="blk tool">tool</span>
+          <span class="blk hit">HIT</span><span class="blk tool">tool</span>
+          <span class="blk hit">HIT</span>
+        </div>
+      </div>
+
+      <div class="scenario">
+        <h4>8. Agentic flow + auto-compaction + followup</h4>
+        <div class="meta">compaction summarizes the tool chain between turn 0 and turn 1</div>
+        <div class="seq">
+          <span class="blk hit">turn-0 HIT</span>
+          <span class="blk miss">turn-1 MISS 135 s</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <span><span class="sw" style="background:var(--hit)"></span>cache hit (prefix reused)</span>
+      <span><span class="sw" style="background:var(--miss)"></span>full miss (cold prefill)</span>
+      <span><span class="sw" style="background:var(--surprise)"></span>surprise miss (top-of-prompt mutation)</span>
+      <span><span class="sw" style="background:var(--tool)"></span>tool call</span>
+    </div>
+
+    <h2>5. The 35× spike — what auto-compaction does to the cache</h2>
+    <p>
+      In scenario 8, the prefix cache survives turn 0 because each LLM call appends tokens to the same
+      growing message list. Between turn 0 and turn 1, however, OpenClaw's runtime <em>compacts</em>
+      the session: the chain of tool-call / tool-result messages is replaced with a short summary message.
+      The new prompt prefix is <em>not</em> the prefix ollama just KV-cached &mdash; it's a different sequence
+      from the system message onward.
+    </p>
+
+    <div class="phase-box">
+      <svg viewBox="0 0 1100 240" width="100%" style="max-width:1100px;">
+        <!-- BEFORE compaction -->
+        <text x="20" y="30" fill="#cfd9e1" font-size="13" font-weight="700">After turn 0 — KV cache lays out matching turn 0's message tape</text>
+        <g>
+          <rect x="20"  y="44" width="160" height="30" fill="#3b6fa8" rx="3"/><text x="100" y="64" text-anchor="middle" fill="#fff" font-size="11">system</text>
+          <rect x="180" y="44" width="120" height="30" fill="#4d8b46" rx="3"/><text x="240" y="64" text-anchor="middle" fill="#fff" font-size="11">user₀</text>
+          <rect x="300" y="44" width="100" height="30" fill="#d99049" rx="3"/><text x="350" y="64" text-anchor="middle" fill="#fff" font-size="11">tool_call₁</text>
+          <rect x="400" y="44" width="100" height="30" fill="#d99049" rx="3"/><text x="450" y="64" text-anchor="middle" fill="#fff" font-size="11">tool_result₁</text>
+          <rect x="500" y="44" width="100" height="30" fill="#d99049" rx="3"/><text x="550" y="64" text-anchor="middle" fill="#fff" font-size="11">tool_call₂</text>
+          <rect x="600" y="44" width="100" height="30" fill="#d99049" rx="3"/><text x="650" y="64" text-anchor="middle" fill="#fff" font-size="11">tool_result₂</text>
+          <rect x="700" y="44" width="140" height="30" fill="#a26ba3" rx="3"/><text x="770" y="64" text-anchor="middle" fill="#fff" font-size="11">assistant₀</text>
+
+          <text x="20" y="100" fill="#7ad188" font-size="12" font-weight="700">turn 0 prefill: HIT — ollama KV cache covers the whole tape</text>
+        </g>
+
+        <!-- AFTER compaction -->
+        <text x="20" y="142" fill="#cfd9e1" font-size="13" font-weight="700">Before turn 1 — OpenClaw compacts the session jsonl</text>
+        <g>
+          <rect x="20"  y="156" width="160" height="30" fill="#3b6fa8" rx="3"/><text x="100" y="176" text-anchor="middle" fill="#fff" font-size="11">system</text>
+          <rect x="180" y="156" width="240" height="30" fill="#a26ba3" rx="3"/><text x="300" y="176" text-anchor="middle" fill="#fff" font-size="11">summary (replaces tool chain)</text>
+          <rect x="420" y="156" width="120" height="30" fill="#4d8b46" rx="3"/><text x="480" y="176" text-anchor="middle" fill="#fff" font-size="11">user₁</text>
+
+          <text x="20" y="212" fill="#f0a09c" font-size="12" font-weight="700">turn 1 prefill: MISS — first token after system differs → cache invalid from position 30 onward → recompute</text>
+        </g>
+      </svg>
+    </div>
+
+    <p>
+      Empirically the prefill latency on the followup turn jumps from <strong>3.9 s</strong> to <strong>135 s</strong> &mdash; a
+      <strong>~35×</strong> spike, sitting ~24× off the trend line that fits every other partial-hit
+      data point in the suite. That's the cleanest demonstration in the dataset of a compaction-induced cache
+      miss, and it's the thing the optimization work targets.
+    </p>
+
+    <h2>6. Try it — simulate a turn</h2>
+    <div class="controls">
+      <div class="ctrl">
+        <label>Model</label>
+        <select id="model">
+          <option value="3b">qwen2.5-3B q4_K_M</option>
+          <option value="7b" selected>qwen2.5-7B q4_K_M</option>
+          <option value="14b">qwen2.5-14B q4_K_M</option>
+        </select>
+      </div>
+      <div class="ctrl">
+        <label>Prompt tokens</label>
+        <input id="prompt" type="number" value="15700" min="100" max="32768">
+      </div>
+      <div class="ctrl">
+        <label>Output tokens</label>
+        <input id="out" type="number" value="240" min="1" max="4096">
+      </div>
+      <div class="ctrl">
+        <label>Cache state</label>
+        <select id="cache">
+          <option value="hit">full prefix hit</option>
+          <option value="partial" selected>partial hit (append last 200 tokens)</option>
+          <option value="compaction">compaction miss (system + summary changed)</option>
+          <option value="cold">cold prime (KV empty + model load)</option>
+        </select>
+      </div>
+    </div>
+    <button id="simBtn">▶ simulate</button>
+    <button class="alt" id="resetBtn">reset</button>
+
+    <div class="metrics" id="metrics">
+      <div class="metric"><div class="v" id="m-ttft">—</div><div class="l">TTFT</div></div>
+      <div class="metric"><div class="v" id="m-prefill">—</div><div class="l">prefill rate</div></div>
+      <div class="metric"><div class="v" id="m-decode">—</div><div class="l">decode rate</div></div>
+      <div class="metric"><div class="v" id="m-wall">—</div><div class="l">total wall-clock</div></div>
+    </div>
+
+    <h2>7. Verified numbers</h2>
+    <p style="font-size:0.93rem;color:var(--muted);">
+      Measured on M3 MacBook Air, 24 GB unified, ollama 0.23.2 (<code>OLLAMA_FLASH_ATTENTION=1</code>,
+      <code>OLLAMA_KV_CACHE_TYPE=q8_0</code>). Full suite in
+      <code>SoC-LAB/openclaw_test/docs/memory_budget_findings.md</code>.
+    </p>
+    <table class="data">
+      <thead>
+        <tr><th>Scenario</th><th>Model</th><th>num_ctx</th><th>parallel</th><th class="n">peak RSS (GB)</th><th class="n">prefill (tok/s)</th><th class="n">decode (tok/s)</th><th class="n">p50 TTFT (s)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>S1</td><td>3B</td><td>4096</td><td>1</td><td class="n">2.11</td><td class="n">416</td><td class="n">37.2</td><td class="n">7.2</td></tr>
+        <tr><td>S3</td><td>7B</td><td>4096</td><td>1</td><td class="n">4.67</td><td class="n">83</td><td class="n">5.2</td><td class="n">34.1</td></tr>
+        <tr><td>S5</td><td>7B</td><td>32768</td><td>1</td><td class="n">5.57</td><td class="n">76</td><td class="n">5.1</td><td class="n">64.3</td></tr>
+        <tr><td>S8</td><td>14B</td><td>32768</td><td>1</td><td class="n">11.39</td><td class="n">36</td><td class="n">2.6</td><td class="n">135.5</td></tr>
+        <tr><td>S9</td><td>14B</td><td>32768</td><td>2</td><td class="n">14.18</td><td class="n">23</td><td class="n">2.4</td><td class="n">210.4</td></tr>
+        <tr><td>S11</td><td>14B</td><td>32768</td><td>4</td><td class="n">15.36</td><td class="n">9</td><td class="n">1.8</td><td class="n">517.9</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      <strong>The 14B / 32k page-compressor cliff.</strong> S10 and S11 predict 18.3 / 21.3 GB of resident set,
+      but the kernel hands back only 14.7 / 15.4 GB &mdash; the missing 4–6 GB has been compressed by the
+      macOS page compressor. Predicted-vs-observed gap reaches 28 %, which is the hard ceiling for what
+      24 GB of unified memory can serve under that workload. The same diagram explains why the demo above
+      caps at 14B / 32k.
+    </div>
+
+  </div>
+
+  <script>
+    const PROFILES = {
+      '3b':  { prefill: 416, decode: 37.2, load_s: 0.9 },
+      '7b':  { prefill: 80,  decode: 5.2,  load_s: 1.2 },
+      '14b': { prefill: 36,  decode: 2.6,  load_s: 2.0 },
+    };
+
+    function fmt(n, suffix) {
+      if (n >= 1000) return (n/1000).toFixed(2) + ' k' + (suffix || '');
+      if (n >= 100)  return n.toFixed(0) + (suffix || '');
+      if (n >= 10)   return n.toFixed(1) + (suffix || '');
+      return n.toFixed(2) + (suffix || '');
+    }
+
+    document.getElementById('simBtn').onclick = () => {
+      const model = document.getElementById('model').value;
+      const promptTok = parseInt(document.getElementById('prompt').value, 10);
+      const outTok = parseInt(document.getElementById('out').value, 10);
+      const cache = document.getElementById('cache').value;
+      const p = PROFILES[model];
+
+      let toPrefill = promptTok;
+      let loadOverhead = 0;
+      if (cache === 'hit') toPrefill = 0;
+      else if (cache === 'partial') toPrefill = Math.min(200, promptTok);
+      else if (cache === 'compaction') toPrefill = promptTok; // full miss, prefix invalid after system
+      else if (cache === 'cold') { toPrefill = promptTok; loadOverhead = p.load_s; }
+
+      const frameworkOverhead = 6.1 + 3.2 + 3.7; // phases 1-3
+      const prefill_s = toPrefill / p.prefill;
+      const decode_s  = outTok / p.decode;
+      const ttft_s    = loadOverhead + prefill_s + (toPrefill > 0 ? 0.05 : 0.02);
+      const wall      = frameworkOverhead + loadOverhead + prefill_s + decode_s;
+
+      document.getElementById('m-ttft').textContent    = fmt(ttft_s, ' s');
+      document.getElementById('m-prefill').textContent = p.prefill + ' tok/s';
+      document.getElementById('m-decode').textContent  = p.decode + ' tok/s';
+      document.getElementById('m-wall').textContent    = fmt(wall, ' s');
+    };
+
+    document.getElementById('resetBtn').onclick = () => {
+      document.getElementById('model').value = '7b';
+      document.getElementById('prompt').value = 15700;
+      document.getElementById('out').value = 240;
+      document.getElementById('cache').value = 'partial';
+      document.getElementById('simBtn').click();
+    };
+
+    // run once
+    document.getElementById('simBtn').click();
+  </script>
+</body>
+</html>

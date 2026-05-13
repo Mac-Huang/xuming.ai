@@ -1,0 +1,538 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Memory Hierarchy &amp; Cache Indexing (VIVT / PIPT / VIPT) — Xuming Huang</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../stylesheet.css">
+  <style>
+    :root {
+      --bg:        #0f2027;
+      --panel:     #ffffff;
+      --ink:       #1c1c1e;
+      --muted:     #5e5e63;
+      --rule:      #dcdcd6;
+      --accent:    #1772d0;
+      --warm:      #b45309;
+      --hit:       #2f8f3f;
+      --miss:      #c0392b;
+      --tlb:       #d97706;
+      --vivt:      #2196f3;
+      --pipt:      #4caf50;
+      --vipt:      #ff9800;
+    }
+    body {
+      font-family: "Inter", "Lato", system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 24px;
+      background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+      min-height: 100vh;
+      color: var(--ink);
+    }
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      background: var(--panel);
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      padding: 28px 32px 40px;
+    }
+    h1 {
+      color: var(--accent);
+      margin: 0 0 6px;
+      font-size: 1.9rem;
+      letter-spacing: -0.02em;
+    }
+    .subtitle { color: var(--muted); margin: 0 0 22px; font-size: 1.05rem; }
+    h2 { margin: 30px 0 10px; font-size: 1.25rem; border-bottom: 1px solid var(--rule); padding-bottom: 6px; }
+    p { line-height: 1.55; }
+    code { background: #efece4; padding: 0.1em 0.35em; border-radius: 3px; font-family: "SF Mono", Menlo, monospace; font-size: 0.9em; }
+    a.back { color: var(--accent); text-decoration: none; font-size: 0.92rem; }
+    a.back:hover { text-decoration: underline; }
+
+    /* Pipeline canvas */
+    .pipeline {
+      background: #1a1d24;
+      color: #f0ede6;
+      border-radius: 10px;
+      padding: 22px;
+      margin: 18px 0;
+      overflow-x: auto;
+    }
+    .pipeline svg { display: block; margin: 0 auto; }
+    .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; font-size: 0.85rem; color: #d1cdc4; }
+    .legend span.sw { display: inline-block; width: 12px; height: 12px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+
+    /* Controls */
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+      margin: 14px 0 6px;
+    }
+    .ctrl {
+      background: #f8f9fa;
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+    .ctrl label { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 6px; font-weight: 600; }
+    .ctrl input[type="text"] {
+      width: 100%;
+      box-sizing: border-box;
+      font-family: "SF Mono", Menlo, monospace;
+      font-size: 0.95rem;
+      padding: 8px 10px;
+      border-radius: 4px;
+      border: 1px solid var(--rule);
+    }
+    .ctrl select { width: 100%; padding: 8px 10px; border-radius: 4px; border: 1px solid var(--rule); }
+    button {
+      background: var(--accent);
+      color: white;
+      border: 0;
+      padding: 8px 16px;
+      border-radius: 5px;
+      font-size: 0.92rem;
+      cursor: pointer;
+      margin-right: 8px;
+      margin-top: 6px;
+    }
+    button.secondary { background: #6c757d; }
+    button:hover { filter: brightness(1.07); }
+
+    /* Comparison table */
+    table.compare { width: 100%; border-collapse: collapse; margin: 12px 0; }
+    table.compare th, table.compare td {
+      border: 1px solid var(--rule);
+      padding: 8px 10px;
+      text-align: left;
+      font-size: 0.93rem;
+      vertical-align: top;
+    }
+    table.compare th { background: #f1efe9; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; color: white; font-size: 0.78rem; font-weight: 600; }
+    .badge.vivt { background: var(--vivt); }
+    .badge.pipt { background: var(--pipt); }
+    .badge.vipt { background: var(--vipt); }
+
+    /* Result log */
+    #log {
+      font-family: "SF Mono", Menlo, monospace;
+      font-size: 0.85rem;
+      background: #0f1216;
+      color: #d7e2ec;
+      border-radius: 8px;
+      padding: 14px 16px;
+      max-height: 240px;
+      overflow-y: auto;
+      margin-top: 10px;
+    }
+    .log-hit { color: #7ad188; }
+    .log-miss { color: #f0a09c; }
+    .log-tlb { color: #f3c264; }
+    .log-meta { color: #98a4b3; }
+
+    /* Hierarchy bars */
+    .hier { display: grid; grid-template-columns: 180px 1fr 110px; gap: 8px; align-items: center; margin: 6px 0; }
+    .hier .name { font-weight: 600; }
+    .hier .bar { background: #e9e6df; height: 22px; border-radius: 4px; position: relative; overflow: hidden; }
+    .hier .bar div { height: 100%; background: linear-gradient(90deg, var(--accent), #4ea0ec); }
+    .hier .latency { font-family: "SF Mono", Menlo, monospace; font-size: 0.85rem; color: var(--muted); text-align: right; }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../projects.html">← Back to Projects</a>
+    <h1>Memory Hierarchy &amp; Cache Indexing</h1>
+    <p class="subtitle">
+      Virtual memory, the TLB, three flavors of L1 cache (VIVT, PIPT, VIPT), main memory, and disk &mdash; one
+      virtual address, traced end-to-end through every box that handles it.
+    </p>
+
+    <h2>1. The whole pipeline at a glance</h2>
+    <p>
+      A load instruction issues a 32-bit virtual address. Depending on which cache structure the CPU uses,
+      the address is split differently and the lookup races (or follows) translation. The picture below
+      shows the data path for all three indexing schemes side by side.
+    </p>
+
+    <div class="pipeline">
+      <svg viewBox="0 0 1180 480" width="100%" style="max-width:1180px;">
+        <!-- Background lanes -->
+        <rect x="0" y="40"  width="1180" height="120" fill="#23272f" rx="6"/>
+        <rect x="0" y="180" width="1180" height="120" fill="#23272f" rx="6"/>
+        <rect x="0" y="320" width="1180" height="120" fill="#23272f" rx="6"/>
+
+        <!-- Lane labels -->
+        <text x="14" y="62"  fill="#9bb3c9" font-size="13" font-weight="700">VIVT</text>
+        <text x="14" y="78"  fill="#7d93a8" font-size="11">virtually indexed, virtually tagged</text>
+        <text x="14" y="202" fill="#9bb3c9" font-size="13" font-weight="700">PIPT</text>
+        <text x="14" y="218" fill="#7d93a8" font-size="11">physically indexed, physically tagged</text>
+        <text x="14" y="342" fill="#9bb3c9" font-size="13" font-weight="700">VIPT</text>
+        <text x="14" y="358" fill="#7d93a8" font-size="11">virtually indexed, physically tagged</text>
+
+        <!-- VIVT row -->
+        <g>
+          <rect x="120" y="60"  width="120" height="80" fill="#2c3540" stroke="#2196f3" rx="6"/>
+          <text x="180" y="92" text-anchor="middle" fill="#ffffff" font-size="13" font-weight="600">CPU</text>
+          <text x="180" y="112" text-anchor="middle" fill="#bdd5ea" font-size="11">VA</text>
+
+          <rect x="280" y="60"  width="180" height="80" fill="#1f3759" stroke="#2196f3" rx="6"/>
+          <text x="370" y="88"  text-anchor="middle" fill="#ffffff" font-size="13" font-weight="600">L1 Cache (VIVT)</text>
+          <text x="370" y="106" text-anchor="middle" fill="#bdd5ea" font-size="11">index &amp; tag = VA bits</text>
+          <text x="370" y="124" text-anchor="middle" fill="#7ad188" font-size="11">no TLB on hit ⚡</text>
+
+          <rect x="500" y="60"  width="140" height="80" fill="#2c3540" stroke="#d97706" rx="6"/>
+          <text x="570" y="92" text-anchor="middle" fill="#ffffff" font-size="13" font-weight="600">TLB</text>
+          <text x="570" y="112" text-anchor="middle" fill="#f3c264" font-size="11">only on L1 miss</text>
+
+          <rect x="680" y="60"  width="160" height="80" fill="#2c3540" stroke="#9c27b0" rx="6"/>
+          <text x="760" y="92" text-anchor="middle" fill="#ffffff" font-size="13" font-weight="600">L2 / L3</text>
+          <text x="760" y="112" text-anchor="middle" fill="#cda4e1" font-size="11">PA-tagged</text>
+
+          <rect x="880" y="60"  width="140" height="80" fill="#2c3540" stroke="#ff5252" rx="6"/>
+          <text x="950" y="92" text-anchor="middle" fill="#ffffff" font-size="13" font-weight="600">DRAM</text>
+
+          <rect x="1040" y="60" width="120" height="80" fill="#2c3540" stroke="#888" rx="6"/>
+          <text x="1100" y="92" text-anchor="middle" fill="#ffffff" font-size="13" font-weight="600">Disk</text>
+          <text x="1100" y="112" text-anchor="middle" fill="#bbb" font-size="11">page fault</text>
+
+          <line x1="240" y1="100" x2="280" y2="100" stroke="#7ad188" stroke-width="2" marker-end="url(#arr)"/>
+          <line x1="460" y1="100" x2="500" y2="100" stroke="#f0a09c" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+          <line x1="640" y1="100" x2="680" y2="100" stroke="#f0a09c" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+          <line x1="840" y1="100" x2="880" y2="100" stroke="#f0a09c" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+          <line x1="1020" y1="100" x2="1040" y2="100" stroke="#f0a09c" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        </g>
+
+        <!-- PIPT row -->
+        <g>
+          <rect x="120" y="200" width="120" height="80" fill="#2c3540" stroke="#4caf50" rx="6"/>
+          <text x="180" y="232" text-anchor="middle" fill="#ffffff" font-size="13" font-weight="600">CPU</text>
+          <text x="180" y="252" text-anchor="middle" fill="#cdebd0" font-size="11">VA</text>
+
+          <rect x="280" y="200" width="140" height="80" fill="#3a3122" stroke="#d97706" rx="6"/>
+          <text x="350" y="232" text-anchor="middle" fill="#ffffff" font-size="13" font-weight="600">TLB</text>
+          <text x="350" y="252" text-anchor="middle" fill="#f3c264" font-size="11">VA → PA (always)</text>
+
+          <rect x="460" y="200" width="180" height="80" fill="#1f4029" stroke="#4caf50" rx="6"/>
+          <text x="550" y="228" text-anchor="middle" fill="#ffffff" font-size="13" font-weight="600">L1 Cache (PIPT)</text>
+          <text x="550" y="246" text-anchor="middle" fill="#cdebd0" font-size="11">index &amp; tag = PA bits</text>
+          <text x="550" y="264" text-anchor="middle" fill="#f0a09c" font-size="11">TLB on critical path 🐢</text>
+
+          <rect x="680" y="200" width="160" height="80" fill="#2c3540" stroke="#9c27b0" rx="6"/>
+          <text x="760" y="232" text-anchor="middle" fill="#ffffff" font-size="13" font-weight="600">L2 / L3</text>
+          <text x="760" y="252" text-anchor="middle" fill="#cda4e1" font-size="11">PA-tagged</text>
+
+          <rect x="880" y="200" width="140" height="80" fill="#2c3540" stroke="#ff5252" rx="6"/>
+          <text x="950" y="232" text-anchor="middle" fill="#ffffff" font-size="13" font-weight="600">DRAM</text>
+
+          <rect x="1040" y="200" width="120" height="80" fill="#2c3540" stroke="#888" rx="6"/>
+          <text x="1100" y="232" text-anchor="middle" fill="#ffffff" font-size="13" font-weight="600">Disk</text>
+          <text x="1100" y="252" text-anchor="middle" fill="#bbb" font-size="11">page fault</text>
+
+          <line x1="240" y1="240" x2="280" y2="240" stroke="#f3c264" stroke-width="2" marker-end="url(#arr)"/>
+          <line x1="420" y1="240" x2="460" y2="240" stroke="#7ad188" stroke-width="2" marker-end="url(#arr)"/>
+          <line x1="640" y1="240" x2="680" y2="240" stroke="#f0a09c" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+          <line x1="840" y1="240" x2="880" y2="240" stroke="#f0a09c" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+          <line x1="1020" y1="240" x2="1040" y2="240" stroke="#f0a09c" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        </g>
+
+        <!-- VIPT row -->
+        <g>
+          <rect x="120" y="340" width="120" height="80" fill="#2c3540" stroke="#ff9800" rx="6"/>
+          <text x="180" y="372" text-anchor="middle" fill="#ffffff" font-size="13" font-weight="600">CPU</text>
+          <text x="180" y="392" text-anchor="middle" fill="#ffd7a3" font-size="11">VA</text>
+
+          <rect x="280" y="340" width="140" height="80" fill="#3a3122" stroke="#d97706" rx="6"/>
+          <text x="350" y="368" text-anchor="middle" fill="#ffffff" font-size="13" font-weight="600">TLB</text>
+          <text x="350" y="386" text-anchor="middle" fill="#f3c264" font-size="11">parallel w/ L1 index</text>
+
+          <rect x="460" y="340" width="180" height="80" fill="#4a3a1e" stroke="#ff9800" rx="6"/>
+          <text x="550" y="364" text-anchor="middle" fill="#ffffff" font-size="13" font-weight="600">L1 Cache (VIPT)</text>
+          <text x="550" y="382" text-anchor="middle" fill="#ffd7a3" font-size="11">index = VA, tag = PA</text>
+          <text x="550" y="400" text-anchor="middle" fill="#7ad188" font-size="11">TLB hidden by index ⚡🐢</text>
+
+          <rect x="680" y="340" width="160" height="80" fill="#2c3540" stroke="#9c27b0" rx="6"/>
+          <text x="760" y="372" text-anchor="middle" fill="#ffffff" font-size="13" font-weight="600">L2 / L3</text>
+          <text x="760" y="392" text-anchor="middle" fill="#cda4e1" font-size="11">PA-tagged</text>
+
+          <rect x="880" y="340" width="140" height="80" fill="#2c3540" stroke="#ff5252" rx="6"/>
+          <text x="950" y="372" text-anchor="middle" fill="#ffffff" font-size="13" font-weight="600">DRAM</text>
+
+          <rect x="1040" y="340" width="120" height="80" fill="#2c3540" stroke="#888" rx="6"/>
+          <text x="1100" y="372" text-anchor="middle" fill="#ffffff" font-size="13" font-weight="600">Disk</text>
+          <text x="1100" y="392" text-anchor="middle" fill="#bbb" font-size="11">page fault</text>
+
+          <line x1="240" y1="380" x2="280" y2="380" stroke="#f3c264" stroke-width="2" marker-end="url(#arr)"/>
+          <line x1="240" y1="380" x2="460" y2="380" stroke="#ffd7a3" stroke-width="2" stroke-dasharray="2,3" marker-end="url(#arr)"/>
+          <line x1="420" y1="380" x2="460" y2="380" stroke="#f3c264" stroke-width="2" marker-end="url(#arr)"/>
+          <line x1="640" y1="380" x2="680" y2="380" stroke="#f0a09c" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+          <line x1="840" y1="380" x2="880" y2="380" stroke="#f0a09c" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+          <line x1="1020" y1="380" x2="1040" y2="380" stroke="#f0a09c" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+        </g>
+
+        <defs>
+          <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#aac4d6"/>
+          </marker>
+        </defs>
+      </svg>
+      <div class="legend">
+        <span><span class="sw" style="background:#7ad188"></span>hot path (hit)</span>
+        <span><span class="sw" style="background:#f0a09c"></span>miss path (deeper level)</span>
+        <span><span class="sw" style="background:#f3c264"></span>address translation</span>
+        <span><span class="sw" style="background:#ffd7a3"></span>parallel index / tag-check</span>
+      </div>
+    </div>
+
+    <h2>2. Address-bit layout</h2>
+    <p>
+      Where the index and tag come from is the whole story. Assume a 32-bit VA, 4 KiB pages
+      (12-bit page offset), and a 32 KiB 4-way set-associative L1 with 64 B lines (64 sets → 6-bit index, 6-bit block offset).
+      That leaves 20 tag bits.
+    </p>
+
+    <div class="pipeline" style="background:#1a1d24;">
+      <svg viewBox="0 0 1100 300" width="100%" style="max-width:1100px;">
+        <!-- VIVT layout -->
+        <text x="20" y="34" fill="#9bb3c9" font-size="14" font-weight="700">VIVT — split the virtual address only</text>
+        <rect x="20"  y="50" width="800" height="40" fill="#1f3759" stroke="#2196f3"/>
+        <line x1="320" y1="50" x2="320" y2="90" stroke="#2196f3"/>
+        <line x1="500" y1="50" x2="500" y2="90" stroke="#2196f3"/>
+        <line x1="660" y1="50" x2="660" y2="90" stroke="#2196f3"/>
+        <text x="170" y="76" text-anchor="middle" fill="#fff" font-size="12">virtual tag (12 bits)</text>
+        <text x="410" y="76" text-anchor="middle" fill="#fff" font-size="12">virtual page (8 bits)</text>
+        <text x="580" y="76" text-anchor="middle" fill="#fff" font-size="12">index (6)</text>
+        <text x="740" y="76" text-anchor="middle" fill="#fff" font-size="12">offset (6)</text>
+
+        <!-- PIPT layout -->
+        <text x="20" y="124" fill="#9bb3c9" font-size="14" font-weight="700">PIPT — translate first, then split the physical address</text>
+        <rect x="20"  y="140" width="500" height="40" fill="#3a3122" stroke="#d97706"/>
+        <text x="270" y="166" text-anchor="middle" fill="#fff" font-size="12">VPN (20 bits) → TLB → PPN (20 bits)</text>
+        <rect x="540" y="140" width="500" height="40" fill="#1f4029" stroke="#4caf50"/>
+        <line x1="800" y1="140" x2="800" y2="180" stroke="#4caf50"/>
+        <line x1="920" y1="140" x2="920" y2="180" stroke="#4caf50"/>
+        <text x="670" y="166" text-anchor="middle" fill="#fff" font-size="12">physical tag (20 bits)</text>
+        <text x="860" y="166" text-anchor="middle" fill="#fff" font-size="12">idx (6)</text>
+        <text x="980" y="166" text-anchor="middle" fill="#fff" font-size="12">offset (6)</text>
+
+        <!-- VIPT layout -->
+        <text x="20" y="214" fill="#9bb3c9" font-size="14" font-weight="700">VIPT — index from VA, tag from PA (in parallel)</text>
+        <rect x="20"  y="230" width="380" height="40" fill="#4a3a1e" stroke="#ff9800"/>
+        <line x1="240" y1="230" x2="240" y2="270" stroke="#ff9800"/>
+        <line x1="320" y1="230" x2="320" y2="270" stroke="#ff9800"/>
+        <text x="130" y="256" text-anchor="middle" fill="#fff" font-size="12">VPN bits</text>
+        <text x="280" y="256" text-anchor="middle" fill="#fff" font-size="12">idx (6)</text>
+        <text x="360" y="256" text-anchor="middle" fill="#fff" font-size="12">off (6)</text>
+        <rect x="420" y="230" width="200" height="40" fill="#3a3122" stroke="#d97706"/>
+        <text x="520" y="256" text-anchor="middle" fill="#fff" font-size="12">TLB → PPN (20 b)</text>
+        <rect x="640" y="230" width="380" height="40" fill="#4a3a1e" stroke="#ff9800"/>
+        <text x="830" y="256" text-anchor="middle" fill="#fff" font-size="12">compare against PA tag (20 b)</text>
+      </svg>
+    </div>
+
+    <p style="font-size:0.93rem;color:var(--muted);margin-top:-4px;">
+      In VIPT the 6 index bits all come from the page offset (bits 6–11), so they are <em>invariant</em>
+      under translation. That's the trick: index lookup can fire on the raw VA without waiting for the TLB.
+      Total index + offset bits ≤ page-offset bits is the design constraint &mdash; widen the cache and you
+      lose the property.
+    </p>
+
+    <h2>3. Walk an address through each pipeline</h2>
+    <div class="controls">
+      <div class="ctrl">
+        <label>Virtual address (hex, 32-bit)</label>
+        <input id="vaInput" type="text" value="0x00ABCD12">
+      </div>
+      <div class="ctrl">
+        <label>Cache structure</label>
+        <select id="schemeSel">
+          <option value="vivt">VIVT — virtually indexed, virtually tagged</option>
+          <option value="pipt" selected>PIPT — physically indexed, physically tagged</option>
+          <option value="vipt">VIPT — virtually indexed, physically tagged</option>
+        </select>
+      </div>
+      <div class="ctrl">
+        <label>Scenario</label>
+        <select id="scenarioSel">
+          <option value="hit">L1 hit (warm)</option>
+          <option value="l1miss">L1 miss, TLB hit, L2 hit</option>
+          <option value="tlbmiss">TLB miss → page-walk, then L2 hit</option>
+          <option value="pagefault">Page fault → disk → DRAM</option>
+        </select>
+      </div>
+    </div>
+    <button id="runBtn">▶ Run trace</button>
+    <button class="secondary" id="clearBtn">clear log</button>
+    <div id="log"></div>
+
+    <h2>4. Latency &amp; cost — why VIPT wins on most modern cores</h2>
+    <div>
+      <div class="hier"><div class="name">L1 (VIPT / VIVT hit)</div><div class="bar"><div style="width:1%"></div></div><div class="latency">~1 ns</div></div>
+      <div class="hier"><div class="name">L1 (PIPT hit)</div><div class="bar"><div style="width:1.6%"></div></div><div class="latency">~1.4 ns</div></div>
+      <div class="hier"><div class="name">TLB hit</div><div class="bar"><div style="width:0.6%"></div></div><div class="latency">~0.4 ns</div></div>
+      <div class="hier"><div class="name">L2</div><div class="bar"><div style="width:4%"></div></div><div class="latency">~4 ns</div></div>
+      <div class="hier"><div class="name">L3</div><div class="bar"><div style="width:12%"></div></div><div class="latency">~12 ns</div></div>
+      <div class="hier"><div class="name">DRAM</div><div class="bar"><div style="width:80%"></div></div><div class="latency">~80 ns</div></div>
+      <div class="hier"><div class="name">TLB miss + page walk</div><div class="bar"><div style="width:30%"></div></div><div class="latency">~30 ns</div></div>
+      <div class="hier"><div class="name">NVMe (page fault)</div><div class="bar"><div style="width:100%; background:linear-gradient(90deg,#c0392b,#e57373)"></div></div><div class="latency">~100 µs</div></div>
+      <div class="hier"><div class="name">HDD (page fault)</div><div class="bar"><div style="width:100%; background:linear-gradient(90deg,#7c2d12,#c0392b)"></div></div><div class="latency">~10 ms</div></div>
+    </div>
+
+    <h2>5. Side-by-side comparison</h2>
+    <table class="compare">
+      <thead>
+        <tr><th></th><th><span class="badge vivt">VIVT</span></th><th><span class="badge pipt">PIPT</span></th><th><span class="badge vipt">VIPT</span></th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Critical-path TLB?</td><td>No (only on miss)</td><td>Yes</td><td>No (TLB runs in parallel)</td></tr>
+        <tr><td>Aliasing (synonyms)?</td><td>Yes &mdash; two VAs → same PA can sit in two ways</td><td>No</td><td>Yes <em>iff</em> index bits exceed page offset</td></tr>
+        <tr><td>Homonyms (same VA, different process)?</td><td>Yes &mdash; needs PID tags or flush on context switch</td><td>No</td><td>No</td></tr>
+        <tr><td>Permission bits checked when?</td><td>Late (on miss path)</td><td>Early (TLB)</td><td>Early (TLB, parallel)</td></tr>
+        <tr><td>Max practical cache size</td><td>Limited by process-tag width</td><td>Unrestricted</td><td>≤ ways × page size (e.g. 4 × 4 KiB = 16 KiB / way)</td></tr>
+        <tr><td>Where you see it</td><td>Early ARM, some DSPs</td><td>Most server CPUs, L2/L3 everywhere</td><td>Most modern L1 (ARM Cortex-A, Apple M-series, AMD Zen, recent Intel)</td></tr>
+      </tbody>
+    </table>
+
+    <h2>6. Why this matters for the WukLab edge-inference work</h2>
+    <p>
+      On Apple M3 the L1D is 128 KiB per core, 8-way, VIPT, and the L2 is 16 MiB shared, PIPT. When
+      <code>ollama</code> is decoding from a 14B model whose weights mmap-mostly into the cache hierarchy,
+      every token reads several MiB of weights through L2/L3 → DRAM. That's why decode rate stays near-constant
+      at the bandwidth ceiling regardless of context length &mdash; the L1 indexing trick wins us latency, but
+      decode is governed by the L2/DRAM end of the same diagram. The
+      <a href="openclaw-workflow.html">OpenClaw workflow demo</a> picks up from here.
+    </p>
+  </div>
+
+  <script>
+    const log = document.getElementById('log');
+    function line(text, cls) {
+      const div = document.createElement('div');
+      if (cls) div.className = cls;
+      div.textContent = text;
+      log.appendChild(div);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    function splitVA(va) {
+      // 32-bit VA, 4 KiB pages: VPN[31:12], offset[11:0]
+      // L1 index = bits [11:6], block off = bits [5:0]
+      const vpn = (va >>> 12) & 0xFFFFF;
+      const off = va & 0xFFF;
+      const idx = (va >>> 6) & 0x3F;
+      const bo  = va & 0x3F;
+      const vtag = (va >>> 18) & 0x3FFF; // toy 14-bit virtual tag for VIVT
+      return { vpn, off, idx, bo, vtag };
+    }
+
+    function fakePPN(vpn) {
+      // deterministic synthetic mapping: scramble + mask to 20 bits
+      let x = (vpn * 0x9E3779B1) >>> 0;
+      return x & 0xFFFFF;
+    }
+
+    document.getElementById('clearBtn').onclick = () => { log.innerHTML = ''; };
+
+    document.getElementById('runBtn').onclick = () => {
+      const raw = document.getElementById('vaInput').value.trim();
+      const va = parseInt(raw, 16);
+      if (Number.isNaN(va) || va < 0 || va > 0xFFFFFFFF) {
+        line('error: VA must be a 32-bit hex (e.g. 0x00ABCD12)', 'log-miss');
+        return;
+      }
+      const scheme = document.getElementById('schemeSel').value;
+      const sc = document.getElementById('scenarioSel').value;
+      const b = splitVA(va >>> 0);
+      const ppn = fakePPN(b.vpn);
+      const pa = ((ppn << 12) | b.off) >>> 0;
+      const paIdx = (pa >>> 6) & 0x3F;
+      const paBO  = pa & 0x3F;
+      const paTag = (pa >>> 12) & 0xFFFFF;
+
+      line(`────── trace: VA=0x${va.toString(16).padStart(8,'0').toUpperCase()}, scheme=${scheme.toUpperCase()}, scenario=${sc} ──────`, 'log-meta');
+      line(`split VA: VPN=0x${b.vpn.toString(16).padStart(5,'0')}, page-offset=0x${b.off.toString(16).padStart(3,'0')}, L1 index=${b.idx} (0x${b.idx.toString(16)}), block-offset=${b.bo}`, 'log-meta');
+
+      let cum = 0;
+
+      if (scheme === 'vivt') {
+        line(`L1.lookup(index=${b.idx}, vtag=0x${b.vtag.toString(16)})  — no TLB consulted`, 'log-meta');
+        if (sc === 'hit') {
+          cum += 1.0;
+          line(`  → HIT in L1[set ${b.idx}]  +1.0 ns`, 'log-hit');
+          line(`total: ${cum.toFixed(1)} ns  (TLB was bypassed entirely)`, 'log-meta');
+          return;
+        }
+        line(`  → miss`, 'log-miss');
+        line(`now translate to retrieve the line`, 'log-meta');
+        line(`TLB.lookup(VPN=0x${b.vpn.toString(16)})`, 'log-tlb');
+      } else if (scheme === 'pipt') {
+        line(`TLB.lookup(VPN=0x${b.vpn.toString(16)})`, 'log-tlb');
+      } else {
+        line(`(parallel) TLB.lookup(VPN=0x${b.vpn.toString(16)})  ⨯  L1.index_read(index=${b.idx})`, 'log-tlb');
+      }
+
+      if (sc === 'tlbmiss') {
+        cum += 30;
+        line(`  TLB miss → 4-level page walk, +30 ns`, 'log-miss');
+        line(`  walked to PTE: PPN=0x${ppn.toString(16)}, valid=1`, 'log-tlb');
+        line(`  TLB filled with VPN=0x${b.vpn.toString(16)} → PPN=0x${ppn.toString(16)}`, 'log-tlb');
+      } else if (sc === 'pagefault') {
+        cum += 30;
+        line(`  TLB miss → page walk, +30 ns`, 'log-miss');
+        line(`  PTE.valid=0 → PAGE FAULT trap to kernel`, 'log-miss');
+        cum += 100000;
+        line(`  kernel issues NVMe read of disk page, +~100 µs (= 100000 ns)`, 'log-miss');
+        line(`  page placed in DRAM, PTE installed, TLB filled, instruction retried`, 'log-tlb');
+        // fall through to L1 miss + DRAM
+      } else {
+        cum += 0.4;
+        line(`  TLB hit: VPN=0x${b.vpn.toString(16)} → PPN=0x${ppn.toString(16)}, +0.4 ns`, 'log-tlb');
+      }
+
+      line(`physical address = 0x${pa.toString(16).padStart(8,'0').toUpperCase()}`, 'log-meta');
+
+      if (scheme === 'pipt') {
+        line(`L1.lookup(index=${paIdx}, ptag=0x${paTag.toString(16)})`, 'log-meta');
+        cum += 1.4;
+        if (sc === 'hit') {
+          line(`  → HIT in L1[set ${paIdx}]  +1.4 ns (TLB was on critical path)`, 'log-hit');
+          line(`total: ${cum.toFixed(1)} ns`, 'log-meta');
+          return;
+        }
+        line(`  → miss`, 'log-miss');
+      } else if (scheme === 'vipt') {
+        line(`L1.tag_compare(set ${b.idx}, ptag=0x${paTag.toString(16)})  — index already read in parallel`, 'log-meta');
+        cum += 1.0;
+        if (sc === 'hit') {
+          line(`  → HIT in L1[set ${b.idx}]  +1.0 ns (TLB hidden by index lookup)`, 'log-hit');
+          line(`total: ${cum.toFixed(1)} ns`, 'log-meta');
+          return;
+        }
+        line(`  → miss`, 'log-miss');
+      }
+
+      // L2 / L3 / DRAM path
+      if (sc !== 'pagefault') {
+        cum += 4;
+        line(`L2.lookup(ptag=0x${paTag.toString(16)})`, 'log-meta');
+        if (sc === 'l1miss') {
+          line(`  → HIT in L2  +4 ns`, 'log-hit');
+        } else if (sc === 'tlbmiss') {
+          line(`  → HIT in L2  +4 ns (page-walk's PTE was probably already cached too)`, 'log-hit');
+        }
+      } else {
+        cum += 80;
+        line(`L2/L3 miss → DRAM read of freshly paged-in line  +80 ns`, 'log-miss');
+      }
+
+      line(`total: ${cum.toFixed(1)} ns`, 'log-meta');
+    };
+
+    // run once on load
+    document.getElementById('runBtn').click();
+  </script>
+</body>
+</html>

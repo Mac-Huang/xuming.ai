@@ -115,6 +115,14 @@
                     across different kernel versions, essentially turning every patched bug into a preventive tool.
                   </p>
                   <p>
+                    I am also a remote research intern at <a href="https://wuklab.io/">WukLab</a> with
+                    Professor <a href="https://cseweb.ucsd.edu/~yiying/">Yiying Zhang</a> (UC San Diego), where I work on two threads
+                    that meet at the LLM-systems boundary: (i) <strong>LLM-driven low-level code optimization</strong>, building agents that
+                    propose, verify, and benchmark compiler-grade transformations on real kernels, and (ii) <strong>system optimization for
+                    edge-device inference</strong>, profiling Apple M-series memory budgets, KV-cache behavior, and prefix-cache compaction
+                    in agentic frameworks (OpenClaw on ollama) to understand what really governs latency on a 24 GB laptop.
+                  </p>
+                  <p>
                     Last <a href="blog/posts/stanford-summer-2025.html">summer at Stanford</a> (CS107: A+, CS161: A), I discovered critical access control misconfigurations
                     in Stanford's AFS through reverse engineering exposed solution binaries. This hands-on experience,
                     combined with my current research bridging compilers and ML, has prepared me to contribute to projects
@@ -209,29 +217,29 @@
               <tr>
                 <td style="padding:20px;width:33%;vertical-align:top">
                   <div style="text-align:center;">
+                    <a href="demos/memory-hierarchy.html">
+                      <img src="images/projects/cache-thumb.jpg" alt="Memory Hierarchy" style="width:100%;max-width:200px;height:120px;object-fit:cover;border-radius:5px;border:1px solid #ddd;">
+                    </a>
+                    <p style="margin-top:10px;"><strong>Memory Hierarchy &amp; Cache Indexing</strong></p>
+                    <p style="font-size:13px;color:#666;">VIVT, PIPT, VIPT — TLB, L1/L2/L3, DRAM, disk — one virtual address traced end-to-end</p>
+                  </div>
+                </td>
+                <td style="padding:20px;width:33%;vertical-align:top">
+                  <div style="text-align:center;">
+                    <a href="demos/openclaw-workflow.html">
+                      <img src="images/papers/wuklab/mem_budget_summary.png" alt="OpenClaw Workflow" style="width:100%;max-width:200px;height:120px;object-fit:cover;border-radius:5px;border:1px solid #ddd;">
+                    </a>
+                    <p style="margin-top:10px;"><strong>OpenClaw Edge Workflow</strong></p>
+                    <p style="font-size:13px;color:#666;">Inside an agentic LLM turn — prompt cache, KV cache, and the 35× compaction spike</p>
+                  </div>
+                </td>
+                <td style="padding:20px;width:33%;vertical-align:top">
+                  <div style="text-align:center;">
                     <a href="demos/heap-allocator.html">
                       <img src="images/projects/heap-allocator-thumb.jpg" alt="Heap Allocator" style="width:100%;max-width:200px;height:120px;object-fit:cover;border-radius:5px;border:1px solid #ddd;">
                     </a>
                     <p style="margin-top:10px;"><strong>Heap Allocator Visualization</strong></p>
                     <p style="font-size:13px;color:#666;">CS107 memory allocation strategies with coalescing and fragmentation analysis</p>
-                  </div>
-                </td>
-                <td style="padding:20px;width:33%;vertical-align:top">
-                  <div style="text-align:center;">
-                    <a href="demos/sorting.html">
-                      <img src="images/projects/sorting-thumb.jpg" alt="Sorting Visualizer" style="width:100%;max-width:200px;height:120px;object-fit:cover;border-radius:5px;border:1px solid #ddd;">
-                    </a>
-                    <p style="margin-top:10px;"><strong>Sorting Algorithm Visualizer</strong></p>
-                    <p style="font-size:13px;color:#666;">Interactive visualization of quicksort, mergesort, heapsort and more</p>
-                  </div>
-                </td>
-                <td style="padding:20px;width:33%;vertical-align:top">
-                  <div style="text-align:center;">
-                    <a href="demos/neural.html">
-                      <img src="images/projects/neural-thumb.jpg" alt="Neural Network" style="width:100%;max-width:200px;height:120px;object-fit:cover;border-radius:5px;border:1px solid #ddd;">
-                    </a>
-                    <p style="margin-top:10px;"><strong>Neural Network Playground</strong></p>
-                    <p style="font-size:13px;color:#666;">Train neural networks with real-time decision boundary visualization</p>
                   </div>
                 </td>
               </tr>
