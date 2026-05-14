@@ -222,6 +222,34 @@ export async function initBot(modelId, progressCb) {
     progressCb?.({ stage: "embed", text: msg, pct: 15 })
   );
 
+  // If the page-level preloader already has an engine for this model,
+  // reuse it instead of doing a second download/init.
+  const pre = window.BotPreload;
+  if (pre && !pre.unsupported && pre.getModelId() === currentModel && !pre.state.error) {
+    if (pre.isReady()) {
+      engine = pre.getEngine(currentModel);
+      ready = true;
+      progressCb?.({ stage: "ready", text: "Ready.", pct: 100 });
+      return;
+    }
+    progressCb?.({ stage: "llm", text: pre.state.text || "Resuming background download…", pct: Math.max(25, pre.state.pct) });
+    await new Promise((resolve) => {
+      const off = pre.onProgress((s) => {
+        if (s.error) { off(); resolve(); return; }
+        if (s.ready) { off(); resolve(); return; }
+        const pct = 25 + Math.round((s.pct / 100) * 70);
+        progressCb?.({ stage: "llm", text: s.text || "Loading model…", pct });
+      });
+    });
+    if (pre.isReady() && !pre.state.error) {
+      engine = pre.getEngine(currentModel);
+      ready = true;
+      progressCb?.({ stage: "ready", text: "Ready.", pct: 100 });
+      return;
+    }
+    // fall through to fresh init if preload errored
+  }
+
   progressCb?.({ stage: "llm", text: `Loading ${currentModel}…`, pct: 25 });
   engine = await CreateMLCEngine(currentModel, {
     initProgressCallback: (report) => {

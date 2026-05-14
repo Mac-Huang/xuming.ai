@@ -73,6 +73,138 @@
               </tr>
             </tbody>
           </table>
+
+          <!-- Fun-fact flash cards (shown while the model loads) -->
+          <style>
+            #funfact-panel {
+              border:1px solid #e0e0e0;
+              border-radius:8px;
+              background:linear-gradient(135deg,#fafbff 0%,#f0f4ff 100%);
+              padding:18px 20px 16px;
+              margin:0 20px;
+              transition:opacity 0.5s,max-height 0.5s,padding 0.5s,margin 0.5s;
+              overflow:hidden;
+            }
+            #funfact-panel.collapsed {
+              opacity:0;
+              max-height:0;
+              padding-top:0;
+              padding-bottom:0;
+              margin-top:0;
+              margin-bottom:0;
+              border-color:transparent;
+            }
+            #funfact-header {
+              display:flex;
+              align-items:center;
+              justify-content:space-between;
+              margin-bottom:10px;
+            }
+            #funfact-title {
+              font-size:13px;
+              color:#1772d0;
+              text-transform:uppercase;
+              letter-spacing:0.08em;
+              font-weight:600;
+            }
+            #funfact-counter { font-size:12px; color:#888; }
+            #funfact-card {
+              perspective:1000px;
+              min-height:120px;
+              cursor:pointer;
+              user-select:none;
+            }
+            #funfact-card-inner {
+              position:relative;
+              width:100%;
+              min-height:120px;
+              transition:transform 0.6s;
+              transform-style:preserve-3d;
+            }
+            #funfact-card.flipped #funfact-card-inner { transform:rotateY(180deg); }
+            .funfact-face {
+              position:absolute;
+              inset:0;
+              backface-visibility:hidden;
+              padding:14px 4px;
+              display:flex;
+              flex-direction:column;
+              justify-content:center;
+            }
+            .funfact-face.back { transform:rotateY(180deg); }
+            .funfact-emoji { font-size:32px; line-height:1; margin-bottom:8px; }
+            .funfact-text { font-size:17px; line-height:1.45; color:#222; }
+            .funfact-detail { font-size:14px; line-height:1.5; color:#444; }
+            #funfact-hint {
+              margin-top:8px;
+              font-size:11px;
+              color:#999;
+              text-align:center;
+              letter-spacing:0.04em;
+            }
+            #funfact-controls {
+              display:flex;
+              gap:8px;
+              justify-content:center;
+              margin-top:10px;
+            }
+            #funfact-controls button {
+              font-family:inherit;
+              font-size:13px;
+              padding:5px 14px;
+              border:1px solid #c8d6f0;
+              background:#fff;
+              color:#1772d0;
+              border-radius:14px;
+              cursor:pointer;
+              transition:background 0.2s;
+            }
+            #funfact-controls button:hover { background:#eaf2ff; }
+            #funfact-dots {
+              display:flex;
+              gap:4px;
+              justify-content:center;
+              margin-top:8px;
+            }
+            #funfact-dots .dot {
+              width:6px; height:6px; border-radius:50%;
+              background:#cfd9ea;
+              transition:background 0.2s,transform 0.2s;
+              cursor:pointer;
+            }
+            #funfact-dots .dot.active { background:#1772d0; transform:scale(1.3); }
+          </style>
+          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+            <tbody>
+              <tr>
+                <td style="padding:0">
+                  <div id="funfact-panel" role="region" aria-label="Fun facts while the AI loads">
+                    <div id="funfact-header">
+                      <span id="funfact-title">While you wait — fun facts about me</span>
+                      <span id="funfact-counter">1 / 1</span>
+                    </div>
+                    <div id="funfact-card" title="Click to flip">
+                      <div id="funfact-card-inner">
+                        <div class="funfact-face front">
+                          <div class="funfact-emoji" id="funfact-emoji">🤖</div>
+                          <div class="funfact-text" id="funfact-front">Loading…</div>
+                        </div>
+                        <div class="funfact-face back">
+                          <div class="funfact-detail" id="funfact-back"></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div id="funfact-hint">Click the card to flip · auto-advances every 7s</div>
+                    <div id="funfact-controls">
+                      <button id="funfact-prev" type="button">← Prev</button>
+                      <button id="funfact-next" type="button">Next →</button>
+                    </div>
+                    <div id="funfact-dots"></div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
           
           <!-- Chat Interface -->
           <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
@@ -178,6 +310,114 @@
   <script src="data/blog-posts.js"></script>
   <script src="js/main.js"></script>
 
+  <!-- Background preloader (also runs on every other page) -->
+  <script src="js/bot-preload.js"></script>
+
+  <!-- Flash-card carousel for fun facts about Xuming while the model loads -->
+  <script>
+  (function () {
+    const FACTS = [
+      { emoji: "🏈", front: "I'm a 2023 NFL FLAG Football National Champion.",
+        back: "Played for the USST Earthmoving Vehicles team — proof that systems people can move fast off-screen too." },
+      { emoji: "🔓", front: "I discovered security holes in Stanford's Andrew File System.",
+        back: "Found and responsibly disclosed them during CS107 in Summer 2025, then worked with Alex Keller on the fixes." },
+      { emoji: "📚", front: "Stanford Summer 2025: A+ in CS107 (99/100), A in CS161 (93/100).",
+        back: "CS107 Computer Organization & Systems and CS161 Design and Analysis of Algorithms." },
+      { emoji: "🤖", front: "This very chatbot runs entirely in your browser.",
+        back: "WebLLM + transformers.js over WebGPU. No server, no API key — your messages never leave your machine." },
+      { emoji: "🎓", front: "Junior CS @ UW–Madison, focused on ML systems and OS.",
+        back: "Currently planning CS 352, CS 552, CS 537, and CS 744 — the systems track." },
+      { emoji: "🌏", front: "I represented CoolAI at the World AI Conference (WAIC).",
+        back: "Internship work on AI products; ended up demoing on the show floor." },
+      { emoji: "🛠️", front: "I write C, C++, Python, Java, x86 assembly, and CUDA.",
+        back: "Plus PyTorch for ML work and a lot of systems-programming time spent in gdb." },
+      { emoji: "🎯", front: "Career goal: advance ML infrastructure — or a PhD in ML systems.",
+        back: "I want to make large-scale training and inference faster, cheaper, and easier to reason about." },
+      { emoji: "🎨", front: "I build CS educational visualizations used by students.",
+        back: "Cache simulators, k-maps, B+ trees, transformer architectures — see the Demos directory on this site." },
+      { emoji: "🧠", front: "Quiz me about FlashAttention, ZeRO, gradient checkpointing, or CUDA.",
+        back: "I've collected notes on these and more — the bot answers from that knowledge base." },
+      { emoji: "📖", front: "Off-keyboard: reading, mentoring, hackathons, open source.",
+        back: "I help newer students get started in CS and follow the systems & ML research community closely." },
+      { emoji: "💬", front: "Want a real conversation? Email me directly.",
+        back: "Click 'email me directly' in the note below this chat — I'm open to research collaborations and ML-infra internships." },
+    ];
+
+    // Shuffle so repeat visits feel fresh, but stable per pageload.
+    for (let i = FACTS.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [FACTS[i], FACTS[j]] = [FACTS[j], FACTS[i]];
+    }
+
+    const panel = document.getElementById("funfact-panel");
+    if (!panel) return;
+    const emojiEl   = document.getElementById("funfact-emoji");
+    const frontEl   = document.getElementById("funfact-front");
+    const backEl    = document.getElementById("funfact-back");
+    const counterEl = document.getElementById("funfact-counter");
+    const cardEl    = document.getElementById("funfact-card");
+    const dotsEl    = document.getElementById("funfact-dots");
+    const prevBtn   = document.getElementById("funfact-prev");
+    const nextBtn   = document.getElementById("funfact-next");
+
+    let idx = 0;
+    let timer = null;
+    let paused = false;
+
+    function render() {
+      const f = FACTS[idx];
+      cardEl.classList.remove("flipped");
+      emojiEl.textContent = f.emoji;
+      frontEl.textContent = f.front;
+      backEl.textContent  = f.back;
+      counterEl.textContent = `${idx + 1} / ${FACTS.length}`;
+      for (const dot of dotsEl.children) {
+        dot.classList.toggle("active", Number(dot.dataset.i) === idx);
+      }
+    }
+
+    function buildDots() {
+      dotsEl.innerHTML = "";
+      FACTS.forEach((_, i) => {
+        const d = document.createElement("span");
+        d.className = "dot";
+        d.dataset.i = i;
+        d.addEventListener("click", (e) => {
+          e.stopPropagation();
+          idx = i; render(); restartTimer();
+        });
+        dotsEl.appendChild(d);
+      });
+    }
+
+    function next() { idx = (idx + 1) % FACTS.length; render(); }
+    function prev() { idx = (idx - 1 + FACTS.length) % FACTS.length; render(); }
+    function restartTimer() {
+      if (timer) clearInterval(timer);
+      timer = setInterval(() => { if (!paused) next(); }, 7000);
+    }
+
+    cardEl.addEventListener("click", () => {
+      cardEl.classList.toggle("flipped");
+      paused = cardEl.classList.contains("flipped");
+    });
+    nextBtn.addEventListener("click", (e) => { e.stopPropagation(); next(); restartTimer(); });
+    prevBtn.addEventListener("click", (e) => { e.stopPropagation(); prev(); restartTimer(); });
+    panel.addEventListener("mouseenter", () => { paused = true; });
+    panel.addEventListener("mouseleave", () => { paused = cardEl.classList.contains("flipped"); });
+
+    buildDots();
+    render();
+    restartTimer();
+
+    // Expose a hide method so the loader can collapse this once the bot is ready.
+    window.__hideFunFacts = function () {
+      if (timer) clearInterval(timer);
+      panel.classList.add("collapsed");
+    };
+  })();
+  </script>
+
   <!-- In-browser RAG bot: WebLLM + transformers.js embeddings -->
   <script type="module" src="js/rag-bot.js"></script>
   <script type="module">
@@ -249,9 +489,13 @@
         setStatus("WebGPU is not available in this browser. Try Chrome/Edge on desktop.", 0);
         return;
       }
+      // On this page we want to start downloading immediately; don't wait
+      // for requestIdleCallback in the preloader.
+      try { window.BotPreload?.start?.(); } catch (_) {}
       try {
         await RagBot.init(modelId, ({ text, pct }) => setStatus(text, pct));
         setStatus("Ready. Ask me anything.", 100);
+        if (typeof window.__hideFunFacts === "function") window.__hideFunFacts();
       } catch (e) {
         console.error(e);
         setStatus("Failed to load model: " + (e?.message || e), 0);
