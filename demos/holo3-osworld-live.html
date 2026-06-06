@@ -1,0 +1,251 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Holo3-35B-A3B on OSWorld-Verified — Live Edge-Inference Tracker — Xuming Huang</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="../stylesheet.css">
+  <style>
+    :root {
+      --ink: #1c1c1e; --muted: #5e5e63; --rule: #dcdcd6; --accent: #1772d0;
+      --panel: #ffffff; --card: #fafaf7; --ok: #2f8f3f; --bad: #c0392b; --warn: #d97706;
+    }
+    body {
+      font-family: "Inter", "Lato", system-ui, -apple-system, sans-serif;
+      margin: 0; padding: 24px; color: var(--ink);
+      background: linear-gradient(135deg, #2c5364 0%, #203a43 50%, #0f2027 100%);
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 1280px; margin: 0 auto; background: var(--panel);
+      border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); padding: 32px 36px;
+    }
+    a.back { color: var(--accent); text-decoration: none; font-size: 0.92rem; }
+    a.back:hover { text-decoration: underline; }
+    h1 { font-family: 'EB Garamond', Georgia, serif; font-weight: 500; font-size: 1.9rem;
+         margin: 10px 0 2px; }
+    h2 { font-family: 'EB Garamond', Georgia, serif; font-weight: 600; font-size: 1.15rem;
+         margin: 0 0 10px; color: #333; border-bottom: 1px solid var(--rule); padding-bottom: 5px; }
+    .sub { color: var(--muted); font-size: 0.95rem; margin-bottom: 6px; }
+    .badge { display:inline-block; padding: 2px 10px; border-radius: 12px; font-size: 0.8rem;
+             font-weight: 600; vertical-align: 2px; }
+    .badge.live { background:#e6f4ea; color: var(--ok); }
+    .badge.live::before { content:"●"; margin-right:5px; animation: blink 1.6s infinite; }
+    .badge.stale { background:#fdf3e1; color: var(--warn); }
+    .badge.fin { background:#e8f0fb; color: var(--accent); }
+    @keyframes blink { 50% { opacity: 0.25; } }
+    .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(300px,1fr));
+            margin-top: 18px; }
+    .panel { background: var(--card); border: 1px solid #e8e6df; border-radius: 8px; padding: 16px 18px; }
+    .full { grid-column: 1 / -1; }
+    .big { display:flex; gap: 26px; flex-wrap: wrap; }
+    .stat .v { font-size: 1.65rem; font-weight: 650; font-variant-numeric: tabular-nums; }
+    .stat .v.ok { color: var(--ok); }
+    .stat .l { color: var(--muted); font-size: 0.78rem; }
+    .bar { height: 12px; background: #ecebe5; border-radius: 6px; overflow: hidden; margin: 10px 0 14px; }
+    .bar > div { height: 100%; background: linear-gradient(90deg, var(--accent), #4d9de0); transition: width .6s; }
+    table.dt { border-collapse: collapse; width: 100%; font-size: 0.82rem; }
+    .dt th, .dt td { text-align: left; padding: 4px 9px; border-bottom: 1px solid #ecebe5; white-space: nowrap; }
+    .dt th { color: var(--muted); font-weight: 600; position: sticky; top: 0; background: var(--card); }
+    .dt td.num, .dt th.num { text-align: right; font-variant-numeric: tabular-nums; }
+    .ok { color: var(--ok); } .bad { color: var(--bad); } .pend { color: #9a9a96; } .run { color: var(--warn); }
+    .scroll { max-height: 460px; overflow: auto; border-radius: 6px; }
+    .kv { display:flex; justify-content: space-between; gap: 10px; font-size: 0.88rem; padding: 2px 0; }
+    .kv .k { color: var(--muted); }
+    canvas { width: 100%; height: 130px; display: block; }
+    .note { font-size: 0.84rem; color: var(--muted); margin-top: 8px; line-height: 1.45; }
+    .mono { font-family: "SF Mono", Menlo, monospace; font-size: 0.85em; background:#efece4;
+            padding: 0.08em 0.35em; border-radius: 3px; }
+    .alert { background:#fdf3e1; border:1px solid #ecd9b0; color:#8a5a10; border-radius:8px;
+             padding:10px 14px; margin-top:14px; font-size:0.9rem; display:none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a class="back" href="../research.html">← Back to Research</a>
+    <h1>Holo3-35B-A3B on OSWorld-Verified <span id="status-badge" class="badge live">LIVE</span></h1>
+    <div class="sub">
+      Full 361-task benchmark of the <a href="https://huggingface.co/Hcompany/Holo3-35B-A3B">#1 open-weight computer-use model</a>
+      running <em>entirely on an edge device</em> — Intel Core Ultra 7 (Panther Lake) NUC, 96&nbsp;GB unified RAM,
+      CPU-only llama.cpp serving (Q4_K_M, 3B active MoE params). Part of
+      <a href="../research.html">System Optimization for Edge Device Inference</a> (WukLab, UC San Diego).
+      Replicates H&nbsp;Company's leaderboard config: <span class="mono">max_steps=100</span>, screenshot-only, single rollout.
+    </div>
+    <div class="sub" id="updated">connecting…</div>
+    <div class="alert" id="alert"></div>
+
+    <div class="grid">
+      <div class="panel">
+        <h2>Progress</h2>
+        <div class="bar"><div id="pbar" style="width:0%"></div></div>
+        <div class="big">
+          <div class="stat"><div class="v" id="p-done">–</div><div class="l">tasks done / total</div></div>
+          <div class="stat"><div class="v ok" id="p-sr">–</div><div class="l">success rate</div></div>
+          <div class="stat"><div class="v" id="p-eta">–</div><div class="l">est. remaining</div></div>
+          <div class="stat"><div class="v" id="p-elapsed">–</div><div class="l">elapsed</div></div>
+        </div>
+        <div class="note">Official Holo3-35B-A3B leaderboard runs: 82.56% / 78.15% (mean 80.4%) at the same 100-step budget.</div>
+      </div>
+
+      <div class="panel">
+        <h2>Current task</h2>
+        <div id="cur" class="kv">idle</div>
+      </div>
+
+      <div class="panel">
+        <h2>Serving &amp; energy</h2>
+        <div id="agg"></div>
+      </div>
+
+      <div class="panel">
+        <h2>Live telemetry</h2>
+        <div id="sys"></div>
+      </div>
+
+      <div class="panel full">
+        <h2>Package power &amp; CPU utilization — last ~3 h</h2>
+        <canvas id="chart" width="1400" height="130"></canvas>
+        <div class="note" id="chart-legend">power (blue, W) · CPU util (orange, %) — sampled every 2 s on-device, downsampled</div>
+      </div>
+
+      <div class="panel">
+        <h2>By domain</h2>
+        <div class="scroll"><table class="dt" id="dom"></table></div>
+      </div>
+
+      <div class="panel">
+        <h2>Why CPU? (GPU &amp; NPU tried first)</h2>
+        <div class="scroll"><table class="dt" id="bringup"></table></div>
+        <div class="note" id="bringup-note"></div>
+      </div>
+
+      <div class="panel full">
+        <h2>All tasks</h2>
+        <div class="scroll"><table class="dt" id="tasks"></table></div>
+      </div>
+
+      <div class="panel full">
+        <h2>About this experiment</h2>
+        <div class="note" style="font-size:0.92rem">
+          The serving stack is <span class="mono">llama.cpp</span> on the CPU with a split thread pool
+          (decode 8 threads / prefill 16 — measured: bandwidth-bound MoE decode peaks at 8 threads on this
+          heterogeneous 4P+8E+4LP part). The Xe3 iGPU was genuinely attempted first: its Vulkan vision-encoder
+          path crashes the device (<span class="mono">vk::DeviceLostError</span>) and text-only offload decodes at
+          half CPU speed; the NPU cannot serve this hybrid Gated-DeltaNet MoE-VLM architecture at all. Every step
+          logs prefill/decode throughput, token counts, KV-cache reuse, RAPL energy across 5 power domains,
+          GPU/NPU frequency and package thermals — the dataset behind the latency and J/task analyses in the
+          write-up. Scores are latency-independent: slow hardware changes wall-clock, not the benchmark result.
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+const DATA_URL = 'https://raw.githubusercontent.com/Mac-Huang/xuming.ai/live-data/holo3_state.json';
+const fmtDur = s => { if(s==null) return '–'; s=Math.round(s);
+  const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);
+  return (d?d+'d ':'')+(h||d?h+'h ':'')+m+'m'; };
+const pct = x => x==null?'–':(100*x).toFixed(1)+'%';
+const kv = (k,v) => `<div class="kv"><span class="k">${k}</span><span>${v}</span></div>`;
+
+async function load(){
+  let st;
+  try { st = await (await fetch(DATA_URL+'?t='+Math.floor(Date.now()/60000))).json(); }
+  catch(e){ document.getElementById('updated').textContent = 'data fetch failed — retrying…'; return; }
+  const m=st.meta||{}, pr=st.progress||{}, ag=st.aggregate||{}, cur=st.current||{}, s=st.system_latest||{};
+
+  // freshness
+  const ageMin = (Date.now()/1000 - (st.published_at||0))/60;
+  const runAge = (Date.now()/1000 - (st.updated_at||0))/60;
+  const finished = (pr.done!=null && pr.total!=null && pr.done>=pr.total) || cur.status==='finished';
+  const badge = document.getElementById('status-badge');
+  const alert = document.getElementById('alert');
+  if (finished){ badge.className='badge fin'; badge.textContent='FINISHED'; alert.style.display='none'; }
+  else if (runAge > 45){ badge.className='badge stale'; badge.textContent='STALE';
+    alert.style.display='block';
+    alert.textContent=`No state update from the device for ${fmtDur(runAge*60)} — the run may be paused or recovering. Data below is the last published snapshot.`;
+  } else { badge.className='badge live'; badge.textContent='LIVE'; alert.style.display='none'; }
+  document.getElementById('updated').textContent =
+    `device: ${m.host||'NUC16'} · model ${m.quant||''} · published ${ageMin<1.5?'just now':fmtDur(ageMin*60)+' ago'} · auto-refreshes every 60 s`;
+
+  document.getElementById('p-done').textContent = `${pr.done??'–'} / ${pr.total??'–'}`;
+  document.getElementById('p-sr').textContent = pct(pr.success_rate);
+  document.getElementById('p-eta').textContent = finished?'—':fmtDur(pr.eta_s);
+  document.getElementById('p-elapsed').textContent = m.started_at? fmtDur(Date.now()/1000-m.started_at):'–';
+  document.getElementById('pbar').style.width = pr.total? (100*pr.done/pr.total)+'%':'0%';
+
+  document.getElementById('cur').outerHTML = `<div id="cur">`+ (finished?
+    '<div class="kv">run complete ✓</div>' : (!cur.task_id? 'idle' :
+    kv('task', `${cur.domain}/${String(cur.task_id).slice(0,8)}`)+
+    kv('step', `${cur.step} / ${cur.max_steps}`)+
+    kv('last predict', (cur.t_predict_s??'–')+' s')+
+    kv('context', (cur.prompt_tokens??'–')+' tokens')+
+    kv('decode', (cur.decode_tps??'–')+' tok/s'))) + `</div>`;
+
+  document.getElementById('agg').innerHTML =
+    kv('mean prefill', (ag.prefill_tps_mean??'–')+' tok/s')+
+    kv('mean decode', (ag.decode_tps_mean??'–')+' tok/s')+
+    kv('mean context', (ag.prompt_tokens_mean??'–')+' tokens')+
+    kv('energy / task', (ag.energy_wh_per_task_mean??'–')+' Wh');
+
+  document.getElementById('sys').innerHTML =
+    kv('package power', s['power_package-0_w']!=null? s['power_package-0_w']+' W':'–')+
+    kv('CPU util', s.cpu_util!=null? pct(s.cpu_util):'–')+
+    kv('package temp', s.temp_x86_pkg_temp_c!=null? s.temp_x86_pkg_temp_c+' °C':'–')+
+    kv('server memory', s.server_rss_kb? (s.server_rss_kb/1e6).toFixed(1)+' GB':'–')+
+    kv('GPU / NPU', `${s.gpu_act_mhz??'–'} MHz / ${s.npu_util!=null?pct(s.npu_util):'–'} (idle by design)`);
+
+  const bd=st.by_domain||{};
+  let dh='<tr><th>domain</th><th class="num">done/total</th><th class="num">success</th></tr>';
+  Object.keys(bd).sort().forEach(d=>{const x=bd[d];
+    dh+=`<tr><td>${d}</td><td class="num">${x.done}/${x.total}</td>`+
+        `<td class="num">${x.done? pct(x.success_sum/x.done):'–'}</td></tr>`;});
+  document.getElementById('dom').innerHTML=dh;
+
+  const bp=st.device_bringup;
+  if(bp){
+    let h='<tr><th>device</th><th>status</th><th>vision</th><th class="num">decode tok/s</th></tr>';
+    (bp.devices||[]).forEach(d=>{
+      let dec=d.decode_tps, vok=d.vision_correct;
+      if(d.configs){const best=d.configs[d.configs.length-1]; dec=best.decode_tps; vok=best.vision_correct;}
+      if(d.device==='CPU' && d.thread_sweep) dec=Math.max(...Object.values(d.thread_sweep.tg32_tps));
+      h+=`<tr><td>${d.device}</td>`+
+         `<td class="${d.status==='SELECTED'?'ok':d.status==='UNAVAILABLE'?'bad':'run'}">${d.status}</td>`+
+         `<td>${vok===true?'<span class=ok>✓</span>':vok===false?'<span class=bad>✗</span>':'–'}</td>`+
+         `<td class="num">${dec??'–'}</td></tr>`;});
+    document.getElementById('bringup').innerHTML=h;
+    document.getElementById('bringup-note').textContent=(bp.decision||'');
+  }
+
+  const ts=st.tasks||[];
+  let th='<tr><th>#</th><th>domain</th><th>task</th><th>status</th><th class="num">score</th>'+
+         '<th class="num">steps</th><th class="num">wall</th><th class="num">Wh</th><th class="num">dec t/s</th></tr>';
+  ts.forEach((t,i)=>{
+    const cls = t.status==='error'?'bad':t.status==='done'?(t.score>=0.999?'ok':t.score>0?'run':'bad'):'pend';
+    th+=`<tr><td class="num pend">${i+1}</td><td>${t.domain}</td>`+
+        `<td class="pend" title="${(t.instruction||'').replace(/"/g,'&quot;')}">${t.task_id||''}</td>`+
+        `<td class="${cls}">${t.status||'pending'}</td>`+
+        `<td class="num ${cls}">${t.score==null?'–':(+t.score).toFixed(2)}</td>`+
+        `<td class="num">${t.steps??'–'}</td><td class="num">${t.wall_s?fmtDur(t.wall_s):'–'}</td>`+
+        `<td class="num">${t.energy_wh??'–'}</td><td class="num">${t.mean_decode_tps??'–'}</td></tr>`;});
+  document.getElementById('tasks').innerHTML=th;
+
+  drawChart(st.telemetry_series||[]);
+}
+
+function drawChart(series){
+  const cv=document.getElementById('chart'), x=cv.getContext('2d'); const W=cv.width,H=cv.height;
+  x.clearRect(0,0,W,H);
+  if(series.length<3) return;
+  const pw=series.map(r=>r.pkg_w), cu=series.map(r=>r.cpu==null?null:r.cpu*100);
+  const plot=(arr,max,color)=>{ x.strokeStyle=color;x.lineWidth=1.6;x.beginPath();let st=false;
+    arr.forEach((v,i)=>{ if(v==null){st=false;return;} const px=i/(arr.length-1)*W, py=H-(v/max)*(H-8)-4;
+      if(!st){x.moveTo(px,py);st=true;}else x.lineTo(px,py);}); x.stroke();};
+  const pmax=Math.max(60,...pw.filter(v=>v!=null))*1.12;
+  plot(pw,pmax,'#1772d0'); plot(cu,100,'#d97706');
+}
+
+load(); setInterval(load, 60000);
+</script>
+</body>
+</html>

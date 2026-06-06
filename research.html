@@ -164,8 +164,16 @@
                     <li>Quantified a <strong>35&times; prefill spike</strong> caused by auto-compaction breaking the ollama prefix cache between two consecutive turns.</li>
                     <li>Showed decode is bandwidth-bound: 3B &asymp; 35 tok/s, 7B &asymp; 5 tok/s, 14B &asymp; 2.5 tok/s, near-constant across context length.</li>
                   </ul>
+                  <p style="margin-top:10px;">
+                    <strong>Current phase:</strong> running the full 361-task <a href="https://os-world.github.io/">OSWorld-Verified</a> benchmark with
+                    <a href="https://huggingface.co/Hcompany/Holo3-35B-A3B">Holo3-35B-A3B</a> &mdash; the #1 open-weight computer-use model &mdash;
+                    served entirely on an Intel Panther Lake NUC (96&nbsp;GB unified, CPU-only llama.cpp after measured GPU/NPU bring-up),
+                    replicating the official leaderboard config (100-step budget, screenshot-only) with per-step latency, token,
+                    KV-cache and 5-domain RAPL energy profiling.
+                  </p>
                   <p style="margin-top:8px;">
-                    <a href="demos/openclaw-workflow.html">[Interactive workflow demo]</a>
+                    <a href="demos/holo3-osworld-live.html">[&#128308; Live benchmark tracker]</a>
+                    &nbsp; <a href="demos/openclaw-workflow.html">[Interactive workflow demo]</a>
                     &nbsp; <a href="demos/memory-hierarchy.html">[Memory hierarchy demo]</a>
                   </p>
                 </td>
