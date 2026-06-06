@@ -1,144 +1,164 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Holo3-35B-A3B on OSWorld-Verified — Live Edge-Inference Tracker — Xuming Huang</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" type="text/css" href="../stylesheet.css">
-  <style>
-    :root {
-      --ink: #1c1c1e; --muted: #5e5e63; --rule: #dcdcd6; --accent: #1772d0;
-      --panel: #ffffff; --card: #fafaf7; --ok: #2f8f3f; --bad: #c0392b; --warn: #d97706;
-    }
-    body {
-      font-family: "Inter", "Lato", system-ui, -apple-system, sans-serif;
-      margin: 0; padding: 24px; color: var(--ink);
-      background: linear-gradient(135deg, #2c5364 0%, #203a43 50%, #0f2027 100%);
-      min-height: 100vh;
-    }
-    .container {
-      max-width: 1280px; margin: 0 auto; background: var(--panel);
-      border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); padding: 32px 36px;
-    }
-    a.back { color: var(--accent); text-decoration: none; font-size: 0.92rem; }
-    a.back:hover { text-decoration: underline; }
-    h1 { font-family: 'EB Garamond', Georgia, serif; font-weight: 500; font-size: 1.9rem;
-         margin: 10px 0 2px; }
-    h2 { font-family: 'EB Garamond', Georgia, serif; font-weight: 600; font-size: 1.15rem;
-         margin: 0 0 10px; color: #333; border-bottom: 1px solid var(--rule); padding-bottom: 5px; }
-    .sub { color: var(--muted); font-size: 0.95rem; margin-bottom: 6px; }
-    .badge { display:inline-block; padding: 2px 10px; border-radius: 12px; font-size: 0.8rem;
-             font-weight: 600; vertical-align: 2px; }
-    .badge.live { background:#e6f4ea; color: var(--ok); }
-    .badge.live::before { content:"●"; margin-right:5px; animation: blink 1.6s infinite; }
-    .badge.stale { background:#fdf3e1; color: var(--warn); }
-    .badge.fin { background:#e8f0fb; color: var(--accent); }
-    @keyframes blink { 50% { opacity: 0.25; } }
-    .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(300px,1fr));
-            margin-top: 18px; }
-    .panel { background: var(--card); border: 1px solid #e8e6df; border-radius: 8px; padding: 16px 18px; }
-    .full { grid-column: 1 / -1; }
-    .big { display:flex; gap: 26px; flex-wrap: wrap; }
-    .stat .v { font-size: 1.65rem; font-weight: 650; font-variant-numeric: tabular-nums; }
-    .stat .v.ok { color: var(--ok); }
-    .stat .l { color: var(--muted); font-size: 0.78rem; }
-    .bar { height: 12px; background: #ecebe5; border-radius: 6px; overflow: hidden; margin: 10px 0 14px; }
-    .bar > div { height: 100%; background: linear-gradient(90deg, var(--accent), #4d9de0); transition: width .6s; }
-    table.dt { border-collapse: collapse; width: 100%; font-size: 0.82rem; }
-    .dt th, .dt td { text-align: left; padding: 4px 9px; border-bottom: 1px solid #ecebe5; white-space: nowrap; }
-    .dt th { color: var(--muted); font-weight: 600; position: sticky; top: 0; background: var(--card); }
-    .dt td.num, .dt th.num { text-align: right; font-variant-numeric: tabular-nums; }
-    .ok { color: var(--ok); } .bad { color: var(--bad); } .pend { color: #9a9a96; } .run { color: var(--warn); }
-    .scroll { max-height: 460px; overflow: auto; border-radius: 6px; }
-    .kv { display:flex; justify-content: space-between; gap: 10px; font-size: 0.88rem; padding: 2px 0; }
-    .kv .k { color: var(--muted); }
-    canvas { width: 100%; height: 130px; display: block; }
-    .note { font-size: 0.84rem; color: var(--muted); margin-top: 8px; line-height: 1.45; }
-    .mono { font-family: "SF Mono", Menlo, monospace; font-size: 0.85em; background:#efece4;
-            padding: 0.08em 0.35em; border-radius: 3px; }
-    .alert { background:#fdf3e1; border:1px solid #ecd9b0; color:#8a5a10; border-radius:8px;
-             padding:10px 14px; margin-top:14px; font-size:0.9rem; display:none; }
-  </style>
+<meta charset="utf-8">
+<title>Holo3 · OSWorld · NUC16 — live</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{--bg:#0d1117;--panel:#161b22;--bd:#30363d;--fg:#c9d1d9;--mut:#8b949e;
+        --grn:#3fb950;--red:#f85149;--yel:#d29922;--blu:#58a6ff;--pur:#bc8cff}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);
+       font:13px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  header{padding:14px 20px;border-bottom:1px solid var(--bd);display:flex;
+         flex-wrap:wrap;gap:6px 24px;align-items:baseline}
+  h1{font-size:16px;margin:0;color:var(--blu)}
+  .sub{color:var(--mut)}
+  .wrap{padding:16px 20px;display:grid;gap:16px;
+        grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+  .panel{background:var(--panel);border:1px solid var(--bd);border-radius:8px;padding:14px}
+  .panel h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;
+            color:var(--mut);margin:0 0 10px}
+  .big{display:flex;gap:18px;flex-wrap:wrap}
+  .stat{min-width:90px}
+  .stat .v{font-size:24px;font-weight:600}
+  .stat .l{color:var(--mut);font-size:11px}
+  .bar{height:14px;background:#21262d;border-radius:7px;overflow:hidden;margin:8px 0}
+  .bar>div{height:100%;background:linear-gradient(90deg,var(--grn),var(--blu));transition:width .6s}
+  table{border-collapse:collapse;width:100%;font-size:12px}
+  th,td{text-align:left;padding:4px 8px;border-bottom:1px solid #21262d;white-space:nowrap}
+  th{color:var(--mut);font-weight:600;position:sticky;top:0;background:var(--panel)}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  .ok{color:var(--grn)}.bad{color:var(--red)}.pend{color:var(--mut)}.run{color:var(--yel)}
+  .scroll{max-height:520px;overflow:auto}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px}
+  .kv{display:flex;justify-content:space-between;gap:8px}
+  .kv .k{color:var(--mut)}
+  canvas{width:100%;height:120px;display:block}
+  .full{grid-column:1/-1}
+  .pill{padding:1px 7px;border-radius:10px;font-size:11px}
+  .pill.cpu{background:#1f6feb33;color:var(--blu)}
+  .dim{color:var(--mut)}
+  a{color:var(--blu);text-decoration:none} a:hover{text-decoration:underline}
+  .err{color:var(--red)}
+  .badge{padding:1px 9px;border-radius:10px;font-size:11px;font-weight:600}
+  .badge.live{background:#1a3a24;color:var(--grn)}
+  .badge.live::before{content:"●";margin-right:5px;animation:blink 1.6s infinite}
+  .badge.stale{background:#3a2e14;color:var(--yel)}
+  .badge.fin{background:#13243a;color:var(--blu)}
+  @keyframes blink{50%{opacity:.25}}
+  .alert{display:none;margin:10px 20px 0;padding:9px 14px;border:1px solid #5a4a1a;
+         background:#241d0c;color:var(--yel);border-radius:8px;font-size:12px}
+  .why p{margin:6px 0;font-size:12.5px;line-height:1.55}
+  .why b{color:var(--fg)}
+  .why .dev{color:var(--blu);font-weight:600}
+  .why ul{margin:4px 0 10px;padding-left:18px}
+  .why li{margin:3px 0;font-size:12.5px;line-height:1.5}
+  .why .fix{border-left:3px solid var(--grn);padding-left:12px;margin-top:10px}
+</style>
 </head>
 <body>
-  <div class="container">
-    <a class="back" href="../research.html">← Back to Research</a>
-    <h1>Holo3-35B-A3B on OSWorld-Verified <span id="status-badge" class="badge live">LIVE</span></h1>
-    <div class="sub">
-      Full 361-task benchmark of the <a href="https://huggingface.co/Hcompany/Holo3-35B-A3B">#1 open-weight computer-use model</a>
-      running <em>entirely on an edge device</em> — Intel Core Ultra 7 (Panther Lake) NUC, 96&nbsp;GB unified RAM,
-      CPU-only llama.cpp serving (Q4_K_M, 3B active MoE params). Part of
-      <a href="../research.html">System Optimization for Edge Device Inference</a> (WukLab, UC San Diego).
-      Replicates H&nbsp;Company's leaderboard config: <span class="mono">max_steps=100</span>, screenshot-only, single rollout.
+<header>
+  <h1>Holo3-35B-A3B · OSWorld-Verified · <span id="host">NUC16</span>
+      <span id="status-badge" class="badge live">LIVE</span></h1>
+  <span class="sub" id="meta-line">loading…</span>
+  <span class="sub" style="margin-left:auto">
+    <span id="updated"></span> &nbsp;·&nbsp; <a href="../research.html">← research</a>
+  </span>
+</header>
+<div class="alert" id="alert"></div>
+
+<div class="wrap">
+  <div class="panel">
+    <h2>Progress</h2>
+    <div class="bar"><div id="pbar" style="width:0%"></div></div>
+    <div class="big">
+      <div class="stat"><div class="v" id="p-done">–</div><div class="l">tasks done / total</div></div>
+      <div class="stat"><div class="v ok" id="p-sr">–</div><div class="l">success rate</div></div>
+      <div class="stat"><div class="v" id="p-scored">–</div><div class="l">scored</div></div>
     </div>
-    <div class="sub" id="updated">connecting…</div>
-    <div class="alert" id="alert"></div>
-
-    <div class="grid">
-      <div class="panel">
-        <h2>Progress</h2>
-        <div class="bar"><div id="pbar" style="width:0%"></div></div>
-        <div class="big">
-          <div class="stat"><div class="v" id="p-done">–</div><div class="l">tasks done / total</div></div>
-          <div class="stat"><div class="v ok" id="p-sr">–</div><div class="l">success rate</div></div>
-          <div class="stat"><div class="v" id="p-eta">–</div><div class="l">est. remaining</div></div>
-          <div class="stat"><div class="v" id="p-elapsed">–</div><div class="l">elapsed</div></div>
-        </div>
-        <div class="note">Official Holo3-35B-A3B leaderboard runs: 82.56% / 78.15% (mean 80.4%) at the same 100-step budget.</div>
-      </div>
-
-      <div class="panel">
-        <h2>Current task</h2>
-        <div id="cur" class="kv">idle</div>
-      </div>
-
-      <div class="panel">
-        <h2>Serving &amp; energy</h2>
-        <div id="agg"></div>
-      </div>
-
-      <div class="panel">
-        <h2>Live telemetry</h2>
-        <div id="sys"></div>
-      </div>
-
-      <div class="panel full">
-        <h2>Package power &amp; CPU utilization — last ~3 h</h2>
-        <canvas id="chart" width="1400" height="130"></canvas>
-        <div class="note" id="chart-legend">power (blue, W) · CPU util (orange, %) — sampled every 2 s on-device, downsampled</div>
-      </div>
-
-      <div class="panel">
-        <h2>By domain</h2>
-        <div class="scroll"><table class="dt" id="dom"></table></div>
-      </div>
-
-      <div class="panel">
-        <h2>Why CPU? (GPU &amp; NPU tried first)</h2>
-        <div class="scroll"><table class="dt" id="bringup"></table></div>
-        <div class="note" id="bringup-note"></div>
-      </div>
-
-      <div class="panel full">
-        <h2>All tasks</h2>
-        <div class="scroll"><table class="dt" id="tasks"></table></div>
-      </div>
-
-      <div class="panel full">
-        <h2>About this experiment</h2>
-        <div class="note" style="font-size:0.92rem">
-          The serving stack is <span class="mono">llama.cpp</span> on the CPU with a split thread pool
-          (decode 8 threads / prefill 16 — measured: bandwidth-bound MoE decode peaks at 8 threads on this
-          heterogeneous 4P+8E+4LP part). The Xe3 iGPU was genuinely attempted first: its Vulkan vision-encoder
-          path crashes the device (<span class="mono">vk::DeviceLostError</span>) and text-only offload decodes at
-          half CPU speed; the NPU cannot serve this hybrid Gated-DeltaNet MoE-VLM architecture at all. Every step
-          logs prefill/decode throughput, token counts, KV-cache reuse, RAPL energy across 5 power domains,
-          GPU/NPU frequency and package thermals — the dataset behind the latency and J/task analyses in the
-          write-up. Scores are latency-independent: slow hardware changes wall-clock, not the benchmark result.
-        </div>
-      </div>
+    <div class="big" style="margin-top:10px">
+      <div class="stat"><div class="v" id="p-elapsed">–</div><div class="l">elapsed</div></div>
+      <div class="stat"><div class="v" id="p-eta">–</div><div class="l">ETA remaining</div></div>
+      <div class="stat"><div class="v" id="p-tw">–</div><div class="l">mean task wall</div></div>
+    </div>
+    <div class="dim" style="margin-top:8px;font-size:11px">
+      official Holo3-35B-A3B leaderboard runs: 82.56 / 78.15 % (mean 80.4) at the same 100-step budget
     </div>
   </div>
+
+  <div class="panel">
+    <h2>Current task</h2>
+    <div id="cur">idle</div>
+  </div>
+
+  <div class="panel">
+    <h2>Live system telemetry</h2>
+    <div class="grid2" id="sys"></div>
+  </div>
+
+  <div class="panel">
+    <h2>Serving aggregate</h2>
+    <div class="grid2" id="agg"></div>
+  </div>
+
+  <div class="panel full">
+    <h2>Success rate by domain</h2>
+    <div class="scroll"><table id="dom"></table></div>
+  </div>
+
+  <div class="panel full">
+    <h2>Package power (W) &amp; CPU util — last ~3 h</h2>
+    <canvas id="chart" width="1200" height="120"></canvas>
+  </div>
+
+  <div class="panel full">
+    <h2>Tasks</h2>
+    <div class="scroll"><table id="tasks"></table></div>
+  </div>
+
+  <div class="panel full">
+    <h2>Device bring-up — why CPU (GPU/NPU tried first)</h2>
+    <div id="bringup" class="dim">…</div>
+  </div>
+
+  <div class="panel full why">
+    <h2>Root cause — why the NPU and iGPU can't serve this model</h2>
+    <p><span class="dev">NPU (Intel NPU&nbsp;5, OpenVINO)</span> — blocked at the <b>software-stack level, twice over</b>:</p>
+    <ul>
+      <li><b>Architecture gap.</b> Holo3 is <code>qwen3_5_moe</code>: a hybrid <b>Gated-DeltaNet</b> (linear-attention/SSM) ×
+          <b>256-expert sparse MoE</b> vision-language model. The NPU is only reachable through OpenVINO, and
+          optimum-intel/OpenVINO cannot export this architecture — OpenVINO GenAI's VLM pipeline supports only
+          <i>dense</i> Qwen3-VL; no MoE-VLM, no DeltaNet ops.</li>
+      <li><b>Hardware ceiling.</b> NPU&nbsp;5 is a static-graph accelerator for small models; ~20&nbsp;GB of INT4 MoE
+          weights plus a growing KV/SSM state in token-by-token agentic decode is the opposite of its design point.</li>
+    </ul>
+    <p><span class="dev">iGPU (Xe3, llama.cpp Vulkan)</span> — three independent, <b>measured</b> failure layers:</p>
+    <ul>
+      <li><b>Vision encoder crashes the device.</b> The CLIP/mmproj graph raises <code>vk::DeviceLostError</code> inside
+          <code>clip_image_batch_encode</code> → GPU reset. Driver/kernel immaturity on brand-new Xe3 silicon (mesa anv).</li>
+      <li><b>Output head computes garbage.</b> Full offload (<code>-ngl 99</code>) yields deterministic wrong tokens at temp 0;
+          isolated to the <b>248,320-vocab lm_head matmul</b> — all 40 transformer blocks alone are numerically correct
+          (<code>-ngl 40</code>). A silent Vulkan kernel bug (likely workgroup/dimension overflow on the huge vocab matrix);
+          narrower repro than upstream issue #21888.</li>
+      <li><b>No physics win even when correct.</b> Decoding a 3B-active MoE is <b>memory-bandwidth-bound</b>, and the iGPU
+          shares the <i>same</i> ~90&nbsp;GB/s DDR5-5600 as the CPU — it adds dispatch overhead on scattered expert reads
+          without adding bandwidth: 10&nbsp;tok/s vs <b>19.9&nbsp;tok/s on CPU</b>. The iGPU cannot win this workload on this
+          silicon even bug-free.</li>
+    </ul>
+    <div class="fix">
+      <p><b>Proposed solution (concise).</b>
+      <b>Now, on this box:</b> stay on CPU and recover the broken KV prefix-cache — restructure the agent's message
+      history so screenshot eviction stops invalidating the prefix (measured ~25K-token re-prefills at ~60 tok/s
+      dominate step latency; est. <b>2–3× faster steps</b>), plus a loop-detector that early-FAILs runaway episodes.
+      <b>Upstream:</b> file the two minimal repros (lm_head-only corruption; clip DeviceLost) — either fix unlocks
+      vision-prefill offload to the iGPU.
+      <b>Right long-term fix:</b> heterogeneous placement once OpenVINO gains MoE-VLM support — vision tower on NPU,
+      compute-bound prefill on iGPU, bandwidth-bound expert decode on CPU — or edge silicon with real bandwidth
+      headroom (≥200&nbsp;GB/s class) where the GPU path pays off.</p>
+    </div>
+  </div>
+</div>
 
 <script>
 const DATA_URL = 'https://raw.githubusercontent.com/Mac-Huang/xuming.ai/live-data/holo3_state.json';
@@ -146,54 +166,70 @@ const fmtDur = s => { if(s==null) return '–'; s=Math.round(s);
   const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);
   return (d?d+'d ':'')+(h||d?h+'h ':'')+m+'m'; };
 const pct = x => x==null?'–':(100*x).toFixed(1)+'%';
-const kv = (k,v) => `<div class="kv"><span class="k">${k}</span><span>${v}</span></div>`;
+const n1 = x => x==null?'–':(+x).toFixed(1);
 
 async function load(){
   let st;
-  try { st = await (await fetch(DATA_URL+'?t='+Math.floor(Date.now()/60000))).json(); }
-  catch(e){ document.getElementById('updated').textContent = 'data fetch failed — retrying…'; return; }
-  const m=st.meta||{}, pr=st.progress||{}, ag=st.aggregate||{}, cur=st.current||{}, s=st.system_latest||{};
+  try{ st = await (await fetch(DATA_URL+'?t='+Math.floor(Date.now()/60000))).json(); }
+  catch(e){ document.getElementById('updated').textContent='data fetch failed — retrying'; return; }
+  const m=st.meta||{}, pr=st.progress||{}, ag=st.aggregate||{}, c=st.current||{}, s=st.system_latest||{};
 
-  // freshness
-  const ageMin = (Date.now()/1000 - (st.published_at||0))/60;
-  const runAge = (Date.now()/1000 - (st.updated_at||0))/60;
-  const finished = (pr.done!=null && pr.total!=null && pr.done>=pr.total) || cur.status==='finished';
-  const badge = document.getElementById('status-badge');
-  const alert = document.getElementById('alert');
-  if (finished){ badge.className='badge fin'; badge.textContent='FINISHED'; alert.style.display='none'; }
-  else if (runAge > 45){ badge.className='badge stale'; badge.textContent='STALE';
-    alert.style.display='block';
-    alert.textContent=`No state update from the device for ${fmtDur(runAge*60)} — the run may be paused or recovering. Data below is the last published snapshot.`;
-  } else { badge.className='badge live'; badge.textContent='LIVE'; alert.style.display='none'; }
+  const runAge=(Date.now()/1000-(st.updated_at||0))/60;
+  const pubAge=(Date.now()/1000-(st.published_at||0))/60;
+  const finished=(pr.done!=null&&pr.total!=null&&pr.done>=pr.total)||c.status==='finished';
+  const badge=document.getElementById('status-badge'), alert=document.getElementById('alert');
+  if(finished){badge.className='badge fin';badge.textContent='FINISHED';alert.style.display='none';}
+  else if(runAge>45){badge.className='badge stale';badge.textContent='STALE';alert.style.display='block';
+    alert.textContent=`no state update from the device for ${fmtDur(runAge*60)} — run may be paused or recovering; showing last published snapshot`;}
+  else {badge.className='badge live';badge.textContent='LIVE';alert.style.display='none';}
+
+  document.getElementById('host').textContent = m.host||'NUC16';
+  document.getElementById('meta-line').innerHTML =
+    `${m.model||''} · ${m.quant||''} · <span class="pill cpu">${(m.device||'?').toUpperCase()}</span> · `+
+    `max_steps=${m.max_steps} · ${m.screen} · ${m.observation} · temp=${m.temperature} · single rollout · `+
+    `<span class="dim">#1 open-weight on OSWorld-Verified</span>`;
   document.getElementById('updated').textContent =
-    `device: ${m.host||'NUC16'} · model ${m.quant||''} · published ${ageMin<1.5?'just now':fmtDur(ageMin*60)+' ago'} · auto-refreshes every 60 s`;
+    'published '+(pubAge<1.5?'just now':fmtDur(pubAge*60)+' ago');
 
   document.getElementById('p-done').textContent = `${pr.done??'–'} / ${pr.total??'–'}`;
   document.getElementById('p-sr').textContent = pct(pr.success_rate);
-  document.getElementById('p-eta').textContent = finished?'—':fmtDur(pr.eta_s);
+  document.getElementById('p-scored').textContent = pr.scored??'–';
   document.getElementById('p-elapsed').textContent = m.started_at? fmtDur(Date.now()/1000-m.started_at):'–';
+  document.getElementById('p-eta').textContent = finished?'—':fmtDur(pr.eta_s);
+  document.getElementById('p-tw').textContent = pr.mean_task_wall_s? fmtDur(pr.mean_task_wall_s):'–';
   document.getElementById('pbar').style.width = pr.total? (100*pr.done/pr.total)+'%':'0%';
 
-  document.getElementById('cur').outerHTML = `<div id="cur">`+ (finished?
-    '<div class="kv">run complete ✓</div>' : (!cur.task_id? 'idle' :
-    kv('task', `${cur.domain}/${String(cur.task_id).slice(0,8)}`)+
-    kv('step', `${cur.step} / ${cur.max_steps}`)+
-    kv('last predict', (cur.t_predict_s??'–')+' s')+
-    kv('context', (cur.prompt_tokens??'–')+' tokens')+
-    kv('decode', (cur.decode_tps??'–')+' tok/s'))) + `</div>`;
+  document.getElementById('cur').innerHTML = finished? '<span class="ok">run complete ✓</span>' :
+    (!c.task_id)? (c.status||'idle') :
+    `<div class="kv"><span class="k">task</span><span>${c.domain}/${String(c.task_id).slice(0,8)}</span></div>`+
+    `<div class="kv"><span class="k">step</span><span class="run">${c.step}/${c.max_steps}</span></div>`+
+    `<div class="kv"><span class="k">last predict</span><span>${n1(c.t_predict_s)} s</span></div>`+
+    `<div class="kv"><span class="k">context</span><span>${c.prompt_tokens??'–'} tokens</span></div>`+
+    `<div class="kv"><span class="k">decode</span><span>${c.decode_tps??'–'} t/s</span></div>`;
 
-  document.getElementById('agg').innerHTML =
-    kv('mean prefill', (ag.prefill_tps_mean??'–')+' tok/s')+
-    kv('mean decode', (ag.decode_tps_mean??'–')+' tok/s')+
-    kv('mean context', (ag.prompt_tokens_mean??'–')+' tokens')+
-    kv('energy / task', (ag.energy_wh_per_task_mean??'–')+' Wh');
+  const sysRows=[
+    ['pkg power', s['power_package-0_w']!=null? s['power_package-0_w']+' W':'–'],
+    ['psys power', s['power_psys_w']!=null? s['power_psys_w']+' W':'–'],
+    ['dram power', s['power_dram_w']!=null? s['power_dram_w']+' W':'–'],
+    ['CPU util', s.cpu_util!=null? pct(s.cpu_util):'–'],
+    ['CPU freq', s.cpu_mean_mhz? s.cpu_mean_mhz+' MHz':'–'],
+    ['pkg temp', s.temp_x86_pkg_temp_c!=null? s.temp_x86_pkg_temp_c+' °C':'–'],
+    ['GPU freq', s.gpu_act_mhz!=null? s.gpu_act_mhz+' MHz (idle by design)':'–'],
+    ['NPU util', s.npu_util!=null? pct(s.npu_util)+' (idle by design)':'–'],
+    ['server RSS', s.server_rss_kb? (s.server_rss_kb/1e6).toFixed(1)+' GB':'–'],
+    ['mem avail', s.mem_available_kb? (s.mem_available_kb/1e6).toFixed(1)+' GB':'–'],
+  ];
+  document.getElementById('sys').innerHTML = sysRows.map(([k,v])=>
+    `<div class="kv"><span class="k">${k}</span><span>${v}</span></div>`).join('');
 
-  document.getElementById('sys').innerHTML =
-    kv('package power', s['power_package-0_w']!=null? s['power_package-0_w']+' W':'–')+
-    kv('CPU util', s.cpu_util!=null? pct(s.cpu_util):'–')+
-    kv('package temp', s.temp_x86_pkg_temp_c!=null? s.temp_x86_pkg_temp_c+' °C':'–')+
-    kv('server memory', s.server_rss_kb? (s.server_rss_kb/1e6).toFixed(1)+' GB':'–')+
-    kv('GPU / NPU', `${s.gpu_act_mhz??'–'} MHz / ${s.npu_util!=null?pct(s.npu_util):'–'} (idle by design)`);
+  const aggRows=[
+    ['prefill t/s', ag.prefill_tps_mean??'–'],
+    ['decode t/s', ag.decode_tps_mean??'–'],
+    ['prompt tokens', ag.prompt_tokens_mean??'–'],
+    ['Wh / task', ag.energy_wh_per_task_mean??'–'],
+  ];
+  document.getElementById('agg').innerHTML = aggRows.map(([k,v])=>
+    `<div class="kv"><span class="k">${k}</span><span>${v}</span></div>`).join('');
 
   const bd=st.by_domain||{};
   let dh='<tr><th>domain</th><th class="num">done/total</th><th class="num">success</th></tr>';
@@ -202,33 +238,38 @@ async function load(){
         `<td class="num">${x.done? pct(x.success_sum/x.done):'–'}</td></tr>`;});
   document.getElementById('dom').innerHTML=dh;
 
-  const bp=st.device_bringup;
-  if(bp){
-    let h='<tr><th>device</th><th>status</th><th>vision</th><th class="num">decode tok/s</th></tr>';
-    (bp.devices||[]).forEach(d=>{
-      let dec=d.decode_tps, vok=d.vision_correct;
-      if(d.configs){const best=d.configs[d.configs.length-1]; dec=best.decode_tps; vok=best.vision_correct;}
-      if(d.device==='CPU' && d.thread_sweep) dec=Math.max(...Object.values(d.thread_sweep.tg32_tps));
-      h+=`<tr><td>${d.device}</td>`+
-         `<td class="${d.status==='SELECTED'?'ok':d.status==='UNAVAILABLE'?'bad':'run'}">${d.status}</td>`+
-         `<td>${vok===true?'<span class=ok>✓</span>':vok===false?'<span class=bad>✗</span>':'–'}</td>`+
-         `<td class="num">${dec??'–'}</td></tr>`;});
-    document.getElementById('bringup').innerHTML=h;
-    document.getElementById('bringup-note').textContent=(bp.decision||'');
-  }
-
   const ts=st.tasks||[];
   let th='<tr><th>#</th><th>domain</th><th>task</th><th>status</th><th class="num">score</th>'+
-         '<th class="num">steps</th><th class="num">wall</th><th class="num">Wh</th><th class="num">dec t/s</th></tr>';
+         '<th class="num">steps</th><th class="num">wall</th><th class="num">Wh</th>'+
+         '<th class="num">predict s</th><th class="num">dec t/s</th><th class="num">ptok</th></tr>';
   ts.forEach((t,i)=>{
     const cls = t.status==='error'?'bad':t.status==='done'?(t.score>=0.999?'ok':t.score>0?'run':'bad'):'pend';
-    th+=`<tr><td class="num pend">${i+1}</td><td>${t.domain}</td>`+
-        `<td class="pend" title="${(t.instruction||'').replace(/"/g,'&quot;')}">${t.task_id||''}</td>`+
+    th+=`<tr><td class="num dim">${i+1}</td><td>${t.domain}</td>`+
+        `<td class="dim" title="${(t.instruction||'').replace(/"/g,'&quot;')}">${t.task_id||''}</td>`+
         `<td class="${cls}">${t.status||'pending'}</td>`+
         `<td class="num ${cls}">${t.score==null?'–':(+t.score).toFixed(2)}</td>`+
-        `<td class="num">${t.steps??'–'}</td><td class="num">${t.wall_s?fmtDur(t.wall_s):'–'}</td>`+
-        `<td class="num">${t.energy_wh??'–'}</td><td class="num">${t.mean_decode_tps??'–'}</td></tr>`;});
+        `<td class="num">${t.steps??'–'}</td>`+
+        `<td class="num">${t.wall_s?fmtDur(t.wall_s):'–'}</td>`+
+        `<td class="num">${t.energy_wh??'–'}</td>`+
+        `<td class="num">${t.mean_predict_s??'–'}</td>`+
+        `<td class="num">${t.mean_decode_tps??'–'}</td>`+
+        `<td class="num">${t.mean_prompt_tokens??'–'}</td></tr>`;});
   document.getElementById('tasks').innerHTML=th;
+
+  const bp=st.device_bringup;
+  if(bp){
+    let h='<table><tr><th>device</th><th>status</th><th>vision OK</th><th class="num">decode t/s</th><th>note</th></tr>';
+    (bp.devices||[]).forEach(d=>{
+      let dec=d.decode_tps, vok=d.vision_correct, note='';
+      if(d.configs){ const best=d.configs[d.configs.length-1]; dec=best.decode_tps; vok=best.vision_correct;
+        note=(d.configs.find(c=>/CRASH/i.test(c.note||''))||{}).note||best.note||''; }
+      if(d.device==='CPU' && d.thread_sweep) dec=Math.max(...Object.values(d.thread_sweep.tg32_tps));
+      h+=`<tr><td>${d.device}</td><td class="${d.status==='SELECTED'?'ok':d.status==='UNAVAILABLE'?'bad':'run'}">${d.status}</td>`+
+         `<td>${vok===true?'<span class=ok>yes</span>':vok===false?'<span class=bad>no</span>':'–'}</td>`+
+         `<td class="num">${dec??'–'}</td><td class="dim">${(note||'').slice(0,90)}</td></tr>`;});
+    h+='</table><div class="dim" style="margin-top:6px">'+(bp.decision||'')+'</div>';
+    document.getElementById('bringup').innerHTML=h;
+  }
 
   drawChart(st.telemetry_series||[]);
 }
@@ -238,11 +279,14 @@ function drawChart(series){
   x.clearRect(0,0,W,H);
   if(series.length<3) return;
   const pw=series.map(r=>r.pkg_w), cu=series.map(r=>r.cpu==null?null:r.cpu*100);
-  const plot=(arr,max,color)=>{ x.strokeStyle=color;x.lineWidth=1.6;x.beginPath();let st=false;
-    arr.forEach((v,i)=>{ if(v==null){st=false;return;} const px=i/(arr.length-1)*W, py=H-(v/max)*(H-8)-4;
+  const plot=(arr,max,color)=>{ x.strokeStyle=color;x.lineWidth=1.5;x.beginPath();let st=false;
+    arr.forEach((v,i)=>{ if(v==null){st=false;return;} const px=i/(arr.length-1)*W, py=H-(v/max)*(H-6)-3;
       if(!st){x.moveTo(px,py);st=true;}else x.lineTo(px,py);}); x.stroke();};
-  const pmax=Math.max(60,...pw.filter(v=>v!=null))*1.12;
-  plot(pw,pmax,'#1772d0'); plot(cu,100,'#d97706');
+  const pmax=Math.max(60,...pw.filter(v=>v!=null))*1.1;
+  plot(pw,pmax,'#f85149'); plot(cu,100,'#58a6ff');
+  x.fillStyle='#8b949e';x.font='11px monospace';
+  x.fillText('power (red, max '+pmax.toFixed(0)+'W)',6,14);
+  x.fillText('cpu% (blue)',6,28);
 }
 
 load(); setInterval(load, 60000);
