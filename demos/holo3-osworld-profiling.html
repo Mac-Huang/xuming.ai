@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Holo3 · OSWorld · NUC16 — profiling corpus</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{--bg:#0d1117;--panel:#161b22;--bd:#30363d;--fg:#c9d1d9;--mut:#8b949e;
+        --grn:#3fb950;--red:#f85149;--yel:#d29922;--blu:#58a6ff;--pur:#bc8cff}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);
+       font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  header{padding:14px 20px;border-bottom:1px solid var(--bd);display:flex;
+         flex-wrap:wrap;gap:6px 24px;align-items:baseline}
+  h1{font-size:16px;margin:0;color:var(--blu)}
+  .sub{color:var(--mut)}
+  .wrap{padding:16px 20px;display:grid;gap:16px;
+        grid-template-columns:repeat(auto-fit,minmax(360px,1fr))}
+  .panel{background:var(--panel);border:1px solid var(--bd);border-radius:8px;padding:16px}
+  .panel h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;
+            color:var(--mut);margin:0 0 12px}
+  .full{grid-column:1/-1}
+  p{margin:8px 0;font-size:12.5px;line-height:1.6}
+  b{color:var(--fg)}
+  code{background:#21262d;padding:1px 5px;border-radius:4px;color:var(--pur);font-size:12px}
+  a{color:var(--blu);text-decoration:none} a:hover{text-decoration:underline}
+  .dim{color:var(--mut)}
+  table{border-collapse:collapse;width:100%;font-size:12px}
+  th,td{text-align:left;padding:5px 9px;border-bottom:1px solid #21262d;white-space:nowrap}
+  th{color:var(--mut);font-weight:600}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  .ok{color:var(--grn)}.bad{color:var(--red)}.run{color:var(--yel)}
+  .scroll{max-width:100%;overflow:auto}
+  /* schema */
+  .grp{margin:0 0 14px}
+  .grp:last-child{margin-bottom:0}
+  .grp .tag{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.06em;
+            padding:2px 9px;border-radius:5px;margin-bottom:8px}
+  .tag.state{background:#1f6feb33;color:var(--blu)}
+  .tag.action{background:#bc8cff33;color:var(--pur)}
+  .tag.cost{background:#d2992233;color:var(--yel)}
+  .tag.label{background:#3fb95033;color:var(--grn)}
+  .frow{display:grid;grid-template-columns:160px 200px 1fr;gap:4px 14px;
+        padding:4px 0;border-bottom:1px solid #21262d;align-items:baseline}
+  .frow .fn{color:var(--fg)}
+  .frow .fv{color:var(--pur);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .frow .fd{color:var(--mut);font-size:11.5px;white-space:normal}
+  @media(max-width:640px){.frow{grid-template-columns:1fr;gap:1px}}
+  /* callouts */
+  .call{border-left:3px solid var(--blu);padding:8px 0 8px 13px;margin:12px 0;
+        background:#10243a55;border-radius:0 6px 6px 0}
+  .call.gap{border-color:var(--yel);background:#241d0c55}
+  .call.fix{border-color:var(--grn);background:#0f240f55}
+  ul{margin:6px 0;padding-left:18px}
+  li{margin:4px 0;font-size:12.5px;line-height:1.55}
+  .badge{padding:1px 9px;border-radius:10px;font-size:11px;font-weight:600;
+         background:#13243a;color:var(--blu)}
+  .src{color:var(--blu);font-size:11.5px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Holo3-35B-A3B · OSWorld-Verified · NUC16 — <span style="color:var(--fg)">profiling corpus</span>
+      <span class="badge">SCHEMA</span></h1>
+  <span class="sub">what every benchmark step records, and why</span>
+  <span class="sub" style="margin-left:auto">
+    <a href="holo3-osworld-live.html">live tracker →</a> &nbsp;·&nbsp; <a href="../research.html#wuklab">← research</a>
+  </span>
+</header>
+
+<div class="wrap">
+
+  <!-- intro -->
+  <div class="panel full">
+    <h2>What this is</h2>
+    <p>
+      Every step of the full 361-task <a href="https://os-world.github.io/">OSWorld-Verified</a> run of
+      <a href="https://huggingface.co/Hcompany/Holo3-35B-A3B">Holo3-35B-A3B</a> on the Intel Panther Lake NUC
+      (CPU-only llama.cpp) is instrumented end to end. The run reproduces the official leaderboard config
+      (100-step budget, screenshot-only, single rollout) — but alongside the score it emits a <b>step-indexed,
+      replayable corpus</b> of state, action, and measured cost.
+    </p>
+    <p>
+      <b>Why bother profiling at step granularity?</b> The research target is an upper-layer <b>model router</b>
+      that sends each step of a task to an appropriately-sized model — large model for the early planning steps,
+      small model for the routine ones — via a policy learned from exactly these per-step traces. This page
+      documents what the corpus contains, shows real sampled rows, and is honest about what it can and cannot
+      train on its own.
+    </p>
+    <p class="dim">
+      Scale when complete: roughly <b>8,000–15,000 rows</b> (361 tasks × the step distribution; current average
+      ~15 steps/task, but cap-bound episodes run to the full 100).
+    </p>
+  </div>
+
+  <!-- sources -->
+  <div class="panel full">
+    <h2>Captured from four time-aligned sources</h2>
+    <p class="dim">One logical row = one agent step (one model call). It is assembled by joining these on
+       <code>(domain, task_id, step)</code> and the 2&nbsp;Hz telemetry on the <code>ts</code> window.</p>
+    <div class="scroll"><table>
+      <tr><th>source file</th><th>grain</th><th>contributes</th></tr>
+      <tr><td class="src">raw/model_calls.jsonl</td><td>per step</td>
+          <td>tokens, server timings, tool, reasoning length, parse success</td></tr>
+      <tr><td class="src">…/episode_profile.json → steps_profile[]</td><td>per step</td>
+          <td>latency split (predict / exec), 5-domain RAPL Joules</td></tr>
+      <tr><td class="src">…/traj.jsonl</td><td>per step</td>
+          <td>action code, note, thought, screenshot filename, reward/done</td></tr>
+      <tr><td class="src">raw/system_samples.csv</td><td>2&nbsp;Hz</td>
+          <td>host telemetry: CPU/GPU/NPU, power, memory, thermals</td></tr>
+    </table></div>
+    <p class="dim" style="margin-top:8px">Plus, on disk per step: the full-resolution
+       <b>screenshot PNG</b>; per task: a <b>screen recording (mp4)</b> and the OSWorld config snapshot.</p>
+  </div>
+
+  <!-- schema -->
+  <div class="panel full">
+    <h2>One row per agent step — fields grouped by role</h2>
+    <p class="dim">Example values are real, sampled from <code>chrome/06fe7178</code> step&nbsp;1
+       (task: <i>"Can you make my computer bring back the last tab I shut down?"</i>).</p>
+
+    <div class="grp">
+      <span class="tag state">STATE — what the router conditions on</span>
+      <div class="frow"><span class="fn">domain</span><span class="fv">chrome</span><span class="fd">task category (10 OSWorld domains)</span></div>
+      <div class="frow"><span class="fn">task_id</span><span class="fv">06fe7178-4491-…</span><span class="fd">OSWorld example UUID</span></div>
+      <div class="frow"><span class="fn">step</span><span class="fv">1</span><span class="fd">index within the episode — the "early vs late" planning axis</span></div>
+      <div class="frow"><span class="fn">screenshot_file</span><span class="fv">step_1_…031052.png</span><span class="fd">full-resolution observation, kept on disk for replay</span></div>
+      <div class="frow"><span class="fn">prompt_tokens</span><span class="fv">3003</span><span class="fd">running context size fed to the model</span></div>
+      <div class="frow"><span class="fn">cached_tokens</span><span class="fv">0</span><span class="fd">KV prefix reused from prior step (0 = cold prefill)</span></div>
+      <div class="frow"><span class="fn">instruction</span><span class="fv">"…bring back the last tab…"</span><span class="fd">natural-language task string</span></div>
+    </div>
+
+    <div class="grp">
+      <span class="tag action">ACTION — what the model did</span>
+      <div class="frow"><span class="fn">tool</span><span class="fv">key</span><span class="fd">click · double_click · right_click · drag · scroll · write · key · wait · answer</span></div>
+      <div class="frow"><span class="fn">action</span><span class="fv">hotkey('ctrl','shift','t')</span><span class="fd">executed pyautogui code (with pixel coords when spatial)</span></div>
+      <div class="frow"><span class="fn">note</span><span class="fv">"User wants to restore…"</span><span class="fd">durable memory the agent carries forward</span></div>
+      <div class="frow"><span class="fn">thought</span><span class="fv">"…use Ctrl+Shift+T…"</span><span class="fd">one-line stated reasoning</span></div>
+      <div class="frow"><span class="fn">reasoning_len</span><span class="fv">436</span><span class="fd">chars of the hidden &lt;think&gt; block (text itself not saved — see gap)</span></div>
+    </div>
+
+    <div class="grp">
+      <span class="tag cost">COST — the price term of any routing objective</span>
+      <div class="frow"><span class="fn">t_predict_s</span><span class="fv">74.946</span><span class="fd">model-call wall time</span></div>
+      <div class="frow"><span class="fn">t_exec_s</span><span class="fv">3.281</span><span class="fd">environment action time</span></div>
+      <div class="frow"><span class="fn">prefill_tps</span><span class="fv">47.33</span><span class="fd">prompt tokens / s</span></div>
+      <div class="frow"><span class="fn">decode_tps</span><span class="fv">17.67</span><span class="fd">generated tokens / s</span></div>
+      <div class="frow"><span class="fn">predicted_tokens</span><span class="fv">198</span><span class="fd">tokens generated this step</span></div>
+      <div class="frow"><span class="fn">energy_j</span><span class="fv">{pkg 3918.6, core 3659.2, uncore 1.1, dram 92.2, psys 5572.3}</span><span class="fd">per-step Joules, 5 RAPL domains</span></div>
+    </div>
+
+    <div class="grp">
+      <span class="tag label">LABEL — inherited by every step of the task</span>
+      <div class="frow"><span class="fn">score</span><span class="fv">1.0</span><span class="fd">OSWorld execution-based final score (0/1)</span></div>
+      <div class="frow"><span class="fn">done_by_agent</span><span class="fv">true</span><span class="fd">agent self-terminated vs hit the 100-step cap</span></div>
+      <div class="frow"><span class="fn">steps</span><span class="fv">2</span><span class="fd">total episode length</span></div>
+    </div>
+  </div>
+
+  <!-- example A -->
+  <div class="panel">
+    <h2>Real episode — short success</h2>
+    <p class="dim"><code>chrome/06fe7178</code> · <i>"bring back the last tab I shut down"</i><br>
+       score <span class="ok">1.0</span> · 2 steps · 183&nbsp;s wall · 2.22&nbsp;Wh</p>
+    <div class="scroll"><table>
+      <tr><th>step</th><th>tool</th><th class="num">prompt</th><th class="num">cached</th>
+          <th class="num">pred</th><th class="num">dec t/s</th><th class="num">predict s</th><th class="num">score</th></tr>
+      <tr><td>1</td><td>key</td><td class="num">3003</td><td class="num">0</td>
+          <td class="num">198</td><td class="num">17.67</td><td class="num">74.9</td><td class="num ok">1.0</td></tr>
+      <tr><td>2</td><td>answer→<span class="ok">DONE</span></td><td class="num">2170</td><td class="num">2999</td>
+          <td class="num">269</td><td class="num">15.63</td><td class="num">75.9</td><td class="num ok">1.0</td></tr>
+    </table></div>
+    <p class="dim" style="margin-top:8px">Step 2's <code>cached_tokens: 2999</code> is the KV prefix
+       reused from step 1 — the rare case where the cache survives.</p>
+  </div>
+
+  <!-- example B -->
+  <div class="panel">
+    <h2>Real episode — cap-bound looper</h2>
+    <p class="dim"><code>chrome/99146c54</code> · <i>"delete browsing data automatically on close"</i><br>
+       score <span class="bad">0.0</span> · 100 steps · 8.9&nbsp;h wall · 38.2&nbsp;Wh</p>
+    <div class="scroll"><table>
+      <tr><th>step</th><th class="num">prompt</th><th class="num">cached</th><th class="num">pred</th>
+          <th class="num">dec t/s</th><th class="num">predict s</th><th class="num">score</th></tr>
+      <tr><td>1</td><td class="num">3007</td><td class="num">0</td><td class="num">221</td>
+          <td class="num">17.68</td><td class="num">75.5</td><td class="num bad">0.0</td></tr>
+      <tr><td>51</td><td class="num">16484</td><td class="num">947</td><td class="num">400</td>
+          <td class="num run">9.80</td><td class="num run">328.4</td><td class="num bad">0.0</td></tr>
+      <tr><td>100</td><td class="num">26299</td><td class="num">947</td><td class="num">308</td>
+          <td class="num bad">6.21</td><td class="num bad">520.5</td><td class="num bad">0.0</td></tr>
+    </table></div>
+    <p class="dim" style="margin-top:8px">Context bloats and KV reuse stays broken → decode collapses
+       and per-step latency runs away.</p>
+  </div>
+
+  <div class="panel full">
+    <div class="call">
+      <b>The contrast is the whole motivation in one picture.</b> Step&nbsp;1 of a 2-step win and step&nbsp;1
+      of a 100-step failure are <b>near-indistinguishable on cost</b> (~75&nbsp;s, ~3000 tokens, ~17.7&nbsp;t/s) —
+      so the routing signal isn't in the raw cost, it's in the <b>state</b>. And the looper shows the runaway the
+      router exists to prevent: latency <b>7×</b> and decode collapsing <b>17.7 → 6.2&nbsp;t/s</b> as context grows.
+    </div>
+  </div>
+
+  <!-- telemetry -->
+  <div class="panel full">
+    <h2>Host telemetry — 2 Hz, joined on <code>ts</code></h2>
+    <div class="scroll"><table>
+      <tr><th>cpu_util</th><th class="num">cpu_mhz</th><th class="num">server_rss</th><th class="num">mem_avail</th>
+          <th class="num">pkg_w</th><th class="num">psys_w</th><th class="num">gpu_mhz</th><th class="num">npu_util</th><th class="num">pkg_°C</th></tr>
+      <tr><td class="num">20.8%</td><td class="num">2156</td><td class="num">38.0 GB</td><td class="num">50.2 GB</td>
+          <td class="num">16.2</td><td class="num">29.3</td><td class="num dim">0 (idle)</td><td class="num dim">0% (idle)</td><td class="num">78.0</td></tr>
+    </table></div>
+    <p class="dim" style="margin-top:8px">The iGPU and NPU read idle <b>by design</b> — the device bring-up
+       (on the <a href="holo3-osworld-live.html">live tracker</a>) shows why this MoE-VLM serves only on CPU
+       on this silicon.</p>
+  </div>
+
+  <!-- router framing -->
+  <div class="panel full">
+    <h2>What this trains — and what it doesn't (yet)</h2>
+    <p>Toward the step-level model router, the corpus is <span class="badge">necessary, not yet sufficient</span>.</p>
+    <p><b>✓ Fully covered — the state &amp; the cost.</b> Every feature a router conditions on at decision time
+       (step index, domain, context size, cached-token ratio, the screenshot, the message history, the tool needed)
+       and the full price term (per-step latency <i>and</i> energy) is measured. Most routing work hand-waves the
+       cost side; here it's instrumented.</p>
+    <div class="call gap">
+      <b>✗ The missing piece — the label.</b> This is a <b>single-model, single-rollout, end-scored</b> benchmark,
+      which leaves two gaps:
+      <ul>
+        <li><b>No counterfactual.</b> Every step ran on the 35B. Nothing says whether a <i>smaller</i> model would
+            have produced an acceptable action at that same state — "big was necessary here" is unlabeled.</li>
+        <li><b>No per-step quality signal.</b> OSWorld scores only the final state; intermediate reward is ~0. You
+            get task-level success/failure, not action-level correctness.</li>
+      </ul>
+    </div>
+    <div class="call fix">
+      <b>What rescues it — the corpus is replayable.</b> Because the screenshot and (reconstructable) message
+      history are saved per step, you can generate the missing labels <b>offline, without re-running OSWorld</b>:
+      replay each logged state through a smaller model, compare its action to the 35B's (action-match, or
+      downstream-success via a verifier), and that becomes the supervised "big-needed" label. The single-model run
+      can't produce routing labels by itself — but it's purpose-built to feed that offline pass.
+    </div>
+    <p class="dim"><b>Two honest caveats baked into the schema:</b>
+       (1) <code>steps_profile.tool</code> is always <code>null</code> (a known bug) — join the per-step tool from
+       <code>model_calls.jsonl</code>/<code>traj.jsonl</code> instead; nothing is lost.
+       (2) <code>reasoning_len</code> is the <i>char count</i> of the &lt;think&gt; block — the reasoning <b>text
+       is discarded</b>, which is the single most valuable missing field for a planning-vs-routine classifier and
+       is worth capturing in a re-run.</p>
+  </div>
+
+  <div class="panel full" style="text-align:center;color:var(--mut);font-size:11.5px">
+    Part of <a href="../research.html#wuklab">System Optimization for Edge Device Inference</a> ·
+    WukLab @ UC San Diego · advised by Yiying Zhang
+  </div>
+
+</div>
+</body>
+</html>
