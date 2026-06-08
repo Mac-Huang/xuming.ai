@@ -40,6 +40,12 @@
   .tag.action{background:#bc8cff33;color:var(--pur)}
   .tag.cost{background:#d2992233;color:var(--yel)}
   .tag.label{background:#3fb95033;color:var(--grn)}
+  .tag.ep{background:#0d3b4355;color:#56d4dd}
+  .rl{display:inline-block;width:48px;height:7px;background:#21262d;border-radius:4px;vertical-align:middle;margin-right:7px;overflow:hidden}
+  .rl i{display:block;height:100%;background:var(--blu)}
+  .up{color:var(--red);font-weight:600}
+  .lead{font-size:12.5px;color:var(--mut);margin:0 0 12px;line-height:1.6}
+  .frz{color:var(--yel)}
   .frow{display:grid;grid-template-columns:160px 200px 1fr;gap:4px 14px;
         padding:4px 0;border-bottom:1px solid #21262d;align-items:baseline}
   .frow .fn{color:var(--fg)}
@@ -81,15 +87,16 @@
       replayable corpus</b> of state, action, and measured cost.
     </p>
     <p>
-      <b>Why bother profiling at step granularity?</b> The research target is an upper-layer <b>model router</b>
-      that sends each step of a task to an appropriately-sized model — large model for the early planning steps,
-      small model for the routine ones — via a policy learned from exactly these per-step traces. This page
-      documents what the corpus contains, shows real sampled rows, and is honest about what it can and cannot
-      train on its own.
+      <b>Two granularities.</b> The atomic record is one <b>step</b> (one model call); the unit a router actually
+      reasons over is one whole <b>task</b> — a trajectory of steps from the first screenshot to <code>answer</code>,
+      plus episode-level aggregates. The research target is an upper-layer <b>model router</b> that sends each step
+      to an appropriately-sized model. The intended heuristic was <i>large model for early planning, small model for
+      the routine tail</i> — and because the corpus is step-indexed, that hypothesis is directly testable.
+      <a href="#test">We test it below</a>, and the data refutes the simple version.
     </p>
     <p class="dim">
-      Scale when complete: roughly <b>8,000–15,000 rows</b> (361 tasks × the step distribution; current average
-      ~15 steps/task, but cap-bound episodes run to the full 100).
+      Measured so far: <b>871 steps across 57 completed tasks</b> (median 8, mean 15.3, max 100 steps/task).
+      Projected to the full 361-task set: roughly <b>8,000–15,000 rows</b>.
     </p>
   </div>
 
@@ -157,6 +164,133 @@
     </div>
   </div>
 
+  <!-- task-level schema -->
+  <div class="panel full">
+    <h2>Zooming out — one task = one episode</h2>
+    <p class="lead">The row above is one step. A <b>task</b> is the whole sequence of those rows for one instruction,
+       wrapped with episode-level aggregates — and it is the unit a router policy acts on. Below: the episode schema
+       (real values from <code>chrome/030eeff7</code>) and that task's complete 14-step trajectory.</p>
+    <div class="grp">
+      <span class="tag ep">EPISODE — the unit the router acts on</span>
+      <div class="frow"><span class="fn">domain / task_id</span><span class="fv">chrome / 030eeff7-…</span><span class="fd">one OSWorld example</span></div>
+      <div class="frow"><span class="fn">instruction</span><span class="fv">"enable 'Do Not Track' in Chrome…"</span><span class="fd">the natural-language goal</span></div>
+      <div class="frow"><span class="fn">score</span><span class="fv">1.0</span><span class="fd">execution-based final score (0/1)</span></div>
+      <div class="frow"><span class="fn">steps</span><span class="fv">14</span><span class="fd">trajectory length</span></div>
+      <div class="frow"><span class="fn">done_by_agent</span><span class="fv">true</span><span class="fd">self-terminated via <code>answer</code> (vs hitting the 100-cap)</span></div>
+      <div class="frow"><span class="fn">wall_s</span><span class="fv">2720.2</span><span class="fd">45 min end-to-end</span></div>
+      <div class="frow"><span class="fn">energy_wh</span><span class="fv">38.27</span><span class="fd">package energy for the whole task</span></div>
+      <div class="frow"><span class="fn">mean_predict_s</span><span class="fv">189.38</span><span class="fd">mean model-call time across the 14 steps</span></div>
+      <div class="frow"><span class="fn">mean_decode_tps</span><span class="fv">14.53</span><span class="fd">mean generated tokens/s</span></div>
+      <div class="frow"><span class="fn">mean_prompt_tokens</span><span class="fv">6726</span><span class="fd">mean context size across steps</span></div>
+      <div class="frow"><span class="fn">steps_profile[]</span><span class="fv">[ 14 × step-row ]</span><span class="fd">the full per-step table ↓ (the STATE/ACTION/COST schema above, ×14)</span></div>
+    </div>
+  </div>
+
+  <!-- full trajectory -->
+  <div class="panel full">
+    <h2>One complete trajectory — all 14 steps of <code>chrome/030eeff7</code></h2>
+    <p class="lead">Goal: <i>enable Chrome's "Do Not Track".</i> The bar is each step's <code>reasoning_len</code>
+       (chars of hidden &lt;think&gt;), scaled to the task max of 1047.</p>
+    <div class="scroll"><table>
+      <tr><th>step</th><th>tool</th><th>reasoning (think chars)</th><th class="num">pred</th>
+          <th class="num">prompt</th><th class="num">cached</th><th class="num">dec t/s</th>
+          <th class="num">predict s</th><th>what the step did</th></tr>
+      <tr><td>1</td><td>click</td><td><span class="rl"><i style="width:100%"></i></span>1047</td><td class="num">438</td><td class="num">3007</td><td class="num">0</td><td class="num">16.71</td><td class="num">94.5</td><td class="dim">open ⋮ menu — plan route to Settings</td></tr>
+      <tr><td>2</td><td>click</td><td><span class="rl"><i style="width:35%"></i></span>364</td><td class="num">237</td><td class="num">2268</td><td class="num">3003</td><td class="num">15.09</td><td class="num">78.7</td><td class="dim">click Settings</td></tr>
+      <tr><td>3</td><td>click</td><td><span class="rl"><i style="width:49%"></i></span>517</td><td class="num">291</td><td class="num">2240</td><td class="num">5267</td><td class="num">14.51</td><td class="num">85.2</td><td class="dim">go to Privacy &amp; security</td></tr>
+      <tr><td>4</td><td>scroll</td><td><span class="rl"><i style="width:94%"></i></span>988</td><td class="num">436</td><td class="num">6772</td><td class="num frz">947</td><td class="num">14.79</td><td class="num">213.1</td><td class="dim">DNT not visible — scroll to look</td></tr>
+      <tr><td>5</td><td>click</td><td><span class="rl"><i style="width:97%"></i></span>1018</td><td class="num">409</td><td class="num">7025</td><td class="num frz">947</td><td class="num">14.64</td><td class="num">214.5</td><td class="dim">still hidden — open Privacy guide</td></tr>
+      <tr><td>6</td><td>click</td><td><span class="rl"><i style="width:72%"></i></span>749</td><td class="num">324</td><td class="num">7249</td><td class="num frz">947</td><td class="num">14.64</td><td class="num">211.4</td><td class="dim">Next through guide</td></tr>
+      <tr><td>7</td><td>click</td><td><span class="rl"><i style="width:31%"></i></span>328</td><td class="num">240</td><td class="num">7447</td><td class="num frz">947</td><td class="num">14.51</td><td class="num">208.7</td><td class="dim">Next</td></tr>
+      <tr><td>8</td><td>click</td><td><span class="rl"><i style="width:23%"></i></span>246</td><td class="num">230</td><td class="num">7653</td><td class="num frz">947</td><td class="num">14.32</td><td class="num">210.3</td><td class="dim">Next <span class="dim">(tersest step)</span></td></tr>
+      <tr><td>9</td><td>click</td><td><span class="rl"><i style="width:36%"></i></span>381</td><td class="num">257</td><td class="num">7863</td><td class="num frz">947</td><td class="num">14.32</td><td class="num">214.9</td><td class="dim">Next</td></tr>
+      <tr><td>10</td><td>click</td><td><span class="rl"><i style="width:46%"></i></span>480</td><td class="num">299</td><td class="num">8069</td><td class="num frz">947</td><td class="num">14.23</td><td class="num">219.5</td><td class="dim">guide done → back to settings</td></tr>
+      <tr><td>11</td><td>click</td><td><span class="rl"><i style="width:32%"></i></span>332</td><td class="num">268</td><td class="num">8302</td><td class="num frz">947</td><td class="num">14.09</td><td class="num">220.5</td><td class="dim">open Third-party cookies</td></tr>
+      <tr><td>12</td><td>click</td><td><span class="rl"><i style="width:32%"></i></span>333</td><td class="num">277</td><td class="num">8532</td><td class="num frz">947</td><td class="num">13.96</td><td class="num">224.0</td><td class="dim">found DNT toggle (Advanced)</td></tr>
+      <tr><td>13</td><td>click</td><td><span class="rl"><i style="width:50%"></i></span>523</td><td class="num">268</td><td class="num">8772</td><td class="num frz">947</td><td class="num">13.87</td><td class="num">226.4</td><td class="dim">Confirm dialog</td></tr>
+      <tr><td>14</td><td>answer</td><td><span class="rl"><i style="width:30%"></i></span>315</td><td class="num">274</td><td class="num">8965</td><td class="num frz">947</td><td class="num">13.74</td><td class="num">229.5</td><td class="ok">answer → DONE (toggle on)</td></tr>
+    </table></div>
+    <div class="call">
+      <b>Difficulty is scattered, not front-loaded.</b> Heavy-reasoning bursts appear at <b>step 1</b> (planning the
+      route to Settings, 1047 chars) <i>and again at steps 4–5</i> (re-planning when "Do Not Track" wasn't where the
+      model expected) — interleaved with terse routine click-through (steps 7–9, down to 246). A router keyed on
+      <i>step position</i> would miss the step-4 spike entirely; the signal it needs is per-step difficulty.
+    </div>
+    <div class="call gap">
+      <b>Cost grows with the trajectory regardless of difficulty.</b> From step 4 on, <span class="frz">cached_tokens
+      freezes at 947</span> — the 3-screenshot eviction invalidates the KV prefix — while the prompt climbs
+      3.0k → 9.0k tokens. So per-step latency nearly <b>triples</b> (94 → 229 s) even for identical "click Next"
+      actions. The price of a step is set by where it sits in the trajectory, not by how hard it is.
+    </div>
+  </div>
+
+  <!-- corpus at a glance -->
+  <div class="panel full">
+    <h2>Corpus at a glance — 57 tasks, 871 steps so far</h2>
+    <div class="grid2" style="grid-template-columns:1fr 1.4fr;gap:10px 28px">
+      <div>
+        <div class="kv" style="display:flex;justify-content:space-between"><span class="dim">scored tasks</span><span>57</span></div>
+        <div class="kv" style="display:flex;justify-content:space-between"><span class="dim">total steps</span><span>871</span></div>
+        <div class="kv" style="display:flex;justify-content:space-between"><span class="dim">steps/task min · median · mean</span><span>2 · 8 · 15.3</span></div>
+        <div class="kv" style="display:flex;justify-content:space-between"><span class="dim">steps/task p90 · max</span><span>36 · 100</span></div>
+      </div>
+      <div class="scroll"><table>
+        <tr><th>episode length</th><th class="num">tasks</th><th class="num">solve rate (score = 1.0)</th></tr>
+        <tr><td>1–3 steps</td><td class="num">4</td><td class="num ok">75%</td></tr>
+        <tr><td>4–9 steps</td><td class="num">29</td><td class="num ok">76%</td></tr>
+        <tr><td>10–29 steps</td><td class="num">16</td><td class="num run">56%</td></tr>
+        <tr><td>30–99 steps</td><td class="num">7</td><td class="num bad">29%</td></tr>
+        <tr><td>100 (capped)</td><td class="num">1</td><td class="num bad">0%</td></tr>
+      </table></div>
+    </div>
+    <p class="dim" style="margin-top:10px"><b>Solve rate collapses as tasks get longer</b> — and long tasks are
+       also where cost concentrates (latency rises with trajectory length). The long tail is the expensive,
+       low-yield regime any efficiency layer most wants to act on.</p>
+  </div>
+
+  <!-- hypothesis test -->
+  <div class="panel full" id="test">
+    <h2>Does effort front-load? — testing the routing hypothesis on real data</h2>
+    <p class="lead">The motivation assumed early steps are heavy (planning) and the tail is routine. With a
+       step-indexed corpus that is directly checkable. An adversarial pass over the <b>36 successful</b> episodes
+       computed each effort proxy by within-task position (terciles), per task, then averaged across tasks. The
+       <b>output-side</b> proxies (reasoning chars, generated tokens) are used because — unlike latency — they do
+       not inflate mechanically as the prompt grows.</p>
+    <div class="scroll"><table class="ev">
+      <tr><th>within-task position</th><th class="num">reasoning_len</th><th class="num">pred tokens</th>
+          <th class="num">prompt tokens</th><th class="num">decode t/s</th><th class="num">predict s</th></tr>
+      <tr><td>first step</td><td class="num">482</td><td class="num">252</td><td class="num">2990</td><td class="num">16.83</td><td class="num">82.7</td></tr>
+      <tr><td>early tercile</td><td class="num">515</td><td class="num">265</td><td class="num">3277</td><td class="num">15.78</td><td class="num">100.2</td></tr>
+      <tr><td>mid tercile</td><td class="num">501</td><td class="num">266</td><td class="num">5495</td><td class="num">14.32</td><td class="num">160.9</td></tr>
+      <tr><td>late tercile</td><td class="num"><span class="up">563 ↑</span></td><td class="num"><span class="up">320 ↑</span></td><td class="num">7448</td><td class="num">14.29</td><td class="num">207.3</td></tr>
+      <tr><td>last step</td><td class="num"><span class="up">664 ↑</span></td><td class="num"><span class="up">410 ↑</span></td><td class="num">7716</td><td class="num">14.12</td><td class="num">217.8</td></tr>
+    </table></div>
+    <div class="call" style="border-color:var(--red);background:#2a121255">
+      <b>Verdict: refuted.</b> Within successful tasks, output-side effort <b>rises</b> early → late, it does not
+      fall: reasoning text <b>+29%</b> and generated tokens <b>+33%</b> (per-task early→late ratio on tasks ≥3 steps,
+      rising in ~5 of 6). And the very <b>first step is the lightest</b>, not the heaviest — it has the shortest
+      prompt and a cold KV cache, so it is the <i>fastest</i> step (≈83 s vs ≈207 s late). The clean "front-load the
+      big model, shrink it for the tail" story does not hold here.
+    </div>
+    <div class="call gap">
+      <b>The dangerous failure mode for a position-based router.</b> Failed runs do not taper to routine — they stay
+      high or spike. The cap-bound looper holds <code>reasoning_len</code> ~657–690 late (peaking ~1144 mid-run)
+      while degenerating into a click/scroll loop. A naïve "use the small model on late steps" policy would strip
+      capability exactly where the agent is stuck and needs it most — turning recoverable runs into hard failures.
+    </div>
+    <div class="call fix">
+      <b>The defensible motivation.</b> Route by <b>per-step difficulty</b>, not step position. Cheap
+      orientation/confirmation steps genuinely exist and can run on a small model — but they are <i>scattered
+      throughout</i> the trajectory (see the exemplar's step-7–9 click-through), not confined to a tail. And the
+      router must never starve a stuck, high-reasoning step of capacity. <span class="dim">(Latency is not a
+      difficulty signal: per-step wall time rises 2.3× early→late only because prompt + KV grow 2.4×.)</span>
+    </div>
+    <p class="dim">Method: within each successful task, step <i>i</i> is normalized to (i−1)/(N−1) and binned
+       early/mid/late by tercile, plus the literal first/last step; per-task means are averaged equally across the
+       36 tasks (a per-task trend, not a global step pool). n is small (median successful task ≈ 6 steps; 11 tasks
+       have ≥9 steps), so treat magnitudes as directional.</p>
+  </div>
+
   <!-- example A -->
   <div class="panel">
     <h2>Real episode — short success</h2>
@@ -219,7 +353,8 @@
   <!-- router framing -->
   <div class="panel full">
     <h2>What this trains — and what it doesn't (yet)</h2>
-    <p>Toward the step-level model router, the corpus is <span class="badge">necessary, not yet sufficient</span>.</p>
+    <p>Toward the step-level model router — now motivated by <a href="#test">per-step difficulty</a> rather than the
+       refuted early/late split — the corpus is <span class="badge">necessary, not yet sufficient</span>.</p>
     <p><b>✓ Fully covered — the state &amp; the cost.</b> Every feature a router conditions on at decision time
        (step index, domain, context size, cached-token ratio, the screenshot, the message history, the tool needed)
        and the full price term (per-step latency <i>and</i> energy) is measured. Most routing work hand-waves the
