@@ -46,6 +46,10 @@
   .up{color:var(--red);font-weight:600}
   .lead{font-size:12.5px;color:var(--mut);margin:0 0 12px;line-height:1.6}
   .frz{color:var(--yel)}
+  .tb{display:inline-flex;width:150px;height:9px;border-radius:4px;overflow:hidden;background:#21262d;vertical-align:middle;margin-right:7px}
+  .tb i{display:block;height:100%}
+  .tb .pf{background:var(--red)} .tb .dc{background:var(--blu)}
+  .leg i{display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:middle;margin:0 4px 0 10px}
   .frow{display:grid;grid-template-columns:160px 200px 1fr;gap:4px 14px;
         padding:4px 0;border-bottom:1px solid #21262d;align-items:baseline}
   .frow .fn{color:var(--fg)}
@@ -132,8 +136,8 @@
       <div class="frow"><span class="fn">task_id</span><span class="fv">06fe7178-4491-…</span><span class="fd">OSWorld example UUID</span></div>
       <div class="frow"><span class="fn">step</span><span class="fv">1</span><span class="fd">index within the episode — the "early vs late" planning axis</span></div>
       <div class="frow"><span class="fn">screenshot_file</span><span class="fv">step_1_…031052.png</span><span class="fd">full-resolution observation, kept on disk for replay</span></div>
-      <div class="frow"><span class="fn">prompt_tokens</span><span class="fv">3003</span><span class="fd">running context size fed to the model</span></div>
-      <div class="frow"><span class="fn">cached_tokens</span><span class="fv">0</span><span class="fd">KV prefix reused from prior step (0 = cold prefill)</span></div>
+      <div class="frow"><span class="fn">prompt_tokens</span><span class="fv">3003</span><span class="fd">newly-<b>prefilled</b> (uncached) tokens this step — the prefill workload, = llama.cpp <code>prompt_n</code></span></div>
+      <div class="frow"><span class="fn">cached_tokens</span><span class="fv">0</span><span class="fd">KV prefix reused from prior step (0 = cold). Full context = prompt_tokens + cached_tokens</span></div>
       <div class="frow"><span class="fn">instruction</span><span class="fv">"…bring back the last tab…"</span><span class="fd">natural-language task string</span></div>
     </div>
 
@@ -153,6 +157,7 @@
       <div class="frow"><span class="fn">prefill_tps</span><span class="fv">47.33</span><span class="fd">prompt tokens / s</span></div>
       <div class="frow"><span class="fn">decode_tps</span><span class="fv">17.67</span><span class="fd">generated tokens / s</span></div>
       <div class="frow"><span class="fn">predicted_tokens</span><span class="fv">198</span><span class="fd">tokens generated this step</span></div>
+      <div class="frow"><span class="fn">↳ time split (derived)</span><span class="fv">prefill ≈ 63 s · decode ≈ 11 s</span><span class="fd">t_predict ≈ prompt_tokens/prefill_tps + predicted_tokens/decode_tps; <b>prefill is ~70–90% of step time</b> here</span></div>
       <div class="frow"><span class="fn">energy_j</span><span class="fv">{pkg 3918.6, core 3659.2, uncore 1.1, dram 92.2, psys 5572.3}</span><span class="fd">per-step Joules, 5 RAPL domains</span></div>
     </div>
 
@@ -189,38 +194,59 @@
   <!-- full trajectory -->
   <div class="panel full">
     <h2>One complete trajectory — all 14 steps of <code>chrome/030eeff7</code></h2>
-    <p class="lead">Goal: <i>enable Chrome's "Do Not Track".</i> The bar is each step's <code>reasoning_len</code>
-       (chars of hidden &lt;think&gt;), scaled to the task max of 1047.</p>
+    <p class="lead">Goal: <i>enable Chrome's "Do Not Track".</i> Two bars per row —
+       <b>reasoning</b> (chars of hidden &lt;think&gt;, vs the task max 1047) and <b>step time</b> split into
+       <span class="leg"><i style="background:var(--red)"></i>prefill</span>
+       <span class="leg"><i style="background:var(--blu)"></i>decode</span> (scaled to the slowest step, 229 s).
+       <code>ctx</code> = full context (prefilled + reused); <code>reused</code> = KV prefix carried over;
+       <code>pf/dec t/s</code> are the per-model throughput coefficients a router's cost model needs.</p>
     <div class="scroll"><table>
-      <tr><th>step</th><th>tool</th><th>reasoning (think chars)</th><th class="num">pred</th>
-          <th class="num">prompt</th><th class="num">cached</th><th class="num">dec t/s</th>
-          <th class="num">predict s</th><th>what the step did</th></tr>
-      <tr><td>1</td><td>click</td><td><span class="rl"><i style="width:100%"></i></span>1047</td><td class="num">438</td><td class="num">3007</td><td class="num">0</td><td class="num">16.71</td><td class="num">94.5</td><td class="dim">open ⋮ menu — plan route to Settings</td></tr>
-      <tr><td>2</td><td>click</td><td><span class="rl"><i style="width:35%"></i></span>364</td><td class="num">237</td><td class="num">2268</td><td class="num">3003</td><td class="num">15.09</td><td class="num">78.7</td><td class="dim">click Settings</td></tr>
-      <tr><td>3</td><td>click</td><td><span class="rl"><i style="width:49%"></i></span>517</td><td class="num">291</td><td class="num">2240</td><td class="num">5267</td><td class="num">14.51</td><td class="num">85.2</td><td class="dim">go to Privacy &amp; security</td></tr>
-      <tr><td>4</td><td>scroll</td><td><span class="rl"><i style="width:94%"></i></span>988</td><td class="num">436</td><td class="num">6772</td><td class="num frz">947</td><td class="num">14.79</td><td class="num">213.1</td><td class="dim">DNT not visible — scroll to look</td></tr>
-      <tr><td>5</td><td>click</td><td><span class="rl"><i style="width:97%"></i></span>1018</td><td class="num">409</td><td class="num">7025</td><td class="num frz">947</td><td class="num">14.64</td><td class="num">214.5</td><td class="dim">still hidden — open Privacy guide</td></tr>
-      <tr><td>6</td><td>click</td><td><span class="rl"><i style="width:72%"></i></span>749</td><td class="num">324</td><td class="num">7249</td><td class="num frz">947</td><td class="num">14.64</td><td class="num">211.4</td><td class="dim">Next through guide</td></tr>
-      <tr><td>7</td><td>click</td><td><span class="rl"><i style="width:31%"></i></span>328</td><td class="num">240</td><td class="num">7447</td><td class="num frz">947</td><td class="num">14.51</td><td class="num">208.7</td><td class="dim">Next</td></tr>
-      <tr><td>8</td><td>click</td><td><span class="rl"><i style="width:23%"></i></span>246</td><td class="num">230</td><td class="num">7653</td><td class="num frz">947</td><td class="num">14.32</td><td class="num">210.3</td><td class="dim">Next <span class="dim">(tersest step)</span></td></tr>
-      <tr><td>9</td><td>click</td><td><span class="rl"><i style="width:36%"></i></span>381</td><td class="num">257</td><td class="num">7863</td><td class="num frz">947</td><td class="num">14.32</td><td class="num">214.9</td><td class="dim">Next</td></tr>
-      <tr><td>10</td><td>click</td><td><span class="rl"><i style="width:46%"></i></span>480</td><td class="num">299</td><td class="num">8069</td><td class="num frz">947</td><td class="num">14.23</td><td class="num">219.5</td><td class="dim">guide done → back to settings</td></tr>
-      <tr><td>11</td><td>click</td><td><span class="rl"><i style="width:32%"></i></span>332</td><td class="num">268</td><td class="num">8302</td><td class="num frz">947</td><td class="num">14.09</td><td class="num">220.5</td><td class="dim">open Third-party cookies</td></tr>
-      <tr><td>12</td><td>click</td><td><span class="rl"><i style="width:32%"></i></span>333</td><td class="num">277</td><td class="num">8532</td><td class="num frz">947</td><td class="num">13.96</td><td class="num">224.0</td><td class="dim">found DNT toggle (Advanced)</td></tr>
-      <tr><td>13</td><td>click</td><td><span class="rl"><i style="width:50%"></i></span>523</td><td class="num">268</td><td class="num">8772</td><td class="num frz">947</td><td class="num">13.87</td><td class="num">226.4</td><td class="dim">Confirm dialog</td></tr>
-      <tr><td>14</td><td>answer</td><td><span class="rl"><i style="width:30%"></i></span>315</td><td class="num">274</td><td class="num">8965</td><td class="num frz">947</td><td class="num">13.74</td><td class="num">229.5</td><td class="ok">answer → DONE (toggle on)</td></tr>
+      <tr><th>step</th><th>tool</th><th>reasoning</th><th class="num">pred</th>
+          <th class="num">ctx</th><th class="num">reused</th><th class="num">pf t/s</th><th class="num">dec t/s</th>
+          <th>step time &nbsp;<span class="dim">prefill / decode</span></th><th class="num">kJ</th><th>what the step did</th></tr>
+      <tr><td>1</td><td>click</td><td><span class="rl"><i style="width:100%"></i></span>1047</td><td class="num">438</td><td class="num">3007</td><td class="num">0</td><td class="num">44.2</td><td class="num">16.7</td><td><span class="tb"><i class="pf" style="width:29.6%"></i><i class="dc" style="width:11.4%"></i></span>94.5 s</td><td class="num">4.8</td><td class="dim">open ⋮ menu — plan route to Settings</td></tr>
+      <tr><td>2</td><td>click</td><td><span class="rl"><i style="width:35%"></i></span>364</td><td class="num">237</td><td class="num">5271</td><td class="num">3003</td><td class="num">36.1</td><td class="num">15.1</td><td><span class="tb"><i class="pf" style="width:27.4%"></i><i class="dc" style="width:6.8%"></i></span>78.7 s</td><td class="num">4.1</td><td class="dim">click Settings</td></tr>
+      <tr><td>3</td><td>click</td><td><span class="rl"><i style="width:49%"></i></span>517</td><td class="num">291</td><td class="num">7507</td><td class="num">5267</td><td class="num">34.5</td><td class="num">14.5</td><td><span class="tb"><i class="pf" style="width:28.3%"></i><i class="dc" style="width:8.8%"></i></span>85.2 s</td><td class="num">4.4</td><td class="dim">go to Privacy &amp; security</td></tr>
+      <tr><td>4</td><td>scroll</td><td><span class="rl"><i style="width:94%"></i></span>988</td><td class="num">436</td><td class="num">7719</td><td class="num frz">947</td><td class="num">37.0</td><td class="num">14.8</td><td><span class="tb"><i class="pf" style="width:79.8%"></i><i class="dc" style="width:12.9%"></i></span>213.1 s</td><td class="num">10.9</td><td class="dim">DNT not visible — scroll to look</td></tr>
+      <tr><td>5</td><td>click</td><td><span class="rl"><i style="width:97%"></i></span>1018</td><td class="num">409</td><td class="num">7972</td><td class="num frz">947</td><td class="num">37.7</td><td class="num">14.6</td><td><span class="tb"><i class="pf" style="width:81.1%"></i><i class="dc" style="width:12.2%"></i></span>214.5 s</td><td class="num">10.9</td><td class="dim">still hidden — open Privacy guide</td></tr>
+      <tr><td>6</td><td>click</td><td><span class="rl"><i style="width:72%"></i></span>749</td><td class="num">324</td><td class="num">8196</td><td class="num frz">947</td><td class="num">38.4</td><td class="num">14.6</td><td><span class="tb"><i class="pf" style="width:82.3%"></i><i class="dc" style="width:9.6%"></i></span>211.4 s</td><td class="num">10.9</td><td class="dim">Next through guide</td></tr>
+      <tr><td>7</td><td>click</td><td><span class="rl"><i style="width:31%"></i></span>328</td><td class="num">240</td><td class="num">8394</td><td class="num frz">947</td><td class="num">38.9</td><td class="num">14.5</td><td><span class="tb"><i class="pf" style="width:83.5%"></i><i class="dc" style="width:7.2%"></i></span>208.7 s</td><td class="num">10.8</td><td class="dim">Next</td></tr>
+      <tr><td>8</td><td>click</td><td><span class="rl"><i style="width:23%"></i></span>246</td><td class="num">230</td><td class="num">8600</td><td class="num frz">947</td><td class="num">39.5</td><td class="num">14.3</td><td><span class="tb"><i class="pf" style="width:84.4%"></i><i class="dc" style="width:7.0%"></i></span>210.3 s</td><td class="num">11.0</td><td class="dim">Next <span class="dim">(tersest step)</span></td></tr>
+      <tr><td>9</td><td>click</td><td><span class="rl"><i style="width:36%"></i></span>381</td><td class="num">257</td><td class="num">8810</td><td class="num frz">947</td><td class="num">40.0</td><td class="num">14.3</td><td><span class="tb"><i class="pf" style="width:85.6%"></i><i class="dc" style="width:7.8%"></i></span>214.9 s</td><td class="num">11.2</td><td class="dim">Next</td></tr>
+      <tr><td>10</td><td>click</td><td><span class="rl"><i style="width:46%"></i></span>480</td><td class="num">299</td><td class="num">9016</td><td class="num frz">947</td><td class="num">40.8</td><td class="num">14.2</td><td><span class="tb"><i class="pf" style="width:86.3%"></i><i class="dc" style="width:9.2%"></i></span>219.5 s</td><td class="num">11.4</td><td class="dim">guide done → back to settings</td></tr>
+      <tr><td>11</td><td>click</td><td><span class="rl"><i style="width:32%"></i></span>332</td><td class="num">268</td><td class="num">9249</td><td class="num frz">947</td><td class="num">41.3</td><td class="num">14.1</td><td><span class="tb"><i class="pf" style="width:87.6%"></i><i class="dc" style="width:8.3%"></i></span>220.5 s</td><td class="num">11.5</td><td class="dim">open Third-party cookies</td></tr>
+      <tr><td>12</td><td>click</td><td><span class="rl"><i style="width:32%"></i></span>333</td><td class="num">277</td><td class="num">9479</td><td class="num frz">947</td><td class="num">41.9</td><td class="num">14.0</td><td><span class="tb"><i class="pf" style="width:88.8%"></i><i class="dc" style="width:8.6%"></i></span>224.0 s</td><td class="num">11.7</td><td class="dim">found DNT toggle (Advanced)</td></tr>
+      <tr><td>13</td><td>click</td><td><span class="rl"><i style="width:50%"></i></span>523</td><td class="num">268</td><td class="num">9719</td><td class="num frz">947</td><td class="num">42.5</td><td class="num">13.9</td><td><span class="tb"><i class="pf" style="width:90.0%"></i><i class="dc" style="width:8.4%"></i></span>226.4 s</td><td class="num">11.9</td><td class="dim">Confirm dialog</td></tr>
+      <tr><td>14</td><td>answer</td><td><span class="rl"><i style="width:30%"></i></span>315</td><td class="num">274</td><td class="num">9912</td><td class="num frz">947</td><td class="num">42.9</td><td class="num">13.7</td><td><span class="tb"><i class="pf" style="width:91.1%"></i><i class="dc" style="width:8.7%"></i></span>229.5 s</td><td class="num">12.1</td><td class="ok">answer → DONE (toggle on)</td></tr>
     </table></div>
+    <p class="dim" style="margin-top:6px">Per-step time decomposed as
+       <b>prefill = prompt_tokens ÷ pf&nbsp;t/s</b> and <b>decode = predicted_tokens ÷ dec&nbsp;t/s</b>; the remainder
+       (HTTP + sampling) is &lt;0.6 s every step. Task totals: <b>prefill 2354 s (89%)</b>, decode 291 s (11%),
+       other 6 s; 38.2 Wh.</p>
     <div class="call">
       <b>Difficulty is scattered, not front-loaded.</b> Heavy-reasoning bursts appear at <b>step 1</b> (planning the
       route to Settings, 1047 chars) <i>and again at steps 4–5</i> (re-planning when "Do Not Track" wasn't where the
       model expected) — interleaved with terse routine click-through (steps 7–9, down to 246). A router keyed on
       <i>step position</i> would miss the step-4 spike entirely; the signal it needs is per-step difficulty.
     </div>
-    <div class="call gap">
-      <b>Cost grows with the trajectory regardless of difficulty.</b> From step 4 on, <span class="frz">cached_tokens
-      freezes at 947</span> — the 3-screenshot eviction invalidates the KV prefix — while the prompt climbs
-      3.0k → 9.0k tokens. So per-step latency nearly <b>triples</b> (94 → 229 s) even for identical "click Next"
-      actions. The price of a step is set by where it sits in the trajectory, not by how hard it is.
+    <div class="call" style="border-color:var(--red);background:#2a121255">
+      <b>Prefill — not decode — is the cost.</b> <b>89% of compute time is prefill, 11% decode</b> (other &lt;1%).
+      The KV prefix grows healthily through step 3 (reused 0 → 5267), then the 3-screenshot eviction at step 4
+      <span class="frz">collapses reuse to 947</span> for the rest of the run — so the model re-prefills ~7–8k tokens
+      <i>every</i> step, even to press "Next." That alone <b>more than doubles step time (≈85 → 215 s) and energy
+      (≈4.4 → 11 kJ)</b>, independent of how hard the step is.
+    </div>
+    <div class="call fix">
+      <b>What a router needs from this — and the trap.</b> A model router optimizes step cost, and the split says
+      where it lives. Routing to a <i>smaller</i> model mainly speeds <b>decode</b> (its lever is the
+      <code>dec t/s</code> coefficient) — but decode is only 11% here, so the ceiling on model-size routing is low
+      unless the small model also prefills cheaper. The dominant term is <b>prefill = prompt_tokens ÷ pf t/s</b>,
+      governed by <b>context management</b> (the <code>reused</code> column), not model choice. And the trap:
+      <b>switching models mid-trajectory invalidates the KV cache</b> (it is weight-specific), forcing a full
+      re-prefill of the whole context on the new model — at 89% prefill with reuse already fragile, a router that
+      flips models often can cost more than it saves. So the trainable objective is <i>per-step difficulty</i>
+      (does this step need the big model?) traded against <i>switch cost</i> (is the saving worth a re-prefill?),
+      with cost = <code>{prefill_s, decode_s, energy}</code> decomposed per candidate model.
     </div>
   </div>
 
@@ -258,7 +284,7 @@
        not inflate mechanically as the prompt grows.</p>
     <div class="scroll"><table class="ev">
       <tr><th>within-task position</th><th class="num">reasoning_len</th><th class="num">pred tokens</th>
-          <th class="num">prompt tokens</th><th class="num">decode t/s</th><th class="num">predict s</th></tr>
+          <th class="num">new tok (prefill)</th><th class="num">decode t/s</th><th class="num">predict s</th></tr>
       <tr><td>first step</td><td class="num">482</td><td class="num">252</td><td class="num">2990</td><td class="num">16.83</td><td class="num">82.7</td></tr>
       <tr><td>early tercile</td><td class="num">515</td><td class="num">265</td><td class="num">3277</td><td class="num">15.78</td><td class="num">100.2</td></tr>
       <tr><td>mid tercile</td><td class="num">501</td><td class="num">266</td><td class="num">5495</td><td class="num">14.32</td><td class="num">160.9</td></tr>
@@ -297,15 +323,15 @@
     <p class="dim"><code>chrome/06fe7178</code> · <i>"bring back the last tab I shut down"</i><br>
        score <span class="ok">1.0</span> · 2 steps · 183&nbsp;s wall · 2.22&nbsp;Wh</p>
     <div class="scroll"><table>
-      <tr><th>step</th><th>tool</th><th class="num">prompt</th><th class="num">cached</th>
+      <tr><th>step</th><th>tool</th><th class="num">new<span class="dim">↻</span></th><th class="num">reused</th>
           <th class="num">pred</th><th class="num">dec t/s</th><th class="num">predict s</th><th class="num">score</th></tr>
       <tr><td>1</td><td>key</td><td class="num">3003</td><td class="num">0</td>
           <td class="num">198</td><td class="num">17.67</td><td class="num">74.9</td><td class="num ok">1.0</td></tr>
       <tr><td>2</td><td>answer→<span class="ok">DONE</span></td><td class="num">2170</td><td class="num">2999</td>
           <td class="num">269</td><td class="num">15.63</td><td class="num">75.9</td><td class="num ok">1.0</td></tr>
     </table></div>
-    <p class="dim" style="margin-top:8px">Step 2's <code>cached_tokens: 2999</code> is the KV prefix
-       reused from step 1 — the rare case where the cache survives.</p>
+    <p class="dim" style="margin-top:8px"><b>new↻</b> = uncached tokens prefilled this step; <b>reused</b> = KV
+       prefix carried over. Step 2 reuses 2999 tokens from step 1 — the rare case where the cache survives a step.</p>
   </div>
 
   <!-- example B -->
@@ -314,7 +340,7 @@
     <p class="dim"><code>chrome/99146c54</code> · <i>"delete browsing data automatically on close"</i><br>
        score <span class="bad">0.0</span> · 100 steps · 8.9&nbsp;h wall · 38.2&nbsp;Wh</p>
     <div class="scroll"><table>
-      <tr><th>step</th><th class="num">prompt</th><th class="num">cached</th><th class="num">pred</th>
+      <tr><th>step</th><th class="num">new<span class="dim">↻</span></th><th class="num">reused</th><th class="num">pred</th>
           <th class="num">dec t/s</th><th class="num">predict s</th><th class="num">score</th></tr>
       <tr><td>1</td><td class="num">3007</td><td class="num">0</td><td class="num">221</td>
           <td class="num">17.68</td><td class="num">75.5</td><td class="num bad">0.0</td></tr>
@@ -323,8 +349,8 @@
       <tr><td>100</td><td class="num">26299</td><td class="num">947</td><td class="num">308</td>
           <td class="num bad">6.21</td><td class="num bad">520.5</td><td class="num bad">0.0</td></tr>
     </table></div>
-    <p class="dim" style="margin-top:8px">Context bloats and KV reuse stays broken → decode collapses
-       and per-step latency runs away.</p>
+    <p class="dim" style="margin-top:8px">KV reuse stays stuck at 947, so by step 100 the agent re-prefills
+       <b>26k tokens every step</b> (full context ≈ 27k) — prefill runs away and decode decays 17.7 → 6.2 t/s.</p>
   </div>
 
   <div class="panel full">
