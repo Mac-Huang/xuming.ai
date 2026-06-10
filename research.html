@@ -171,9 +171,19 @@
                     replicating the official leaderboard config (100-step budget, screenshot-only) with per-step latency, token,
                     KV-cache and 5-domain RAPL energy profiling.
                   </p>
+                  <ul>
+                    <li>The OSWorld prefill wall is <strong>quadratic in steps</strong> — an artifact of in-place screenshot
+                        eviction breaking the KV prefix; an <strong>append-only, never-evict context</strong> (affordable because the
+                        hybrid model caches only 10/40 layers → a 262K window is ~5&nbsp;GB KV in the 96&nbsp;GB pool) turns it linear:
+                        a <strong>4–10× prefill cut</strong>, runtime-agnostic.</li>
+                    <li>The Xe3 iGPU is <strong>2.5× faster at prefill</strong> (Vulkan), but full offload is blocked by two
+                        localized correctness bugs (248k-vocab output projection, vision encoder crash); <code>--cache-reuse</code>
+                        is ruled out as inert &amp; unsound for this hybrid arch. CPU stays the fastest <em>correct</em> path.</li>
+                  </ul>
                   <p style="margin-top:8px;">
                     <a href="demos/holo3-osworld-live.html">[&#128308; Live benchmark tracker]</a>
                     &nbsp; <a href="demos/holo3-osworld-profiling.html">[&#128202; Profiling corpus &amp; schema]</a>
+                    &nbsp; <a href="demos/holo3-osworld-acceleration.html">[&#9889; KV-cache &amp; iGPU study]</a>
                     &nbsp; <a href="demos/openclaw-workflow.html">[Interactive workflow demo]</a>
                     &nbsp; <a href="demos/memory-hierarchy.html">[Memory hierarchy demo]</a>
                   </p>

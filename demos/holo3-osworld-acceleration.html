@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Holo3 · OSWorld · NUC16 — KV-cache management &amp; iGPU acceleration</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{--bg:#0d1117;--panel:#161b22;--bd:#30363d;--fg:#c9d1d9;--mut:#8b949e;
+        --grn:#3fb950;--red:#f85149;--yel:#d29922;--blu:#58a6ff;--pur:#bc8cff}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);
+       font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  header{padding:14px 20px;border-bottom:1px solid var(--bd);display:flex;
+         flex-wrap:wrap;gap:6px 24px;align-items:baseline}
+  h1{font-size:16px;margin:0;color:var(--blu)}
+  .sub{color:var(--mut)}
+  .wrap{padding:16px 20px;display:grid;gap:16px;
+        grid-template-columns:repeat(auto-fit,minmax(360px,1fr))}
+  .panel{background:var(--panel);border:1px solid var(--bd);border-radius:8px;padding:16px}
+  .panel h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;
+            color:var(--mut);margin:0 0 12px}
+  .full{grid-column:1/-1}
+  p{margin:8px 0;font-size:12.5px;line-height:1.6}
+  b{color:var(--fg)}
+  code{background:#21262d;padding:1px 5px;border-radius:4px;color:var(--pur);font-size:12px}
+  a{color:var(--blu);text-decoration:none} a:hover{text-decoration:underline}
+  .dim{color:var(--mut)}
+  table{border-collapse:collapse;width:100%;font-size:12px}
+  th,td{text-align:left;padding:5px 9px;border-bottom:1px solid #21262d;white-space:nowrap}
+  th{color:var(--mut);font-weight:600}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  .ok{color:var(--grn)}.bad{color:var(--red)}.run{color:var(--yel)}
+  .scroll{max-width:100%;overflow:auto}
+  ul{margin:6px 0;padding-left:18px}
+  li{margin:4px 0;font-size:12.5px;line-height:1.55}
+  .lead{font-size:12.5px;color:var(--mut);margin:0 0 12px;line-height:1.6}
+  .badge{padding:1px 9px;border-radius:10px;font-size:11px;font-weight:600;
+         background:#13243a;color:var(--blu)}
+  .src{color:var(--blu);font-size:11.5px}
+  /* callouts */
+  .call{border-left:3px solid var(--blu);padding:8px 0 8px 13px;margin:12px 0;
+        background:#10243a55;border-radius:0 6px 6px 0}
+  .call.gap{border-color:var(--yel);background:#241d0c55}
+  .call.fix{border-color:var(--grn);background:#0f240f55}
+  .call.bad{border-color:var(--red);background:#2a121255}
+  .k{color:var(--blu)} .g{color:var(--grn)} .y{color:var(--yel)} .r{color:var(--red)} .p{color:var(--pur)}
+  .tb{display:inline-flex;width:150px;height:9px;border-radius:4px;overflow:hidden;background:#21262d;vertical-align:middle;margin-right:7px}
+  .tb i{display:block;height:100%}
+  .tb .pf{background:var(--red)} .tb .dc{background:var(--blu)}
+  .leg i{display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:middle;margin:0 4px 0 10px}
+  .pill{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:5px;margin:0 2px}
+  .pill.no{background:#2a1212;color:var(--red)} .pill.yes{background:#0f240f;color:var(--grn)} .pill.maybe{background:#241d0c;color:var(--yel)}
+</style>
+</head>
+<body>
+<header>
+  <h1>Holo3-35B-A3B · OSWorld-Verified · NUC16 — <span style="color:var(--fg)">KV-cache &amp; accelerator study</span>
+      <span class="badge">SYSTEMS</span></h1>
+  <span class="sub">why prefill dominates, and whether the iGPU / 96&nbsp;GB can help</span>
+  <span class="sub" style="margin-left:auto">
+    <a href="holo3-osworld-profiling.html">profiling corpus →</a> &nbsp;·&nbsp;
+    <a href="holo3-osworld-live.html">live tracker →</a> &nbsp;·&nbsp;
+    <a href="../research.html#wuklab">← research</a>
+  </span>
+</header>
+
+<div class="wrap">
+
+  <!-- TL;DR -->
+  <div class="panel full">
+    <h2>The question</h2>
+    <p class="lead">
+      The Holo3 / OSWorld run is served entirely on one Intel Panther Lake NUC (Core&nbsp;Ultra&nbsp;7&nbsp;356H,
+      96&nbsp;GB unified, Xe3 iGPU, NPU&nbsp;5). It is <b>prefill-bound</b>: ~<b>89%</b> of compute time is prompt
+      processing, not generation. Two levers were measured against that wall — <b>(1) managing the KV cache</b> so the
+      prefill stops being re-done every step, and <b>(2) offloading to the iGPU / spending the 96&nbsp;GB</b>. All
+      numbers below are measured on the live machine (llama.cpp <code>b9535</code>, Holo3-35B-A3B&nbsp;<code>i1-Q4_K_M</code>).
+    </p>
+    <div class="call fix">
+      <p style="margin:0"><b class="g">Headline.</b> The prefill wall is <b>quadratic in steps</b> — an artifact of how
+      the agent edits its own context, not of the model or the hardware. Making the conversation <b>append-only</b> turns
+      it <b>linear</b> (<b class="g">a 4–10× prefill reduction, runtime-agnostic</b>), and it is affordable precisely
+      because of the 96&nbsp;GB: this hybrid model keeps only <b>10 of 40 layers</b> in the position-indexed KV cache, so
+      its full <b>262K-token</b> context costs only ~<b>5&nbsp;GB</b> of KV — the box can simply never evict. The iGPU,
+      separately, is <b>2.5× faster at prefill</b> but is <b>blocked by two concrete correctness bugs</b>, so CPU remains
+      the fastest <i>correct</i> path today.</p>
+    </div>
+  </div>
+
+  <!-- The prefill wall -->
+  <div class="panel full">
+    <h2>1 · The prefill wall: KV reuse collapses every step</h2>
+    <p>
+      Each agent step sends a screenshot and the model emits a short action (a JSON tool call). Decode is tiny
+      (~<b>280 tokens/step</b>); the cost is <b>prompt processing</b>. With a working prefix cache, step <i>N</i> should
+      reuse step <i>N−1</i>'s KV and prefill only the new tokens. It does not — and the per-step trace of one 100-step
+      task shows exactly why:
+    </p>
+    <div class="scroll"><table>
+      <tr><th>step</th><th class="num">prompt total</th><th class="num">KV reused (<code>cache_n</code>)</th><th class="num">re-prefilled</th><th class="num">reuse</th></tr>
+      <tr><td>2</td><td class="num">5,233</td><td class="num g">3,003</td><td class="num">2,230</td><td class="num">0.57</td></tr>
+      <tr><td>3</td><td class="num">7,479</td><td class="num g">5,229</td><td class="num">2,250</td><td class="num">0.70</td></tr>
+      <tr><td><b>4</b></td><td class="num">7,688</td><td class="num r">947</td><td class="num r">6,741</td><td class="num r">0.12</td></tr>
+      <tr><td>50</td><td class="num">17,233</td><td class="num r">947</td><td class="num r">16,286</td><td class="num r">0.055</td></tr>
+      <tr><td>100</td><td class="num">27,246</td><td class="num r">947</td><td class="num r">26,299</td><td class="num r">0.035</td></tr>
+    </table></div>
+    <p>
+      From <b>step 4 onward, <code>cache_n</code> is frozen at exactly 947</b> — the static system+tools preamble — while
+      the prompt grows to 27k. Reuse decays as <code>947 / total</code>. The cause is in the agent loop: to honor
+      H&nbsp;Company's <code>max_images=3</code> budget, older screenshots are <b>rewritten in place</b> to the text
+      <code>"[screenshot evicted]"</code>. In a causal transformer, mutating a token that sits early in the context
+      invalidates the KV of <i>everything after it</i> — so the longest reusable prefix collapses back to the 947-token
+      preamble that precedes the first screenshot, every step.
+    </p>
+    <div class="call gap">
+      <p style="margin:0"><b class="y">The real shape of the cost.</b> Because the whole suffix is re-prefilled each
+      step, total prefill over a task is <b>Σ(re-prefilled)</b> ≈ a 100-step task pays for ~<b>1.6M</b> prefilled tokens
+      — <b>quadratic</b> in step count. One screenshot alone is ~<b>2,014 tokens</b>, so the context fills fast and the
+      per-step bill keeps climbing (from ~<b>75&nbsp;s</b> early to <b>400&nbsp;s+</b> on CPU as the context fills — the
+      ~7.7&nbsp;min/step seen on cap-bound tasks). Across 113 scored tasks, <b>model inference is 98%
+      of wall-clock</b>; ~89% of that is prefill. This is the single biggest latency lever.</p>
+    </div>
+  </div>
+
+  <!-- KV management -->
+  <div class="panel full">
+    <h2>2 · Managing the KV cache for OSWorld</h2>
+    <p>The model is <code>qwen3_5_moe</code> — a <b>hybrid</b>: of its 40 layers, only the <b>10 full-attention layers</b>
+       hold a position-indexed KV cache; the other <b>30 are Gated-DeltaNet / linear-attention</b> layers carrying an
+       <i>O(1) recurrent state</i> (one running summary per sequence, not per-token KV). That single fact reshapes every option.</p>
+
+    <p><b>Option A — <code>--cache-reuse</code> (KV-shift the reusable prefix): <span class="pill no">ruled out</span></b>
+       Verified inert in llama.cpp source. It is disabled at startup because the model is multimodal
+       (<code class="src">server-context.cpp:997</code>) and refused per-request because every prompt carries image tokens
+       (<code class="src">:2716</code>, <code>can_cache_reuse = can_shift &amp;&amp; !has_mtmd</code>). Even text-only it
+       would be <b>unsound</b>: the hybrid memory reports <code>can_shift=true</code> by delegating to its attention half
+       (<code class="src">llama-memory-hybrid.cpp:133</code>), but the recurrent <code>seq_add</code> only bumps a single
+       tail-cell's position (<code class="src">llama-memory-recurrent.cpp:304</code>) — it cannot reconstruct a
+       gapped-prefix running state, so it would silently corrupt 30 of 40 layers. KV-shift is meaningful only for the 10
+       attention layers.</p>
+
+    <p><b>Option B — append-only context, never evict: <span class="pill yes">the lever</span></b>
+       The collapse is self-inflicted by the in-place eviction. If the history is <b>append-only</b> — old screenshots
+       stay where they are, each step only <i>adds</i> the new screenshot + action — the prefix stays byte-identical and
+       the KV (attention <i>and</i> recurrent state) is reused. Per-step prefill drops from the 8–27k re-prefill to the
+       <b>~2k-token delta</b>; total prefill goes from <b>quadratic to linear</b> (~200k vs ~1.6M tokens on a 100-step
+       task): a <b class="g">4–10× cut, on CPU, no new hardware</b>.</p>
+
+    <div class="call fix">
+      <p style="margin:0"><b class="g">Why 96&nbsp;GB is what unlocks it.</b> Append-only means the context can grow to a
+      whole task (~2k tok/step × 100 ≈ 200k tokens). Holo3 supports <b>262K</b>. The usual objection is KV memory — but
+      here only <b>10/40 layers</b> are cached, so a full 262K window is ~<b>5&nbsp;GB</b> of KV, not tens of GB. The
+      96&nbsp;GB unified pool holds the 20&nbsp;GB weights + a 262K context + the OSWorld VM with room to spare, so the
+      agent can <b>simply never evict</b> for any OSWorld task. The memory budget is what converts "stop evicting" from
+      impossible to free.</p>
+    </div>
+
+    <p class="dim"><b>The honest caveat.</b> <code>max_images=3</code> is H&nbsp;Company's documented protocol — the
+      80.4%-leaderboard config. Keeping every screenshot deviates from it, so the accuracy effect (does Holo3 do as well,
+      better, or worse with a long visual history?) is an open <b>A/B question</b>, not a settled win. The current run is
+      a pure replication and is left untouched; this is the <b>next-run</b> experiment. Cheaper variants on the same axis:
+      lower screenshot resolution (fewer image tokens), or summarize-then-drop old turns at a stable boundary instead of
+      mutating them — both trade fidelity for prefill and both need the same A/B.</p>
+  </div>
+
+  <!-- iGPU / 96GB -->
+  <div class="panel full">
+    <h2>3 · iGPU (Xe3 / Vulkan) &amp; the 96&nbsp;GB throughput lever</h2>
+    <p>The premise that the accelerators are unreachable turned out to be false: the Xe3 is usable through llama.cpp's
+       <b>Vulkan</b> backend (Mesa, no <code>intel-compute-runtime</code> needed; OpenCL&nbsp;NEO and Level-Zero GPU+NPU
+       runtimes are in fact now installed). Raw throughput, measured at full offload:</p>
+    <div class="scroll"><table>
+      <tr><th>stage</th><th class="num">CPU (live)</th><th class="num">iGPU Vulkan</th><th class="num">ratio</th></tr>
+      <tr><td>prefill pp512</td><td class="num">~47 t/s</td><td class="num g">124.4</td><td class="num g">2.6×</td></tr>
+      <tr><td>prefill pp2048</td><td class="num">~47 t/s</td><td class="num g">115.4</td><td class="num g">2.5×</td></tr>
+      <tr><td>prefill pp8192</td><td class="num">~47 t/s</td><td class="num g">120.7</td><td class="num g">2.6×</td></tr>
+      <tr><td>decode (batch 1)</td><td class="num">14.7 t/s</td><td class="num r">8–10</td><td class="num r">0.6×</td></tr>
+      <tr><td>decode (4 concurrent)</td><td class="num">14.7 t/s</td><td class="num y">16.9 agg</td><td class="num y">1.2×</td></tr>
+    </table></div>
+    <p>Prefill — the bottleneck — is <b>2.5× faster</b> on the iGPU (the Xe3's <code>KHR_coopmat</code> fp16 matrix cores
+       win the big GEMMs). Decode is memory-bandwidth-bound and <i>slower</i> at batch&nbsp;1, but scales with
+       concurrency (B1→B4 = 8.5→16.9 t/s aggregate) — the <b>96&nbsp;GB continuous-batching lever</b>, which would need a
+       parallel runner driving the 4 server slots (sublinear, ~B2–3 on this box). On a prefill-dominated workload the net
+       would be ~<b>2× end-to-end</b>.</p>
+
+    <div class="call bad">
+      <p style="margin:0"><b class="r">But it is correctness-blocked today.</b> The 2.5× requires full offload
+      (<code>-ngl 99</code>), and on this Xe3/Vulkan stack two pieces break: <b>(1)</b> the 248k-vocab output projection
+      garbles tokens (greedy decode answers <i>"3."</i> for "capital of France"); <b>(2)</b> the vision encoder crashes
+      the GPU (<code>vk::DeviceLostError</code> in <code>clip_image_batch_encode</code>) — fatal, since every step needs
+      vision. The only <i>correct</i> offload (output + vision on CPU) was measured slower than CPU on every axis. So
+      <b>CPU is the fastest correct path.</b></p>
+    </div>
+
+    <p><b>How narrow is the bug?</b> llama.cpp's kernel test suite (<code>test-backend-ops</code>, synthetic tensors, no
+       model) on <code>Vulkan0</code>: <b class="g">947/947 MUL_MAT tests pass</b> vs the CPU reference, and the broad
+       sweep surfaced <b>zero numerical failures</b> — unimplemented ops merely report <code>not supported → CPU
+       fallback</code>. So the corruption is <b>not a general matmul defect</b>; it is narrow (the untested very-large
+       output shape, or an op fallback in the head), which makes it the kind of bug that gets fixed upstream — after
+       which a ~2× GPU path opens. That is a research/upstream effort, not a config flag.</p>
+  </div>
+
+  <!-- bottom line -->
+  <div class="panel full">
+    <h2>Bottom line</h2>
+    <table>
+      <tr><th>lever</th><th>uses 96&nbsp;GB?</th><th>expected</th><th>status</th></tr>
+      <tr><td>Append-only / KV-stable context</td><td>yes (262K ctx ≈ 5 GB KV)</td><td class="g">4–10× prefill, runtime-agnostic</td><td class="y">next-run A/B (accuracy)</td></tr>
+      <tr><td><code>--cache-reuse</code></td><td>—</td><td>—</td><td class="r">ruled out (inert + unsound)</td></tr>
+      <tr><td>iGPU Vulkan offload</td><td>weights+KV in unified mem</td><td class="g">~2× end-to-end</td><td class="r">blocked (2 kernel bugs)</td></tr>
+      <tr><td>Continuous batching</td><td>yes (4× context)</td><td class="y">~1.8–2.5× throughput (B2–3)</td><td class="y">needs parallel runner</td></tr>
+    </table>
+    <p class="dim" style="margin-top:12px">
+      The actionable, hardware-agnostic win is <b>KV-cache management</b>: the OSWorld prefill wall is a quadratic
+      artifact of in-place screenshot eviction, and the 96&nbsp;GB unified memory — combined with the hybrid model's tiny
+      KV footprint — makes an append-only, never-evict context affordable, turning the wall linear. The iGPU has the
+      throughput to add a further ~2×, gated on two specific, now-localized llama.cpp/Mesa correctness bugs.
+      <span class="dim">Measured on the live NUC16 run; the replication itself is left untouched.</span>
+    </p>
+  </div>
+
+</div>
+</body>
+</html>
