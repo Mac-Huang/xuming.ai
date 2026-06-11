@@ -122,6 +122,60 @@
     </div>
   </div>
 
+  <!-- per-task timeline -->
+  <div class="panel full">
+    <h2>1b · Where a task's wall-clock actually goes (per-step timeline)</h2>
+    <p>In the timeline style of <a href="https://arxiv.org/abs/2506.16042">OSWorld-Human</a> (Abhyankar, Qi &amp; Zhang),
+       here is one real <b>successful</b> OSWorld task (<code>chrome</code>, 8 steps, score 1.0) decomposed per step into
+       <b class="r">prefill</b>, <b class="k">decode</b>, and <b class="g">action</b>. OSWorld-Human reports that "each
+       successive step can take 3&times; longer than steps at the beginning of a task" — that is exactly what the top track
+       shows, and the cause here is mechanical: at <b>step 4</b> the 3-screenshot eviction breaks the KV prefix, so prefill
+       triples (≈59&nbsp;s → ≈175&nbsp;s) and never recovers.</p>
+    <div class="scroll"><svg viewBox="0 0 770 196" xmlns="http://www.w3.org/2000/svg" font-family="ui-monospace,Menlo,Consolas,monospace" style="width:100%;min-width:560px">
+<style>
+ .pf{fill:#f85149} .dc{fill:#58a6ff} .ex{fill:#3fb950}
+ .sep{stroke:#0d1117;stroke-width:1} .ax{stroke:#8b949e;stroke-width:1}
+ .lbl{fill:#c9d1d9;font-size:11px} .axt{fill:#8b949e;font-size:10px}
+ .tot{fill:#8b949e;font-size:10.5px} .ann{fill:#d29922;font-size:10px} .annl{stroke:#d29922;stroke-width:1;stroke-dasharray:2 2}
+</style>
+<text x="74" y="36" class="lbl" text-anchor="end">measured</text>
+<text x="74" y="49" class="axt" text-anchor="end">(current)</text>
+<rect x="78.0" y="40" width="32.6" height="26" class="pf"/><rect x="110.6" y="40" width="6.7" height="26" class="dc"/><rect x="117.3" y="40" width="1.7" height="26" class="ex"/><line x1="119.1" y1="40" x2="119.1" y2="66" class="sep"/>
+<rect x="119.1" y="40" width="29.8" height="26" class="pf"/><rect x="148.9" y="40" width="6.5" height="26" class="dc"/><rect x="155.4" y="40" width="1.7" height="26" class="ex"/><line x1="157.1" y1="40" x2="157.1" y2="66" class="sep"/>
+<rect x="157.1" y="40" width="30.8" height="26" class="pf"/><rect x="188.0" y="40" width="10.6" height="26" class="dc"/><rect x="198.6" y="40" width="1.7" height="26" class="ex"/><line x1="200.3" y1="40" x2="200.3" y2="66" class="sep"/>
+<rect x="200.3" y="40" width="88.2" height="26" class="pf"/><rect x="288.5" y="40" width="8.1" height="26" class="dc"/><rect x="296.6" y="40" width="1.7" height="26" class="ex"/><line x1="298.3" y1="40" x2="298.3" y2="66" class="sep"/>
+<rect x="298.3" y="40" width="89.0" height="26" class="pf"/><rect x="387.3" y="40" width="7.3" height="26" class="dc"/><rect x="394.6" y="40" width="1.7" height="26" class="ex"/><line x1="396.3" y1="40" x2="396.3" y2="66" class="sep"/>
+<rect x="396.3" y="40" width="90.0" height="26" class="pf"/><rect x="486.4" y="40" width="8.4" height="26" class="dc"/><rect x="494.7" y="40" width="1.8" height="26" class="ex"/><line x1="496.5" y1="40" x2="496.5" y2="66" class="sep"/>
+<rect x="496.5" y="40" width="91.2" height="26" class="pf"/><rect x="587.8" y="40" width="8.0" height="26" class="dc"/><rect x="595.8" y="40" width="1.7" height="26" class="ex"/><line x1="597.5" y1="40" x2="597.5" y2="66" class="sep"/>
+<rect x="597.5" y="40" width="92.0" height="26" class="pf"/><rect x="689.5" y="40" width="9.9" height="26" class="dc"/><rect x="699.4" y="40" width="1.6" height="26" class="ex"/><line x1="701.0" y1="40" x2="701.0" y2="66" class="sep"/>
+<text x="707.0" y="58" class="tot">1200s</text>
+<text x="74" y="121" class="lbl" text-anchor="end">KV-stable</text>
+<text x="74" y="113" class="axt" text-anchor="end">(projected)</text>
+<rect x="78.0" y="104" width="32.6" height="26" class="pf"/><rect x="110.6" y="104" width="6.7" height="26" class="dc"/><rect x="117.3" y="104" width="1.7" height="26" class="ex"/><line x1="119.1" y1="104" x2="119.1" y2="130" class="sep"/>
+<rect x="119.1" y="104" width="29.8" height="26" class="pf"/><rect x="148.9" y="104" width="6.5" height="26" class="dc"/><rect x="155.4" y="104" width="1.7" height="26" class="ex"/><line x1="157.1" y1="104" x2="157.1" y2="130" class="sep"/>
+<rect x="157.1" y="104" width="30.8" height="26" class="pf"/><rect x="188.0" y="104" width="10.6" height="26" class="dc"/><rect x="198.6" y="104" width="1.7" height="26" class="ex"/><line x1="200.3" y1="104" x2="200.3" y2="130" class="sep"/>
+<rect x="200.3" y="104" width="30.1" height="26" class="pf"/><rect x="230.4" y="104" width="8.1" height="26" class="dc"/><rect x="238.5" y="104" width="1.7" height="26" class="ex"/><line x1="240.2" y1="104" x2="240.2" y2="130" class="sep"/>
+<rect x="240.2" y="104" width="30.1" height="26" class="pf"/><rect x="270.3" y="104" width="7.3" height="26" class="dc"/><rect x="277.6" y="104" width="1.7" height="26" class="ex"/><line x1="279.3" y1="104" x2="279.3" y2="130" class="sep"/>
+<rect x="279.3" y="104" width="30.1" height="26" class="pf"/><rect x="309.4" y="104" width="8.4" height="26" class="dc"/><rect x="317.8" y="104" width="1.8" height="26" class="ex"/><line x1="319.6" y1="104" x2="319.6" y2="130" class="sep"/>
+<rect x="319.6" y="104" width="30.1" height="26" class="pf"/><rect x="349.7" y="104" width="8.0" height="26" class="dc"/><rect x="357.7" y="104" width="1.7" height="26" class="ex"/><line x1="359.4" y1="104" x2="359.4" y2="130" class="sep"/>
+<rect x="359.4" y="104" width="30.1" height="26" class="pf"/><rect x="389.5" y="104" width="9.9" height="26" class="dc"/><rect x="399.4" y="104" width="1.6" height="26" class="ex"/><line x1="401.0" y1="104" x2="401.0" y2="130" class="sep"/>
+<text x="407.0" y="122" class="tot">622s &#8595;1.9&#215;</text>
+<line x1="78.0" y1="148" x2="78.0" y2="153" class="ax"/><text x="78.0" y="164" class="axt" text-anchor="middle">0</text><line x1="233.7" y1="148" x2="233.7" y2="153" class="ax"/><text x="233.7" y="164" class="axt" text-anchor="middle">300</text><line x1="389.4" y1="148" x2="389.4" y2="153" class="ax"/><text x="389.4" y="164" class="axt" text-anchor="middle">600</text><line x1="545.1" y1="148" x2="545.1" y2="153" class="ax"/><text x="545.1" y="164" class="axt" text-anchor="middle">900</text><line x1="700.8" y1="148" x2="700.8" y2="153" class="ax"/><text x="700.8" y="164" class="axt" text-anchor="middle">1200</text>
+<text x="392" y="180" class="axt" text-anchor="middle">wall-clock seconds (one OSWorld task, 8 steps, success)</text>
+<line x1="200.5" y1="30" x2="200.5" y2="92" class="annl"/><text x="204.5" y="26" class="ann">step 4: KV reuse collapses &#8594; prefill 3&#215;</text>
+</svg></div>
+    <p class="leg"><i style="background:#f85149"></i>prefill (prompt processing, incl. screenshot encode)
+       <i style="background:#58a6ff"></i>decode (reasoning + action)
+       <i style="background:#3fb950"></i>action (VM execution)</p>
+    <p class="dim">Prefill is <b>89%</b> of model time here (1,048&nbsp;s of 1,200&nbsp;s). The lower track projects the
+       <b>append-only</b> KV-stable case, where steps 4–8 prefill only the ~2k-token delta instead of re-processing the whole
+       window: the task contracts <b>~1.9&times;</b> (1,200&rarr;622&nbsp;s) and the per-step cliff disappears. (The
+       terminal-slot scheme of §2b instead holds prefill at a constant ~6k/step — a smaller win on an 8-step task like this,
+       but the decisive one on long, high-step tasks where today's re-prefill balloons to 27k.) Unlike OSWorld-Human's multi-module agents (where separate planning / reflection / judging model calls
+       dominate), Holo3 is <i>one</i> model call per step — so the whole latency is a single prefill+decode, and KV-cache
+       management <i>is</i> the latency lever.</p>
+  </div>
+
   <!-- KV management -->
   <div class="panel full">
     <h2>2 · Managing the KV cache for OSWorld</h2>
@@ -161,6 +215,44 @@
       a pure replication and is left untouched; this is the <b>next-run</b> experiment. Cheaper variants on the same axis:
       lower screenshot resolution (fewer image tokens), or summarize-then-drop old turns at a stable boundary instead of
       mutating them — both trade fidelity for prefill and both need the same A/B.</p>
+  </div>
+
+  <!-- slot swap -->
+  <div class="panel full">
+    <h2>2b · Can screenshots live in swappable KV slots?</h2>
+    <p>A sharper idea than "never evict": lay the prompt out as <code>[preamble][img-slot-1][img-slot-2][img-slot-3][text]</code>
+       and each step swap the oldest screenshot out of its slot, prefilling <b>only</b> the new image + appended text while
+       reusing the rest of the KV. On a <b>standard</b> transformer this is a real, published technique — at a measured cost:</p>
+    <div class="scroll"><table>
+      <tr><th>method</th><th>mechanism</th><th class="num">recompute</th><th>quality cost</th></tr>
+      <tr><td><a href="https://arxiv.org/abs/2311.04934">Prompt Cache</a> (MLSys'24)</td><td>position-anchored modules; mask cross-attention</td><td class="num">0%</td><td>&lt;1 pt (if self-contained)</td></tr>
+      <tr><td><a href="https://arxiv.org/abs/2405.16444">CacheBlend</a> (EuroSys'25)</td><td>recompute high-deviation tokens</td><td class="num">5–18%</td><td>~0.01 F1</td></tr>
+      <tr><td><a href="https://arxiv.org/abs/2410.15332">EPIC</a></td><td>recompute chunk-boundary tokens (LegoLink)</td><td class="num">~16–20 tok</td><td>0–7%</td></tr>
+    </table></div>
+    <div class="call bad">
+      <p style="margin:0"><b class="r">But the literal "swap a middle slot" version is blocked on this model.</b> Holo3 is
+      hybrid: 30 of 40 layers are Gated-DeltaNet with a <i>sequential recurrent state</i>
+      (s<sub>t</sub> = s<sub>t-1</sub>·g<sub>t</sub> + k<sub>t</sub>·d<sub>t</sub>). Editing a token at position <i>p</i>
+      invalidates <b>every</b> state after <i>p</i>, with no per-token KV to splice — and since the evicted screenshot sits
+      near the front, a middle-swap re-scans ~the whole suffix (today's cost). Causal attention adds the same staleness on
+      the 10 full-attention layers. (This is also why <code>--cache-reuse</code> / KV-shift is unsound here.)</p>
+    </div>
+    <div class="call fix">
+      <p style="margin:0"><b class="g">The twist that makes it work — losslessly.</b> The same strict causality cuts both
+      ways: a <b>state snapshot at position p is an exact summary of the prefix [0..p]</b>. So put the ≤3 screenshots at the
+      <b>END</b>, checkpoint the full state (attention KV + recurrent ssm/conv) at the image-region start, and each step
+      <b>restore the checkpoint and re-prefill only the current image window</b> (~6k tokens, constant) — exact for all 40
+      layers, not approximate. llama.cpp <i>already ships</i> this: <code>--ctx-checkpoints</code> (on by default, n=32) with
+      <code>llama_state_seq_get/set_data_ext(PARTIAL_ONLY)</code> serializing the recurrent state
+      (<code class="src">server-context.cpp:2033</code>, <code class="src">llama-memory-recurrent.cpp:864</code>). No model
+      change — agent/server orchestration only. The forced corrections to the idea: the slots must be <b>terminal</b>, and
+      the mechanism is <b>checkpoint-restore, not KV-pointer-swap</b>.</p>
+    </div>
+    <p class="dim">So the instinct ("only compute the swapped-in screenshot") is right. Terminal slots keep the 3-image count
+       (close to the model's training regime) at a constant ~6k-tok/step with bounded memory; append-only is cheaper
+       (~2k/step) but keeps every image and grows context. Both reorder the prompt vs the interleaved leaderboard layout, so
+       both warrant an accuracy A/B. The distinction from <code>--cache-reuse</code> matters: checkpoint-restore replays the
+       <i>full exact state</i>, whereas KV-shift fakes token positions and silently corrupts the recurrent half.</p>
   </div>
 
   <!-- iGPU / 96GB -->
@@ -206,6 +298,7 @@
     <table>
       <tr><th>lever</th><th>uses 96&nbsp;GB?</th><th>expected</th><th>status</th></tr>
       <tr><td>Append-only / KV-stable context</td><td>yes (262K ctx ≈ 5 GB KV)</td><td class="g">4–10× prefill, runtime-agnostic</td><td class="y">next-run A/B (accuracy)</td></tr>
+      <tr><td>Terminal slots + state checkpoint</td><td>yes (bounded 3-img KV)</td><td class="g">constant ~6k/step (vs 8–27k)</td><td class="y">buildable now (--ctx-checkpoints); A/B</td></tr>
       <tr><td><code>--cache-reuse</code></td><td>—</td><td>—</td><td class="r">ruled out (inert + unsound)</td></tr>
       <tr><td>iGPU Vulkan offload</td><td>weights+KV in unified mem</td><td class="g">~2× end-to-end</td><td class="r">blocked (2 kernel bugs)</td></tr>
       <tr><td>Continuous batching</td><td>yes (4× context)</td><td class="y">~1.8–2.5× throughput (B2–3)</td><td class="y">needs parallel runner</td></tr>
