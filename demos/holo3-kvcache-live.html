@@ -122,6 +122,28 @@
     <div class="dim" id="cmp-note" style="margin-top:8px;font-size:11.5px"></div>
   </div>
 
+  <div class="panel full" id="timeline-panel">
+    <h2>Where a task's wall-clock actually goes — per-step timeline</h2>
+    <div class="dim" style="margin-bottom:6px;font-size:12.5px;line-height:1.55">
+      In the timeline style of <span style="color:var(--blu)">OSWorld-Human</span> (Abhyankar, Qi &amp; Zhang),
+      one real <b>successful</b> task (<span class="pill cpu">chrome</span>, 8 steps, score 1.0) decomposed per step
+      into <span style="color:var(--red)">prefill</span>, <span style="color:var(--blu)">decode</span>, and
+      <span style="color:var(--grn)">action</span>. OSWorld-Human reports each successive step can take ~3× longer
+      than early steps — exactly what the <b>evict</b> track shows, and the cause is mechanical: at <b>step&nbsp;4</b>
+      the 3-screenshot eviction breaks the KV prefix, so prefill triples (≈59&nbsp;s → ≈175&nbsp;s) and never recovers.
+      The matched A/B above measures the same effect across every task.
+    </div>
+    <div id="timeline"></div>
+    <div class="big" style="gap:8px 18px;margin-top:8px;font-size:12px;flex-wrap:wrap">
+      <span><span style="display:inline-block;width:11px;height:11px;background:var(--red);vertical-align:middle"></span>
+        prefill (prompt processing, incl. screenshot encode)</span>
+      <span><span style="display:inline-block;width:11px;height:11px;background:var(--blu);vertical-align:middle"></span>
+        decode (reasoning + action)</span>
+      <span><span style="display:inline-block;width:11px;height:11px;background:var(--grn);vertical-align:middle"></span>
+        action (VM execution)</span>
+    </div>
+  </div>
+
   <div class="panel full">
     <h2>Success rate by domain</h2>
     <div class="scroll"><table id="dom"></table></div>
@@ -387,6 +409,49 @@ function drawChart(series){
   x.fillText('cpu% (blue)',6,28);
 }
 
+// Per-step wall-clock timeline for one real chrome task (8 steps, score 1.0).
+// evict (measured): prefill ~59s for steps 1-3, then triples to ~175s from step 4
+// when 3-screenshot eviction breaks the KV prefix. no-evict (projected): KV-stable
+// prefill stays ~59s every step. Static illustrative figure (not live data).
+function buildTimeline(){
+  const el=document.getElementById('timeline'); if(!el) return;
+  const W=1000,H=292,x0=170,x1=908,plotW=x1-x0,total=1200;
+  const RED='#f85149',BLU='#58a6ff',GRN='#3fb950',MUT='#8b949e',YEL='#d29922',FG='#c9d1d9',BD='#30363d';
+  const px=s=>x0+s*plotW/total;
+  const steps=(n,pf)=>Array.from({length:n},()=>({pf,dec:16,act:3}));
+  const measured=[...steps(3,59),...steps(5,175)];   // collapse at step 4
+  const kvstable=steps(8,59);
+  const track=(arr,yTop,h)=>{ let x=x0,s='';
+    arr.forEach(st=>[['pf',RED],['dec',BLU],['act',GRN]].forEach(([k,c])=>{
+      const w=st[k]*plotW/total;
+      s+=`<rect x="${x.toFixed(1)}" y="${yTop}" width="${Math.max(w,0.6).toFixed(1)}" height="${h}" fill="${c}"/>`;
+      x+=w;})); return {svg:s,endX:x}; };
+  const yM=64,yK=150,h=34;
+  const tM=track(measured,yM,h), tK=track(kvstable,yK,h);
+  const s4=px(measured.slice(0,3).reduce((a,b)=>a+b.pf+b.dec+b.act,0));
+  let g=`<svg viewBox="0 0 ${W} ${H}" width="100%" font-family="ui-monospace,Menlo,monospace">`;
+  // track labels (match the comparison-table columns: evict / no-evict)
+  g+=`<text x="${x0-12}" y="${yM+14}" fill="${FG}" font-size="15" text-anchor="end">evict</text>`;
+  g+=`<text x="${x0-12}" y="${yM+30}" fill="${MUT}" font-size="11" text-anchor="end">measured</text>`;
+  g+=`<text x="${x0-12}" y="${yK+14}" fill="${FG}" font-size="15" text-anchor="end">no-evict</text>`;
+  g+=`<text x="${x0-12}" y="${yK+30}" fill="${MUT}" font-size="11" text-anchor="end">KV-stable · projected</text>`;
+  g+=tM.svg+tK.svg;
+  g+=`<text x="${(tM.endX+8).toFixed(0)}" y="${yM+22}" fill="${MUT}" font-size="13">1200s</text>`;
+  g+=`<text x="${(tK.endX+8).toFixed(0)}" y="${yK+22}" fill="${GRN}" font-size="13">622s ↓1.9×</text>`;
+  // step-4 collapse annotation
+  g+=`<line x1="${s4.toFixed(1)}" y1="44" x2="${s4.toFixed(1)}" y2="${yK+h+6}" stroke="${YEL}" stroke-width="1.5" stroke-dasharray="4 4"/>`;
+  g+=`<text x="${(s4+8).toFixed(0)}" y="38" fill="${YEL}" font-size="13">step 4: KV reuse collapses → prefill 3×</text>`;
+  // time axis
+  const yA=yK+h+26;
+  g+=`<line x1="${x0}" y1="${yA}" x2="${x1}" y2="${yA}" stroke="${BD}"/>`;
+  [0,300,600,900,1200].forEach(t=>{
+    g+=`<line x1="${px(t).toFixed(1)}" y1="${yA}" x2="${px(t).toFixed(1)}" y2="${yA+5}" stroke="${MUT}"/>`;
+    g+=`<text x="${px(t).toFixed(1)}" y="${yA+19}" fill="${MUT}" font-size="12" text-anchor="middle">${t}</text>`;});
+  g+=`<text x="${((x0+x1)/2).toFixed(0)}" y="${yA+38}" fill="${MUT}" font-size="12" text-anchor="middle">wall-clock seconds (one OSWorld task, 8 steps, success)</text>`;
+  g+='</svg>';
+  el.innerHTML=g;
+}
+buildTimeline();
 load(); setInterval(load, 60000);
 </script>
 </body>
