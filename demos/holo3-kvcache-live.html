@@ -119,21 +119,7 @@
   <div class="panel full" id="cmp-panel" style="display:none">
     <h2>Evict vs no-eviction — all coefficients</h2>
     <div class="scroll"><table id="cmp"></table></div>
-    <div class="dim" id="cmp-note" style="margin-top:8px;font-size:11.5px"></div>
-  </div>
-
-  <div class="panel full" id="timeline-panel">
-    <h2>Where a task's wall-clock actually goes — per-step timeline</h2>
-    <div class="dim" style="margin-bottom:6px;font-size:12.5px;line-height:1.55">
-      In the timeline style of <span style="color:var(--blu)">OSWorld-Human</span> (Abhyankar, Qi &amp; Zhang),
-      one real <b>successful</b> task (<span class="pill cpu">chrome</span>, 8 steps, score 1.0) decomposed per step
-      into <span style="color:var(--red)">prefill</span>, <span style="color:var(--blu)">decode</span>, and
-      <span style="color:var(--grn)">action</span>. OSWorld-Human reports each successive step can take ~3× longer
-      than early steps — exactly what the <b>evict</b> track shows, and the cause is mechanical: at <b>step&nbsp;4</b>
-      the 3-screenshot eviction breaks the KV prefix, so prefill triples (≈59&nbsp;s → ≈175&nbsp;s) and never recovers.
-      The matched A/B above measures the same effect across every task.
-    </div>
-    <div id="timeline"></div>
+    <div id="timeline" style="margin-top:18px"></div>
     <div class="big" style="gap:8px 18px;margin-top:8px;font-size:12px;flex-wrap:wrap">
       <span><span style="display:inline-block;width:11px;height:11px;background:var(--red);vertical-align:middle"></span>
         prefill (prompt processing, incl. screenshot encode)</span>
@@ -343,12 +329,6 @@ async function load(){
          `<td class="num">${fmtV(r,'noevict')}</td>`+
          `<td class="num">${gain(r)}</td></tr>`;});
     document.getElementById('cmp').innerHTML=h;
-    document.getElementById('cmp-note').innerHTML=
-      `Coarse → fine (task-level, then step-level). <b>Matched A/B: both arms on the same ${cmp.n_clean} tasks</b> — `+
-      `evict = their last-3-screenshot run from the 361 sweep. ${cmp.n_excluded} runaway task`+
-      `${cmp.n_excluded===1?'':'s'} excluded from BOTH arms (${cmp.exclude_rule}): `+
-      `${(cmp.excluded||[]).join(', ')||'none'} — where no-evict's unbounded context collapses decode and nears the memory wall. `+
-      `<b>gain &gt;1× = no-evict better</b>; <span class="bad">accuracy (−pp) and decode time (&lt;1×) are the costs</span>.`;
   } else cmpEl.style.display='none';
 
   const bd=st.by_domain||{};
