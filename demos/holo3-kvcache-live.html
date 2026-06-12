@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Holo3 · OSWorld · NUC16 — live</title>
+<title>Holo3 · KV-cache ablation · NUC16 — live</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
   :root{--bg:#0d1117;--panel:#161b22;--bd:#30363d;--fg:#c9d1d9;--mut:#8b949e;
@@ -46,10 +46,16 @@
   .badge.live::before{content:"●";margin-right:5px;animation:blink 1.6s infinite}
   .badge.stale{background:#3a2e14;color:var(--yel)}
   .badge.fin{background:#13243a;color:var(--blu)}
-  .badge.paused{background:#13243a;color:var(--blu)}
   @keyframes blink{50%{opacity:.25}}
   .alert{display:none;margin:10px 20px 0;padding:9px 14px;border:1px solid #5a4a1a;
          background:#241d0c;color:var(--yel);border-radius:8px;font-size:12px}
+  .paused{margin:10px 20px 0;padding:9px 14px;border:1px solid #243a52;
+          background:#0e1d2e;color:var(--blu);border-radius:8px;font-size:12px}
+  .paused b{color:var(--fg)}
+  .ab{border-color:#2d4a30}
+  .ab .stat .v{color:var(--grn)}
+  .ab .stat .v.warn{color:var(--yel)}
+  .ab .stat .sub{color:var(--mut);font-size:10.5px}
   .why p{margin:6px 0;font-size:12.5px;line-height:1.55}
   .why b{color:var(--fg)}
   .why .dev{color:var(--blu);font-weight:600}
@@ -60,14 +66,15 @@
 </head>
 <body>
 <header>
-  <h1>Holo3-35B-A3B · OSWorld-Verified · <span id="host">NUC16</span>
+  <h1>Holo3-35B-A3B · KV-cache ablation · <span id="host">NUC16</span>
       <span id="status-badge" class="badge live">LIVE</span></h1>
   <span class="sub" id="meta-line">loading…</span>
   <span class="sub" style="margin-left:auto">
-    <span id="updated"></span> &nbsp;·&nbsp; <a href="holo3-kvcache-live.html">KV-cache ablation →</a> &nbsp;·&nbsp; <a href="../research.html">← research</a>
+    <span id="updated"></span> &nbsp;·&nbsp; <a href="holo3-osworld-live.html">leaderboard run →</a> &nbsp;·&nbsp; <a href="../research.html">← research</a>
   </span>
 </header>
 <div class="alert" id="alert"></div>
+<div class="paused" id="paused-banner" style="display:none"></div>
 
 <div class="wrap">
   <div class="panel">
@@ -101,6 +108,12 @@
   <div class="panel">
     <h2>Serving aggregate</h2>
     <div class="grid2" id="agg"></div>
+  </div>
+
+  <div class="panel full ab" id="ab-panel" style="display:none">
+    <h2>A/B — unlimited KV-cache (no eviction) vs evicted baseline</h2>
+    <div class="big" id="ab-stats"></div>
+    <div class="dim" id="ab-note" style="margin-top:8px;font-size:11.5px"></div>
   </div>
 
   <div class="panel full">
@@ -162,7 +175,7 @@
 </div>
 
 <script>
-const DATA_URL = 'https://raw.githubusercontent.com/Mac-Huang/xuming.ai/live-data/holo3_state.json';
+const DATA_URL = 'https://raw.githubusercontent.com/Mac-Huang/xuming.ai/live-data/holo3_kvcache_state.json';
 const fmtDur = s => { if(s==null) return '–'; s=Math.round(s);
   const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);
   return (d?d+'d ':'')+(h||d?h+'h ':'')+m+'m'; };
@@ -177,34 +190,43 @@ async function load(){
 
   const runAge=(Date.now()/1000-(st.updated_at||0))/60;
   const pubAge=(Date.now()/1000-(st.published_at||0))/60;
-  const paused=!!m.paused;
-  const finished=!paused&&((pr.done!=null&&pr.total!=null&&pr.done>=pr.total)||c.status==='finished');
+  const finished=(pr.done!=null&&pr.total!=null&&pr.done>=pr.total)||c.status==='finished';
   const badge=document.getElementById('status-badge'), alert=document.getElementById('alert');
-  if(paused){badge.className='badge paused';badge.textContent='PAUSED';alert.style.display='block';
-    alert.style.borderColor='#243a52';alert.style.background='#0e1d2e';alert.style.color='#58a6ff';
-    alert.textContent=`run paused at ${pr.done}/${pr.total} (${pct(pr.success_rate)} success) — resumable; the team paused it to run the KV-cache ablation (link above)`;}
-  else if(finished){badge.className='badge fin';badge.textContent='FINISHED';alert.style.display='none';}
+  if(finished){badge.className='badge fin';badge.textContent='FINISHED';alert.style.display='none';}
   else if(runAge>45){badge.className='badge stale';badge.textContent='STALE';alert.style.display='block';
     alert.textContent=`no state update from the device for ${fmtDur(runAge*60)} — run may be paused or recovering; showing last published snapshot`;}
   else {badge.className='badge live';badge.textContent='LIVE';alert.style.display='none';}
 
   document.getElementById('host').textContent = m.host||'NUC16';
+  const expTag = m.mode==='no_evict'
+    ? `<span class="pill" style="background:#15351f;color:#3fb950">KV-CACHE ABLATION · no eviction</span>`
+    : '';
   document.getElementById('meta-line').innerHTML =
     `${m.model||''} · ${m.quant||''} · <span class="pill cpu">${(m.device||'?').toUpperCase()}</span> · `+
-    `max_steps=${m.max_steps} · ${m.screen} · ${m.observation} · temp=${m.temperature} · single rollout · `+
-    `<span class="dim">#1 open-weight on OSWorld-Verified</span>`;
+    `max_steps=${m.max_steps} · ${m.screen} · screenshots: ${m.screenshot_policy||m.observation} · temp=${m.temperature} · `+
+    expTag+` <span class="dim">#1 open-weight on OSWorld-Verified</span>`;
   document.getElementById('updated').textContent =
     'published '+(pubAge<1.5?'just now':fmtDur(pubAge*60)+' ago');
+
+  // paused 361-task leaderboard run banner
+  const pmEl=document.getElementById('paused-banner');
+  if(m.paused_main){
+    const p=m.paused_main;
+    pmEl.style.display='block';
+    pmEl.innerHTML=`⏸ <b>Full 361-task leaderboard run is paused</b> at ${p.done}/${p.total} `+
+      `(${pct(p.success_rate)} success) — resumable. This page is now tracking the `+
+      `<b>unlimited-KV / no-eviction ablation</b> on ${m.total_tasks} solved tasks.`;
+  } else pmEl.style.display='none';
 
   document.getElementById('p-done').textContent = `${pr.done??'–'} / ${pr.total??'–'}`;
   document.getElementById('p-sr').textContent = pct(pr.success_rate);
   document.getElementById('p-scored').textContent = pr.scored??'–';
   document.getElementById('p-elapsed').textContent = m.started_at? fmtDur(Date.now()/1000-m.started_at):'–';
-  document.getElementById('p-eta').textContent = (finished||paused)?'—':fmtDur(pr.eta_s);
+  document.getElementById('p-eta').textContent = finished?'—':fmtDur(pr.eta_s);
   document.getElementById('p-tw').textContent = pr.mean_task_wall_s? fmtDur(pr.mean_task_wall_s):'–';
   document.getElementById('pbar').style.width = pr.total? (100*pr.done/pr.total)+'%':'0%';
 
-  document.getElementById('cur').innerHTML = paused? '<span class="run">⏸ paused — resumable</span>' : finished? '<span class="ok">run complete ✓</span>' :
+  document.getElementById('cur').innerHTML = finished? '<span class="ok">run complete ✓</span>' :
     (!c.task_id)? (c.status||'idle') :
     `<div class="kv"><span class="k">task</span><span>${c.domain}/${String(c.task_id).slice(0,8)}</span></div>`+
     `<div class="kv"><span class="k">step</span><span class="run">${c.step}/${c.max_steps}</span></div>`+
@@ -232,9 +254,34 @@ async function load(){
     ['decode t/s', ag.decode_tps_mean??'–'],
     ['prompt tokens', ag.prompt_tokens_mean??'–'],
     ['Wh / task', ag.energy_wh_per_task_mean??'–'],
+    ['KV cache hit', ag.cache_hit_mean!=null? pct(ag.cache_hit_mean):'–'],
   ];
   document.getElementById('agg').innerHTML = aggRows.map(([k,v])=>
     `<div class="kv"><span class="k">${k}</span><span>${v}</span></div>`).join('');
+
+  // A/B panel — no-eviction vs evicted baseline
+  const ab=st.ab||{}, abEl=document.getElementById('ab-panel');
+  if(ab.n){
+    abEl.style.display='block';
+    const cell=(v,l,sub,warn)=>`<div class="stat"><div class="v${warn?' warn':''}">${v}</div>`+
+      `<div class="l">${l}</div>${sub?`<div class="sub">${sub}</div>`:''}</div>`;
+    document.getElementById('ab-stats').innerHTML=
+      cell((ab.predict_time_speedup_x??'–')+'×','step-time speedup',
+           `${ab.evict_predict_s??'–'}s → ${ab.noevict_predict_s??'–'}s / step`)+
+      cell((ab.prefill_tokens_reduction_x??'–')+'×','less prefill work',
+           `${ab.evict_new_tokens_step??'–'} → ${ab.noevict_new_tokens_step??'–'} new tok/step`)+
+      cell(ab.cache_hit_mean!=null?pct(ab.cache_hit_mean):'–','KV cache hit',
+           'evicted ≈ 0% (prefix broken)')+
+      cell((ab.wall_speedup_x??'–')+'×','wall/task speedup')+
+      cell(ab.score_retained_frac!=null?pct(ab.score_retained_frac):'–','score retained',
+           'tasks still solved', ab.score_retained_frac!=null&&ab.score_retained_frac<0.9)+
+      cell((ab.noevict_energy_wh!=null?ab.noevict_energy_wh:'–')+' Wh',
+           'energy/task',`evicted ${ab.evict_energy_wh??'–'} Wh`);
+    document.getElementById('ab-note').innerHTML=
+      `n=${ab.n} solved tasks · baseline = the same tasks' EVICTED (last-3-screenshot) numbers from the paused 361-run. `+
+      `H Company caps context at 3 screenshots ("more degrades accuracy"); this ablation removes that cap to test the `+
+      `KV-cache speed gain vs any accuracy cost of unlimited visual history.`;
+  } else abEl.style.display='none';
 
   const bd=st.by_domain||{};
   let dh='<tr><th>domain</th><th class="num">done/total</th><th class="num">success</th></tr>';
