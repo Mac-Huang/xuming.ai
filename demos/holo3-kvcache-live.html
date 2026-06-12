@@ -312,7 +312,7 @@ async function load(){
       const g=r.ratio, cls=g>1.02?'ok':g<0.98?'bad':'dim';
       return `<span class="${cls}">${g}×</span>`; };
     let h='<tr><th>coefficient</th>'+
-          `<th class="num">evict · all ${cmp.n_all} tasks</th>`+
+          `<th class="num">evict · ${cmp.n_clean} tasks</th>`+
           `<th class="num">no-evict · ${cmp.n_clean} tasks</th>`+
           '<th class="num">gain</th></tr>';
     cmp.rows_clean.forEach(r=>{
@@ -322,10 +322,10 @@ async function load(){
          `<td class="num">${gain(r)}</td></tr>`;});
     document.getElementById('cmp').innerHTML=h;
     document.getElementById('cmp-note').innerHTML=
-      `Coarse → fine (task-level, then step-level). <b>Evict = the full last-3-screenshot baseline over all `+
-      `${cmp.n_all} tasks</b> from the 361 sweep (eviction caps context at 3 screenshots, so it never blows up). `+
-      `No-evict excludes ${cmp.n_excluded} runaway task${cmp.n_excluded===1?'':'s'} (${cmp.exclude_rule}): `+
-      `${(cmp.excluded||[]).join(', ')||'none'} — where unbounded context collapses decode and nears the memory wall. `+
+      `Coarse → fine (task-level, then step-level). <b>Matched A/B: both arms on the same ${cmp.n_clean} tasks</b> — `+
+      `evict = their last-3-screenshot run from the 361 sweep. ${cmp.n_excluded} runaway task`+
+      `${cmp.n_excluded===1?'':'s'} excluded from BOTH arms (${cmp.exclude_rule}): `+
+      `${(cmp.excluded||[]).join(', ')||'none'} — where no-evict's unbounded context collapses decode and nears the memory wall. `+
       `<b>gain &gt;1× = no-evict better</b>; <span class="bad">accuracy (−pp) and decode time (&lt;1×) are the costs</span>.`;
   } else cmpEl.style.display='none';
 
