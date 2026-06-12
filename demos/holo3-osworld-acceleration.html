@@ -58,6 +58,7 @@
       <span class="badge">SYSTEMS</span></h1>
   <span class="sub">why prefill dominates, and whether the iGPU / 96&nbsp;GB can help</span>
   <span class="sub" style="margin-left:auto">
+    <a href="holo3-kvcache-optimum.html">the KV-cache optimum →</a> &nbsp;·&nbsp;
     <a href="holo3-osworld-profiling.html">profiling corpus →</a> &nbsp;·&nbsp;
     <a href="holo3-osworld-live.html">live tracker →</a> &nbsp;·&nbsp;
     <a href="../research.html#wuklab">← research</a>
@@ -253,6 +254,10 @@
        (~2k/step) but keeps every image and grows context. Both reorder the prompt vs the interleaved leaderboard layout, so
        both warrant an accuracy A/B. The distinction from <code>--cache-reuse</code> matters: checkpoint-restore replays the
        <i>full exact state</i>, whereas KV-shift fakes token positions and silently corrupts the recurrent half.</p>
+    <div class="call fix"><p style="margin:0"><b class="g">→ Build guide.</b> The full per-step algorithm, the
+      <code>llama_state_seq_*_data_ext(PARTIAL_ONLY)</code> / <code>--ctx-checkpoints</code> orchestration, the projected
+      numbers, and the prior-art roadmap (Prompt Cache, CacheBlend, EPIC, VLCache, GUI-KV) are written up at
+      <a href="holo3-kvcache-optimum.html"><b>the KV-cache optimum →</b></a></p></div>
   </div>
 
   <!-- iGPU / 96GB -->

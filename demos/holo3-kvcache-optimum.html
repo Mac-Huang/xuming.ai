@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Holo3 · The KV-cache optimum · bounded context with a cache hit every step</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{--bg:#0d1117;--panel:#161b22;--bd:#30363d;--fg:#c9d1d9;--mut:#8b949e;
+        --grn:#3fb950;--red:#f85149;--yel:#d29922;--blu:#58a6ff;--pur:#bc8cff}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);
+       font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  header{padding:14px 20px;border-bottom:1px solid var(--bd);display:flex;
+         flex-wrap:wrap;gap:6px 24px;align-items:baseline}
+  h1{font-size:16px;margin:0;color:var(--blu)}
+  .sub{color:var(--mut)}
+  .wrap{padding:16px 20px;display:grid;gap:16px;
+        grid-template-columns:repeat(auto-fit,minmax(360px,1fr))}
+  .panel{background:var(--panel);border:1px solid var(--bd);border-radius:8px;padding:16px}
+  .panel h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;
+            color:var(--mut);margin:0 0 12px}
+  .full{grid-column:1/-1}
+  p{margin:8px 0;font-size:12.5px;line-height:1.6}
+  b{color:var(--fg)}
+  code{background:#21262d;padding:1px 5px;border-radius:4px;color:var(--pur);font-size:12px}
+  a{color:var(--blu);text-decoration:none} a:hover{text-decoration:underline}
+  .dim{color:var(--mut)}
+  table{border-collapse:collapse;width:100%;font-size:12px}
+  th,td{text-align:left;padding:5px 9px;border-bottom:1px solid #21262d;white-space:nowrap}
+  th{color:var(--mut);font-weight:600;vertical-align:bottom}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  .scroll{max-width:100%;overflow:auto}
+  ul,ol{margin:6px 0;padding-left:20px}
+  li{margin:4px 0;font-size:12.5px;line-height:1.55}
+  .lead{font-size:13px;color:var(--fg);margin:0 0 12px;line-height:1.65}
+  .badge{padding:1px 9px;border-radius:10px;font-size:11px;font-weight:600;
+         background:#13243a;color:var(--blu)}
+  .src{color:var(--blu);font-size:11.5px}
+  .call{border-left:3px solid var(--blu);padding:8px 0 8px 13px;margin:12px 0;
+        background:#10243a55;border-radius:0 6px 6px 0}
+  .call.gap{border-color:var(--yel);background:#241d0c55}
+  .call.fix{border-color:var(--grn);background:#0f240f55}
+  .call.bad{border-color:var(--red);background:#2a121255}
+  .k{color:var(--blu)} .g{color:var(--grn)} .y{color:var(--yel)} .r{color:var(--red)} .p{color:var(--pur)}
+  .pill{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:5px;margin:0 2px}
+  .pill.no{background:#2a1212;color:var(--red)} .pill.yes{background:#0f240f;color:var(--grn)} .pill.maybe{background:#241d0c;color:var(--yel)}
+  /* rendered-markdown blocks */
+  .md{font-size:12.5px;line-height:1.62}
+  .md h1,.md h2,.md h3,.md h4{color:var(--fg);margin:16px 0 8px;line-height:1.3}
+  .md h1{font-size:15px;color:var(--blu)} .md h2{font-size:13.5px;text-transform:none;letter-spacing:0;color:var(--fg)}
+  .md h3{font-size:12.5px;color:var(--blu)} .md h4{font-size:12px;color:var(--mut)}
+  .md p{font-size:12.5px} .md ul,.md ol{padding-left:20px}
+  .md code{background:#21262d;color:var(--pur)}
+  .md pre{background:#0b0f14;border:1px solid var(--bd);border-radius:6px;padding:10px 12px;overflow:auto}
+  .md pre code{background:none;color:var(--fg);font-size:11.5px;line-height:1.5;padding:0}
+  .md table{margin:10px 0} .md th{border-bottom:1px solid var(--bd)}
+  .md blockquote{border-left:3px solid var(--bd);margin:8px 0;padding:2px 0 2px 12px;color:var(--mut)}
+  .md a{color:var(--blu)} .md strong{color:var(--fg)}
+  .md hr{border:none;border-top:1px solid var(--bd);margin:14px 0}
+</style>
+</head>
+<body>
+<header>
+  <h1>Holo3-35B-A3B · The KV-cache optimum
+      <span style="color:var(--fg)">— bounded screenshots, cache hit every step</span>
+      <span class="badge">SYSTEMS · GUIDE</span></h1>
+  <span class="sub">how to keep context short <i>and</i> stop re-prefilling it — on a hybrid model</span>
+  <span class="sub" style="margin-left:auto">
+    <a href="holo3-kvcache-live.html">no-evict A/B (live) →</a> &nbsp;·&nbsp;
+    <a href="holo3-osworld-acceleration.html">KV &amp; accelerator study →</a> &nbsp;·&nbsp;
+    <a href="holo3-osworld-live.html">leaderboard run →</a>
+  </span>
+</header>
+
+<div class="wrap">
+
+  <div class="panel full">
+    <h2>The goal</h2>
+    <p class="lead">Today we trade one good thing for another. <b>Evict</b> (keep the last 3 screenshots) keeps
+      context short and quality high — but rewriting an old screenshot in place <b>breaks the KV prefix every step</b>,
+      so the whole history is re-prefilled (<span class="r">~0% cache hit, 126&nbsp;s prefill/step, quadratic on long
+      tasks</span>). <b>No-evict</b> (keep everything) makes the prefix stable so the cache is reused
+      (<span class="g">~2× less prefill</span>) — but context grows unbounded: decode slows, memory OOMs, and accuracy
+      drops <span class="r">−11&nbsp;pp</span>. <b>The optimum we want is both at once:</b> keep only the last few
+      screenshots (short context → full quality, fast decode, no OOM) <i>and</i> make every step a cache hit on the
+      retained history (only the new visual content is re-prefilled). This page is the build guide — and the honest
+      account of what the hybrid architecture lets us actually reach.</p>
+    <div class="call fix"><p style="margin:0"><b class="g">The answer, in one line.</b> The naive "evict from the
+      middle of the KV and renumber positions" is <b>unsound</b> on Holo3 (30 of its 40 layers are recurrent — no
+      per-token KV to splice). The exact, buildable optimum is <b>terminal screenshot slots + a state
+      checkpoint/restore</b>: park the text history in a checkpoint, re-prefill only the current ≤3-image window each
+      step. It is exact for all 40 layers and the primitive already ships in llama.cpp (<code>--ctx-checkpoints</code>).</p></div>
+  </div>
+
+  <div class="panel full">
+    <h2>The three regimes, side by side</h2>
+    <div class="scroll"><table>
+  <tr><th>per-step coefficient</th>
+      <th>evict (now) <span class="dim">measured</span></th>
+      <th>no-evict <span class="dim">measured</span></th>
+      <th>terminal-slot optimum <span class="dim">projected</span></th></tr>
+  <tr><td>screenshot context</td><td>last 3 — bounded</td><td class="r">all — grows</td><td class="g">last 3 — bounded</td></tr>
+  <tr><td>KV prefix each step</td><td class="r">broken (in-place rewrite)</td><td class="g">stable (append-only)</td><td class="g">restored from checkpoint</td></tr>
+  <tr><td>prefill work / step</td><td class="r">4.8k–27k tok re-prefill</td><td class="g">~2.4k tok (new only)</td><td class="g">~6k tok <b>constant</b> (3 imgs)</td></tr>
+  <tr><td>prefill time / step</td><td>126 s</td><td class="g">63 s</td><td class="g">~constant (no blow-up)</td></tr>
+  <tr><td>KV cache hit</td><td class="r">~0%</td><td class="y">~62%</td><td class="g">text 100% (restored)</td></tr>
+  <tr><td>step latency</td><td>145 s</td><td class="g">84 s</td><td class="g">bounded, flat</td></tr>
+  <tr><td>decode</td><td>fast</td><td class="r">0.89× (slows as ctx grows)</td><td class="g">fast (bounded ctx)</td></tr>
+  <tr><td>task score</td><td class="g">100% (baseline)</td><td class="r">89% (−11pp)</td><td class="g">100% (3-img regime)</td></tr>
+  <tr><td>peak KV memory</td><td>bounded</td><td class="r">OOM tail (long tasks)</td><td class="g">bounded</td></tr>
+  <tr><td>numerical soundness</td><td>exact</td><td>exact</td><td class="g">exact (all 40 layers)</td></tr>
+  <tr><td>status</td><td class="dim">current run</td><td class="y">measured A/B</td><td class="y">buildable now (--ctx-checkpoints)</td></tr>
+</table></div>
+    <p class="dim" style="margin-top:10px">Measured columns are the matched evict-vs-no-evict A/B on this NUC16 run
+      (clean subset, n≈46; see the <a href="holo3-kvcache-live.html">live A/B</a>). The optimum column is a projection
+      from the mechanism below — its defining property is the <b>constant</b> per-step prefill with full quality and
+      bounded memory.</p>
+  </div>
+
+  <div class="panel full">
+    <h2>What gets recomputed each step</h2>
+    <div class="scroll"><svg viewBox="0 0 780 250" xmlns="http://www.w3.org/2000/svg"
+  font-family="ui-monospace,Menlo,Consolas,monospace" style="width:100%;min-width:580px">
+<style>
+ .pre{fill:#30363d} .hit{fill:#1f6f3f} .new{fill:#1f6feb} .rip{fill:#8b2e26}
+ .bt{fill:#c9d1d9;font-size:10px} .lb{fill:#c9d1d9;font-size:11px}
+ .ax{fill:#8b949e;font-size:10px} .ck{stroke:#d29922;stroke-width:2;stroke-dasharray:3 2}
+ .ckt{fill:#d29922;font-size:9.5px} .gr{fill:#3fb950;font-size:10px} .rd{fill:#f85149;font-size:10px}
+</style>
+<!-- Evict -->
+<text x="8" y="34" class="lb">evict (now)</text>
+<rect x="120" y="22" width="40" height="20" class="pre"/><text x="140" y="36" class="bt" text-anchor="middle">pre</text>
+<rect x="160" y="22" width="86" height="20" class="rip"/><rect x="246" y="22" width="86" height="20" class="rip"/>
+<rect x="332" y="22" width="86" height="20" class="rip"/><rect x="418" y="22" width="70" height="20" class="new"/>
+<text x="430" y="36" class="bt" text-anchor="middle">img4</text>
+<text x="300" y="36" class="bt" text-anchor="middle" fill="#f0c0bc">img1*→[evicted] · a1 · img2 · a2 · img3 · a3  (all re-prefilled)</text>
+<text x="500" y="36" class="rd">↻ ~5k–27k tok/step · 0% hit</text>
+<!-- No-evict -->
+<text x="8" y="92" class="lb">no-evict</text>
+<rect x="120" y="80" width="40" height="20" class="pre"/><text x="140" y="94" class="bt" text-anchor="middle">pre</text>
+<rect x="160" y="80" width="260" height="20" class="hit"/><text x="290" y="94" class="bt" text-anchor="middle">img1·a1 … imgN-1·aN-1  (cache hit)</text>
+<rect x="420" y="80" width="70" height="20" class="new"/><text x="455" y="94" class="bt" text-anchor="middle">imgN</text>
+<text x="498" y="94" class="ax">→ grows ↗</text>
+<text x="560" y="94" class="gr">~2k tok/step · 62% hit</text>
+<text x="560" y="106" class="rd" font-size="9.5">but unbounded → −11pp, OOM</text>
+<!-- Terminal-slot optimum -->
+<text x="8" y="156" class="lb" font-weight="600">terminal-slot</text>
+<text x="8" y="168" class="lb" font-weight="600">+ checkpoint</text>
+<rect x="120" y="142" width="40" height="20" class="pre"/><text x="140" y="156" class="bt" text-anchor="middle">pre</text>
+<rect x="160" y="142" width="180" height="20" class="hit"/><text x="250" y="156" class="bt" text-anchor="middle">a1 a2 … aN  (text history)</text>
+<line x1="343" y1="134" x2="343" y2="170" class="ck"/><text x="343" y="130" class="ckt" text-anchor="middle">checkpoint</text>
+<rect x="346" y="142" width="46" height="20" class="rip"/><rect x="392" y="142" width="46" height="20" class="rip"/><rect x="438" y="142" width="46" height="20" class="new"/>
+<text x="415" y="156" class="bt" text-anchor="middle" fill="#f0c0bc">imgN-2 imgN-1 imgN</text>
+<text x="494" y="156" class="gr">restore → re-prefill 3 imgs only</text>
+<text x="494" y="168" class="ax" font-size="9.5">constant ~6k tok/step · text=100% hit · bounded · exact</text>
+<!-- legend -->
+<rect x="120" y="200" width="12" height="12" class="pre"/><text x="137" y="210" class="ax">preamble</text>
+<rect x="210" y="200" width="12" height="12" class="hit"/><text x="227" y="210" class="ax">cache hit / restored (exact)</text>
+<rect x="410" y="200" width="12" height="12" class="rip"/><text x="427" y="210" class="ax">re-prefilled each step</text>
+<rect x="585" y="200" width="12" height="12" class="new"/><text x="602" y="210" class="ax">new this step</text>
+<text x="120" y="236" class="ax">Layout — what is recomputed when the agent takes one step. Bar width ≈ tokens; ↻ = re-prefill.</text>
+</svg></div>
+  </div>
+
+  <div class="panel full">
+    <h2>How to achieve it — the mechanism &amp; build</h2>
+    <div class="md"><blockquote>
+<p>Build guide and research roadmap for bounded-context, full-quality, cache-resident acceleration of Holo3-35B-A3B on llama.cpp (CPU). This page assumes the architecture facts established in <a href="/demos/holo3-osworld-acceleration.html">holo3-osworld-acceleration.html</a>; read it first for the hybrid-layer analysis and the ruling-out of <code>--cache-reuse</code>.</p>
+</blockquote>
+<hr />
+<h2>1. The goal, and the core idea in one paragraph</h2>
+<p><strong>Goal.</strong> Today we are forced to choose between two bad arms:</p>
+<ul>
+<li><strong>evict</strong> (H Company default, keep last 3 screenshots by trimming the <em>prompt</em>): bounded context → full quality and fast decode, but every step diverges the token sequence near the trimmed image, so the server re-tokenizes and re-prefills everything after the first divergence — <strong>KV-cache hit ≈ 0%</strong>, prefill ≈ 126 s/step.</li>
+<li><strong>no-evict</strong> (append-only, keep all screenshots): the stable prefix is a true cache hit so prefill drops to ≈ 63 s/step (<strong>KV hit ≈ 62%</strong>), but context grows without bound → decode <em>slows</em> as context grows, the quality A/B drops <strong>−11 pp</strong>, and the tail OOMs.</li>
+</ul>
+<p>We want <strong>both</strong>: keep the context bounded to ≤ K screenshots (the model's training regime → full quality, fast decode, no OOM) <strong>and</strong> make the stable text history a true cache hit so only the current screenshot window is prefilled.</p>
+<p><strong>Core idea.</strong> Lay the prompt out so all screenshots sit at the <em>end</em> — <code>[preamble][append-only TEXT action history][≤ K current screenshots]</code> — and take an exact <strong>state checkpoint</strong> at the image-region start (the end of the stable text prefix, <em>before</em> the screenshots). Strict causality makes that checkpoint an exact summary of the prefix <code>[0..p]</code> for <strong>all 40 layers</strong> (the 10 attention layers' KV <em>and</em> the 30 Gated-DeltaNet recurrent states). Each step we <strong>restore</strong> the checkpoint, <strong>prefill only the current ≤ K-screenshot window</strong> (a constant ~6k tokens for K=3, never growing), decode the action, append the new action <em>text</em> to the stable prefix, and <strong>advance the checkpoint</strong> by that small text delta. The text history is restored, never recomputed (a true cache hit); only the screenshots are re-encoded. This is the bounded, exact, full-quality optimum on this hybrid model.</p>
+<hr />
+<h2>2. Why the naive "evict from the middle of the KV and renumber" is unsound here</h2>
+<p>The intuitive optimum — drop the <em>oldest</em> screenshot's KV span from the middle, renumber the survivors, and re-rotate — is the <code>seq_rm</code> + <code>seq_add</code> + K-shift triad (<code>--cache-reuse</code> / context-shift). On a <strong>plain transformer with per-token KV</strong> this is exactly what StreamingLLM (Xiao et al., ICLR 2024) does: it assigns positions <em>within the cache</em> rather than from source text and re-applies RoPE to the survivors. Block-Attention (Ma et al., ICLR 2025) gives the de-rotate → zero → re-rotate-to-target math; CachedAttention/AttentionStore (Gao et al., USENIX ATC 2024) is the production analogue ("positional-encoding-decoupled truncation"). <strong>All of these assume per-token KV and therefore map only onto the 10 attention layers of Holo3.</strong> They are silent on the other 30.</p>
+<p>On <strong>this</strong> model the triad is unsound for two independent reasons:</p>
+<p><strong>(a) <code>--cache-reuse</code> is inert here anyway — it is disabled for multimodal.</strong> In <code>llama-server</code>, cache-reuse is turned off for multimodal contexts (<code>server-context.cpp:997</code>) and refused per-request whenever the prompt carries image tokens (<code>can_cache_reuse = can_shift &amp;&amp; !has_mtmd</code>, <code>server-context.cpp:2716</code>). Every Holo3 prompt carries image tokens, so the path never even fires. The OpenAI <code>/v1</code> endpoint exposes none of this regardless.</p>
+<p><strong>(b) Even if you forced it, the K-shift only touches 10 of 40 layers — and the other 30 cannot be spliced.</strong> Holo3-35B-A3B (qwen3_5_moe) is a <strong>hybrid</strong>: only 10 layers are full-attention with a position-indexed KV cache; the other <strong>30 are Gated-DeltaNet / linear-attention layers carrying an O(1) recurrent state</strong> (one running summary per sequence, <code>s_t = s_{t-1}·g_t + k_t·d_t</code>), <strong>not</strong> per-token KV. A K-shift re-rotates cached <em>keys</em> — it has no meaning for a recurrent state. And <code>llama_memory_seq_add</code> on a recurrent memory only bumps a single tail cell (<code>llama-memory-recurrent.cpp:304</code>); it <strong>cannot reconstruct a gapped-prefix running state</strong>. Editing any token at position <code>p</code> invalidates <em>every</em> recurrent state after <code>p</code>, and there is no per-token KV to splice back in. So <code>seq_rm</code>+<code>seq_add</code>+K-shift would leave 10 layers approximately-correct and <strong>silently corrupt 30/40 layers</strong>.</p>
+<p>This is the deep reason the <em>evict</em> arm measures <strong>0%</strong> KV hit and <strong>126 s</strong> prefill while <em>no-evict</em> gets <strong>62%</strong> / <strong>63 s</strong>: prompt-level trimming forces a full re-prefill, and there is no sound in-cache shortcut for this architecture. The fix is not "shift the KV better" — it is to never put a screenshot in a position we will later have to remove from the middle.</p>
+<blockquote>
+<p>The importance-based eviction literature (H2O, Scissorhands, SnapKV, GUI-KV, STaR-KV, VL-Cache) answers <em>which</em> tokens to drop, and GUI-KV/STaR-KV even report accuracy <em>gains</em> over full-cache on multi-screenshot GUI histories. But every one of them selects at the attention-score layer and <strong>deliberately does not touch positions or recurrent state</strong> — they presuppose the per-token-KV substrate we only partially have. They are useful for <em>choosing K</em> and <em>which</em> screenshots to keep, not for keeping the retained context a cache hit on this hybrid model.</p>
+</blockquote>
+<hr />
+<h2>3. The correct mechanism on this llama.cpp: terminal slots + checkpoint/restore</h2>
+<p>The architecture forbids middle-splice but <em>permits</em> an exact terminal operation. <strong>Strict causality cuts both ways:</strong> a state snapshot taken at position <code>p</code> is an exact summary of the prefix <code>[0..p]</code> for all 40 layers — attention KV <em>and</em> recurrent ssm/conv state. So if every screenshot lives strictly <em>after</em> <code>p</code>, we never edit anything before <code>p</code>, the snapshot stays valid forever, and we only ever recompute the bounded suffix.</p>
+<h3>3.1 Prompt layout (terminal slots)</h3>
+<pre><code>position 0 ──────────────────────────────────────────────► n
+┌───────────┬──────────────────────────────┬───────────────────────────┐
+│ preamble  │ append-only TEXT action hist │  ≤ K current screenshots  │
+│ (system,  │  step1 action, step2 action, │  &lt;observation&gt;img…&lt;/obs&gt;  │
+│  task)    │  …  (grows by ~text/step)    │  (the ONLY image region)  │
+└───────────┴──────────────────────────────┴───────────────────────────┘
+            ▲                              ▲
+       checkpoint A0                  checkpoint Ck  ← &quot;image-region start&quot;
+       (after preamble)               (end of stable text prefix,
+                                        BEFORE any screenshot)
+</code></pre>
+<p>This is the Prompt Cache (Gim et al., MLSys 2024) "modular slot" discipline made architecture-honest: the screenshots are a single relocatable <em>terminal</em> region, and the checkpoint is the schema-defined boundary between the stable prefix and that region. ChunkAttention's two-phase (shared-prefix / fresh-suffix) kernel is the exact compute pattern — a long reused span plus a small fresh span.</p>
+<p><strong>Take the checkpoint <code>Ck</code> at the image-region start</strong> — the end of the stable text prefix, immediately before the first screenshot token. That is the <em>largest</em> prefix that is stable across the step (the action text for the step we are about to take has not been generated yet), so it maximizes what is reused.</p>
+<h3>3.2 Per-step algorithm</h3>
+<pre><code>state:  Ck            # checkpoint at end of stable text prefix (all 40 layers)
+        prefix_text   # preamble + action history (the tokens Ck summarizes)
+        window        # deque of ≤ K most recent screenshots (image-token spans)
+
+loop each agent step:
+    1. new_shot = capture_screenshot()
+       window.push(new_shot)
+       if len(window) &gt; K: window.pop_oldest()      # bounded → training regime
+
+    2. restore(seq=0, Ck)                            # exact prefix summary, all 40 layers
+       # cache now holds [0..p] for attention KV AND recurrent state — a true hit,
+       # nothing in prefix_text is recomputed.
+
+    3. prefill(window)                               # ONLY the ≤K-image window
+       # ~6k tokens for K=3, CONSTANT. re-encode the screenshots; this is the
+       # only recompute. recurrent state advances forward from Ck over the window.
+
+    4. action = decode_action()                      # bounded context → fast decode
+
+    5. prefix_text += render_action_text(action)     # append-only, small delta
+       restore(seq=0, Ck)                            # back to the boundary…
+       prefill(action_text_delta)                    # …extend by the text delta only
+       Ck = checkpoint(seq=0, at end of prefix_text) # ADVANCE checkpoint
+
+    # next step re-prefills only the next ≤K window; text history is never recomputed.
+</code></pre>
+<p>Step 5 is the key bookkeeping move: the screenshot window is <em>transient</em> (recomputed each step), but the <strong>action text</strong> is <em>durable</em>, so we fold only the new action text into the checkpoint. The checkpoint walks forward over the stable prefix one small text delta at a time; the screenshots never enter it.</p>
+<p><strong>Cost:</strong> per-step prefill = <code>|window|</code> ≈ 6k (constant), not the growing 8k–27k re-prefill we pay today. The text history is a restore (cache hit), not a recompute.</p>
+<h3>3.3 The exact llama.cpp primitives — this already ships</h3>
+<p>No model change. This is <strong>agent + server orchestration</strong> on top of primitives that are in the tree today:</p>
+<ul>
+<li><strong><code>--ctx-checkpoints</code></strong> (on by default, <code>n=32</code>): the server's checkpoint ring. This is the feature to repurpose — instead of opportunistic checkpoints, place one deterministically at the image-region boundary and advance it each step.</li>
+<li><strong><code>llama_state_seq_get_data_ext(... LLAMA_STATE_SEQ_FLAGS_PARTIAL_ONLY)</code></strong> → serialize a sequence's state at the current position (our <code>checkpoint(Ck)</code>).</li>
+<li><strong><code>llama_state_seq_set_data_ext(... LLAMA_STATE_SEQ_FLAGS_PARTIAL_ONLY)</code></strong> → restore it (our <code>restore(Ck)</code>).</li>
+<li>Crucially, these serialize <strong>both the attention KV and the recurrent state</strong> in one blob (<code>server-context.cpp:2033</code>; recurrent path <code>llama-memory-recurrent.cpp:864</code>). That is precisely why this is sound where K-shift is not: the checkpoint is an <em>exact, whole-model</em> prefix summary, including the 30 Gated-DeltaNet layers that cannot be shifted. CachedAttention's session save/restore (USENIX ATC 2024) is the published analogue, and Mooncake (FAST 2025) / LMCache (2025) are the tiering tier if these blobs need to be parked rather than held — LMCache independently measured the pathology we are fixing: production context-truncation halves the prefix-cache hit ratio (~85% → ~45%).</li>
+</ul>
+<h3>3.4 What to patch, and where</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>holo3_agent.py</code></strong> (agent harness)</td>
+<td>Reorder the message list to the <strong>terminal layout</strong>: emit the new screenshot's <code>&lt;observation&gt;</code> block(s) for only the last ≤ K steps at the <em>end</em> of the prompt, and keep the older steps as <strong>text-only</strong> action history (strip their <code>image_url</code> chunks, but keep the <em>text</em>, in original order). This is a stricter version of today's <code>_trim_to_last_n_images(K)</code> — it already strips old images; the new requirement is that the surviving images are contiguous at the tail, and the text ordering of the prefix is stable across steps so the checkpoint stays valid.</td>
+</tr>
+<tr>
+<td><strong><code>llama-server</code></strong></td>
+<td>Expose checkpoint/restore <strong>per slot/request</strong>: an endpoint (or slot-extension) that (a) restores a named checkpoint, (b) prefills only the appended suffix, (c) optionally re-snapshots at a caller-given boundary. The OpenAI <code>/v1</code> endpoint hides slot state; this needs a <code>/slots</code>-level or libllama-level handle. The mtmd injection already gives the exact image-token span <code>[p0,p1)</code> of each screenshot — track it to know where the image region starts (the checkpoint boundary).</td>
+</tr>
+<tr>
+<td><strong>model</strong></td>
+<td><strong>None.</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>4. Correctness and quality — honest treatment</h2>
+<p><strong>This scheme is exact for all 40 layers.</strong> A state snapshot at position <code>p</code> <em>is</em> the model's true internal state for the prefix <code>[0..p]</code> — there is no approximation in the attention KV and none in the recurrent state. Restoring it and continuing is bit-identical to having computed the whole prefix. This is the decisive difference from the K-shift family, which is <strong>approximate even on the 10 attention layers</strong> (Block-Attention needs a fine-tune to recover accuracy; EPIC/CacheBlend/KVLink all add selective recompute or link tokens to repair relocation error) and <strong>undefined on the 30 recurrent layers</strong>. We pay zero correction budget because we never relocate anything.</p>
+<p><strong>The one remaining open question is not numerical — it is layout.</strong> The terminal-slot prompt <strong>reorders</strong> the conversation relative to the interleaved leaderboard layout (where each screenshot sits next to the action it produced). The model still sees the same information, but image observations are now clustered at the tail and older observations survive only as text. The empirical question is whether that reordering changes agent behavior.</p>
+<p><strong>What to test (accuracy A/B, holding everything else fixed):</strong></p>
+<ol>
+<li><strong>Terminal-slot layout vs. interleaved layout</strong>, both at K=3 screenshots, on the same OSWorld-Verified subset (the same clean n≈46 used for the evict/no-evict A/B). Primary metric: task score. This isolates the <em>only</em> thing the optimization changes.</li>
+<li><strong>Sensitivity to K</strong> (K=2,3,4): confirm K=3 stays in Holo3's training regime and that going terminal does not shift the sweet spot.</li>
+<li><strong>Text-history fidelity</strong>: ablate <em>what</em> of each old step survives as text (full action JSON vs. summarized) — terminal layout pushes more weight onto the text history, so verify the action text carries enough state.</li>
+<li><strong>Exactness sanity check</strong>: assert restore-then-prefill produces token-for-token identical logits to a from-scratch full prefill on a fixed prompt (numerical proof the checkpoint is exact on this hybrid model end-to-end).</li>
+</ol>
+<p>If (1) shows parity, the optimum is fully realized. If the reorder costs a little, FastV's "visual info migrates to text in early layers" result (Chen et al., ECCV 2024) and the GUI-KV/STaR-KV redundancy findings suggest the cost is small and recoverable by tuning <em>what</em> text survives — but that is a layout tweak, not a correctness fix.</p>
+<hr />
+<h2>5. The purest ideal — and why it is architecturally impossible to do <em>bounded</em> here</h2>
+<p>The theoretically purest step would be <strong>~2k tokens/step</strong>: re-encode <em>only the new screenshot</em>, with every retained token (text <em>and</em> the older retained screenshots) a cache hit, <em>and</em> context bounded. VLCache (Qin et al., Alibaba/Qwen, 2025) is almost exactly this for VLMs on the <em>same model family</em> (Qwen2.5-VL/Qwen3-VL, including the 30B-A3B class): store image KV pre-RoPE as a hash-keyed slot, re-apply position at the destination, recompute 2–5% of tokens.</p>
+<p><strong>It is impossible to do bounded on this hybrid model</strong>, because keeping the <em>older</em> retained screenshots as cache hits while bounding context requires splicing an old screenshot out of the <strong>middle</strong> of the sequence — and that middle-splice is exactly what the 30 Gated-DeltaNet recurrent layers forbid (Section 2). VLCache, like all of Section 2's prior art, presupposes per-token KV; it has no recurrent state to reconstruct. There is no pre-RoPE relocatable slot for a running summary.</p>
+<p>The append-only / <strong>no-evict</strong> arm <em>does</em> already realize the ~2k/step prefill (re-encode only the new screenshot, everything else a hit) — <strong>but only by leaving context unbounded.</strong> That is the trade it cannot escape: it buys minimal prefill with decode slowdown, the −11 pp quality A/B, and an OOM tail. You can have <em>minimal prefill</em> (no-evict, unbounded) or <em>bounded exact</em> (terminal-slot checkpoint), but not the pure <em>bounded + minimal-prefill</em> ideal — the architecture removes that option.</p>
+<p><strong>Terminal-slot checkpoint/restore is therefore the optimum that actually exists for this model:</strong> it trades a constant ~6k/step (re-encode the K-image window) to keep the model in its ≤ K-screenshot training regime, and wins decisively over both evict (re-prefill everything, quadratic in steps) and no-evict (unbounded, slow decode, OOM) on long, high-step tasks.</p>
+<hr />
+<h2>6. Predicted performance</h2>
+<p><strong>PROJECTION</strong> — <code>evict</code> and <code>no-evict</code> columns are the measured matched A/B (clean subset, n≈46, CPU). The <code>terminal-slot</code> column is <em>projected</em> from those measurements (constant ~6k window prefill ≈ half of evict's growing re-prefill; full quality from the bounded ≤3-image regime; decode at evict's fast bounded-context rate; memory bounded like evict).</p>
+<table>
+<thead>
+<tr>
+<th>Metric (per step unless noted)</th>
+<th>evict (measured)</th>
+<th>no-evict (measured)</th>
+<th><strong>terminal-slot optimum (PROJECTED)</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Prefill <strong>new tokens</strong></td>
+<td>4832 (growing re-prefill)</td>
+<td>2366 (only new shot)</td>
+<td><strong>~6000, CONSTANT</strong> (K-image window)</td>
+</tr>
+<tr>
+<td>Prefill <strong>time</strong></td>
+<td>126 s</td>
+<td>63 s</td>
+<td><strong>~63 s, CONSTANT</strong> (no growth)</td>
+</tr>
+<tr>
+<td><strong>Cache-hit semantics</strong></td>
+<td>≈ 0% (prompt trim diverges)</td>
+<td>≈ 62% (stable prefix hits)</td>
+<td><strong>text prefix = true hit (restored); only ≤K screenshots recomputed</strong></td>
+</tr>
+<tr>
+<td><strong>Decode</strong> / step</td>
+<td>19.0 s</td>
+<td>21.4 s (slows as ctx grows)</td>
+<td><strong>~19 s</strong> (bounded ctx, like evict)</td>
+</tr>
+<tr>
+<td><strong>Step latency</strong></td>
+<td>145 s</td>
+<td>84 s</td>
+<td><strong>~80 s</strong></td>
+</tr>
+<tr>
+<td><strong>Task score</strong></td>
+<td>100% (ref)</td>
+<td>89% (−11 pp)</td>
+<td><strong>~100%</strong> (bounded ≤3-image training regime)</td>
+</tr>
+<tr>
+<td><strong>Memory</strong></td>
+<td>bounded</td>
+<td>grows → OOM tail</td>
+<td><strong>bounded</strong> (≤K screenshots)</td>
+</tr>
+<tr>
+<td>Wall / task</td>
+<td>1297 s</td>
+<td>711 s</td>
+<td><strong>≈ 700 s, no OOM tail, no quality loss</strong></td>
+</tr>
+<tr>
+<td>Energy / task</td>
+<td>15 Wh</td>
+<td>9 Wh</td>
+<td><strong>~9 Wh</strong></td>
+</tr>
+<tr>
+<td>Correctness</td>
+<td>exact (but quadratic)</td>
+<td>exact (but unbounded)</td>
+<td><strong>exact, all 40 layers — and bounded</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The win is structural, not marginal: terminal-slot keeps no-evict's prefill/decode/energy profile <em>and</em> evict's bounded memory and full quality, and unlike both it does <strong>not</strong> degrade as the task lengthens (no quadratic re-prefill, no unbounded growth).</p>
+<hr />
+<h3>See also</h3>
+<ul>
+<li><a href="/demos/holo3-osworld-acceleration.html">/demos/holo3-osworld-acceleration.html</a> — establishes the hybrid-layer fact, rules out <code>--cache-reuse</code>, and is the deeper justification for everything in Sections 2 and 5.</li>
+<li>Prior art that maps onto the <strong>10 attention layers only</strong> (per-token-KV slot/relocation): Prompt Cache (MLSys 2024), Block-Attention (ICLR 2025), CacheBlend (EuroSys 2025), EPIC (ICML 2025), KVLink (NeurIPS 2025), StreamingLLM (ICLR 2024), VLCache (2025). They inform <em>which</em> K and <em>what</em> text to keep — none of them handle the 30 recurrent layers, which is why checkpoint/restore (CachedAttention, USENIX ATC 2024), not relocation, is the correct primitive here.</li>
+</ul></div>
+  </div>
+
+  <div class="panel full">
+    <h2>Research &amp; practical roadmap</h2>
+    <div class="md"><p>The mechanism is settled in the sibling page <a href="holo3-osworld-acceleration.html"><code>/demos/holo3-osworld-acceleration.html</code></a> (§2, §2b): on this <em>hybrid</em> <code>qwen3_5_moe</code> model — 10 full-attention layers with a position-indexed KV cache, <strong>30 Gated-DeltaNet layers carrying an O(1) recurrent state</strong> — the literal "swap a screenshot out of the middle of the KV" move (<code>llama_memory_seq_rm</code> + <code>seq_add</code> + K-shift, i.e. <code>--cache-reuse</code>) is both <em>inert</em> (disabled for multimodal prompts) and <em>unsound</em> (it would silently corrupt 30 of 40 layers, since the recurrent state cannot be position-shifted). The bounded-context-<strong>and</strong>-cache-hit optimum is reached instead by <strong>terminal slots + exact state checkpoint/restore</strong>: lay the prompt as <code>[preamble][append-only TEXT action history][≤K screenshots at the END]</code>, checkpoint the full state (attention KV <strong>and</strong> recurrent ssm/conv state) at the image-region start, and each step restore the checkpoint and re-prefill only the current ≤K-screenshot window (~6 k tokens, constant). This section maps the prior art onto that mechanism, ranks the practical paths, gives a validation plan, and renders a verdict.</p>
+<blockquote>
+<p><strong>Read this first:</strong> almost every result below was developed on <em>standard</em> transformers with per-token KV on <strong>all</strong> layers. On those models, the "relocate/evict a KV segment in the middle and re-rotate positions" family is sound. On Holo3 it is sound <strong>only for the 10 attention layers</strong> — the 30 recurrent layers have no per-token KV to splice, so the <em>exact</em> analogue of any "KV segment" trick is a <strong>state checkpoint</strong>, not a KV edit. Keep that asterisk on everything in Clusters 1–4.</p>
+</blockquote>
+<hr />
+<h3>1 · Related work, mapped to our problem</h3>
+<h4>Cluster A — Modular / position-independent KV reuse (segment / slot caching)</h4>
+<p>This is the cluster the user half-remembers, and it is the conceptual ancestor of "a screenshot is a reusable slot." The MLSys work is <strong>Prompt Cache</strong> (Gim et al., <em>MLSys 2024</em>): it defines reusable prompt <strong>modules</strong> with an explicit schema that <em>assigns each module a position range</em> in the new prompt, so a cached segment can be slotted in at a different offset than where it was computed (up to 8× lower TTFT on GPU, <strong>60× on CPU</strong>, no quality loss). The screenshot analogy is exact at the abstraction level — <em>each screenshot is a modular KV slot with an assigned <code>[p0,p1)</code> position range, and we track that span from the mtmd injection.</em> <strong>The key limitation here is architectural:</strong> Prompt Cache assumes the segment <em>is</em> per-token KV that can be re-slotted by re-assigning positions. On our 30 recurrent layers there is no per-token KV to re-slot — the exact summary of a prefix is the <strong>recurrent state at that position</strong>, so the faithful realization of a "reusable screenshot slot" is a <strong>state checkpoint of the prefix that ends where the screenshots begin</strong>, not a relocatable KV chunk. That is precisely why our slots must be <strong>terminal</strong> (§2b of the sibling page).</p>
+<p>The rest of the cluster supplies the <em>segment-relocation</em> machinery that is valid only for our 10 attention layers:
+- <strong>Block-Attention</strong> (Ma, Wang, Tian, <em>ICLR 2025</em>) is the closest published analogue to an M-RoPE K-shift: it caches each block at RoPE-position 0, then <strong>de-rotates → zeroes → re-rotates</strong> the cached KV to its true global position (98.7 % TTFT reduction, ≤1 % RAG gap <em>after a block fine-tune</em>). It gives us the exact angle arithmetic for shifting the attention half — but it is 1-D-RoPE text only and needs a fine-tune we cannot apply to a fixed Q4_K_M model.
+- <strong>VLCache</strong> (Qin et al., Qwen Team / Alibaba, <em>arXiv Dec 2025</em>) is the multimodal realization, evaluated on <strong>the same family as Holo3 (Qwen3-VL-30B-A3B)</strong>: store image KV <strong>pre-RoPE</strong>, hash-key by pixel content, re-apply position at the destination, recompute only <strong>2–5 %</strong> of vision tokens (1.2–16× TTFT, integrated in SGLang). It is the most transplantable template — <em>but it reuses identical recurring images and lives above libllama in SGLang, and it still presumes per-token KV on every layer.</em> On the recurrent half its "store pre-RoPE, relocate, recompute 2–5 %" recipe has no defined meaning.
+- <strong>CacheBlend</strong> (Yao et al., <em>EuroSys 2025, Best Paper</em>) and <strong>EPIC</strong> (Hu et al., <em>ICML 2025</em>) supply the <em>correction</em> primitive for relocation error on attention layers: recompute only the high-deviation tokens (CacheBlend, ~15 %) or just the first ≤32 boundary tokens of a relocated chunk to kill the false attention sink (EPIC/LegoLink). <strong>KVLink</strong> (Yang et al., <em>NeurIPS 2025</em>) couples position re-index + learned "link" tokens. These are the right tools <em>if</em> we ever relocate an attention-layer segment — but they require a fine-tune (KVLink) or assume 1-D RoPE text (all four), and none has a recurrent-state story. <strong>ChunkAttention</strong> (Ye et al., <em>ACL Findings 2024</em>) gives the data-structure / kernel pattern (chunked KV in a prefix tree, two-phase partition for "long reused span + small fresh span") — directly the compute shape of "restore prefix + prefill only the new screenshots."</p>
+<blockquote>
+<p><strong>Mapping verdict for Cluster A:</strong> the segment/slot abstraction is right; the <em>implementation</em> (relocatable KV chunk + RoPE re-rotation + small recompute) is sound only for our 10 attention layers. The 30 recurrent layers force the exact analogue to be a <strong>state checkpoint</strong>, which is what makes terminal-slot checkpoint-restore — not a KV-pointer swap — the correct mechanism.</p>
+</blockquote>
+<h4>Cluster B — Streaming / sliding-window KV + attention sinks + position renumbering</h4>
+<p>This cluster legitimizes "renumber surviving positions inside the cache." <strong>StreamingLLM</strong> (Xiao et al., <em>ICLR 2024</em>) is the canonical result: keep ~4 <strong>attention-sink</strong> tokens + a rolling recent window, and assign positions <strong>within the cache, not from the source text</strong> (re-applying RoPE to surviving keys) — 22.2× over sliding-window recompute, stable to 4 M tokens. <strong>LM-Infinite</strong> (Han et al., <em>NAACL 2024, Outstanding</em>) adds the <strong>distance-limit</strong> principle (keep relative positions inside the trained range), and <strong>Self-Extend</strong> (Jin et al., <em>ICML 2024, Spotlight</em>) proves position ids can be rewritten <strong>inference-only</strong> (floor-division remap) with no retraining. The production realization of all three is <strong>llama.cpp context-shift / <code>--cache-reuse</code></strong> (the <code>seq_rm</code> + <code>seq_add</code> + K-shift triad, <code>n_keep</code> as the sink anchor), and <strong>PR #13870</strong> ("llama : fix KV shift for qwen2vl") even makes the K-shift M-RoPE-aware by rotating the temporal component as NEOX whole-vector (θ=−1).</p>
+<blockquote>
+<p><strong>Mapping verdict for Cluster B:</strong> every primitive here edits per-token KV positions. On Holo3 that path is the one the sibling page <strong>ruled out</strong> — it touches only the 10 attention layers and silently corrupts the 30 recurrent ones (the recurrent <code>seq_add</code> only bumps a single tail cell). What this cluster <em>does</em> give terminal-slot checkpoint-restore is two transferable disciplines: <strong>(1) pin the sink</strong> — keep the instruction/preamble prefix stable (it is the checkpoint root), and <strong>(2) the distance-limit intuition</strong> — because the ≤K screenshots sit at the end and the text history is append-only, retained positions never leave the trained range, which is the whole reason the terminal layout is benign. <strong>DuoAttention</strong> (Xiao et al., <em>ICLR 2025</em>), <strong>H2O</strong> (Zhang et al., <em>NeurIPS 2023</em>) and <strong>VL-Cache</strong> inform <em>which</em> content is safe to bound, not <em>how</em> to keep it a hit.</p>
+</blockquote>
+<h4>Cluster C — Importance-based KV eviction / compression (which tokens to keep)</h4>
+<p>This cluster answers a question terminal-slot checkpoint-restore mostly <strong>dissolves</strong>: with the ≤3 most recent screenshots always re-prefilled at the end, we never have to choose <em>which old screenshot KV to drop</em> — we keep a bounded window by construction. Its value is at the margins: <strong>GUI-KV</strong> (Huang et al., Salesforce, <em>arXiv 2025</em>) and <strong>ST-Lite</strong> (Zhou et al., <em>arXiv 2026</em>) are screenshot-trajectory-native (spatial L2-saliency + cross-frame temporal redundancy; UI-element-aware grouping), and <strong>GUI-KV reports +4.1 pp step accuracy at −38.9 % FLOPs on a 5-screenshot context</strong> — evidence that bounded screenshot context can <em>raise</em> accuracy, directly supporting our "bounded ≠ worse" claim. <strong>STaR-KV</strong> (Han et al., <em>arXiv 2026</em>) is the most recent successor (+0.38 pp vs full cache at a 40 % budget). <strong>VL-Cache</strong> (Tu et al., <em>ICLR 2025</em>) gives the modality-aware, layer-adaptive budget rule (image KV is far more compressible than text). <strong>Quest</strong> (Tang et al., <em>ICML 2024</em>) is the conceptual pivot for the cache-HIT constraint: it <em>never evicts</em> — it keeps full KV resident and <strong>gates which pages enter attention</strong> by query-aware min/max bounds, so the prefix stays bit-identical. <strong>H2O / Scissorhands / SnapKV / FastGen</strong> supply the text-LLM importance signals.</p>
+<blockquote>
+<p><strong>Mapping verdict for Cluster C:</strong> these choose <em>what to drop</em>; terminal-slot checkpoint-restore needs no victim selection because the window is fixed at the end. They become relevant only if we want <strong>K &gt; 3</strong> (use GUI-KV/ST-Lite redundancy scoring to thin the extra screenshots) or want to push the bound further on the <strong>attention layers only</strong> (VL-Cache budgets, Quest page-gating — neither touches the recurrent state, so both are safe to layer <em>on top of</em> checkpoint-restore but neither replaces it).</p>
+</blockquote>
+<h4>Cluster D — Serving systems: paged / prefix / block KV + reuse infra</h4>
+<p>The production substrate. <strong>PagedAttention/vLLM</strong> (Kwon et al., <em>SOSP 2023</em>) gives block-table indirection (the structure that makes any "free one screenshot's blocks" expressible); <strong>RadixAttention/SGLang</strong> (Zheng et al., <em>NeurIPS 2024</em>) gives the radix-tree prefix index + LRU. The decisive, independently-measured fact comes from <strong>LMCache</strong> (Liu et al., <em>arXiv 2025</em>): production <strong>context truncation drops the prefix-cache hit ratio from ~85 % to ~45 %</strong> on real traces — production-scale corroboration of our measured 62 %→0 % collapse, and the motivation for <em>not</em> truncating the prompt. <strong>CachedAttention/AttentionStore</strong> (Gao et al., <em>USENIX ATC 2024</em>) is the closest serving analogue of our mechanism: a <strong>positional-encoding-decoupled</strong> KV save/restore that survives a window slide and re-embeds positions on load (87 % TTFT reduction) — the session-granularity ancestor of checkpoint-restore. <strong>CacheBlend</strong> reappears here as the non-prefix correction pass; <strong>Mooncake</strong> (Qin et al., <em>USENIX FAST 2025, Best Paper</em>) is the tiered KV-pool worldview.</p>
+<blockquote>
+<p><strong>Mapping verdict for Cluster D:</strong> all of these treat KV as the first-class object — exactly the worldview in which "checkpoint this prefix, restore it next step" is a <em>scheduling decision</em>. But every one is <strong>prefix/block/text</strong> oriented; none models <strong>M-RoPE image positions</strong> or, critically, a <strong>Gated-DeltaNet recurrent state</strong>. vLLM/SGLang would hit the <em>same</em> hybrid-recurrent constraint we hit, and they currently lack mtmd + Gated-DeltaNet checkpoint serialization — which llama.cpp <em>already</em> ships via <code>llama_state_seq_get/set_data_ext(PARTIAL_ONLY)</code>.</p>
+</blockquote>
+<h4>Cluster E — Multimodal / VLM KV management + M-RoPE position correctness</h4>
+<p>The model-spec and risk cluster. <strong>Qwen2-VL</strong> (Wang et al., <em>arXiv 2024</em>) / <strong>Qwen3-VL Technical Report</strong> (<em>arXiv 2025</em>) define <strong>M-RoPE</strong> (temporal/height/width components; image tokens hold a constant temporal id + per-patch h/w) — <em>this is Holo3's position spec.</em> The primary llama.cpp artifacts <strong>PR #13870</strong> (M-RoPE shift as NEOX whole-vector, θ=−1) and <strong>issue #17930</strong> ("Qwen2.5-VL fails with M-RoPE sequence position error") confirm that position-relocating image spans is a <strong>fragile workaround that is still failing upstream</strong> — the open risk that, on this model, we <em>avoid entirely</em> by never relocating image positions (terminal slots + checkpoint-restore re-prefill the screenshots at their natural positions). <strong>FastV</strong> (Chen et al., <em>ECCV 2024</em>) and <strong>VL-Cache</strong> justify that image KV is largely droppable after early layers; <strong>Elastic Cache</strong> (Liu et al., <em>ECCV 2024</em>) offers anchor-merging as a softer alternative; <strong>StreamingLLM</strong> recurs as the renumbering precedent; <strong>UI-TARS</strong> (Qin et al., <em>arXiv 2025</em>) frames the workload (pure-screenshot OSWorld agent, OSWorld 24.6/22.7).</p>
+<blockquote>
+<p><strong>Mapping verdict for Cluster E:</strong> this cluster's headline gift is <em>negative</em> and clarifying — the M-RoPE-shift correctness risk that dominates Clusters A/B is <strong>designed out</strong> by the terminal-slot layout, because we never move an image token's position; we restore an exact prefix and re-encode the screenshots fresh. The GUI-agent works (UI-TARS, GUI-KV, STaR-KV) supply the evaluation framing and the "≤3 screenshots is near the training regime" justification.</p>
+</blockquote>
+<hr />
+<h3>2 · Practical paths, ranked (easiest / most reliable first)</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Approach</th>
+<th>What to build</th>
+<th>Borrows from</th>
+<th>Effort</th>
+<th>Risk</th>
+<th>Expected payoff</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1</strong></td>
+<td><strong>Terminal-slot layout + <code>--ctx-checkpoints</code> state checkpoint/restore</strong> (in agent + server) — <em>the optimum</em></td>
+<td>Reorder the prompt to <code>[preamble][append-only text history][≤3 screenshots at END]</code>; checkpoint full state (attn KV + recurrent ssm/conv) at image-region start via <code>llama_state_seq_get_data_ext(PARTIAL_ONLY)</code>; each step restore + prefill only the new ≤3-image window; advance the checkpoint by the small new text delta</td>
+<td>CachedAttention/AttentionStore (save-restore-on-slide); Prompt Cache (terminal modular slots); ChunkAttention (reused-prefix + fresh-suffix kernel shape); llama.cpp <code>--ctx-checkpoints</code> (ships)</td>
+<td><strong>S–M</strong> (orchestration only, <strong>no model change</strong>)</td>
+<td><strong>Low</strong> — exact for all 40 layers (strict causality makes a snapshot at <em>p</em> an exact summary of <code>[0..p]</code>); only open risk is <em>terminal-layout accuracy drift</em> vs interleaved leaderboard layout</td>
+<td><strong>Constant ~6 k-tok/step prefill</strong> (vs today's 8–27 k growing re-prefill), <strong>bounded</strong> to 3 images → full-quality training regime, bounded KV memory, no OOM. Text history is a true cache hit</td>
+</tr>
+<tr>
+<td><strong>2</strong></td>
+<td><strong>Append-only / no-evict</strong> — the <em>unbounded-but-simple</em> baseline (<strong>already running</strong>, the measured arm)</td>
+<td>Stop in-place eviction; prompt grows monotonically; rely on byte-identical prefix → KV (attn + recurrent) reused</td>
+<td>StreamingLLM (sink retention idea); llama.cpp context reuse on an unchanged prefix</td>
+<td><strong>S</strong> (already built)</td>
+<td><strong>Medium</strong> — context <strong>unbounded</strong>: decode slows as context grows (measured 0.89×), OOM tail on very long tasks, and <strong>−11 pp A/B</strong> vs evict from leaving the 3-image regime</td>
+<td>Pure <strong>~2 k-tok/step</strong> prefill (cheapest per-step), 4–10× total prefill cut, runtime-agnostic — but quality/decode/memory regress on long, high-step tasks</td>
+</tr>
+<tr>
+<td><strong>3</strong></td>
+<td><strong>Position-independent segment caching</strong> (Prompt Cache / Block-Attention / CacheBlend / EPIC / VLCache style)</td>
+<td>Treat each screenshot as a relocatable KV slot; re-rotate on shift + recompute a small boundary/high-deviation fraction</td>
+<td>Cluster A in full (VLCache is the Qwen3-VL-family template)</td>
+<td><strong>L</strong></td>
+<td><strong>High on this model</strong> — <strong>sound only for the 10 attention layers.</strong> The 30 recurrent layers have no per-token KV to relocate; would need a <em>recurrent-state-splice</em> story that does not exist (and Block-Attention/KVLink need a fine-tune we can't apply)</td>
+<td>Would approach the <em>pure</em> ~2 k/step bounded ideal <strong>iff</strong> the recurrent half were solvable — it isn't exactly, so this is a research direction, not a buildable path here</td>
+</tr>
+<tr>
+<td><strong>4</strong></td>
+<td><strong>Move serving to vLLM / SGLang paged-prefix</strong></td>
+<td>Port Holo3 to a paged-prefix engine; rely on its prefix cache / radix tree</td>
+<td>PagedAttention, RadixAttention, LMCache, Mooncake (Cluster D)</td>
+<td><strong>L</strong></td>
+<td><strong>High</strong> — same hybrid-recurrent constraint; these engines currently <strong>lack mtmd + Gated-DeltaNet checkpoint serialization</strong>, and prefix-only reuse collapses under truncation (LMCache's own 85→45 % measurement). Also abandons the working CPU llama.cpp path</td>
+<td>Mature batching/scheduling infra, but <strong>no advantage over path 1 for the core problem</strong> until they add recurrent-state checkpointing that llama.cpp already has</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Honest constraints on this stack:</strong> CPU-only (the iGPU path is correctness-blocked — sibling §3); <strong>hybrid</strong> (30/40 layers are recurrent — no per-token KV surgery); <strong>mtmd</strong> (image tokens disable <code>--cache-reuse</code> at startup and per-request). Paths 3 and 4 are <em>exactly the ones these three constraints block</em>; paths 1 and 2 are the ones they leave open.</p>
+<hr />
+<h3>3 · Experiment plan — validate the optimum on <strong>this</strong> setup</h3>
+<p><strong>Instrumentation (per step, logged to the run folder):</strong>
+- <strong>prefill tokens processed</strong> (the headline — target: constant ~6 k for path 1; ~2 k for path 2; 8–27 k growing for the evict baseline)
+- <strong>KV-cache hit ratio</strong> (expect ~0 % evict, ~62 % no-evict, ~100 % on the <em>text history</em> for checkpoint-restore — only the ≤3 images are recomputed)
+- <strong>decode throughput (t/s)</strong> as a function of resident context length (catches the no-evict decode-slowdown tail)
+- <strong>task score</strong> (OSWorld-Verified success), <strong>per-step latency</strong>, <strong>wall-clock / task</strong>, <strong>energy (Wh)</strong>
+- <strong>peak KV memory</strong> (must stay bounded for path 1; must be watched for OOM on path 2)
+- <strong>checkpoint cost</strong>: <code>state_seq_get/set</code> serialize time + bytes (must be small vs the prefill it saves)</p>
+<p><strong>A/B arms (matched clean subset, n≈46, same seeds/tasks as the existing measured A/B):</strong>
+1. <strong>Evict baseline</strong> — current <code>max_images=3</code> prompt-level trimming (the 100 %-score, 126 s-prefill, 0 %-hit arm).
+2. <strong>No-evict / append-only</strong> — the running unbounded arm (89 % score, 63 s-prefill, 62 %-hit, decode 0.89×).
+3. <strong>Terminal-slot checkpoint-restore</strong> — path 1 (the candidate optimum).</p>
+<p><strong>Success criteria:</strong>
+- <strong>Quality:</strong> arm 3 matches arm 1 (evict) <strong>within noise</strong> on task score — i.e. recovers the −11 pp that arm 2 loses, by staying in the 3-image regime.
+- <strong>Speed/memory:</strong> arm 3 holds <strong>prefill ≈ constant ~6 k tokens/step</strong> while <strong>KV memory stays bounded</strong> (no growth, no OOM), and decode does <strong>not</strong> degrade with task length (unlike arm 2).
+- <strong>Net:</strong> arm 3 wins on <strong>wall-clock and energy</strong> vs arm 1 on long/high-step tasks (constant vs growing prefill), without arm 2's unbounded-context penalties.</p>
+<p><strong>Key failure signal:</strong> <strong>terminal-layout accuracy drift</strong> — if arm 3 (screenshots-at-END layout) scores below arm 1 (interleaved leaderboard layout) <em>beyond noise</em>, the regression is the <strong>prompt reordering</strong>, not the caching (checkpoint-restore is bit-exact). Diagnostic: run a <strong>layout-only control</strong> — interleaved vs terminal layout with <em>identical</em> no-cache prefill — to isolate reorder cost from checkpoint cost. Secondary signal: checkpoint serialize/restore time approaching the prefill it saves (would erase the win on a small box).</p>
+<hr />
+<h3>4 · Verdict</h3>
+<p><strong>Yes — the theoretical optimum is reachable in practice on this exact stack, and it is the only one of the four paths that is.</strong> Terminal-slot checkpoint-restore is <strong>exact, not approximate</strong>: strict causality makes a state snapshot at position <em>p</em> a faithful summary of <code>[0..p]</code> for <strong>all 40 layers</strong> (attention KV <em>and</em> recurrent state), so it sidesteps both the M-RoPE position-shift risk (we never relocate an image token) and the recurrent-state corruption that kills <code>--cache-reuse</code> (we never splice the recurrent state — we replay it). Crucially, <strong>the primitive already ships</strong> — llama.cpp's <code>--ctx-checkpoints</code> with <code>llama_state_seq_get/set_data_ext(PARTIAL_ONLY)</code> serializes both halves of the hybrid memory — so this is <strong>agent + server orchestration, no model change</strong> (cross-ref <a href="holo3-osworld-acceleration.html"><code>/demos/holo3-osworld-acceleration.html</code></a> §2b). The single highest-leverage first step: <strong>build the terminal-slot layout + checkpoint-restore loop in the agent harness and run the 3-arm A/B (evict / no-evict / checkpoint-restore) on the matched clean subset</strong>, with a layout-only control to separate prompt-reorder cost from caching — that one experiment confirms (or refutes) the whole scheme and tells us the true accuracy cost of moving the screenshots to the end.
+```</p></div>
+  </div>
+
+  <div class="panel full">
+    <h2>Prior art — 37 works, web-verified</h2>
+    <p class="dim">Building blocks drawn from the literature. Slot/segment caching (Prompt Cache, CacheBlend, EPIC) is
+      sound for the 10 attention layers; the 30 recurrent layers are why the exact scheme here is a state checkpoint,
+      not a KV segment.</p>
+    <div class="scroll"><table><tr><th>work</th><th>venue</th><th>building block it gives us</th></tr><tr><td><a href="https://arxiv.org/abs/2311.04934">Prompt Cache: Modular Attention Reuse for Low-Latency Inference</a></td><td class="dim">MLSys 2024</td><td>The &#x27;screenshot = modular KV slot with an assigned position range&#x27; abstraction, plus the schema-driven discipline of tracking each segment&#x27;s exact [p0,p1) span — precisely the span-tracking we need to feed llama_memory_seq_rm / seq_add for in-cache eviction.</td></tr><tr><td><a href="https://arxiv.org/abs/2409.15355">Block-Attention for Efficient Prefilling</a></td><td class="dim">ICLR 2025</td><td>A concrete, validated recipe for the K-shift math (de-rotate -&gt; zero -&gt; re-rotate to target position) and the empirical reassurance that re-positioning cached KV need not degrade quality — the central feasibility argument for in-cache screenshot eviction.</td></tr><tr><td><a href="https://arxiv.org/abs/2405.16444">CacheBlend: Fast Large Language Model Serving for RAG with Cached Knowledge Fusion</a></td><td class="dim">EuroSys (Best Paper) 2025</td><td>The selective-recompute-to-repair-relocation primitive: an HKVD-style metric + gradual layer filter to decide which retained (image) tokens to refresh after an in-cache eviction, turning &#x27;relocation is approximate&#x27; into a tunable accuracy/latency knob.</td></tr><tr><td><a href="https://arxiv.org/abs/2410.15332">EPIC: Efficient Position-Independent Caching for Serving Large Language Models</a></td><td class="dim">ICML 2025</td><td>(1) The PIC framing/vocabulary to position our contribution; (2) a targeted, very-low-cost correction (recompute only the first &lt;=32 tokens of each relocated chunk to kill the relocation-induced attention sink) that is cheaper than CacheBlend&#x27;s broader selective recompute.</td></tr><tr><td><a href="https://arxiv.org/abs/2502.16002">KVLink: Accelerating Large Language Models via Efficient KV Cache Reuse</a></td><td class="dim">NeurIPS 2025</td><td>The &#x27;position re-index + lightweight link/glue tokens&#x27; template — evidence that after we renumber and K-shift the retained screenshots, a handful of learned or recomputed bridging tokens can repair the cross-screenshot attention seam left by an evicted span.</td></tr><tr><td><a href="https://arxiv.org/abs/2402.15220">ChunkAttention: Efficient Self-Attention with Prefix-Aware KV Cache and Two-Phase Partition</a></td><td class="dim">ACL (Findings) 2024</td><td>The &#x27;KV stored as relocatable fixed chunks behind a content index&#x27; engineering pattern and a kernel-locality argument for why operating on per-screenshot chunk spans (rather than the monolithic cache) is efficient.</td></tr><tr><td><a href="https://arxiv.org/abs/2512.12977">VLCache: Computing 2% Vision Tokens and Reusing 98% for Vision-Language Inference</a></td><td class="dim">arXiv preprint (not yet peer-reviewed) 2025</td><td>The most directly transplantable building block: (1) store image KV pre-RoPE + per-image hash key (a position-independent screenshot slot); (2) re-apply position at the destination; (3) recompute only ~2-5% of (early) image tokens to bound cumulative M-RoPE relocation error — a concrete, cheap correctness budget for our open risk.</td></tr><tr><td><a href="https://arxiv.org/abs/2309.17453">Efficient Streaming Language Models with Attention Sinks</a></td><td class="dim">International Conference on Learning Representations (ICLR) 2024</td><td>The sink-retention + in-cache position-renumbering pattern: when we evict an old screenshot span, keep the leading sink tokens, renumber surviving positions contiguously, and re-rotate the retained keys via RoPE — exactly the K-shift path. Justifies that the retained window stays numerically valid.</td></tr><tr><td><a href="https://github.com/ggml-org/llama.cpp/blob/master/tools/server/README.md (impl in src/llama-kv-cache.cpp; M-RoPE K-shift fix PR github.com/ggml-org/llama.cpp/pull/13870 &#x27;llama : fix KV shift for qwen2vl&#x27;)">llama.cpp context-shift / cache_reuse (--cache-reuse, n_keep) and self-extend (--grp-attn-n/--grp-attn-w)</a></td><td class="dim">Open-source project (GitHub ggml-org/llama.cpp); not a peer-reviewed paper 2024</td><td>The concrete building block: seq_rm + seq_add + K-shift triad as the eviction+renumber+re-rotate operation, plus n_keep as the sink anchor and the cache_reuse chunk-matching logic as a model for keeping the cache a hit after a mid-sequence drop.</td></tr><tr><td><a href="https://arxiv.org/abs/2308.16137">LM-Infinite: Zero-Shot Extreme Length Generalization for Large Language Models</a></td><td class="dim">North American Chapter of the ACL (NAACL) — Outstanding Paper 2024</td><td>A principled cap on relative positions after renumbering (the distance limit) so the M-RoPE K-shift keeps retained image/text tokens within the trained positional range, reducing the risk that shifting pushes positions into untrained territory.</td></tr><tr><td><a href="https://arxiv.org/abs/2401.01325">LLM Maybe LongLM: Self-Extend LLM Context Window Without Tuning</a></td><td class="dim">International Conference on Machine Learning (ICML) — Spotlight 2024</td><td>The floor-division grouped-position remapping recipe as a template for renumbering surviving positions after we drop an image span — and proof that an inference-only position rewrite needs only minor code changes, not retraining.</td></tr><tr><td><a href="https://arxiv.org/abs/2410.10819">DuoAttention: Efficient Long-Context LLM Inference with Retrieval and Streaming Heads</a></td><td class="dim">International Conference on Learning Representations (ICLR) 2025</td><td>A per-head streaming-vs-retrieval budget so eviction of old screenshot spans is applied only where it is safe, preserving accuracy while still bounding memory and keeping the retained cache a hit.</td></tr><tr><td><a href="https://arxiv.org/abs/2306.14048">H2O: Heavy-Hitter Oracle for Efficient Generative Inference of Large Language Models</a></td><td class="dim">Conference on Neural Information Processing Systems (NeurIPS) 2023</td><td>An accumulated-attention scoring policy to select the evicted span by importance rather than age, a knob to trade memory vs the -11pp quality drop.</td></tr><tr><td><a href="https://arxiv.org/abs/2410.23317">VL-Cache: Sparsity and Modality-Aware KV Cache Compression for Vision-Language Model Inference Acceleration</a></td><td class="dim">International Conference on Learning Representations (ICLR) 2025</td><td>A modality-aware token-scoring + per-layer budget scheme to decide how much of an old screenshot&#x27;s KV to keep vs evict, and evidence that vision-token KV is highly compressible without much accuracy loss.</td></tr><tr><td><a href="https://arxiv.org/abs/2305.17118">Scissorhands: Exploiting the Persistence of Importance Hypothesis for LLM KV Cache Compression at Test Time</a></td><td class="dim">NeurIPS 2023</td><td>The persistence assumption and a probabilistic-retention scheme to carry importance scores forward across agent steps, reducing the risk that a single noisy step evicts a span we will need again.</td></tr><tr><td><a href="https://arxiv.org/abs/2404.14469">SnapKV: LLM Knows What You are Looking for Before Generation</a></td><td class="dim">NeurIPS 2024</td><td>The observation-window selection mechanism and the pooling trick (keep clustered spans, not top-k scattered tokens) — directly portable to choosing the [p0,p1) image spans we retain before applying the renumber/K-shift.</td></tr><tr><td><a href="https://arxiv.org/abs/2310.01801">Model Tells You What to Discard: Adaptive KV Cache Compression for LLMs (FastGen)</a></td><td class="dim">ICLR (Oral) 2024</td><td>A per-head policy-selection recipe driven by a cheap one-pass profile, letting us set heterogeneous eviction budgets per head instead of a single global last-3 rule.</td></tr><tr><td><a href="https://arxiv.org/abs/2406.10774">Quest: Query-Aware Sparsity for Efficient Long-Context LLM Inference</a></td><td class="dim">ICML 2024</td><td>A query-aware page-criticality estimator (min/max key bounds + query dot-product) we could adapt to skip stale screenshot pages at attention time WITHOUT touching positions — sidestepping the M-RoPE renumber risk entirely if memory (not compute) is the only constraint.</td></tr><tr><td><a href="https://arxiv.org/abs/2510.00536">GUI-KV: Efficient GUI Agents via KV Cache with Spatio-Temporal Awareness</a></td><td class="dim">arXiv preprint (Salesforce AI Research) 2025</td><td>Two ready-to-borrow scores: L2-norm-augmented attention for spatial saliency, and key-subspace-projection redundancy across frames to identify droppable historical screenshot tokens — the victim-selection front-end to our in-cache eviction.</td></tr><tr><td><a href="https://arxiv.org/abs/2603.00188">Efficient Long-Horizon GUI Agents via Training-Free KV Cache Compression (ST-Lite)</a></td><td class="dim">arXiv preprint (cs.CV) 2026</td><td>A component-aware (keep whole UI elements) saliency rule plus a trajectory-level dedup gate to prune repeated screenshots across steps — directly usable to choose which screenshot spans we retain in a bounded cache.</td></tr><tr><td><a href="https://arxiv.org/abs/2309.06180">Efficient Memory Management for Large Language Model Serving with PagedAttention</a></td><td class="dim">SOSP (ACM Symposium on Operating Systems Principles) 2023</td><td>Block-table indirection: the ability to free/remap individual KV blocks (one screenshot&#x27;s span) without touching the retained context&#x27;s blocks — the structural prerequisite for in-cache eviction with a per-step hit on what remains.</td></tr><tr><td><a href="https://arxiv.org/abs/2312.07104">SGLang: Efficient Execution of Structured Language Model Programs (RadixAttention)</a></td><td class="dim">NeurIPS (Conference on Neural Information Processing Systems) 2024</td><td>An LRU radix-tree index + cache-aware scheduler design we can adapt to track the per-step retained-context prefix and decide eviction order across screenshots, instead of evicting blindly at the prompt level.</td></tr><tr><td><a href="https://arxiv.org/abs/2510.09665">LMCache: An Efficient KV Cache Layer for Enterprise-Scale LLM Inference</a></td><td class="dim">arXiv preprint (open-source system; integrates with vLLM Production Stack) 2025</td><td>A real connector/tiering interface (and the CacheBlend integration path) into which a libllama-level &#x27;evict-and-K-shift the old screenshot span&#x27; operation could be wired, plus the empirical hit-rate-collapse-under-truncation evidence (85%-&gt;45%) that frames our contribution.</td></tr><tr><td><a href="https://arxiv.org/abs/2403.19708">Cost-Efficient Large Language Model Serving for Multi-turn Conversations with CachedAttention (AttentionStore)</a></td><td class="dim">USENIX ATC (Annual Technical Conference) 2024</td><td>A concrete prior for &#x27;reuse cached KV after the surrounding context&#x27;s positions changed&#x27; — the conceptual ancestor of our M-RoPE-aware K-shift — plus the layer-wise prefetch/overlap scheme to hide KV reload latency across agent steps.</td></tr><tr><td><a href="https://arxiv.org/abs/2407.00079">Mooncake: A KVCache-centric Disaggregated Architecture for LLM Serving</a></td><td class="dim">USENIX FAST (Conference on File and Storage Technologies) — Best Paper 2025</td><td>A KVCache-centric scheduling and tiered-pool blueprint for deciding which screenshot spans to keep resident, offload, or evict across an agent rollout, and how to meet a per-step latency SLO while doing so.</td></tr><tr><td><a href="https://arxiv.org/abs/2606.01790">STaR-KV: Spatio-Temporal Adaptive Re-weighting for KV Cache Compression in GUI Vision-Language Models</a></td><td class="dim">arXiv preprint 2026</td><td>A per-head spatial-profiling + temporal-stability scoring scheme to rank screenshot tokens for eviction, and an up-to-date baseline on UI-TARS-1.5-7B and OpenCUA-7B across four GUI benchmarks (ScreenSpot-Pro, ScreenSpot-v2, AndroidControl, AgentNetBench) for head-to-head comparison.</td></tr><tr><td><a href="https://arxiv.org/abs/2409.12191 (Qwen2-VL, M-RoPE origin); 2511.21631 (Qwen3-VL, Dec 2025)">Qwen2-VL: Enhancing Vision-Language Model&#x27;s Perception of the World at Any Resolution (M-RoPE origin) + Qwen3-VL Technical Report (Interleaved-MRoPE lineage)</a></td><td class="dim">arXiv technical reports 2024</td><td>The exact M-RoPE position-id layout per screenshot (the [p0,p1) image span structure) we must track from the mtmd injection, plus the documented NEOX-as-temporal-shift trick (theta=-1) and its position constraint that our renumber-and-K-shift implementation must respect.</td></tr><tr><td><a href="https://arxiv.org/abs/2309.17453">Efficient Streaming Language Models with Attention Sinks (StreamingLLM)</a></td><td class="dim">ICLR (International Conference on Learning Representations) 2024</td><td>The position-renumbering-in-cache principle (cache-relative positions + RoPE re-indexing) and the attention-sink rationale for pinning the prompt prefix — the exact recipe llama.cpp&#x27;s llama_memory_seq_add + K-shift implements, which we extend to M-RoPE.</td></tr><tr><td><a href="https://arxiv.org/abs/2403.06764">An Image is Worth 1/2 Tokens After Layer 2: Plug-and-Play Inference Acceleration for Large Vision-Language Models (FastV)</a></td><td class="dim">ECCV (European Conference on Computer Vision) 2024</td><td>An empirical layer threshold and attention-score criterion for how/where image-token KV becomes droppable, and the &#x27;visual information migrates to text early&#x27; justification for retaining the text/action history while evicting the image span.</td></tr><tr><td><a href="https://arxiv.org/abs/2407.18121">Efficient Inference of Vision Instruction-Following Models with Elastic Cache</a></td><td class="dim">ECCV (European Conference on Computer Vision) 2024</td><td>An anchor-point KV-merging primitive as a fallback/complement to span eviction (merge old screenshot KV instead of dropping it), plus the instruction-vs-generation stage separation for budgeting.</td></tr><tr><td><a href="https://arxiv.org/abs/2501.12326">UI-TARS: Pioneering Automated GUI Interaction with Native Agents</a></td><td class="dim">arXiv technical report 2025</td><td>The reference agent-loop and OSWorld evaluation framing (multi-screenshot observation history, unified action space) and a quantitative SOTA anchor to position the quality/latency trade-offs our eviction targets.</td></tr></table></div>
+  </div>
+
+  <div class="panel full">
+    <p class="dim" style="margin:0">Measured live on wuklab-NUC16 (Core Ultra 7 356H, 96&nbsp;GB, llama.cpp CPU,
+      Holo3-35B-A3B i1-Q4_K_M). Mechanism grounded in the local llama.cpp source; prior art verified against primary
+      sources. Companion analysis: <a href="holo3-osworld-acceleration.html">KV-cache &amp; accelerator study</a>.</p>
+  </div>
+
+</div>
+</body>
+</html>
