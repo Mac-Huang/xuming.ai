@@ -299,34 +299,33 @@ async function load(){
 
   // Full coefficient comparison table (evict | no-evict all | no-evict excl. blowups)
   const cmp=st.comparison, cmpEl=document.getElementById('cmp-panel');
-  if(cmp && cmp.rows_all && cmp.rows_all.length){
+  if(cmp && cmp.rows_clean && cmp.rows_clean.length){
     cmpEl.style.display='block';
     const fmtV=(r,which)=>{ const v=r[which]; if(v==null) return '–';
       if(r.fmt==='score'||r.fmt==='cache') return (v*100).toFixed(0)+'%';
       if(r.fmt==='n1') return (+v).toFixed(1);
       return Math.round(v).toLocaleString(); };
-    const clean={}; (cmp.rows_clean||[]).forEach(r=>clean[r.metric]=r);
-    const gain=r=>{ if(r.ratio==null) return ''; const better=r.lower_better!==false?r.ratio>=1:r.ratio>=1;
-      const g=r.ratio; const cls=g>1.02?'ok':g<0.98?'bad':'dim';
+    const gain=r=>{
+      if(r.fmt==='score'){ const d=r.deficit_pp; if(d==null) return '';
+        return `<span class="bad">${d>0?'+':''}${d} pp</span>`; }   // accuracy deficit, red
+      if(r.ratio==null) return '';
+      const g=r.ratio, cls=g>1.02?'ok':g<0.98?'bad':'dim';
       return `<span class="${cls}">${g}×</span>`; };
     let h='<tr><th>coefficient</th><th class="num">evict (baseline)</th>'+
-          `<th class="num">no-evict · all (n=${cmp.n_all})</th>`+
-          `<th class="num">no-evict · excl. blowups (n=${cmp.n_clean})</th>`+
-          '<th class="num">gain (clean)</th></tr>';
-    cmp.rows_all.forEach(r=>{
-      const c=clean[r.metric]||{};
+          `<th class="num">no-evict (n=${cmp.n_clean})</th>`+
+          '<th class="num">gain</th></tr>';
+    cmp.rows_clean.forEach(r=>{
       h+=`<tr><td>${r.metric}${r.unit?` <span class=dim>(${r.unit})</span>`:''}</td>`+
          `<td class="num">${fmtV(r,'evict')}</td>`+
          `<td class="num">${fmtV(r,'noevict')}</td>`+
-         `<td class="num">${fmtV(c,'noevict')}</td>`+
-         `<td class="num">${gain(c)}</td></tr>`;});
+         `<td class="num">${gain(r)}</td></tr>`;});
     document.getElementById('cmp').innerHTML=h;
     document.getElementById('cmp-note').innerHTML=
-      `Matched A/B on identical tasks; evict baseline = the same tasks' last-3-screenshot run from the 361 sweep. `+
-      `<b>excl. blowups</b> drops ${cmp.n_excluded} runaway task${cmp.n_excluded===1?'':'s'} `+
-      `(${cmp.exclude_rule}) — ${(cmp.excluded||[]).join(', ')||'none'} — where unbounded context `+
-      `collapses decode and approaches the memory wall. <b>gain &gt;1× = no-evict better</b> `+
-      `(decode is &lt;1× because attention over the growing KV slows token generation).`;
+      `Matched A/B on identical tasks (coarse → fine: task-level then step-level); evict baseline = the same `+
+      `tasks' last-3-screenshot run from the 361 sweep. Excludes ${cmp.n_excluded} runaway task`+
+      `${cmp.n_excluded===1?'':'s'} (${cmp.exclude_rule}): ${(cmp.excluded||[]).join(', ')||'none'} — `+
+      `where unbounded context collapses decode and approaches the memory wall. `+
+      `<b>gain &gt;1× = no-evict better</b>; <span class="bad">accuracy (−pp) and decode time (&lt;1×) are the costs</span>.`;
   } else cmpEl.style.display='none';
 
   const bd=st.by_domain||{};
