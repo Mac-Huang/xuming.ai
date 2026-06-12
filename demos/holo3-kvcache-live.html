@@ -312,8 +312,8 @@ async function load(){
       const g=r.ratio, cls=g>1.02?'ok':g<0.98?'bad':'dim';
       return `<span class="${cls}">${g}×</span>`; };
     let h='<tr><th>coefficient</th>'+
-          `<th class="num">evict (all, n=${cmp.n_all})</th>`+
-          `<th class="num">no-evict (n=${cmp.n_clean})</th>`+
+          `<th class="num">evict · all ${cmp.n_all} tasks</th>`+
+          `<th class="num">no-evict · ${cmp.n_clean} tasks</th>`+
           '<th class="num">gain</th></tr>';
     cmp.rows_clean.forEach(r=>{
       h+=`<tr><td>${r.metric}${r.unit?` <span class=dim>(${r.unit})</span>`:''}</td>`+
