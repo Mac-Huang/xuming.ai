@@ -237,7 +237,8 @@ async function load(){
     pmEl.style.display='block';
     pmEl.innerHTML=`⏸ <b>Full 361-task leaderboard run is paused</b> at ${p.done}/${p.total} `+
       `(${pct(p.success_rate)} success) — resumable. This page is now tracking the `+
-      `<b>unlimited-KV / no-eviction ablation</b> on ${m.total_tasks} solved tasks.`;
+      `<b>unlimited-KV / no-eviction ablation</b> on ${m.total_tasks} tasks — `+
+      `every task the evict run scored (its successes and failures alike), so the A/B is matched.`;
   } else pmEl.style.display='none';
 
   document.getElementById('p-done').textContent = `${pr.done??'–'} / ${pr.total??'–'}`;
@@ -296,11 +297,11 @@ async function load(){
            'evicted ≈ 0% (prefix broken)')+
       cell((ab.wall_speedup_x??'–')+'×','wall/task speedup')+
       cell(ab.score_retained_frac!=null?pct(ab.score_retained_frac):'–','score retained',
-           'tasks still solved', ab.score_retained_frac!=null&&ab.score_retained_frac<0.9)+
+           'no-evict ≥ evict per task', ab.score_retained_frac!=null&&ab.score_retained_frac<0.9)+
       cell((ab.noevict_energy_wh!=null?ab.noevict_energy_wh:'–')+' Wh',
            'energy/task',`evicted ${ab.evict_energy_wh??'–'} Wh`);
     document.getElementById('ab-note').innerHTML=
-      `n=${ab.n} solved tasks · baseline = the same tasks' EVICTED (last-3-screenshot) numbers from the paused 361-run. `+
+      `n=${ab.n} tasks (every task the evict run scored) · baseline = the same tasks' EVICTED (last-3-screenshot) numbers from the paused 361-run. `+
       `H Company caps context at 3 screenshots ("more degrades accuracy"); this ablation removes that cap to test the `+
       `KV-cache speed gain vs any accuracy cost of unlimited visual history.`;
   } else abEl.style.display='none';
