@@ -184,8 +184,16 @@ const n1 = x => x==null?'–':(+x).toFixed(1);
 
 async function load(){
   let st;
-  try{ st = await (await fetch(DATA_URL+'?t='+Math.floor(Date.now()/60000))).json(); }
-  catch(e){ document.getElementById('updated').textContent='data fetch failed — retrying'; return; }
+  try{ const r=await fetch(DATA_URL+'?t='+Math.floor(Date.now()/60000));
+        if(!r.ok) throw new Error('not published yet'); st = await r.json(); }
+  catch(e){
+    document.getElementById('status-badge').className='badge fin';
+    document.getElementById('status-badge').textContent='QUEUED';
+    document.getElementById('meta-line').innerHTML=
+      'no-eviction KV-cache ablation — <b>queued</b>; launches automatically when the paused '+
+      '<a href="holo3-osworld-live.html">leaderboard run</a>\'s final in-flight task finishes, then publishes here within ~10 min.';
+    document.getElementById('updated').textContent='waiting for run start';
+    return; }
   const m=st.meta||{}, pr=st.progress||{}, ag=st.aggregate||{}, c=st.current||{}, s=st.system_latest||{};
 
   const runAge=(Date.now()/1000-(st.updated_at||0))/60;
