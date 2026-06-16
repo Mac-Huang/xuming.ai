@@ -122,42 +122,47 @@
 
   <div class="panel full">
     <h2>What gets recomputed each step</h2>
-    <div class="scroll"><svg viewBox="0 0 940 238" xmlns="http://www.w3.org/2000/svg"
-  font-family="ui-monospace,Menlo,Consolas,monospace" style="width:100%;min-width:640px">
+    <div class="scroll"><svg viewBox="0 0 1000 252" xmlns="http://www.w3.org/2000/svg"
+  font-family="ui-monospace,Menlo,Consolas,monospace" style="width:100%;min-width:680px">
 <style>
  .pre{fill:#30363d} .hit{fill:#1f6f3f} .new{fill:#1f6feb} .rip{fill:#8b2e26}
  .drop{fill:#161b22;stroke:#6e3b36;stroke-width:1;stroke-dasharray:2 2}
+ .grow{fill:#1f6f3f;fill-opacity:0.4;stroke:#2ea043;stroke-width:1;stroke-dasharray:4 3}
  .bt{fill:#c9d1d9;font-size:10px} .lb{fill:#c9d1d9;font-size:11px}
  .ax{fill:#8b949e;font-size:10px} .gr{fill:#3fb950;font-size:10px} .rd{fill:#f85149;font-size:10px}
 </style>
+<!-- bounded-window edge reference: evict & optimum stop here; no-evict crosses it -->
+<line x1="524" y1="18" x2="524" y2="152" stroke="#6e7681" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="524" y="13" class="ax" text-anchor="middle">bounded-window edge</text>
 <!-- Evict -->
-<text x="8" y="36" class="lb">evict (now)</text>
+<text x="8" y="38" class="lb">evict (now)</text>
 <rect x="124" y="24" width="36" height="20" class="pre"/><text x="142" y="38" class="bt" text-anchor="middle">pre</text>
 <rect x="160" y="24" width="300" height="20" class="rip"/><text x="310" y="38" class="bt" text-anchor="middle" fill="#f0c0bc">history + 3 imgs — all re-prefilled</text>
 <rect x="460" y="24" width="64" height="20" class="new"/><text x="492" y="38" class="bt" text-anchor="middle">imgN</text>
-<text x="536" y="38" class="rd">↻ 5143 tok · 0% hit · 131 s</text>
-<!-- No-evict -->
-<text x="8" y="86" class="lb">no-evict</text>
+<text x="540" y="38" class="rd">↻ 5143 tok · 0% hit · 131 s</text>
+<!-- No-evict: context bar extends PAST the window edge and keeps growing -->
+<text x="8" y="88" class="lb">no-evict</text>
 <rect x="124" y="74" width="36" height="20" class="pre"/><text x="142" y="88" class="bt" text-anchor="middle">pre</text>
-<rect x="160" y="74" width="300" height="20" class="hit"/><text x="310" y="88" class="bt" text-anchor="middle">history — real cache hit (grows →)</text>
-<rect x="460" y="74" width="64" height="20" class="new"/><text x="492" y="88" class="bt" text-anchor="middle">imgN</text>
-<text x="536" y="88" class="gr">2353 tok · 64% hit · 63 s</text>
-<text x="160" y="108" class="rd" font-size="9.5">BUT unbounded → decode slows, OOM tail, −6.4 pp score</text>
-<!-- Optimum -->
-<text x="8" y="130" class="lb" font-weight="600" fill="#3fb950">theoretical</text>
-<text x="8" y="142" class="lb" font-weight="600" fill="#3fb950">optimum</text>
+<rect x="160" y="74" width="392" height="20" class="hit"/><text x="356" y="88" class="bt" text-anchor="middle">history — real cache hit · accumulates every step</text>
+<rect x="552" y="74" width="64" height="20" class="new"/><text x="584" y="88" class="bt" text-anchor="middle">imgN</text>
+<rect x="620" y="74" width="48" height="20" class="grow"/><text x="644" y="88" class="bt" text-anchor="middle" fill="#9be3b3">grows→</text>
+<text x="680" y="88" class="gr">2353 tok · 64% hit · 63 s</text>
+<text x="160" y="110" class="rd" font-size="9.5">BUT unbounded → decode slows, OOM tail, −6.4 pp score</text>
+<!-- Optimum: bounded like evict, but the prior window is a cache hit -->
+<text x="8" y="132" class="lb" font-weight="600" fill="#3fb950">theoretical</text>
+<text x="8" y="144" class="lb" font-weight="600" fill="#3fb950">optimum</text>
 <rect x="84" y="124" width="34" height="20" class="drop"/><text x="101" y="138" class="bt" text-anchor="middle" fill="#8b949e">drop</text>
 <rect x="124" y="124" width="36" height="20" class="pre"/><text x="142" y="138" class="bt" text-anchor="middle">pre</text>
-<rect x="160" y="124" width="300" height="20" class="hit"/><text x="310" y="138" class="bt" text-anchor="middle">history + 2 imgs — hit (assumed)</text>
+<rect x="160" y="124" width="300" height="20" class="hit"/><text x="310" y="138" class="bt" text-anchor="middle">history + 2 imgs — bounded · prior reused</text>
 <rect x="460" y="124" width="64" height="20" class="new"/><text x="492" y="138" class="bt" text-anchor="middle">imgN</text>
-<text x="536" y="138" class="gr">2353 tok · 100% hit · 82 s · quality = evict</text>
+<text x="540" y="138" class="gr">2353 tok · ≈64% hit · 82 s · quality = evict</text>
 <!-- legend -->
-<rect x="124" y="172" width="12" height="12" class="pre"/><text x="141" y="182" class="ax">preamble</text>
-<rect x="224" y="172" width="12" height="12" class="hit"/><text x="241" y="182" class="ax">cache hit (real / assumed)</text>
-<rect x="414" y="172" width="12" height="12" class="rip"/><text x="431" y="182" class="ax">re-prefilled each step</text>
-<rect x="580" y="172" width="12" height="12" class="new"/><text x="597" y="182" class="ax">new screenshot this step</text>
-<text x="124" y="208" class="ax">What is recomputed per agent step (bar width ≈ tokens): the optimum keeps evict's bounded window but pays only for the new</text>
-<text x="124" y="222" class="ax">screenshot — no-evict's prefill with evict's decode / quality / memory. A computed bound; the buildable terminal-slot approach is in §4.</text>
+<rect x="124" y="174" width="12" height="12" class="pre"/><text x="141" y="184" class="ax">preamble</text>
+<rect x="224" y="174" width="12" height="12" class="hit"/><text x="241" y="184" class="ax">cache hit (reused — free)</text>
+<rect x="404" y="174" width="12" height="12" class="rip"/><text x="421" y="184" class="ax">re-prefilled each step</text>
+<rect x="574" y="174" width="12" height="12" class="new"/><text x="591" y="184" class="ax">new screenshot this step</text>
+<text x="124" y="210" class="ax">Bar width ≈ context tokens. evict re-prefills its whole bounded window every step (red). no-evict keeps a real cache hit, but its context</text>
+<text x="124" y="224" class="ax">grows past the window edge (unbounded → slow decode, OOM, −6.4 pp). The optimum keeps the bounded window AND the hit — paying only imgN.</text>
 </svg></div>
   </div>
 
