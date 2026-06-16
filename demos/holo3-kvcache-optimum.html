@@ -97,13 +97,27 @@
   </div>
 
   <div class="panel full">
-    <h2>The three regimes, side by side</h2>
-    <div class="scroll"><table><tr><th>coefficient <span class="dim">· matched clean subset, n=78</span></th><th>evict (now) <span class="dim">measured</span></th><th>no-evict <span class="dim">measured</span></th><th>theoretical optimum <span class="dim">computed</span></th></tr><tr><td>screenshot context</td><td>last 3 — bounded</td><td><span class="r">all — grows</span></td><td class="g">last 3 — bounded <span class="dim">(= evict)</span></td></tr><tr><td>KV prefix each step</td><td><span class="r">broken (prompt rewrite)</span></td><td>stable (append-only)</td><td class="g">perfect hit <span class="dim">(assumed)</span></td></tr><tr><td>prefill work / step</td><td><span class="r">5143 tok</span></td><td>2353 tok</td><td class="g">2353 tok <span class="dim">(only new)</span></td></tr><tr><td>prefill time / step</td><td>132 s</td><td>63 s</td><td class="g">63 s <span class="dim">(2.09×)</span></td></tr><tr><td>KV cache hit</td><td><span class="r">~0%</span></td><td><span class="y">64%</span></td><td class="g">100% <span class="dim">(assumed)</span></td></tr><tr><td>decode / step</td><td>19.5 s</td><td><span class="r">23.0 s (slows)</span></td><td class="g">19.5 s <span class="dim">(= evict)</span></td></tr><tr><td>step latency</td><td>151 s</td><td>86 s</td><td class="g">82 s <span class="dim">(1.83×)</span></td></tr><tr><td>task score</td><td>85.8%</td><td><span class="r">78.2% (-6.4 pp)</span></td><td class="g">85.8% <span class="dim">(= evict, no loss)</span></td></tr><tr><td>wall / task</td><td>1819 s</td><td><span class="g">784 s</span></td><td class="g">858 s <span class="dim">(2.12×)</span></td></tr><tr><td>energy / task</td><td>18.3 Wh</td><td><span class="g">10.0 Wh</span></td><td class="g">9.4 Wh <span class="dim">(1.93×)</span></td></tr><tr><td>agent-steps / hour</td><td>23.8</td><td><span class="dim">—</span></td><td class="g">43.7 <span class="dim">(1.84×)</span></td></tr><tr><td>peak KV memory</td><td>bounded</td><td><span class="r">OOM tail</span></td><td class="g">bounded</td></tr><tr><td>nature</td><td><span class="dim">measured</span></td><td><span class="dim">measured</span></td><td class="dim"><span class="dim">computed upper bound</span></td></tr></table></div>
-    <p class="dim" style="margin-top:10px">Evict and no-evict are <b>measured</b> on this NUC16 run (matched clean
-      subset; see the <a href="holo3-kvcache-live.html">live A/B</a>). The optimum is <b>computed</b> by replaying those
-      same tasks under a perfect-cache, bounded-window model (<code>theoretical_optimum.py</code> / the per-step
-      <code>simulate_optimum.py</code>) — it takes no-evict's prefill and evict's decode/quality/memory. The defining
-      property: only the new screenshot is prefilled, yet context stays bounded and quality is evict's, exactly.</p>
+    <h2>The four regimes, side by side</h2>
+    <div class="scroll"><table>
+    <tr><th>coefficient</th>
+        <th>evict <span class="dim">(baseline)</span></th>
+        <th>no-evict</th>
+        <th>combinational optimum <span class="dim">(computed)</span></th>
+        <th class="g">measured optimum <span class="dim">(genuine patch)</span></th></tr>
+    <tr><td>screenshot context</td><td>last 3 — bounded</td><td><span class="r">all — grows</span></td><td>last 3 — bounded</td><td class="g">last 3 — bounded</td></tr>
+    <tr><td>KV prefix each step</td><td><span class="r">broken (rewrite)</span></td><td>stable (append-only)</td><td>perfect hit <span class="dim">(assumed)</span></td><td class="g">fabricated hit <span class="dim">(cache_n=L, registered)</span></td></tr>
+    <tr><td>prefill work / step</td><td><span class="r">5143 tok</span></td><td>2353 tok</td><td>2353 tok <span class="dim">(only-new)</span></td><td class="g">2058 tok <span class="dim">(only-new)</span></td></tr>
+    <tr><td><b>prefill time / step</b></td><td>131.5 s</td><td>62.9 s</td><td><b>62.9 s</b> <span class="dim">(2.09×)</span></td><td class="g"><b>56.0 s</b> <span class="dim">(2.34×)</span></td></tr>
+    <tr><td>KV cache hit</td><td><span class="r">~0 %</span></td><td><span class="y">64 %</span></td><td>100 % <span class="dim">(assumed)</span></td><td class="g">100 % <span class="dim">(measured)</span></td></tr>
+    <tr><td>decode / step</td><td>19.5 s</td><td><span class="r">23.0 s (slows)</span></td><td>19.5 s <span class="dim">(= evict)</span></td><td>19.9 s <span class="dim">(= evict)</span></td></tr>
+    <tr><td>step latency</td><td>151 s</td><td>86 s</td><td>82.4 s <span class="dim">(1.83×)</span></td><td class="g">79.2 s <span class="dim">(1.95×)</span></td></tr>
+    <tr><td>task score</td><td>0.858</td><td><span class="r">0.782 (−6.4 pp)</span></td><td>0.858 <span class="dim">(= evict)</span></td><td>0.858 <span class="dim">(= evict)*</span></td></tr>
+    <tr><td>wall / task</td><td>1819 s</td><td><span class="g">784 s</span></td><td>858 s <span class="dim">(2.12×)</span></td><td class="g">1.95× <span class="dim">(633 s · 1 task)</span></td></tr>
+    <tr><td>energy / task</td><td>18.3 Wh</td><td>10.0 Wh</td><td>9.4 Wh <span class="dim">(1.93×)</span></td><td class="g">≈1.95× <span class="dim">(∝ wall)</span></td></tr>
+    <tr><td>peak KV memory</td><td>bounded</td><td><span class="r">OOM tail</span></td><td>bounded</td><td class="g">bounded</td></tr>
+    <tr><td>nature</td><td class="dim">measured</td><td class="dim">measured</td><td class="dim">computed bound</td><td class="dim"><b>measured — genuine run</b></td></tr>
+    </table></div>
+    <p class="dim" style="margin-top:10px"><b>evict / no-evict / combinational optimum</b> are the matched clean subset (n=78): evict and no-evict are <b>measured</b> on this NUC16 run; the <b>combinational optimum</b> is <b>computed</b> by splicing no-evict's only-new prefill onto evict's decode / quality / memory (<code>theoretical_optimum.py</code>; derivation below). <b>Measured optimum</b> is the genuine fake-prefix patch (<code>n_fake_cached</code>, vision-inclusive) replayed on a representative task (chrome/3720f614, 8 steps): its evict-arm prefill (131.3 s/step) and decode (19.9 s) match the n=78 aggregate (131.5, 19.5), so the task is representative, and the per-step optimum prefill is depth-flat so one task characterizes it. <b class="g">It confirms the computed bound to within 1.4 %</b> (computed 441.6 s vs measured 447.9 s task prefill). <span class="dim">*score / decode are evict's by construction — the patch discards the (garbage) output token; it measures prefill <i>timing</i>, not quality.</span></p>
   </div>
 
   <div class="panel full">
@@ -425,51 +439,6 @@
   </div>
 
   <div class="panel full">
-    <h2>Run it yourself &amp; tweak the system code</h2>
-    <div class="md"><p>This is the actionable companion to the mechanism above: the exact commands, files, and llama.cpp APIs — verified against the local checkout (<code>/data/repos/llama.cpp</code>, <code>build-cpu</code>). Three tiers, cheapest first.</p>
-<h3>Tier 0 — get the numbers without building anything (the simulation)</h3>
-<p>You do <strong>not</strong> need to modify the model or server to know the payoff — replay the tasks already run. Two scripts in <code>experiments/agentic_bench/</code>:</p>
-<pre><code class="language-bash"># aggregate upper bound: no-evict prefill ⊕ evict decode/quality/memory, matched clean subset
-python theoretical_optimum.py \
-  /data/runs/2026-06-09_wuklab-NUC16_holo3-osworld-noevict-kv /tmp/optimum.json
-
-# per-step replay of each task's EVICT trace, swapping only the prefill cost
-python simulate_optimum.py \
-  /data/runs/2026-06-09_wuklab-NUC16_holo3-osworld-noevict-kv \
-  /data/runs/2026-06-06_wuklab-NUC16_holo3-osworld-full361  /tmp/sim.json
-</code></pre>
-<p><code>simulate_optimum.py</code> reads each task's <code>steps_profile</code> (per step: <code>prompt_tokens</code>, <code>prefill_tps</code>, <code>t_predict_s</code>, <code>t_exec_s</code>) and, for every step after the cold first one, replaces evict's full-suffix re-prefill with the only-new-content prefill that no-evict physically measured (<code>mean_prompt_tokens</code>). Decode, VM action, and per-task overhead are left at evict's measured values. It prints the per-step timeline (the cliff in the figure above) and cross-checks its aggregate wall against <code>theoretical_optimum.py</code> (833 s vs 858 s — within the per-step-rate vs mean-rate slack). <strong>This is the simulation: the bound is computed, not run.</strong></p>
-<h3>Tier 1 — build the bounded + cached system (agent-side, no kernel patch)</h3>
-<p>The server already does the hard part. On every request it computes <code>n_past = get_common_prefix(input_tokens)</code> (<code>tools/server/server-context.cpp:2708</code>) and reuses that KV — <strong>even for multimodal prompts</strong>: only the <em>shift</em>-based reuse is gated by <code>!has_mtmd</code> (<code>:2719</code>), exact-prefix reuse is not. Context checkpoints of the recurrent state are already on (<code>--ctx-checkpoints</code>, default 32; <code>create_checkpoint</code> at <code>:2033</code>). So the only thing stopping reuse today is the agent <strong>mutating an early token every step</strong>.</p>
-<p>The culprit is <code>holo3_agent.py :_trim_to_last_n_images()</code>: to honor the 3-image budget it rewrites the <em>oldest</em> screenshot in place to <code>"[screenshot evicted]"</code>. That oldest image sits right after the preamble, so the common prefix collapses to the 947-token preamble every step (measured <code>cache_n ≈ 947</code>). The fix is to stop mutating history and move the live screenshots to a <strong>terminal block</strong>:</p>
-<pre><code class="language-text">  now (interleaved + in-place trim):     terminal-slot (append-only + tail images):
-  [sys][instr]                           [sys][instr]
-  [user &lt;obs&gt; IMG1 &lt;/obs&gt;][a1]           [user &lt;obs step=1/&gt;][a1]        ← text-only, byte-stable
-  [user &lt;obs&gt; IMG2 &lt;/obs&gt;][a2]           [user &lt;obs step=2/&gt;][a2]        ← never rewritten
-  [user &lt;obs&gt; IMG3→&quot;[evicted]&quot; ][a3]     ...
-  [user &lt;obs&gt; IMG4 &lt;/obs&gt;]   ← mutates    [user &lt;obs step=N/&gt;][aN]
-   an EARLY token → prefix breaks         [user &quot;current screens:&quot; IMGN-2 IMGN-1 IMGN]  ← only this re-prefills
-</code></pre>
-<p>Concretely, in <code>predict()</code>:
-- append a <strong>text-only</strong> observation turn each step (<code>&lt;observation step=N/&gt;</code>, no <code>image_url</code>) — once written it is never edited, so the whole text history is byte-stable;
-- keep the last ≤3 screenshots' image data in a single <strong>final</strong> user message that you rebuild each step;
-- delete the <code>_trim_to_last_n_images()</code> call (the mutation that breaks the prefix).</p>
-<p>Then keep <code>cache_prompt: true</code> in the payload (it already is, <code>:263</code>) and start the server with checkpoints + a slot path:</p>
-<pre><code class="language-bash">serve_holo3.sh 8082 262144   # add: --ctx-checkpoints 32 --slot-save-path /data/scratch/slots
-</code></pre>
-<p>Now <code>get_common_prefix</code> reuses the stable text history and the server re-prefills only the terminal image block (~3 screenshots ≈ 6k tokens, <strong>constant</strong>) instead of the whole growing context. That is the buildable approximation: bounded memory, evict-class quality, and prefill that stays flat instead of ballooning to 27k on long tasks. (If you want explicit control instead of relying on auto-prefix-reuse, <code>POST /slots/{id}?action=save|restore</code> — <code>server-context.cpp:4138</code> — checkpoints/restores a slot to <code>--slot-save-path</code> via <code>llama_state_seq_save_file</code>/<code>load_file</code>, <code>include/llama.h:855</code>.)</p>
-<p><strong>Honest caveat:</strong> moving screenshots out of their turns changes the input distribution from the leaderboard layout, so re-run the accuracy A/B (this is the same caveat as no-evict). The simulator's quality column assumes evict's trajectory; the terminal layout must be shown not to drift it.</p>
-<h3>Tier 2 — close the gap to the theoretical bound (research)</h3>
-<p>Tier 1 still re-prefills <strong>3</strong> images/step; the bound re-prefills <strong>1</strong> (only the genuinely new screenshot). Closing 3→1 means reusing the 2 retained screenshots' KV at their shifted positions — the part the hybrid architecture makes hard:</p>
-<ul>
-<li><strong>10 attention layers:</strong> M-RoPE-aware K-shift of the retained image spans. llama.cpp's K-shift already special-cases M-RoPE as NEOX (<code>src/llama-kv-cache.cpp:1757</code>, PR #13870), but it is unvalidated on <em>image</em> spans (per-dim t/h/w positions) — that correctness check is the research.</li>
-<li><strong>30 Gated-DeltaNet recurrent layers:</strong> cannot be mid-spliced at all; keep the terminal-slot checkpoint-at-image-start trick (Tier 1 already gives this — it is exact for the recurrent half).</li>
-<li><strong>Repair the relocation error:</strong> moving an image span breaks its cross-attention to the evicted one; recompute only the high-deviation tokens, CacheBlend (EuroSys'25) / EPIC (ICML'25) style (~15% of tokens), to restore quality without a full re-prefill.</li>
-</ul>
-<p>Tier 0 already tells you the ceiling (the bound), so you can decide whether Tier 2's research cost is worth the marginal 3→1 image saving over Tier 1 — on long tasks Tier 1 is already most of the win.</p></div>
-  </div>
-
-  <div class="panel full">
     <h2>Research &amp; practical roadmap</h2>
     <div class="md"><blockquote>
 <p><strong>Read first:</strong> this section assumes the architecture facts and the three-arm A/B numbers established on the sibling page, <a href="/demos/holo3-osworld-acceleration.html"><code>/demos/holo3-osworld-acceleration.html</code></a> — the 10-attention / 30-Gated-DeltaNet hybrid split, why <code>--cache-reuse</code> is inert <em>and</em> unsound here, and the <em>evict / no-evict / theoretical-optimum</em> table. All numbers below are the matched clean subset, <strong>n = 78</strong> (exclude rule: &gt; 20 steps ≈ &gt; 60 K-token context = the 8-task memory-blowup tail), recomputed live by <code>theoretical_optimum.py</code> over the current no-evict run.</p>
@@ -611,8 +580,8 @@ python simulate_optimum.py \
 <hr />
 <h2>4 · Verdict</h2>
 <p>The <strong>theoretical optimum is a COMPUTED bound, not a system we run</strong>: it splices <em>prefill from no-evict</em> (the genuinely-new 2353 tok/step, trajectory-independent) onto <em>score / steps / decode / memory from evict</em> (copied by construction under the no-input-change argument — it keeps evict's <strong>9.4-step trajectory, not no-evict's cheaper 8.1</strong>, so it does not cherry-pick), yielding <strong>2.12× wall (1818.9 → 858.1 s), 1.93× energy (18.3 → 9.4 Wh), and zero quality loss vs evict (0.858)</strong> while bounded — dominating no-evict because it pairs cheap prefill with evict's <em>non-degrading</em> decode (82.4 s/step vs no-evict's 85.9 s). It is a <strong>fiction</strong> because on this hybrid model the retained screenshots' attention KV depends on the evicted one and their positions shift, while the 30 Gated-DeltaNet layers carry an O(1) state that cannot be mid-window spliced — so a real bounded cache cannot reuse them for free. The <strong>buildable terminal-slot + checkpoint-restore scheme</strong> is the closest physically-realizable approach: exact for all 40 layers, bounded, full-quality, but paying ~6 k tok/step (3 images) rather than the bound's ~2.4 k (≈1 image) because the checkpoint sits <em>before</em> the image region — so it lands between no-evict and the bound on short tasks and crushes evict on long ones. <strong>The single highest-leverage first step is path 2(a): build terminal-slot + <code>--ctx-checkpoints</code> and run the exactness sanity check</strong> — it needs no model change, the llama.cpp primitives (<code>--ctx-checkpoints</code>, <code>llama_state_seq_*_data_ext(PARTIAL_ONLY)</code>) already ship, and a passing logit-parity assertion immediately converts the computed bound from an argument into a realizable, bounded, full-quality acceleration. See <a href="/demos/holo3-osworld-acceleration.html"><code>/demos/holo3-osworld-acceleration.html</code></a> §2b for the mechanism's architectural derivation.
-```</p>
-<p>The Markdown roadmap above is my complete deliverable (it is the full answer; reproduce it verbatim). Key grounding: the 5 corpus clusters (A–E), their works, venues, and cluster→layer/bound/buildable scope were extracted from <code>/data/repos/xuming.ai/demos/holo3-kvcache-optimum.html</code> (lines 106–134) and the sibling <code>/data/repos/xuming.ai/demos/holo3-osworld-acceleration.html</code> (§2/§2b, lines 180–261); all n=78 numbers (prefill 131.5/62.9, step 151.0/82.4, new-tok 5143/2353, wall 1818.9/858.1, energy 18.3/9.4, decode 19.5, steps 9.4, score 0.858, ratios 1.83×/2.12×/1.93×/1.84×) were verified live by running <code>/data/repos/edge-ai-holo3/experiments/agentic_bench/theoretical_optimum.py</code>, which reproduced the GROUND TRUTH exactly. Prompt Cache (MLSys 2024) is named as the segment/slot ancestor with the screenshot-as-reusable-segment analogy and its recurrent-layer limit; the −6.4 pp / 64 % cache-hit figures and all adversarial-verification corrections (fiction labeling, evict's 9.4-step trajectory, conservative energy, length-dependent gain) are incorporated.</p></div>
+</p>
+</div>
   </div>
 
   <div class="panel full">
