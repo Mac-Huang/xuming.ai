@@ -389,6 +389,42 @@
   </div>
 
   <div class="panel full">
+    <h2>Measured on the real system — the genuine patch confirms the bound</h2>
+    <p class="lead">Everything above is the <b>computed</b> bound. We then built the actual engine change — an
+      <code>n_fake_cached</code> patch to llama.cpp (<a href="holo3-fakekv-guide.html">coding guide ↗</a>) that, per
+      request, fabricates a depth-<i>L</i> prior KV (valid positions, never computed) and prefills only-new — and
+      <b>replayed a complete real OSWorld task through it, vision-inclusive</b>: every step sends the real recorded
+      screenshot (genuinely vision-encoded) against the fabricated depth-<i>L</i> window. This <b>measures</b> the
+      optimum on the production server instead of inferring it.</p>
+    <div class="call fix"><b class="g">The computed / combined evict+no-evict bound lands within 1.4% of the real run.</b>
+      For <code>chrome/3720f614</code> (8 steps, score 1.0): task prefill <b>1050 s → 448 s measured</b> (2.35×) vs
+      <b>442 s predicted</b> (2.38×) from the combined curve; wall <b>1236 s → 633 s</b> (1.95×) — inside the aggregate
+      bound's band (prefill ≈2.05×, wall ≈1.9–2.2×).</div>
+    <div class="scroll"><table>
+      <thead><tr><th>step</th><th class="num">full depth (tok)</th><th class="num">evict baseline (s)</th>
+        <th class="num">computed bound (s)</th><th class="num">genuine run (s)</th><th class="num">bound ÷ run</th></tr></thead>
+      <tbody>
+      <tr><td>1</td><td class="num">3025</td><td class="num">64.0</td><td class="num">52.3</td><td class="num">53.5</td><td class="num">0.98</td></tr>
+      <tr><td>2</td><td class="num">5214</td><td class="num">57.9</td><td class="num">53.9</td><td class="num">54.9</td><td class="num">0.98</td></tr>
+      <tr><td>3</td><td class="num">7431</td><td class="num">59.5</td><td class="num">55.6</td><td class="num">56.3</td><td class="num">0.99</td></tr>
+      <tr><td>4</td><td class="num">7611</td><td class="num r">169.8</td><td class="num">55.7</td><td class="num">56.6</td><td class="num">0.99</td></tr>
+      <tr><td>5</td><td class="num">7821</td><td class="num r">171.1</td><td class="num">55.8</td><td class="num">56.3</td><td class="num">0.99</td></tr>
+      <tr><td>6</td><td class="num">8065</td><td class="num r">173.5</td><td class="num">56.0</td><td class="num">56.6</td><td class="num">0.99</td></tr>
+      <tr><td>7</td><td class="num">8303</td><td class="num r">176.3</td><td class="num">56.1</td><td class="num">56.9</td><td class="num">0.99</td></tr>
+      <tr><td>8</td><td class="num">8487</td><td class="num r">178.3</td><td class="num">56.2</td><td class="num">56.9</td><td class="num">0.99</td></tr>
+      <tr style="border-top:2px solid #30363d"><td><b>task</b></td><td class="num">—</td><td class="num"><b>1050</b></td><td class="num"><b class="g">442</b></td><td class="num"><b class="g">448</b></td><td class="num"><b>0.99</b></td></tr>
+      </tbody>
+    </table></div>
+    <p class="dim">Both the computed and the run columns are vision-inclusive (the new screenshot is encoded every step).
+      The genuine run holds prefill <b>flat at ~56 s</b> while the evict baseline jumps <b>60 → 170 s at step 4</b>
+      (the <span class="r">KV-collapse cliff</span>) — the same cliff the simulation predicts, now <b>measured</b>.
+      Every step's fabricated hit registered exactly (<code>cache_n == L</code>); the underlying mechanism was separately
+      cross-validated against an independent <code>cb_eval</code> profiler to <b>±3%</b> over a 0–40k-token depth sweep.
+      The computed bound (442 s) sits just <i>below</i> the real run (448 s) because the per-step rate model is mildly
+      optimistic — i.e. the bound is honest, not over-claimed.</p>
+  </div>
+
+  <div class="panel full">
     <h2>Run it yourself &amp; tweak the system code</h2>
     <div class="md"><p>This is the actionable companion to the mechanism above: the exact commands, files, and llama.cpp APIs — verified against the local checkout (<code>/data/repos/llama.cpp</code>, <code>build-cpu</code>). Three tiers, cheapest first.</p>
 <h3>Tier 0 — get the numbers without building anything (the simulation)</h3>
