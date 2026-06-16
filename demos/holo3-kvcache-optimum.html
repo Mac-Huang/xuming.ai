@@ -111,9 +111,9 @@
     <tr><td>KV cache hit</td><td class="r">~0 %</td><td>64 %</td><td>≈ 64 % <span class="dim">(= no-evict)</span></td><td class="g">≈ 66 % <span class="dim">(measured)</span></td></tr>
     <tr><td>decode / step</td><td>19.5 s</td><td class="r">23.0 s (slows)</td><td>19.5 s <span class="dim">(= evict)</span></td><td>19.9 s <span class="dim">(= evict)</span></td></tr>
     <tr><td>step latency</td><td class="r">151 s</td><td>86 s</td><td>82.4 s <span class="dim">(1.83×)</span></td><td class="g">79.2 s <span class="dim">(1.95×)</span></td></tr>
-    <tr><td>task score</td><td>0.858</td><td class="r">0.782 (−6.4 pp)</td><td>0.858 <span class="dim">(= evict)</span></td><td>0.858 <span class="dim">(= evict)*</span></td></tr>
-    <tr><td>wall / task</td><td class="r">1819 s</td><td>784 s</td><td>858 s <span class="dim">(2.12×)</span></td><td class="g">633 s <span class="dim">(1 task)</span></td></tr>
-    <tr><td>energy / task</td><td class="r">18.3 Wh</td><td>10.0 Wh</td><td>9.4 Wh <span class="dim">(1.93×)</span></td><td class="g">8.7 Wh <span class="dim">(1 task)</span></td></tr>
+    <tr><td>task score</td><td>0.858</td><td class="r">0.782 (−6.4 pp)</td><td>0.858 <span class="dim">(= evict)</span></td><td class="y">0.858 <span class="dim">(= evict)*</span></td></tr>
+    <tr><td>wall / task</td><td class="r">1819 s</td><td>784 s</td><td>858 s <span class="dim">(2.12×)</span></td><td class="y">633 s <span class="dim">(1 task)</span></td></tr>
+    <tr><td>energy / task</td><td class="r">18.3 Wh</td><td>10.0 Wh</td><td>9.4 Wh <span class="dim">(1.93×)</span></td><td class="y">8.7 Wh <span class="dim">(1 task)</span></td></tr>
     <tr><td>peak KV memory</td><td>bounded</td><td class="r">OOM tail</td><td>bounded</td><td>bounded</td></tr>
     <tr><td>nature</td><td class="dim">measured</td><td class="dim">measured</td><td class="dim">computed bound</td><td class="dim"><b>measured — genuine run</b></td></tr>
     </table></div>
