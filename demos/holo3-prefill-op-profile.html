@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>Holo3 · where prefill time actually goes (measured per-op)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+ :root{--bg:#0d1117;--panel:#161b22;--bd:#30363d;--fg:#c9d1d9;--mut:#8b949e;
+       --grn:#3fb950;--red:#f85149;--yel:#d29922;--blu:#58a6ff;--pur:#bc8cff}
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--bg);color:var(--fg);
+      font:13px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+ header{padding:14px 20px;border-bottom:1px solid var(--bd);display:flex;flex-wrap:wrap;gap:6px 24px;align-items:baseline}
+ h1.top{font-size:16px;margin:0;color:var(--blu)}
+ .sub{color:var(--mut)}
+ nav{margin-left:auto;display:flex;gap:14px;flex-wrap:wrap}
+ a{color:var(--blu);text-decoration:none} a:hover{text-decoration:underline}
+ .wrap{max-width:1000px;margin:0 auto;padding:20px}
+ .panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:16px 18px;margin:0 0 18px}
+ h2{font-size:15px;margin:2px 0 10px;color:var(--fg);border-bottom:1px solid var(--bd);padding-bottom:6px}
+ p{margin:9px 0}
+ b.r{color:var(--red)} b.g{color:var(--grn)} b.b{color:var(--blu)} b.p{color:var(--pur)} b.y{color:var(--yel)}
+ code{background:#21262d;color:var(--pur);padding:1px 5px;border-radius:4px;font-size:12px}
+ .scroll{overflow-x:auto}
+ table{border-collapse:collapse;width:100%;margin:10px 0;font-size:11.5px}
+ th,td{text-align:right;padding:5px 8px;border:1px solid var(--bd)}
+ th{color:var(--mut);background:#11161d;font-weight:600;text-align:right}
+ th:first-child,td:first-child{text-align:left}
+ .cards{display:flex;flex-wrap:wrap;gap:12px;margin:6px 0 2px}
+ .card{flex:1 1 150px;background:#11161d;border:1px solid var(--bd);border-radius:8px;padding:11px 13px}
+ .card .k{color:var(--mut);font-size:11px} .card .v{font-size:18px;margin-top:3px}
+ .banner{background:#0f240f55;border:1px solid #1f6f3f;border-radius:8px;padding:11px 14px;margin:0 0 16px;font-size:12.5px;line-height:1.6}
+ .foot{padding:16px 20px;color:var(--mut);font-size:11.5px;border-top:1px solid var(--bd);max-width:1000px;margin:0 auto}
+ ul{padding-left:20px} li{margin:5px 0}
+</style></head><body>
+<header>
+ <h1 class="top">Holo3 · where prefill time actually goes</h1>
+ <span class="sub">measured per-operation breakdown of CPU prefill vs context depth</span>
+ <nav>
+   <a href="holo3-osworld-acceleration.html">acceleration ↗</a>
+   <a href="holo3-optimum-sim.html">optimum sim ↗</a>
+   <a href="holo3-kvcache-optimum.html">KV optimum ↗</a>
+   <a href="holo3-fakekv-guide.html">fake-prefix guide ↗</a>
+ </nav>
+</header>
+<div class="wrap">
+ <div class="banner">This <b>replaces the schematic</b>. Every band below is <b>measured</b>:
+  each ggml node of a real Holo3 (<code>qwen35moe</code>) forward pass is individually timed via
+  llama.cpp's public <code>cb_eval</code> hook, summed into operation bands, and anchored to the
+  true fused prefill wall (per-node coverage <b>100%</b>). The sibling page's claim that prefill is
+  "GEMM-bound" is now resolved into <b>which</b> GEMMs, and at <b>what depth attention takes over</b>.</div>
+
+ <div class="panel">
+  <h2>The measured answer — ms per token, by operation, as context grows</h2>
+  <div class="scroll"><svg viewBox="0 0 940 410" xmlns="http://www.w3.org/2000/svg" font-family="ui-monospace,Menlo,Consolas,monospace" style="width:100%;min-width:640px">
+<line x1="78" y1="370.0" x2="890" y2="370.0" stroke="#21262d" stroke-width="1"/>
+<text x="70" y="373.0" fill="#8b949e" font-size="10" text-anchor="end">0</text>
+<line x1="78" y1="308.3" x2="890" y2="308.3" stroke="#21262d" stroke-width="1"/>
+<text x="70" y="311.3" fill="#8b949e" font-size="10" text-anchor="end">4</text>
+<line x1="78" y1="246.5" x2="890" y2="246.5" stroke="#21262d" stroke-width="1"/>
+<text x="70" y="249.5" fill="#8b949e" font-size="10" text-anchor="end">8</text>
+<line x1="78" y1="184.8" x2="890" y2="184.8" stroke="#21262d" stroke-width="1"/>
+<text x="70" y="187.8" fill="#8b949e" font-size="10" text-anchor="end">12</text>
+<line x1="78" y1="123.0" x2="890" y2="123.0" stroke="#21262d" stroke-width="1"/>
+<text x="70" y="126.0" fill="#8b949e" font-size="10" text-anchor="end">16</text>
+<line x1="78" y1="61.3" x2="890" y2="61.3" stroke="#21262d" stroke-width="1"/>
+<text x="70" y="64.3" fill="#8b949e" font-size="10" text-anchor="end">20</text>
+<line x1="78.0" y1="370.0" x2="78.0" y2="374.0" stroke="#8b949e"/>
+<text x="78.0" y="386.0" fill="#8b949e" font-size="10" text-anchor="middle">0k</text>
+<line x1="236.6" y1="370.0" x2="236.6" y2="374.0" stroke="#8b949e"/>
+<text x="236.6" y="386.0" fill="#8b949e" font-size="10" text-anchor="middle">8k</text>
+<line x1="395.2" y1="370.0" x2="395.2" y2="374.0" stroke="#8b949e"/>
+<text x="395.2" y="386.0" fill="#8b949e" font-size="10" text-anchor="middle">16k</text>
+<line x1="553.8" y1="370.0" x2="553.8" y2="374.0" stroke="#8b949e"/>
+<text x="553.8" y="386.0" fill="#8b949e" font-size="10" text-anchor="middle">24k</text>
+<line x1="712.4" y1="370.0" x2="712.4" y2="374.0" stroke="#8b949e"/>
+<text x="712.4" y="386.0" fill="#8b949e" font-size="10" text-anchor="middle">32k</text>
+<line x1="871.0" y1="370.0" x2="871.0" y2="374.0" stroke="#8b949e"/>
+<text x="871.0" y="386.0" fill="#8b949e" font-size="10" text-anchor="middle">40k</text>
+<polygon points="78.0,306.8 88.2,306.8 98.3,306.8 108.5,306.5 118.6,306.2 128.8,306.2 138.9,305.8 149.1,305.8 159.2,305.8 169.4,305.8 179.5,305.8 189.7,305.6 199.8,305.6 210.0,305.5 220.1,305.5 230.2,305.5 240.4,305.2 250.5,305.0 260.7,305.0 270.9,304.9 281.0,304.9 291.1,304.9 301.3,304.9 311.4,304.9 321.6,304.8 331.8,304.8 341.9,304.8 352.1,304.6 362.2,304.2 372.3,304.1 382.5,304.1 392.7,303.7 402.8,303.7 412.9,303.5 423.1,303.5 433.2,303.8 443.4,303.8 453.6,303.9 463.7,303.9 473.8,303.9 484.0,304.2 494.1,303.8 504.3,303.8 514.5,304.0 524.6,304.0 534.8,303.5 544.9,303.7 555.0,303.7 565.2,303.7 575.4,304.0 585.5,304.0 595.6,304.2 605.8,304.2 615.9,304.2 626.1,304.4 636.2,304.7 646.4,304.7 656.6,304.7 666.7,304.7 676.9,304.5 687.0,304.3 697.1,304.3 707.3,304.1 717.4,304.1 727.6,304.1 737.8,304.1 747.9,304.4 758.1,304.4 768.2,304.3 778.4,304.6 788.5,304.6 798.6,304.3 808.8,304.3 818.9,304.3 829.1,304.3 839.2,304.3 849.4,304.1 859.6,304.1 869.7,304.1 879.9,304.2 879.9,370.0 869.7,370.0 859.6,370.0 849.4,370.0 839.2,370.0 829.1,370.0 818.9,370.0 808.8,370.0 798.6,370.0 788.5,370.0 778.4,370.0 768.2,370.0 758.1,370.0 747.9,370.0 737.8,370.0 727.6,370.0 717.4,370.0 707.3,370.0 697.1,370.0 687.0,370.0 676.9,370.0 666.7,370.0 656.6,370.0 646.4,370.0 636.2,370.0 626.1,370.0 615.9,370.0 605.8,370.0 595.6,370.0 585.5,370.0 575.4,370.0 565.2,370.0 555.0,370.0 544.9,370.0 534.8,370.0 524.6,370.0 514.5,370.0 504.3,370.0 494.1,370.0 484.0,370.0 473.8,370.0 463.7,370.0 453.6,370.0 443.4,370.0 433.2,370.0 423.1,370.0 412.9,370.0 402.8,370.0 392.7,370.0 382.5,370.0 372.3,370.0 362.2,370.0 352.1,370.0 341.9,370.0 331.8,370.0 321.6,370.0 311.4,370.0 301.3,370.0 291.1,370.0 281.0,370.0 270.9,370.0 260.7,370.0 250.5,370.0 240.4,370.0 230.2,370.0 220.1,370.0 210.0,370.0 199.8,370.0 189.7,370.0 179.5,370.0 169.4,370.0 159.2,370.0 149.1,370.0 138.9,370.0 128.8,370.0 118.6,370.0 108.5,370.0 98.3,370.0 88.2,370.0 78.0,370.0" fill="#58a6ff" fill-opacity="0.82" stroke="#58a6ff" stroke-width="0.5"/>
+<polygon points="78.0,257.4 88.2,257.3 98.3,257.3 108.5,256.6 118.6,256.6 128.8,256.3 138.9,255.9 149.1,255.9 159.2,256.2 169.4,255.9 179.5,256.3 189.7,256.1 199.8,256.1 210.0,255.3 220.1,255.8 230.2,255.8 240.4,255.6 250.5,255.3 260.7,255.3 270.9,255.3 281.0,254.9 291.1,254.5 301.3,254.5 311.4,254.5 321.6,254.4 331.8,254.5 341.9,254.7 352.1,254.4 362.2,254.1 372.3,253.9 382.5,253.2 392.7,252.3 402.8,252.3 412.9,252.2 423.1,252.4 433.2,252.7 443.4,253.5 453.6,252.8 463.7,253.5 473.8,252.8 484.0,253.4 494.1,252.5 504.3,252.4 514.5,252.6 524.6,252.7 534.8,252.1 544.9,252.5 555.0,252.6 565.2,252.6 575.4,252.9 585.5,252.9 595.6,252.6 605.8,252.2 615.9,252.6 626.1,252.3 636.2,252.7 646.4,254.0 656.6,254.0 666.7,254.0 676.9,253.8 687.0,253.6 697.1,253.6 707.3,253.4 717.4,253.2 727.6,253.4 737.8,253.2 747.9,253.5 758.1,253.4 768.2,253.4 778.4,253.7 788.5,253.7 798.6,253.3 808.8,253.3 818.9,253.3 829.1,253.6 839.2,253.1 849.4,253.0 859.6,252.9 869.7,252.7 879.9,252.7 879.9,304.2 869.7,304.1 859.6,304.1 849.4,304.1 839.2,304.3 829.1,304.3 818.9,304.3 808.8,304.3 798.6,304.3 788.5,304.6 778.4,304.6 768.2,304.3 758.1,304.4 747.9,304.4 737.8,304.1 727.6,304.1 717.4,304.1 707.3,304.1 697.1,304.3 687.0,304.3 676.9,304.5 666.7,304.7 656.6,304.7 646.4,304.7 636.2,304.7 626.1,304.4 615.9,304.2 605.8,304.2 595.6,304.2 585.5,304.0 575.4,304.0 565.2,303.7 555.0,303.7 544.9,303.7 534.8,303.5 524.6,304.0 514.5,304.0 504.3,303.8 494.1,303.8 484.0,304.2 473.8,303.9 463.7,303.9 453.6,303.9 443.4,303.8 433.2,303.8 423.1,303.5 412.9,303.5 402.8,303.7 392.7,303.7 382.5,304.1 372.3,304.1 362.2,304.2 352.1,304.6 341.9,304.8 331.8,304.8 321.6,304.8 311.4,304.9 301.3,304.9 291.1,304.9 281.0,304.9 270.9,304.9 260.7,305.0 250.5,305.0 240.4,305.2 230.2,305.5 220.1,305.5 210.0,305.5 199.8,305.6 189.7,305.6 179.5,305.8 169.4,305.8 159.2,305.8 149.1,305.8 138.9,305.8 128.8,306.2 118.6,306.2 108.5,306.5 98.3,306.8 88.2,306.8 78.0,306.8" fill="#3fb950" fill-opacity="0.82" stroke="#3fb950" stroke-width="0.5"/>
+<polygon points="78.0,247.8 88.2,247.6 98.3,247.6 108.5,246.9 118.6,246.8 128.8,246.5 138.9,246.0 149.1,246.1 159.2,246.3 169.4,246.0 179.5,246.4 189.7,246.3 199.8,246.3 210.0,245.5 220.1,245.9 230.2,245.9 240.4,245.7 250.5,245.5 260.7,245.5 270.9,245.4 281.0,245.1 291.1,244.7 301.3,244.6 311.4,244.6 321.6,244.6 331.8,244.7 341.9,244.8 352.1,244.6 362.2,244.2 372.3,244.0 382.5,243.3 392.7,242.5 402.8,242.4 412.9,242.2 423.1,242.5 433.2,242.8 443.4,243.5 453.6,242.9 463.7,243.5 473.8,242.9 484.0,243.4 494.1,242.6 504.3,242.4 514.5,242.5 524.6,242.6 534.8,242.1 544.9,242.4 555.0,242.6 565.2,242.5 575.4,242.9 585.5,242.8 595.6,242.6 605.8,242.2 615.9,242.5 626.1,242.3 636.2,242.7 646.4,243.9 656.6,243.9 666.7,244.0 676.9,243.8 687.0,243.5 697.1,243.6 707.3,243.4 717.4,243.1 727.6,243.3 737.8,243.1 747.9,243.4 758.1,243.3 768.2,243.3 778.4,243.6 788.5,243.7 798.6,243.2 808.8,243.2 818.9,243.2 829.1,243.5 839.2,243.0 849.4,242.9 859.6,242.7 869.7,242.5 879.9,242.6 879.9,252.7 869.7,252.7 859.6,252.9 849.4,253.0 839.2,253.1 829.1,253.6 818.9,253.3 808.8,253.3 798.6,253.3 788.5,253.7 778.4,253.7 768.2,253.4 758.1,253.4 747.9,253.5 737.8,253.2 727.6,253.4 717.4,253.2 707.3,253.4 697.1,253.6 687.0,253.6 676.9,253.8 666.7,254.0 656.6,254.0 646.4,254.0 636.2,252.7 626.1,252.3 615.9,252.6 605.8,252.2 595.6,252.6 585.5,252.9 575.4,252.9 565.2,252.6 555.0,252.6 544.9,252.5 534.8,252.1 524.6,252.7 514.5,252.6 504.3,252.4 494.1,252.5 484.0,253.4 473.8,252.8 463.7,253.5 453.6,252.8 443.4,253.5 433.2,252.7 423.1,252.4 412.9,252.2 402.8,252.3 392.7,252.3 382.5,253.2 372.3,253.9 362.2,254.1 352.1,254.4 341.9,254.7 331.8,254.5 321.6,254.4 311.4,254.5 301.3,254.5 291.1,254.5 281.0,254.9 270.9,255.3 260.7,255.3 250.5,255.3 240.4,255.6 230.2,255.8 220.1,255.8 210.0,255.3 199.8,256.1 189.7,256.1 179.5,256.3 169.4,255.9 159.2,256.2 149.1,255.9 138.9,255.9 128.8,256.3 118.6,256.6 108.5,256.6 98.3,257.3 88.2,257.3 78.0,257.4" fill="#bc8cff" fill-opacity="0.82" stroke="#bc8cff" stroke-width="0.5"/>
+<polygon points="78.0,244.6 88.2,244.5 98.3,244.5 108.5,243.7 118.6,243.6 128.8,243.3 138.9,242.8 149.1,242.9 159.2,243.2 169.4,242.9 179.5,243.3 189.7,243.2 199.8,243.1 210.0,242.3 220.1,242.8 230.2,242.8 240.4,242.6 250.5,242.3 260.7,242.4 270.9,242.3 281.0,242.0 291.1,241.6 301.3,241.5 311.4,241.5 321.6,241.4 331.8,241.5 341.9,241.6 352.1,241.4 362.2,241.1 372.3,240.9 382.5,240.2 392.7,239.3 402.8,239.2 412.9,239.0 423.1,239.3 433.2,239.6 443.4,240.3 453.6,239.7 463.7,240.3 473.8,239.6 484.0,240.2 494.1,239.3 504.3,239.1 514.5,239.3 524.6,239.4 534.8,238.8 544.9,239.2 555.0,239.3 565.2,239.2 575.4,239.6 585.5,239.5 595.6,239.2 605.8,238.9 615.9,239.3 626.1,239.0 636.2,239.4 646.4,240.7 656.6,240.7 666.7,240.8 676.9,240.5 687.0,240.3 697.1,240.3 707.3,240.1 717.4,239.9 727.6,240.1 737.8,239.9 747.9,240.1 758.1,240.1 768.2,240.1 778.4,240.4 788.5,240.5 798.6,240.0 808.8,240.0 818.9,240.0 829.1,240.2 839.2,239.7 849.4,239.6 859.6,239.5 869.7,239.3 879.9,239.3 879.9,242.6 869.7,242.5 859.6,242.7 849.4,242.9 839.2,243.0 829.1,243.5 818.9,243.2 808.8,243.2 798.6,243.2 788.5,243.7 778.4,243.6 768.2,243.3 758.1,243.3 747.9,243.4 737.8,243.1 727.6,243.3 717.4,243.1 707.3,243.4 697.1,243.6 687.0,243.5 676.9,243.8 666.7,244.0 656.6,243.9 646.4,243.9 636.2,242.7 626.1,242.3 615.9,242.5 605.8,242.2 595.6,242.6 585.5,242.8 575.4,242.9 565.2,242.5 555.0,242.6 544.9,242.4 534.8,242.1 524.6,242.6 514.5,242.5 504.3,242.4 494.1,242.6 484.0,243.4 473.8,242.9 463.7,243.5 453.6,242.9 443.4,243.5 433.2,242.8 423.1,242.5 412.9,242.2 402.8,242.4 392.7,242.5 382.5,243.3 372.3,244.0 362.2,244.2 352.1,244.6 341.9,244.8 331.8,244.7 321.6,244.6 311.4,244.6 301.3,244.6 291.1,244.7 281.0,245.1 270.9,245.4 260.7,245.5 250.5,245.5 240.4,245.7 230.2,245.9 220.1,245.9 210.0,245.5 199.8,246.3 189.7,246.3 179.5,246.4 169.4,246.0 159.2,246.3 149.1,246.1 138.9,246.0 128.8,246.5 118.6,246.8 108.5,246.9 98.3,247.6 88.2,247.6 78.0,247.8" fill="#6e7681" fill-opacity="0.82" stroke="#6e7681" stroke-width="0.5"/>
+<polygon points="78.0,240.5 88.2,238.0 98.3,238.0 108.5,234.9 118.6,231.8 128.8,229.6 138.9,226.6 149.1,224.6 159.2,222.3 169.4,219.7 179.5,217.9 189.7,215.3 199.8,212.3 210.0,209.5 220.1,207.5 230.2,205.2 240.4,202.8 250.5,199.6 260.7,197.5 270.9,194.9 281.0,192.4 291.1,189.1 301.3,185.9 311.4,184.5 321.6,182.1 331.8,179.7 341.9,177.6 352.1,175.0 362.2,172.0 372.3,168.9 382.5,165.8 392.7,161.5 402.8,159.3 412.9,157.7 423.1,155.0 433.2,151.4 443.4,151.0 453.6,147.8 463.7,146.9 473.8,143.0 484.0,142.0 494.1,135.9 504.3,135.6 514.5,132.1 524.6,130.4 534.8,127.0 544.9,123.4 555.0,123.2 565.2,119.6 575.4,118.3 585.5,115.4 595.6,112.2 605.8,109.4 615.9,107.6 626.1,105.9 636.2,102.8 646.4,102.1 656.6,100.7 666.7,95.3 676.9,94.2 687.0,92.9 697.1,89.1 707.3,86.2 717.4,82.5 727.6,81.9 737.8,79.2 747.9,75.6 758.1,75.1 768.2,72.8 778.4,68.8 788.5,66.7 798.6,64.7 808.8,63.8 818.9,58.8 829.1,56.9 839.2,53.9 849.4,51.3 859.6,48.5 869.7,45.5 879.9,45.5 879.9,239.3 869.7,239.3 859.6,239.5 849.4,239.6 839.2,239.7 829.1,240.2 818.9,240.0 808.8,240.0 798.6,240.0 788.5,240.5 778.4,240.4 768.2,240.1 758.1,240.1 747.9,240.1 737.8,239.9 727.6,240.1 717.4,239.9 707.3,240.1 697.1,240.3 687.0,240.3 676.9,240.5 666.7,240.8 656.6,240.7 646.4,240.7 636.2,239.4 626.1,239.0 615.9,239.3 605.8,238.9 595.6,239.2 585.5,239.5 575.4,239.6 565.2,239.2 555.0,239.3 544.9,239.2 534.8,238.8 524.6,239.4 514.5,239.3 504.3,239.1 494.1,239.3 484.0,240.2 473.8,239.6 463.7,240.3 453.6,239.7 443.4,240.3 433.2,239.6 423.1,239.3 412.9,239.0 402.8,239.2 392.7,239.3 382.5,240.2 372.3,240.9 362.2,241.1 352.1,241.4 341.9,241.6 331.8,241.5 321.6,241.4 311.4,241.5 301.3,241.5 291.1,241.6 281.0,242.0 270.9,242.3 260.7,242.4 250.5,242.3 240.4,242.6 230.2,242.8 220.1,242.8 210.0,242.3 199.8,243.1 189.7,243.2 179.5,243.3 169.4,242.9 159.2,243.2 149.1,242.9 138.9,242.8 128.8,243.3 118.6,243.6 108.5,243.7 98.3,244.5 88.2,244.5 78.0,244.6" fill="#f85149" fill-opacity="0.82" stroke="#f85149" stroke-width="0.5"/>
+<line x1="347.3" y1="26.0" x2="347.3" y2="370.0" stroke="#f0f6fc" stroke-width="1.2" stroke-dasharray="4 3"/>
+<text x="352.3" y="38.0" fill="#f0f6fc" font-size="10.5">attention core overtakes FFN/MoE → L≈13.6k</text>
+<text x="484" y="404" fill="#c9d1d9" font-size="11.5" text-anchor="middle">context depth L  (tokens already in KV when the next 512-token chunk is prefilled)</text>
+<text x="16" y="198" fill="#c9d1d9" font-size="11.5" text-anchor="middle" transform="rotate(-90 16 198)">prefill time per token  (ms)</text>
+<rect x="666.0" y="26.0" width="11" height="11" fill="#f85149" fill-opacity="0.82"/>
+<text x="682.0" y="35.0" fill="#c9d1d9" font-size="10.5">attention core (QKᵀ·softmax·V)</text>
+<rect x="666.0" y="42.0" width="11" height="11" fill="#6e7681" fill-opacity="0.82"/>
+<text x="682.0" y="51.0" fill="#c9d1d9" font-size="10.5">norms / embed / LM head</text>
+<rect x="666.0" y="58.0" width="11" height="11" fill="#bc8cff" fill-opacity="0.82"/>
+<text x="682.0" y="67.0" fill="#c9d1d9" font-size="10.5">Q/K/V/O projections</text>
+<rect x="666.0" y="74.0" width="11" height="11" fill="#3fb950" fill-opacity="0.82"/>
+<text x="682.0" y="83.0" fill="#c9d1d9" font-size="10.5">Gated-DeltaNet recurrence</text>
+<rect x="666.0" y="90.0" width="11" height="11" fill="#58a6ff" fill-opacity="0.82"/>
+<text x="682.0" y="99.0" fill="#c9d1d9" font-size="10.5">FFN / MoE experts</text>
+</svg></div>
+  <p>Flat bands (FFN/MoE, projections, Gated-DeltaNet recurrence, norms) are <b>per-token constant</b> —
+   they cost the same whether the new chunk sits at depth 0 or 40k. Only the <b class="r">attention core</b>
+   rises, because each new token's flash-attention sweeps the growing KV of the <b>10 full-attention</b>
+   layers — while the <b>30 Gated-DeltaNet</b> layers carry an O(1) state and stay flat regardless of
+   depth. The dashed line marks where the rising attention band <b>overtakes</b> FFN/MoE.</p>
+  <div class="cards">
+   <div class="card"><div class="k">dominant cost at shallow depth (~4k)</div><div class="v" style="color:#58a6ff">FFN / MoE experts</div></div>
+   <div class="card"><div class="k">attention-core crossover</div><div class="v" style="color:var(--red)">L ≈ <b>13.6k tokens</b></div></div>
+   <div class="card"><div class="k">dominant cost at deep context (40k)</div><div class="v" style="color:#f85149">attention core (QKᵀ·softmax·V)</div></div>
+  </div>
+ </div>
+
+ <div class="panel">
+  <h2>The crossover, made literal — each band as its own line</h2>
+  <div class="scroll"><svg viewBox="0 0 940 312" xmlns="http://www.w3.org/2000/svg" font-family="ui-monospace,Menlo,Consolas,monospace" style="width:100%;min-width:640px">
+<line x1="78" y1="276.0" x2="890" y2="276.0" stroke="#21262d"/>
+<text x="70" y="279.0" fill="#8b949e" font-size="10" text-anchor="end">0</text>
+<line x1="78" y1="257.6" x2="890" y2="257.6" stroke="#21262d"/>
+<text x="70" y="260.6" fill="#8b949e" font-size="10" text-anchor="end">1</text>
+<line x1="78" y1="239.1" x2="890" y2="239.1" stroke="#21262d"/>
+<text x="70" y="242.1" fill="#8b949e" font-size="10" text-anchor="end">2</text>
+<line x1="78" y1="220.7" x2="890" y2="220.7" stroke="#21262d"/>
+<text x="70" y="223.7" fill="#8b949e" font-size="10" text-anchor="end">3</text>
+<line x1="78" y1="202.2" x2="890" y2="202.2" stroke="#21262d"/>
+<text x="70" y="205.2" fill="#8b949e" font-size="10" text-anchor="end">4</text>
+<line x1="78" y1="183.8" x2="890" y2="183.8" stroke="#21262d"/>
+<text x="70" y="186.8" fill="#8b949e" font-size="10" text-anchor="end">5</text>
+<line x1="78" y1="165.4" x2="890" y2="165.4" stroke="#21262d"/>
+<text x="70" y="168.4" fill="#8b949e" font-size="10" text-anchor="end">6</text>
+<line x1="78" y1="146.9" x2="890" y2="146.9" stroke="#21262d"/>
+<text x="70" y="149.9" fill="#8b949e" font-size="10" text-anchor="end">7</text>
+<line x1="78" y1="128.5" x2="890" y2="128.5" stroke="#21262d"/>
+<text x="70" y="131.5" fill="#8b949e" font-size="10" text-anchor="end">8</text>
+<line x1="78" y1="110.1" x2="890" y2="110.1" stroke="#21262d"/>
+<text x="70" y="113.1" fill="#8b949e" font-size="10" text-anchor="end">9</text>
+<line x1="78" y1="91.6" x2="890" y2="91.6" stroke="#21262d"/>
+<text x="70" y="94.6" fill="#8b949e" font-size="10" text-anchor="end">10</text>
+<line x1="78" y1="73.2" x2="890" y2="73.2" stroke="#21262d"/>
+<text x="70" y="76.2" fill="#8b949e" font-size="10" text-anchor="end">11</text>
+<line x1="78" y1="54.7" x2="890" y2="54.7" stroke="#21262d"/>
+<text x="70" y="57.7" fill="#8b949e" font-size="10" text-anchor="end">12</text>
+<line x1="78" y1="36.3" x2="890" y2="36.3" stroke="#21262d"/>
+<text x="70" y="39.3" fill="#8b949e" font-size="10" text-anchor="end">13</text>
+<text x="78.0" y="292.0" fill="#8b949e" font-size="10" text-anchor="middle">0k</text>
+<text x="236.6" y="292.0" fill="#8b949e" font-size="10" text-anchor="middle">8k</text>
+<text x="395.2" y="292.0" fill="#8b949e" font-size="10" text-anchor="middle">16k</text>
+<text x="553.8" y="292.0" fill="#8b949e" font-size="10" text-anchor="middle">24k</text>
+<text x="712.4" y="292.0" fill="#8b949e" font-size="10" text-anchor="middle">32k</text>
+<text x="871.0" y="292.0" fill="#8b949e" font-size="10" text-anchor="middle">40k</text>
+<polyline points="78.0,200.5 88.2,200.5 98.3,200.5 108.5,200.1 118.6,199.8 128.8,199.8 138.9,199.3 149.1,199.3 159.2,199.3 169.4,199.3 179.5,199.3 189.7,199.1 199.8,199.1 210.0,199.0 220.1,199.0 230.2,199.0 240.4,198.6 250.5,198.3 260.7,198.3 270.9,198.3 281.0,198.3 291.1,198.3 301.3,198.3 311.4,198.3 321.6,198.2 331.8,198.2 341.9,198.2 352.1,197.9 362.2,197.4 372.3,197.3 382.5,197.3 392.7,196.8 402.8,196.8 412.9,196.6 423.1,196.6 433.2,196.9 443.4,197.0 453.6,197.0 463.7,197.0 473.8,197.0 484.0,197.4 494.1,196.9 504.3,196.9 514.5,197.2 524.6,197.2 534.8,196.5 544.9,196.8 555.0,196.8 565.2,196.8 575.4,197.2 585.5,197.2 595.6,197.4 605.8,197.4 615.9,197.4 626.1,197.6 636.2,198.0 646.4,198.0 656.6,198.0 666.7,198.0 676.9,197.8 687.0,197.6 697.1,197.6 707.3,197.3 717.4,197.3 727.6,197.3 737.8,197.3 747.9,197.6 758.1,197.6 768.2,197.5 778.4,197.9 788.5,197.9 798.6,197.6 808.8,197.6 818.9,197.6 829.1,197.5 839.2,197.5 849.4,197.3 859.6,197.3 869.7,197.3 879.9,197.4" fill="none" stroke="#58a6ff" stroke-width="2"/>
+<polyline points="78.0,271.1 88.2,268.3 98.3,268.3 108.5,265.5 118.6,261.9 128.8,259.6 138.9,256.6 149.1,254.2 159.2,251.1 169.4,248.3 179.5,245.6 189.7,242.7 199.8,239.2 210.0,236.8 220.1,233.9 230.2,231.2 240.4,228.5 250.5,224.9 260.7,222.4 270.9,219.3 281.0,216.8 291.1,213.3 301.3,209.5 311.4,207.9 321.6,205.2 331.8,202.2 341.9,199.5 352.1,196.7 362.2,193.5 372.3,190.0 382.5,187.1 392.7,183.1 402.8,180.6 412.9,178.9 423.1,175.4 433.2,170.8 443.4,169.3 453.6,166.3 463.7,164.4 473.8,160.6 484.0,158.8 494.1,152.5 504.3,152.4 514.5,148.0 524.6,145.9 534.8,142.5 544.9,137.7 555.0,137.3 565.2,133.1 575.4,131.2 585.5,127.8 595.6,124.3 605.8,121.3 615.9,118.8 626.1,116.9 636.2,112.8 646.4,110.5 656.6,108.8 666.7,102.3 676.9,101.2 687.0,99.9 697.1,95.3 707.3,92.2 717.4,88.0 727.6,87.1 737.8,84.1 747.9,79.5 758.1,78.9 768.2,76.1 778.4,71.0 788.5,68.4 798.6,66.6 808.8,65.5 818.9,59.6 829.1,57.1 839.2,54.0 849.4,51.1 859.6,47.9 869.7,44.5 879.9,44.5" fill="none" stroke="#f85149" stroke-width="2"/>
+<polyline points="78.0,264.5 88.2,264.4 98.3,264.4 108.5,264.4 118.6,264.3 128.8,264.3 138.9,264.2 149.1,264.3 159.2,264.3 169.4,264.3 179.5,264.3 189.7,264.3 199.8,264.3 210.0,264.2 220.1,264.2 230.2,264.2 240.4,264.2 250.5,264.2 260.7,264.2 270.9,264.2 281.0,264.2 291.1,264.2 301.3,264.2 311.4,264.2 321.6,264.2 331.8,264.3 341.9,264.2 352.1,264.2 362.2,264.2 372.3,264.2 382.5,264.2 392.7,264.2 402.8,264.2 412.9,264.1 423.1,264.1 433.2,264.1 443.4,264.1 453.6,264.1 463.7,264.1 473.8,264.1 484.0,264.1 494.1,264.1 504.3,264.0 514.5,264.0 524.6,264.0 534.8,264.0 544.9,264.0 555.0,264.0 565.2,264.0 575.4,264.1 585.5,264.0 595.6,264.0 605.8,264.0 615.9,264.0 626.1,264.0 636.2,264.0 646.4,264.0 656.6,264.0 666.7,264.1 676.9,264.0 687.0,264.0 697.1,264.0 707.3,264.0 717.4,264.0 727.6,263.9 737.8,263.9 747.9,263.9 758.1,263.9 768.2,264.0 778.4,264.0 788.5,264.0 798.6,264.0 808.8,264.0 818.9,264.0 829.1,263.9 839.2,263.9 849.4,263.9 859.6,263.9 869.7,263.9 879.9,263.9" fill="none" stroke="#bc8cff" stroke-width="2"/>
+<polyline points="78.0,217.0 88.2,217.0 98.3,217.0 108.5,216.4 118.6,216.7 128.8,216.4 138.9,216.4 149.1,216.4 159.2,216.7 169.4,216.4 179.5,216.9 189.7,216.9 199.8,216.9 210.0,216.1 220.1,216.6 230.2,216.6 240.4,216.8 250.5,216.7 260.7,216.7 270.9,216.7 281.0,216.3 291.1,215.8 301.3,215.7 311.4,215.7 321.6,215.8 331.8,215.8 341.9,216.0 352.1,216.0 362.2,216.1 372.3,216.0 382.5,215.2 392.7,214.7 402.8,214.7 412.9,214.7 423.1,215.0 433.2,215.0 443.4,215.8 453.6,215.0 463.7,215.8 473.8,215.0 484.0,215.3 494.1,214.8 504.3,214.7 514.5,214.5 524.6,214.7 534.8,214.7 544.9,214.8 555.0,214.9 565.2,214.9 575.4,214.9 585.5,214.9 595.6,214.4 605.8,214.0 615.9,214.4 626.1,213.8 636.2,213.8 646.4,215.4 656.6,215.4 666.7,215.4 676.9,215.4 687.0,215.4 697.1,215.4 707.3,215.4 717.4,215.2 727.6,215.4 737.8,215.2 747.9,215.2 758.1,215.1 768.2,215.2 778.4,215.1 788.5,215.2 798.6,215.0 808.8,215.0 818.9,215.0 829.1,215.5 839.2,214.9 849.4,214.9 859.6,214.8 869.7,214.5 879.9,214.5" fill="none" stroke="#3fb950" stroke-width="2"/>
+<polyline points="78.0,272.2 88.2,272.2 98.3,272.2 108.5,272.2 118.6,272.2 128.8,272.2 138.9,272.2 149.1,272.2 159.2,272.3 169.4,272.3 179.5,272.3 189.7,272.3 199.8,272.2 210.0,272.2 220.1,272.3 230.2,272.3 240.4,272.3 250.5,272.3 260.7,272.3 270.9,272.3 281.0,272.3 291.1,272.3 301.3,272.3 311.4,272.2 321.6,272.2 331.8,272.2 341.9,272.2 352.1,272.2 362.2,272.3 372.3,272.3 382.5,272.3 392.7,272.2 402.8,272.2 412.9,272.2 423.1,272.2 433.2,272.2 443.4,272.2 453.6,272.2 463.7,272.2 473.8,272.1 484.0,272.1 494.1,272.1 504.3,272.1 514.5,272.1 524.6,272.1 534.8,272.1 544.9,272.1 555.0,272.1 565.2,272.0 575.4,272.0 585.5,272.0 595.6,272.0 605.8,272.0 615.9,272.1 626.1,272.1 636.2,272.1 646.4,272.1 656.6,272.1 666.7,272.1 676.9,272.1 687.0,272.1 697.1,272.1 707.3,272.1 717.4,272.1 727.6,272.1 737.8,272.1 747.9,272.1 758.1,272.2 768.2,272.2 778.4,272.2 788.5,272.2 798.6,272.2 808.8,272.1 818.9,272.1 829.1,272.1 839.2,272.1 849.4,272.1 859.6,272.1 869.7,272.1 879.9,272.1" fill="none" stroke="#6e7681" stroke-width="2"/>
+<line x1="347.3" y1="26.0" x2="347.3" y2="276.0" stroke="#f0f6fc" stroke-width="1.1" stroke-dasharray="4 3"/>
+<circle cx="347.3" cy="197.9" r="3.5" fill="#f0f6fc"/>
+<text x="16" y="151" fill="#c9d1d9" font-size="11.5" text-anchor="middle" transform="rotate(-90 16 151)">ms / token</text>
+</svg></div>
+  <p>Same data, un-stacked. The <b class="r">attention-core</b> line climbs from
+   <b>0.11 ms/tok</b> at depth 0 to
+   <b>12.66 ms/tok</b> at 40k and crosses the flat
+   <b class="b">FFN/MoE</b> line (4.26 ms/tok) at L ≈ <b>13.6k tokens</b>. Below the
+   crossover the model is <b>FFN/MoE-bound</b>; above it, <b>attention-bound</b> — the regime almost
+   every multi-step OSWorld task lives in once a few screenshots accumulate.</p>
+ </div>
+
+ <div class="panel">
+  <h2>Per-depth table (subsampled)</h2>
+  <div class="scroll"><table><tr><th>depth L</th><th>total ms/tok</th><th>FFN / MoE experts</th><th>Gated-DeltaNet recurrence</th><th>Q/K/V/O projections</th><th>norms / embed / LM head</th><th>attention core (QKᵀ·softmax·V)</th></tr>
+<tr><td>0.0k</td><td>8.19</td><td>4.09</td><td>3.17</td><td>0.62</td><td>0.21</td><td>0.11</td></tr>
+<tr><td>2.5k</td><td>9.09</td><td>4.13</td><td>3.23</td><td>0.63</td><td>0.20</td><td>0.89</td></tr>
+<tr><td>5.1k</td><td>9.81</td><td>4.13</td><td>3.19</td><td>0.63</td><td>0.20</td><td>1.65</td></tr>
+<tr><td>7.6k</td><td>10.74</td><td>4.20</td><td>3.26</td><td>0.64</td><td>0.20</td><td>2.43</td></tr>
+<tr><td>10.2k</td><td>11.47</td><td>4.18</td><td>3.24</td><td>0.63</td><td>0.20</td><td>3.21</td></tr>
+<tr><td>12.8k</td><td>12.31</td><td>4.21</td><td>3.26</td><td>0.63</td><td>0.20</td><td>4.00</td></tr>
+<tr><td>15.3k</td><td>13.14</td><td>4.26</td><td>3.22</td><td>0.64</td><td>0.20</td><td>4.82</td></tr>
+<tr><td>17.9k</td><td>14.25</td><td>4.37</td><td>3.31</td><td>0.66</td><td>0.21</td><td>5.71</td></tr>
+<tr><td>20.4k</td><td>14.74</td><td>4.29</td><td>3.24</td><td>0.64</td><td>0.21</td><td>6.36</td></tr>
+<tr><td>23.0k</td><td>15.72</td><td>4.27</td><td>3.35</td><td>0.65</td><td>0.21</td><td>7.24</td></tr>
+<tr><td>25.6k</td><td>16.53</td><td>4.26</td><td>3.36</td><td>0.65</td><td>0.21</td><td>8.04</td></tr>
+<tr><td>28.1k</td><td>17.22</td><td>4.25</td><td>3.25</td><td>0.65</td><td>0.21</td><td>8.85</td></tr>
+<tr><td>30.7k</td><td>17.89</td><td>4.24</td><td>3.24</td><td>0.65</td><td>0.21</td><td>9.55</td></tr>
+<tr><td>33.2k</td><td>18.83</td><td>4.25</td><td>3.31</td><td>0.65</td><td>0.21</td><td>10.41</td></tr>
+<tr><td>35.8k</td><td>19.63</td><td>4.25</td><td>3.26</td><td>0.65</td><td>0.21</td><td>11.26</td></tr>
+<tr><td>38.4k</td><td>20.45</td><td>4.27</td><td>3.28</td><td>0.65</td><td>0.21</td><td>12.04</td></tr>
+<tr><td>40.4k</td><td>21.17</td><td>4.26</td><td>3.38</td><td>0.65</td><td>0.21</td><td>12.66</td></tr>
+</table></div>
+ </div>
+
+ <div class="panel">
+  <h2>How this was measured (and what each number is)</h2>
+  <ul>
+   <li><b>Instrument.</b> A standalone program links llama.cpp's <code>build-cpu</code> libraries and sets the
+     public <code>llama_context_params.cb_eval</code> callback. In <b>TIMED</b> mode the callback returns
+     <code>true</code> for every node, which makes the scheduler compute each ggml node alone and synchronise
+     after it (<code>ggml-backend.cpp</code> compute-splits) — so <code>observe−ask</code> is that node's
+     wall time. In <b>FUSED</b> mode it returns <code>false</code>, nodes fuse and run at native speed; we wrap
+     <code>llama_decode</code> with a monotonic clock for the <b>true</b> marginal prefill time of a 512-token
+     chunk at depth L.</li>
+   <li><b>Bands.</b> Each node is mapped to a band by its weight name (<code>blk.&lt;L&gt;.attn_q/…</code>),
+     its ggml op (<code>FLASH_ATTN_EXT</code>→attention core, <code>GATED_DELTA_NET</code>/<code>SSM_CONV</code>→GDN,
+     <code>MUL_MAT_ID</code>→MoE experts), and the layer's recurrent/attention type. Coverage of timed wall
+     by the five bands is <b>100%</b> — nothing falls through.</li>
+   <li><b>ms/token.</b> per-band = (band's TIMED share) × (FUSED chunk ms) ÷ 512. Anchoring shares to the
+     fused wall removes the per-node isolation overhead; TIMED-total and FUSED-total agree to ~1.5% here
+     (the heavy ops — MoE GEMMs, flash-attn, delta-net — don't fuse with neighbours, so their absolute
+     time is the same in both modes).</li>
+   <li><b>Honesty.</b> Attention is a single fused <code>FLASH_ATTN_EXT</code> op per attention layer, so the
+     "attention core" band already includes its softmax and the value sweep — it is not decomposed further.
+     Quality is irrelevant to op timing (these matmul/softmax/scan kernels are data-independent), so the probe
+     uses filler tokens. Measured CPU-only, <code>-t 8 / -tb 16</code>, matching the production server; clean
+     room (server stopped), 3 cycles, median per depth. The 4 slow LP-E cores are inside the
+     16-thread batch set, identical for both modes, so they add wall jitter but cannot bias the shares.</li>
+   <li><b>Independently verified.</b> Three adversarial reviewers re-derived these numbers from the raw
+     per-node dump: timing fidelity (per-node-isolated sum vs fused wall agree to <b>1.4%</b>, no depth drift),
+     band coverage (100%, with a cross-band audit that no heavy op is mis-binned), and physics (absolute scale
+     122.04 tok/s at depth 0 vs the server's measured ~118 tok/s; attention
+     linear in L at R²≈0.9997). One real bug was caught and fixed — the 30 Gated-DeltaNet input GEMMs were
+     briefly counted under projections — which is why GDN, not projections, is the second flat band.</li>
+  </ul>
+  <p class="sub">model <code>Holo3-35B-A3B.i1-Q4_K_M.gguf</code> · n_ctx 41984 · ubatch 512 ·
+   80 depths to 40k · cycles 3</p>
+ </div>
+</div>
+<div class="foot">Measured on wuklab-NUC16 (Core Ultra 7 356H, CPU-only) via llama.cpp <code>cb_eval</code> per-node timing ·
+ raw per-node JSON + categoriser in the run folder · 🤖 Generated with <a href="https://claude.com/claude-code">Claude Code</a></div>
+</body></html>

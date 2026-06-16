@@ -133,6 +133,12 @@
        successive step can take 3&times; longer than steps at the beginning of a task" — that is exactly what the top track
        shows, and the cause here is mechanical: at <b>step 4</b> the 3-screenshot eviction breaks the KV prefix, so prefill
        triples (≈59&nbsp;s → ≈175&nbsp;s) and never recovers.</p>
+    <p>And <i>within</i> that prefill, where does the time actually go? Measured per-operation (every ggml node
+       timed via llama.cpp's <code>cb_eval</code> hook): the step is <b class="b">FFN/MoE</b>-bound when context is
+       short, but the <b class="r">attention core</b> grows linearly with depth and <b>overtakes FFN/MoE at
+       L&nbsp;≈&nbsp;13.6k tokens</b> — see the measured stacked-area breakdown in
+       <a href="holo3-prefill-op-profile.html"><b>where prefill time actually goes</b></a> (and the
+       <a href="holo3-prefill-profiler-method.html">method</a>: what was built, run, and verified).</p>
     <div class="scroll"><svg viewBox="0 0 770 196" xmlns="http://www.w3.org/2000/svg" font-family="ui-monospace,Menlo,Consolas,monospace" style="width:100%;min-width:560px">
 <style>
  .pf{fill:#f85149} .dc{fill:#58a6ff} .ex{fill:#3fb950}

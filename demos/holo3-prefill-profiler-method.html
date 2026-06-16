@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Holo3 · measuring prefill op cost — what I built, ran &amp; verified</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{--bg:#0d1117;--panel:#161b22;--bd:#30363d;--fg:#c9d1d9;--mut:#8b949e;
+        --grn:#3fb950;--red:#f85149;--yel:#d29922;--blu:#58a6ff;--pur:#bc8cff}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);
+       font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  header{padding:14px 20px;border-bottom:1px solid var(--bd);display:flex;
+         flex-wrap:wrap;gap:6px 24px;align-items:baseline}
+  h1.top{font-size:16px;margin:0;color:var(--blu)}
+  .sub{color:var(--mut)}
+  nav{margin-left:auto;display:flex;gap:14px;flex-wrap:wrap}
+  a{color:var(--blu);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:1000px;margin:0 auto;padding:20px}
+  .md{font-size:13px;line-height:1.62}
+  .md h1{font-size:19px;color:var(--blu);margin:18px 0 10px;line-height:1.3}
+  .md h2{font-size:15px;color:var(--fg);margin:26px 0 10px;border-bottom:1px solid var(--bd);padding-bottom:5px}
+  .md h3{font-size:13.5px;color:var(--blu);margin:18px 0 8px}
+  .md h4{font-size:12.5px;color:var(--mut);margin:14px 0 6px}
+  .md p{margin:9px 0}
+  .md strong{color:var(--fg)} .md em{color:var(--mut)}
+  .md code{background:#21262d;color:var(--pur);padding:1px 5px;border-radius:4px;font-size:12px}
+  .md pre{background:#0b0f14;border:1px solid var(--bd);border-radius:6px;padding:12px 14px;
+          overflow:auto;margin:10px 0}
+  .md pre code{background:none;color:var(--fg);font-size:11.5px;line-height:1.5;padding:0}
+  .md table{border-collapse:collapse;width:100%;margin:12px 0;font-size:12px}
+  .md th,.md td{text-align:left;padding:6px 10px;border:1px solid var(--bd);vertical-align:top}
+  .md th{color:var(--mut);background:#11161d;font-weight:600}
+  .md blockquote{border-left:3px solid var(--yel);background:#241d0c33;margin:10px 0;
+                 padding:6px 0 6px 13px;border-radius:0 6px 6px 0;color:var(--fg)}
+  .md ul,.md ol{padding-left:22px} .md li{margin:4px 0}
+  .md hr{border:none;border-top:1px solid var(--bd);margin:18px 0}
+  .md a{color:var(--blu)}
+  .banner{background:#0f240f55;border:1px solid #1f6f3f;border-radius:8px;padding:11px 14px;
+          margin:0 0 16px;font-size:12.5px;line-height:1.6}
+  .foot{padding:16px 20px;color:var(--mut);font-size:11.5px;border-top:1px solid var(--bd);
+        max-width:1000px;margin:0 auto}
+</style>
+</head>
+<body>
+<header>
+  <h1 class="top">Holo3 · measuring prefill op cost — what I built, ran &amp; verified</h1>
+  <span class="sub">a standalone <code>cb_eval</code> profiler that times every ggml node, no engine patch</span>
+  <nav>
+    <a href="holo3-prefill-op-profile.html">the result chart ↗</a>
+    <a href="holo3-osworld-acceleration.html">acceleration ↗</a>
+    <a href="holo3-optimum-sim.html">optimum sim ↗</a>
+    <a href="holo3-fakekv-guide.html">fake-prefix guide ↗</a>
+  </nav>
+</header>
+<div class="wrap">
+  <div class="banner">This is the <b>method</b> writeup — exactly what was modified, run, and verified to
+   measure where Holo3's prefill wall-clock goes. The instrument adds <b>zero edits to llama.cpp</b>: it
+   links the prebuilt libraries and uses the public <code>cb_eval</code> hook to time each ggml node.
+   The measured result it produces is on the <a href="holo3-prefill-op-profile.html">chart page</a>.
+   Raw markdown: <a href="holo3-prefill-profiler-method.md">PREFILL_OP_PROFILE_METHOD.md</a>.</div>
+  <div class="md">
+<h1>Measuring where Holo3 prefill time actually goes — what I built, ran, and verified</h1>
+<p>This documents the instrument and procedure behind the measured per-operation prefill
+profile of <strong>Holo3-35B-A3B</strong> (<code>qwen35moe</code>) on the NUC16, CPU-only. It is the <em>method</em>
+companion to the result chart (<strong><a href="holo3-prefill-op-profile.html">where prefill time actually goes</a></strong>).</p>
+<p>The question it answers: <em>for one prefill step, which operation eats the wall-clock —
+FFN/MoE, the attention core, the Q/K/V/O projections, or the Gated-DeltaNet recurrence —
+and at what context depth does attention take over?</em> Previously this was asserted
+schematically ("prefill is GEMM-bound"). This replaces the schematic with a measurement
+in real milliseconds-per-token.</p>
+<hr />
+<h2>1. What I modified — and what I deliberately did <strong>not</strong></h2>
+<p>There are two ways to get per-operation timing out of llama.cpp:</p>
+<table>
+<thead>
+<tr>
+<th>approach</th>
+<th>cost</th>
+<th>what it touches</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Patch the engine (add timers inside the graph compute / per-layer)</td>
+<td>invasive, must be maintained against upstream</td>
+<td><code>ggml</code>, <code>llama-context</code>, the model graph builders</td>
+</tr>
+<tr>
+<td><strong>Use the public <code>cb_eval</code> hook</strong> (what I did)</td>
+<td>a standalone program, <strong>zero core edits</strong></td>
+<td>nothing — links the prebuilt libraries</td>
+</tr>
+</tbody>
+</table>
+<p>I chose the second. <code>llama_context_params</code> already exposes an evaluation callback that
+the scheduler invokes for <strong>every node</strong> of the compute graph:</p>
+<pre><code class="language-c">// include/llama.h:362
+ggml_backend_sched_eval_callback cb_eval;
+void *                           cb_eval_user_data;
+</code></pre>
+<p>It is wired straight through to <code>ggml_backend_sched_set_eval_callback</code>
+(<code>src/llama-context.cpp:1286</code>). So a small program that links <code>build-cpu</code>'s shared
+libraries and sets <code>cb_eval</code> can time the graph <strong>without modifying llama.cpp at all</strong>.
+The whole instrument is one ~280-line <code>.cpp</code> (<code>profile_prefill_ops.cpp</code>) plus a ~200-line
+categoriser (<code>categorize_ops.py</code>). The llama.cpp checkout stays clean — this is a private
+research instrument, not an upstream change.</p>
+<blockquote>
+<p>This is the opposite trade-off from the <a href="holo3-fakekv-guide.html">fake-prefix prefill guide</a>,
+which <em>does</em> need an engine patch because it changes what the engine computes. Here I only
+<em>observe</em> what it already computes, so the public hook suffices.</p>
+</blockquote>
+<hr />
+<h2>2. How the timer works — the <code>cb_eval</code> mechanism</h2>
+<p>The scheduler's per-node loop (<code>ggml/src/ggml-backend.cpp</code>,
+<code>ggml_backend_sched_compute_splits</code>, ~lines 1683-1714) behaves differently depending on
+what the callback returns to the <code>ask</code> probe:</p>
+<pre><code class="language-c">for (int j0 = 0; j0 &lt; n_nodes; j0++) {
+    bool need = callback(node[j0], /*ask=*/true);   // (A)
+    int j1 = j0;
+    while (!need &amp;&amp; j1 &lt; n_nodes-1)                  // (B) extend a fused run
+        need = callback(node[++j1], /*ask=*/true);
+    gv = graph_view(j0 .. j1);
+    graph_compute_async(gv);                         // compute the range
+    synchronize();
+    if (need) callback(node[j1], /*ask=*/false);     // (C) observe
+    j0 = j1;
+}
+</code></pre>
+<p>The instrument runs in two modes by flipping one flag inside <code>cb_eval_user_data</code>:</p>
+<ul>
+<li>
+<p><strong>TIMED mode</strong> — <code>ask</code> returns <strong><code>true</code></strong> for every node. Then <code>need</code> is true
+  immediately (the while-loop <strong>(B)</strong> never extends), so the graph view is a <strong>single
+  node</strong>, it is computed, synchronised, and <strong>(C)</strong> fires. I stamp a clock on <strong>(A)</strong> and
+  again on <strong>(C)</strong>; the difference is that one node's compute time. Every node is isolated
+  and waited on.</p>
+</li>
+<li>
+<p><strong>FUSED mode</strong> — <code>ask</code> returns <strong><code>false</code></strong> for every node. Now <strong>(B)</strong> extends <code>j1</code> to
+  the end, the whole split computes as one graph at <strong>native speed</strong>, and <strong>(C)</strong> never
+  fires. I wrap the whole <code>llama_decode</code> in a monotonic clock to get the <strong>true</strong> marginal
+  prefill time of the chunk.</p>
+</li>
+</ul>
+<pre><code class="language-cpp">// profile_prefill_ops.cpp — the callback (simplified; the real one guards the
+// metadata capture with `if (a.calls == 0)` and also records src1/layer/ne)
+static bool cb_eval(ggml_tensor * t, bool ask, void * user) {
+    CBData * d = (CBData *) user;
+    if (!d-&gt;timed) return false;             // FUSED: never observe -&gt; nodes fuse
+    if (ask) { d-&gt;t_ask = now_ms(); return true; }   // TIMED: isolate this node
+    double dt = now_ms() - d-&gt;t_ask;         // node t just computed + synced
+    auto &amp; a = (*d-&gt;acc)[t-&gt;name[0] ? t-&gt;name : ggml_op_name(t-&gt;op)];
+    a.op = ggml_op_name(t-&gt;op);
+    a.src0 = t-&gt;src[0] ? t-&gt;src[0]-&gt;name : &quot;&quot;;   // weight name -&gt; band + layer
+    a.ms += dt; a.calls++;
+    return true;
+}
+</code></pre>
+<p><strong>Why two modes instead of one.</strong> TIMED disables op fusion, so its <em>absolute</em> time is
+slightly inflated; but it gives clean per-node <em>shares</em>. FUSED gives the honest absolute
+wall but no breakdown. The per-band number is</p>
+<pre><code>band ms/token = (band's TIMED share) × (FUSED chunk ms) ÷ 512
+</code></pre>
+<p>On this CPU backend the two totals agree to <strong>~1.4% on average</strong> (the heavy ops — MoE
+GEMMs, flash-attention, the delta-net scan — don't fuse with neighbours, so their absolute
+time is the same either way), so the share decomposition is essentially unbiased. The
+per-depth discrepancy ranges roughly −3% to +5%, largest at depth 0 (the cache-cold first
+chunk) and decaying with depth.</p>
+<blockquote>
+<p>A subtlety the verification flagged: the CPU backend's <code>synchronize</code> is a <em>no-op</em>
+(<code>iface.synchronize == NULL</code>). That is <strong>not</strong> a bug here — <code>ggml_graph_compute</code> is itself
+blocking (it joins the OpenMP/threadpool workers before returning), so by the time
+<strong>(C)</strong> fires the node is genuinely done. The empirical "sum of isolated node times ≈
+fused wall (1.4%)" is the proof.</p>
+</blockquote>
+<hr />
+<h2>3. The depth sweep — getting a clean point at each context length L</h2>
+<p>To see attention's cost <em>as a function of depth</em>, I prefill a fixed <strong>512-token chunk</strong>
+(one ubatch) at increasing context depths. The trick is to do it cumulatively so the model
+only pays for building the context once:</p>
+<ul>
+<li>decode the context in 512-token chunks, chunk <em>c</em> covering positions <code>[c·512, c·512+512)</code>;</li>
+<li>chunk <em>c</em> is a probe at depth <strong>L = c·512</strong> — it attends to <code>L+512</code> keys;</li>
+<li>run the whole sweep <strong>twice per cycle</strong>: once all-TIMED (per-node shares), once
+  all-FUSED (true ms). Both passes hit the <em>same</em> chunk-boundary depths, and the recurrent
+  state is naturally consistent within each pass (no rollback needed).</li>
+</ul>
+<pre><code class="language-cpp">for (int c = 0; c &lt; n_chunks; ++c) {            // FUSED pass
+    double t0 = now_ms();
+    decode_chunk(c*M, M);                        // 512 new tokens at depth c*M
+    fused[c].push_back(now_ms() - t0);           // true marginal prefill ms
+}
+// ... then a TIMED pass over the same chunks for the per-node breakdown
+</code></pre>
+<p>80 chunks → depths 0…40k. Quality is irrelevant to op timing (these matmul / softmax /
+scan kernels are data-independent), so the probe uses deterministic filler tokens spread
+across the vocab so MoE expert routing resembles real text.</p>
+<hr />
+<h2>4. Sorting nodes into operation bands</h2>
+<p><code>categorize_ops.py</code> maps every ggml node to one of five bands using three signals, most
+reliable first:</p>
+<ol>
+<li><strong>ggml op type</strong> — <code>FLASH_ATTN_EXT → attention core</code>, <code>GATED_DELTA_NET</code> / <code>SSM_CONV →
+   GDN</code>, <code>MUL_MAT_ID → FFN/MoE experts</code>. (Holo3 uses <em>fused</em> flash-attention and <em>fused</em>
+   delta-net, so each is a single op per layer.)</li>
+<li><strong>weight name</strong> for plain matmuls — the input weight <code>blk.&lt;L&gt;.&lt;proj&gt;.weight</code> names the
+   projection exactly. <code>attn_q/k/v/output → projections</code>, <code>attn_qkv</code>/<code>attn_gate</code>/<code>ssm_* →
+   GDN</code>, <code>ffn_* → FFN/MoE</code>.</li>
+<li><strong>layer type</strong> — a layer is recurrent (GDN) or full-attention; this disambiguates the
+   few node names that the attention and GDN paths share.</li>
+</ol>
+<pre><code class="language-python"># exact proj-token map (avoids the substring trap below)
+WEIGHT_EXACT = {
+  &quot;attn_q&quot;:&quot;proj&quot;,&quot;attn_k&quot;:&quot;proj&quot;,&quot;attn_v&quot;:&quot;proj&quot;,&quot;attn_output&quot;:&quot;proj&quot;,
+  &quot;attn_qkv&quot;:&quot;gdn&quot;,&quot;attn_gate&quot;:&quot;gdn&quot;,&quot;ssm_out&quot;:&quot;gdn&quot;,&quot;ssm_in&quot;:&quot;gdn&quot;,
+  &quot;ssm_alpha&quot;:&quot;gdn&quot;,&quot;ssm_beta&quot;:&quot;gdn&quot;,&quot;ssm_conv1d&quot;:&quot;gdn&quot;,&quot;ssm_norm&quot;:&quot;gdn&quot;,
+  &quot;ffn_down_exps&quot;:&quot;ffn_moe&quot;,&quot;ffn_gate_exps&quot;:&quot;ffn_moe&quot;,&quot;ffn_up_exps&quot;:&quot;ffn_moe&quot;, ...
+}
+</code></pre>
+<p>Coverage of the timed wall by the five bands is <strong>100%</strong> at every depth — nothing falls
+through. The leftover "other" band is only the token embedding, the final RMSNorm, the
+248k-vocab LM head (computed for the last token only), and residual adds.</p>
+<hr />
+<h2>5. What I ran — the clean-room sweep</h2>
+<p>The production Holo3 server holds a 262k-token KV cache (~76 GB) and was paused, so I
+measured in a clean room: stop the (idle) server, run the sweep with the whole machine to
+itself, then <strong>always</strong> restart the server on exit.</p>
+<pre><code class="language-bash"># stop supervisor + server, wait for RAM to free, then:
+profile_prefill_ops  Holo3-35B-A3B.i1-Q4_K_M.gguf  \
+    41984   512   40960   3   op_profile.json   8 16
+#   n_ctx  ubatch  max_depth cycles  out         -t -tb
+# ... server restarted via serve_holo3.sh on exit (EXIT trap)
+</code></pre>
+<ul>
+<li><strong>CPU-only, <code>-t 8 / -tb 16</code></strong> — identical to the production server, so the numbers are
+  the ones the live system pays.</li>
+<li><strong>3 cycles, median per depth</strong> — the middle of three samples, robust to transient OS jitter.</li>
+<li>the model is loaded <strong>text-only</strong> (no vision encoder) — vision is a separate one-shot
+  encode and is not part of the per-token prefill cost being profiled.</li>
+<li>everything lands in a write-once run folder: the raw per-node JSON (~39 MB/cycle), the
+  instrument source, the system snapshot, and the sweep log.</li>
+</ul>
+<p>The full sweep is ~one hour of compute (cumulative decode to 40k, twice per cycle, ×3).</p>
+<hr />
+<h2>6. How it was verified</h2>
+<p>The result was put through a 3-reviewer <strong>adversarial</strong> pass — each reviewer re-derived
+the numbers from the raw per-node dump and tried to break them:</p>
+<ul>
+<li><strong>Timing fidelity</strong> — per-node-isolated sum vs fused wall agree to <strong>1.4% on average</strong>
+  (per-depth −3% to +5%, largest at depth 0); the no-op CPU <code>synchronize</code> is a red herring
+  (graph compute is blocking).</li>
+<li><strong>Coverage</strong> — 100% at every depth; "other" is clean; a cross-band audit confirms no
+  heavy op is mis-binned.</li>
+<li><strong>Physics</strong> — absolute scale <strong>122 tok/s at depth 0 vs the server's measured ~118 tok/s</strong>
+  (+3.4%); attention-core cost is <strong>linear in L (R²≈0.9998)</strong> — the textbook flash-attention
+  O(L) signature; the flat bands are flat (CV ≤ 3.3%).</li>
+</ul>
+<p><strong>One real bug was caught and fixed.</strong> The first categoriser used substring matching and
+<code>"attn_q"</code> is a prefix of <code>"attn_qkv"</code>, so the 30 Gated-DeltaNet <em>input</em> GEMMs were briefly
+counted under "projections." Those <code>attn_qkv</code> GEMMs are ~2× the real Q/K/V/O projections, so
+the bug roughly <strong>tripled</strong> the projection band and correspondingly <strong>deflated</strong> GDN. The fix
+is exact proj-token matching plus a cross-band audit that flags any recurrent-layer matmul
+landing in an attention band; it moves those GEMMs back to GDN. After the fix, <strong>GDN — not
+projections — is the second flat band</strong>, which is what the architecture predicts (30 GDN
+layers vs 10 attention layers).</p>
+<hr />
+<h2>7. The measured answer</h2>
+<p>At shallow depth the step is <strong>FFN/MoE-bound</strong> (~4.3 ms/token, the dominant flat cost).
+The <strong>attention core climbs linearly</strong> with context and <strong>overtakes FFN/MoE at L ≈ 13.6k
+tokens</strong>; by the deepest probe (40k) it is ~60% of prefill (12.7 ms/token). The other three
+bands stay flat regardless of depth — GDN ~3.4, projections ~0.65, other ~0.2 ms/token.
+Full chart, per-depth table, and numbers:
+<strong><a href="holo3-prefill-op-profile.html">where prefill time actually goes →</a></strong>.</p>
+<hr />
+<h2>8. Reproduce</h2>
+<pre><code class="language-bash"># build the instrument against the prebuilt build-cpu libraries (no core edit)
+g++ -std=c++17 -O2 profile_prefill_ops.cpp \
+  -I llama.cpp/include -I llama.cpp/ggml/include -I llama.cpp/common \
+  -L llama.cpp/build-cpu/bin -lllama -lllama-common -lggml -lggml-base -lggml-cpu \
+  -Wl,-rpath,$PWD/llama.cpp/build-cpu/bin -o profile_prefill_ops
+
+# run a sweep, then categorise + plot
+profile_prefill_ops MODEL.gguf 41984 512 40960 3 op_profile.json 8 16
+python3 categorize_ops.py op_profile.json     # per-band ms/token + coverage audit
+</code></pre>
+<p><em>Measured on wuklab-NUC16 (Intel Core Ultra 7 356H, 16 cores, CPU-only) via llama.cpp's
+public <code>cb_eval</code> per-node timing.</em></p>
+  </div>
+</div>
+<div class="foot">Measured on wuklab-NUC16 (Intel Core Ultra 7 356H, CPU-only) ·
+ raw per-node JSON + instrument in the run folder · 🤖 Generated with <a href="https://claude.com/claude-code">Claude Code</a></div>
+</body>
+</html>
