@@ -106,9 +106,9 @@
         <th class="g">measured optimum <span class="dim">(genuine patch)</span></th></tr>
     <tr><td>screenshot context</td><td>last 3 — bounded</td><td class="r">all — grows</td><td>last 3 — bounded</td><td>last 3 — bounded</td></tr>
     <tr><td>KV prefix each step</td><td class="r">broken (rewrite)</td><td>stable (append-only)</td><td>prior reused <span class="dim">(assumed)</span></td><td>prior reused <span class="dim">(cache_n=L)</span></td></tr>
-    <tr><td>prefill work / step</td><td class="r">5143 tok</td><td>2353 tok</td><td>2353 tok <span class="dim">(only-new)</span></td><td>2058 tok <span class="dim">(only-new)</span></td></tr>
-    <tr><td><b>prefill time / step</b></td><td class="r">131.5 s</td><td>62.9 s</td><td><b>62.9 s</b> <span class="dim">(2.09×)</span></td><td class="g"><b>56.0 s</b> <span class="dim">(2.34×)</span></td></tr>
-    <tr><td>KV cache hit</td><td class="r">~0 %</td><td>64 %</td><td>≈ 64 % <span class="dim">(= no-evict)</span></td><td>≈ 66 % <span class="dim">(measured)</span></td></tr>
+    <tr><td>prefill work / step</td><td class="r">5143 tok</td><td>2353 tok</td><td>2353 tok <span class="dim">(only-new)</span></td><td class="g">2058 tok <span class="dim">(only-new)</span></td></tr>
+    <tr><td>prefill time / step</td><td class="r">131.5 s</td><td>62.9 s</td><td>62.9 s <span class="dim">(2.09×)</span></td><td class="g">56.0 s <span class="dim">(2.34×)</span></td></tr>
+    <tr><td>KV cache hit</td><td class="r">~0 %</td><td>64 %</td><td>≈ 64 % <span class="dim">(= no-evict)</span></td><td class="g">≈ 66 % <span class="dim">(measured)</span></td></tr>
     <tr><td>decode / step</td><td>19.5 s</td><td class="r">23.0 s (slows)</td><td>19.5 s <span class="dim">(= evict)</span></td><td>19.9 s <span class="dim">(= evict)</span></td></tr>
     <tr><td>step latency</td><td class="r">151 s</td><td>86 s</td><td>82.4 s <span class="dim">(1.83×)</span></td><td class="g">79.2 s <span class="dim">(1.95×)</span></td></tr>
     <tr><td>task score</td><td>0.858</td><td class="r">0.782 (−6.4 pp)</td><td>0.858 <span class="dim">(= evict)</span></td><td>0.858 <span class="dim">(= evict)*</span></td></tr>
