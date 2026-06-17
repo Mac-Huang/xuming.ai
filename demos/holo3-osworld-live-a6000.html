@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Holo3 · OSWorld · NUC16 — live</title>
+<title>Holo3 · OSWorld · 2×A6000 — live</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
   :root{--bg:#0d1117;--panel:#161b22;--bd:#30363d;--fg:#c9d1d9;--mut:#8b949e;
@@ -37,7 +37,7 @@
   canvas{width:100%;height:120px;display:block}
   .full{grid-column:1/-1}
   .pill{padding:1px 7px;border-radius:10px;font-size:11px}
-  .pill.cpu{background:#1f6feb33;color:var(--blu)}
+  .pill.gpu{background:#23863633;color:var(--grn)}
   .dim{color:var(--mut)}
   a{color:var(--blu);text-decoration:none} a:hover{text-decoration:underline}
   .err{color:var(--red)}
@@ -46,7 +46,6 @@
   .badge.live::before{content:"●";margin-right:5px;animation:blink 1.6s infinite}
   .badge.stale{background:#3a2e14;color:var(--yel)}
   .badge.fin{background:#13243a;color:var(--blu)}
-  .badge.paused{background:#13243a;color:var(--blu)}
   @keyframes blink{50%{opacity:.25}}
   .alert{display:none;margin:10px 20px 0;padding:9px 14px;border:1px solid #5a4a1a;
          background:#241d0c;color:var(--yel);border-radius:8px;font-size:12px}
@@ -60,11 +59,13 @@
 </head>
 <body>
 <header>
-  <h1>Holo3-35B-A3B · OSWorld-Verified · <span id="host">NUC16</span>
+  <h1>Holo3-35B-A3B · OSWorld-Verified · <span id="host">2×A6000</span>
       <span id="status-badge" class="badge live">LIVE</span></h1>
   <span class="sub" id="meta-line">loading…</span>
   <span class="sub" style="margin-left:auto">
-    <span id="updated"></span> &nbsp;·&nbsp; <a href="holo3-kvcache-live.html">KV-cache ablation →</a> &nbsp;·&nbsp; <a href="holo3-osworld-live-a6000.html">A6000 run</a> &nbsp;·&nbsp; <a href="../research.html">← research</a>
+    <span id="updated"></span> &nbsp;·&nbsp;
+    <a href="holo3-osworld-live.html">NUC16 run</a> &nbsp;·&nbsp;
+    <a href="../research.html">← research</a>
   </span>
 </header>
 <div class="alert" id="alert"></div>
@@ -85,6 +86,7 @@
     </div>
     <div class="dim" style="margin-top:8px;font-size:11px">
       official Holo3-35B-A3B leaderboard runs: 82.56 / 78.15 % (mean 80.4) at the same 100-step budget
+      · sibling run: <a href="holo3-osworld-live.html">NUC16 (CPU edge)</a>
     </div>
   </div>
 
@@ -109,7 +111,7 @@
   </div>
 
   <div class="panel full">
-    <h2>Package power (W) &amp; CPU util — last ~3 h</h2>
+    <h2>GPU power (W) &amp; GPU util — last ~3 h</h2>
     <canvas id="chart" width="1200" height="120"></canvas>
   </div>
 
@@ -119,50 +121,35 @@
   </div>
 
   <div class="panel full">
-    <h2>Device bring-up — why CPU (GPU/NPU tried first)</h2>
+    <h2>Engine bring-up — llama.cpp CUDA vs vLLM (evidence)</h2>
     <div id="bringup" class="dim">…</div>
   </div>
 
-  <div class="panel full why">
-    <h2>Root cause — why the NPU and iGPU can't serve this model</h2>
-    <p><span class="dev">NPU (Intel NPU&nbsp;5, OpenVINO)</span> — blocked at the <b>software-stack level, twice over</b>:</p>
+  <div class="panel full why" id="why-panel">
+    <h2>Same model, three devices — what changes and why</h2>
+    <p><span class="dev">This run (2×RTX A6000, GDDR6 ~768 GB/s each)</span> — the same hybrid
+      <code>qwen3_5_moe</code> (Gated-DeltaNet × 256-expert MoE VLM) that limps on edge silicon
+      simply <b>works</b> on discrete CUDA:</p>
     <ul>
-      <li><b>Architecture gap.</b> Holo3 is <code>qwen3_5_moe</code>: a hybrid <b>Gated-DeltaNet</b> (linear-attention/SSM) ×
-          <b>256-expert sparse MoE</b> vision-language model. The NPU is only reachable through OpenVINO, and
-          optimum-intel/OpenVINO cannot export this architecture — OpenVINO GenAI's VLM pipeline supports only
-          <i>dense</i> Qwen3-VL; no MoE-VLM, no DeltaNet ops.</li>
-      <li><b>Hardware ceiling.</b> NPU&nbsp;5 is a static-graph accelerator for small models; ~20&nbsp;GB of INT4 MoE
-          weights plus a growing KV/SSM state in token-by-token agentic decode is the opposite of its design point.</li>
-    </ul>
-    <p><span class="dev">iGPU (Xe3, llama.cpp Vulkan)</span> — three independent, <b>measured</b> failure layers:</p>
-    <ul>
-      <li><b>Vision encoder crashes the device.</b> The CLIP/mmproj graph raises <code>vk::DeviceLostError</code> inside
-          <code>clip_image_batch_encode</code> → GPU reset. Driver/kernel immaturity on brand-new Xe3 silicon (mesa anv).</li>
-      <li><b>Output head computes garbage.</b> Full offload (<code>-ngl 99</code>) yields deterministic wrong tokens at temp 0;
-          isolated to the <b>248,320-vocab lm_head matmul</b> — all 40 transformer blocks alone are numerically correct
-          (<code>-ngl 40</code>). A silent Vulkan kernel bug (likely workgroup/dimension overflow on the huge vocab matrix);
-          narrower repro than upstream issue #21888.</li>
-      <li><b>No physics win even when correct.</b> Decoding a 3B-active MoE is <b>memory-bandwidth-bound</b>, and the iGPU
-          shares the <i>same</i> ~90&nbsp;GB/s DDR5-5600 as the CPU — it adds dispatch overhead on scattered expert reads
-          without adding bandwidth: 10&nbsp;tok/s vs <b>19.9&nbsp;tok/s on CPU</b>. The iGPU cannot win this workload on this
-          silicon even bug-free.</li>
+      <li><b>The Vulkan failure classes don't reproduce on CUDA.</b> Full offload (<code>-ngl 99</code>) decodes
+          correct tokens at temp 0 (the Xe3 lm_head corruption is a Vulkan kernel bug, not a model property), and the
+          CLIP/mmproj vision encoder runs clean (no <code>DeviceLost</code>) — UI localization lands within ~2 px.</li>
+      <li><b>Bandwidth is the whole story for MoE decode.</b> 3B active parameters streamed from 768 GB/s GDDR6
+          instead of ~90 GB/s shared DDR5 → decode ~10× the NUC (and prefill ~28–75×, compute-bound).</li>
+      <li><b>What stays identical:</b> task set (361 = 369 − 8 Google-Drive), max_steps=100, screenshot-only
+          observation, temp 0.8, 1920×1080, single rollout, H Company agent-loop protocol.</li>
     </ul>
     <div class="fix">
-      <p><b>Proposed solution (concise).</b>
-      <b>Now, on this box:</b> stay on CPU and recover the broken KV prefix-cache — restructure the agent's message
-      history so screenshot eviction stops invalidating the prefix (measured ~25K-token re-prefills at ~60 tok/s
-      dominate step latency; est. <b>2–3× faster steps</b>), plus a loop-detector that early-FAILs runaway episodes.
-      <b>Upstream:</b> file the two minimal repros (lm_head-only corruption; clip DeviceLost) — either fix unlocks
-      vision-prefill offload to the iGPU.
-      <b>Right long-term fix:</b> heterogeneous placement once OpenVINO gains MoE-VLM support — vision tower on NPU,
-      compute-bound prefill on iGPU, bandwidth-bound expert decode on CPU — or edge silicon with real bandwidth
-      headroom (≥200&nbsp;GB/s class) where the GPU path pays off.</p>
+      <p><b>Why this comparison matters.</b> NUC16 measures what a fanless edge box can do today;
+      this run measures the same agent with the serving bottleneck removed — isolating <i>model capability</i>
+      from <i>serving physics</i>. Score deltas between the two runs bound the quality cost of edge serving
+      (quant + latency-induced behavior differences), while the step-latency/energy gap quantifies its price.</p>
     </div>
   </div>
 </div>
 
 <script>
-const DATA_URL = 'https://raw.githubusercontent.com/Mac-Huang/xuming.ai/live-data/holo3_state.json';
+const DATA_URL = 'https://raw.githubusercontent.com/Mac-Huang/xuming.ai/live-data/holo3_state_a6000.json';
 const fmtDur = s => { if(s==null) return '–'; s=Math.round(s);
   const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);
   return (d?d+'d ':'')+(h||d?h+'h ':'')+m+'m'; };
@@ -177,20 +164,16 @@ async function load(){
 
   const runAge=(Date.now()/1000-(st.updated_at||0))/60;
   const pubAge=(Date.now()/1000-(st.published_at||0))/60;
-  const paused=!!m.paused;
-  const finished=!paused&&((pr.done!=null&&pr.total!=null&&pr.done>=pr.total)||c.status==='finished');
+  const finished=(pr.done!=null&&pr.total!=null&&pr.done>=pr.total)||c.status==='finished';
   const badge=document.getElementById('status-badge'), alert=document.getElementById('alert');
-  if(paused){badge.className='badge paused';badge.textContent='PAUSED';alert.style.display='block';
-    alert.style.borderColor='#243a52';alert.style.background='#0e1d2e';alert.style.color='#58a6ff';
-    alert.textContent=`run paused at ${pr.done}/${pr.total} (${pct(pr.success_rate)} success) — resumable; the team paused it to run the KV-cache ablation (link above)`;}
-  else if(finished){badge.className='badge fin';badge.textContent='FINISHED';alert.style.display='none';}
+  if(finished){badge.className='badge fin';badge.textContent='FINISHED';alert.style.display='none';}
   else if(runAge>45){badge.className='badge stale';badge.textContent='STALE';alert.style.display='block';
     alert.textContent=`no state update from the device for ${fmtDur(runAge*60)} — run may be paused or recovering; showing last published snapshot`;}
   else {badge.className='badge live';badge.textContent='LIVE';alert.style.display='none';}
 
-  document.getElementById('host').textContent = m.host||'NUC16';
+  document.getElementById('host').textContent = m.host||'2×A6000';
   document.getElementById('meta-line').innerHTML =
-    `${m.model||''} · ${m.quant||''} · <span class="pill cpu">${(m.device||'?').toUpperCase()}</span> · `+
+    `${m.model||''} · ${m.quant||''} · <span class="pill gpu">${(m.device||'?').toUpperCase()}</span> · `+
     `max_steps=${m.max_steps} · ${m.screen} · ${m.observation} · temp=${m.temperature} · single rollout · `+
     `<span class="dim">#1 open-weight on OSWorld-Verified</span>`;
   document.getElementById('updated').textContent =
@@ -200,11 +183,11 @@ async function load(){
   document.getElementById('p-sr').textContent = pct(pr.success_rate);
   document.getElementById('p-scored').textContent = pr.scored??'–';
   document.getElementById('p-elapsed').textContent = m.started_at? fmtDur(Date.now()/1000-m.started_at):'–';
-  document.getElementById('p-eta').textContent = (finished||paused)?'—':fmtDur(pr.eta_s);
+  document.getElementById('p-eta').textContent = finished?'—':fmtDur(pr.eta_s);
   document.getElementById('p-tw').textContent = pr.mean_task_wall_s? fmtDur(pr.mean_task_wall_s):'–';
   document.getElementById('pbar').style.width = pr.total? (100*pr.done/pr.total)+'%':'0%';
 
-  document.getElementById('cur').innerHTML = paused? '<span class="run">⏸ paused — resumable</span>' : finished? '<span class="ok">run complete ✓</span>' :
+  document.getElementById('cur').innerHTML = finished? '<span class="ok">run complete ✓</span>' :
     (!c.task_id)? (c.status||'idle') :
     `<div class="kv"><span class="k">task</span><span>${c.domain}/${String(c.task_id).slice(0,8)}</span></div>`+
     `<div class="kv"><span class="k">step</span><span class="run">${c.step}/${c.max_steps}</span></div>`+
@@ -212,18 +195,18 @@ async function load(){
     `<div class="kv"><span class="k">context</span><span>${c.prompt_tokens??'–'} tokens</span></div>`+
     `<div class="kv"><span class="k">decode</span><span>${c.decode_tps??'–'} t/s</span></div>`;
 
-  const sysRows=[
-    ['pkg power', s['power_package-0_w']!=null? s['power_package-0_w']+' W':'–'],
-    ['psys power', s['power_psys_w']!=null? s['power_psys_w']+' W':'–'],
-    ['dram power', s['power_dram_w']!=null? s['power_dram_w']+' W':'–'],
-    ['CPU util', s.cpu_util!=null? pct(s.cpu_util):'–'],
-    ['CPU freq', s.cpu_mean_mhz? s.cpu_mean_mhz+' MHz':'–'],
-    ['pkg temp', s.temp_x86_pkg_temp_c!=null? s.temp_x86_pkg_temp_c+' °C':'–'],
-    ['GPU freq', s.gpu_act_mhz!=null? s.gpu_act_mhz+' MHz (idle by design)':'–'],
-    ['NPU util', s.npu_util!=null? pct(s.npu_util)+' (idle by design)':'–'],
-    ['server RSS', s.server_rss_kb? (s.server_rss_kb/1e6).toFixed(1)+' GB':'–'],
-    ['mem avail', s.mem_available_kb? (s.mem_available_kb/1e6).toFixed(1)+' GB':'–'],
-  ];
+  const gpus=s.gpus||[];
+  const sysRows=[];
+  gpus.forEach(g=>{
+    sysRows.push([`GPU${g.i} util`, g.util!=null? pct(g.util):'–']);
+    sysRows.push([`GPU${g.i} VRAM`, g.mem_mb!=null? (g.mem_mb/1024).toFixed(1)+' GB':'–']);
+    sysRows.push([`GPU${g.i} power`, g.power_w!=null? g.power_w.toFixed(0)+' W':'–']);
+    sysRows.push([`GPU${g.i} temp`, g.temp_c!=null? g.temp_c+' °C':'–']);
+  });
+  sysRows.push(['GPU total power', s.gpu_total_power_w!=null? s.gpu_total_power_w.toFixed(0)+' W':'–']);
+  sysRows.push(['CPU util', s.cpu_util!=null? pct(s.cpu_util):'–']);
+  sysRows.push(['server RSS', s.server_rss_kb? (s.server_rss_kb/1e6).toFixed(1)+' GB':'–']);
+  sysRows.push(['mem avail', s.mem_available_kb? (s.mem_available_kb/1e6).toFixed(1)+' GB':'–']);
   document.getElementById('sys').innerHTML = sysRows.map(([k,v])=>
     `<div class="kv"><span class="k">${k}</span><span>${v}</span></div>`).join('');
 
@@ -231,7 +214,8 @@ async function load(){
     ['prefill t/s', ag.prefill_tps_mean??'–'],
     ['decode t/s', ag.decode_tps_mean??'–'],
     ['prompt tokens', ag.prompt_tokens_mean??'–'],
-    ['Wh / task', ag.energy_wh_per_task_mean??'–'],
+    ['Wh / task (GPU)', ag.energy_wh_per_task_mean??'–'],
+    ['KV reuse', ag.kv_reuse_pct!=null? ag.kv_reuse_pct+'%':'–'],
   ];
   document.getElementById('agg').innerHTML = aggRows.map(([k,v])=>
     `<div class="kv"><span class="k">${k}</span><span>${v}</span></div>`).join('');
@@ -263,15 +247,16 @@ async function load(){
 
   const bp=st.device_bringup;
   if(bp){
-    let h='<table><tr><th>device</th><th>status</th><th>vision OK</th><th class="num">decode t/s</th><th>note</th></tr>';
+    let h='<table><tr><th>engine / config</th><th>status</th><th>vision OK</th><th class="num">prefill t/s</th><th class="num">decode t/s</th><th>note</th></tr>';
     (bp.devices||[]).forEach(d=>{
-      let dec=d.decode_tps, vok=d.vision_correct, note='';
-      if(d.configs){ const best=d.configs[d.configs.length-1]; dec=best.decode_tps; vok=best.vision_correct;
-        note=(d.configs.find(c=>/CRASH/i.test(c.note||''))||{}).note||best.note||''; }
-      if(d.device==='CPU' && d.thread_sweep) dec=Math.max(...Object.values(d.thread_sweep.tg32_tps));
-      h+=`<tr><td>${d.device}</td><td class="${d.status==='SELECTED'?'ok':d.status==='UNAVAILABLE'?'bad':'run'}">${d.status}</td>`+
-         `<td>${vok===true?'<span class=ok>yes</span>':vok===false?'<span class=bad>no</span>':'–'}</td>`+
-         `<td class="num">${dec??'–'}</td><td class="dim">${(note||'').slice(0,90)}</td></tr>`;});
+      const rows = d.configs || [d];
+      rows.forEach((cfg,j)=>{
+        h+=`<tr><td>${j===0? d.device:'&nbsp;&nbsp;· '}${cfg.config||cfg.backend||''}</td>`+
+           `<td class="${d.status==='SELECTED'?'ok':d.status==='UNAVAILABLE'?'bad':'run'}">${j===0? d.status:''}</td>`+
+           `<td>${cfg.vision_correct===true?'<span class=ok>yes</span>':cfg.vision_correct===false?'<span class=bad>no</span>':'–'}</td>`+
+           `<td class="num">${cfg.prefill_tps??'–'}</td>`+
+           `<td class="num">${cfg.decode_tps??'–'}</td><td class="dim">${(cfg.note||'').slice(0,110)}</td></tr>`;});
+    });
     h+='</table><div class="dim" style="margin-top:6px">'+(bp.decision||'')+'</div>';
     document.getElementById('bringup').innerHTML=h;
   }
@@ -283,15 +268,15 @@ function drawChart(series){
   const cv=document.getElementById('chart'), x=cv.getContext('2d'); const W=cv.width,H=cv.height;
   x.clearRect(0,0,W,H);
   if(series.length<3) return;
-  const pw=series.map(r=>r.pkg_w), cu=series.map(r=>r.cpu==null?null:r.cpu*100);
+  const pw=series.map(r=>r.gpu_w), gu=series.map(r=>r.gpu_util==null?null:r.gpu_util*100);
   const plot=(arr,max,color)=>{ x.strokeStyle=color;x.lineWidth=1.5;x.beginPath();let st=false;
     arr.forEach((v,i)=>{ if(v==null){st=false;return;} const px=i/(arr.length-1)*W, py=H-(v/max)*(H-6)-3;
       if(!st){x.moveTo(px,py);st=true;}else x.lineTo(px,py);}); x.stroke();};
-  const pmax=Math.max(60,...pw.filter(v=>v!=null))*1.1;
-  plot(pw,pmax,'#f85149'); plot(cu,100,'#58a6ff');
+  const pmax=Math.max(120,...pw.filter(v=>v!=null))*1.1;
+  plot(pw,pmax,'#f85149'); plot(gu,100,'#58a6ff');
   x.fillStyle='#8b949e';x.font='11px monospace';
-  x.fillText('power (red, max '+pmax.toFixed(0)+'W)',6,14);
-  x.fillText('cpu% (blue)',6,28);
+  x.fillText('GPU power (red, max '+pmax.toFixed(0)+'W)',6,14);
+  x.fillText('GPU util% (blue)',6,28);
 }
 
 load(); setInterval(load, 60000);
