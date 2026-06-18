@@ -331,9 +331,13 @@ async function renderCompare(a6){
   const nlbl = nuc? `NUC16 n=${N.scored}/${N.total}` : 'NUC16 feed unavailable';
   document.getElementById('cmp-note').innerHTML =
     `${nlbl} · A6000 n=${A.scored}/${A.total}. Both runs use the identical screenshot-only local agent `+
-    `(not H Company's cloud surferH), so this is an apples-to-apples device comparison, not a leaderboard score. `+
+    `(not H Company's cloud surferH), so this is a device comparison, not a leaderboard score. `+
     `prefill/decode time per step derived from aggregate t/s × mean prompt tokens and mean per-step predict time. `+
-    `The A6000 VM runs under QEMU-TCG software emulation (no KVM on this host), adding ~15 s/step of environment latency.`;
+    `<b>Score caveat:</b> the A6000 VM runs under QEMU-TCG software emulation (no KVM on this host), which adds `+
+    `~15&nbsp;s/step of latency AND degrades precise desktop-app interactions: web (chrome) tasks score the same as `+
+    `the KVM NUC, but LibreOffice/GIMP/Thunderbird/VLC tasks — which the same agent passes ~65–100% under KVM on the `+
+    `NUC — fail under TCG. So the A6000 <i>serving coefficients</i> (prefill/decode/latency/energy) are the robust `+
+    `result here; representative app-domain <i>scores</i> need a KVM-capable VM host.`;
 }
 
 function drawChart(series){
