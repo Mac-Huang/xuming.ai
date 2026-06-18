@@ -125,6 +125,20 @@
     <div id="bringup" class="dim">…</div>
   </div>
 
+  <div class="panel full">
+    <h2>The four regimes, inverted — edge (NUC16) vs datacenter (2×A6000), live</h2>
+    <div class="dim" style="font-size:11.5px;margin-bottom:8px">
+      Same model, same screenshot-only agent, same OSWorld tasks — read against the
+      <a href="holo3-kvcache-optimum.html">KV-cache four-regimes</a> framework. On the edge the agent step is
+      <b>prefill-bound</b> (re-prefilling the evicted context dominates), which is the whole reason the
+      evict / no-evict / KV-optimum tradeoff exists. On the A6000 prefill collapses to ~1–2 s, the step becomes
+      <b>VM/environment-bound</b>, and the KV-cache regime is moot (vLLM also has no prefix cache for this hybrid
+      arch). The bottleneck — and the energy story — invert. Numbers update live from both runs' state feeds.
+    </div>
+    <div class="scroll"><table id="cmp"></table></div>
+    <div class="dim" id="cmp-note" style="font-size:11px;margin-top:6px"></div>
+  </div>
+
   <div class="panel full why" id="why-panel">
     <h2>Same model, three devices — what changes and why</h2>
     <p><span class="dev">This run (2×RTX A6000, GDDR6 ~768 GB/s each)</span> — the same hybrid
@@ -150,6 +164,7 @@
 
 <script>
 const DATA_URL = 'https://raw.githubusercontent.com/Mac-Huang/xuming.ai/live-data/holo3_state_a6000.json';
+const NUC_URL  = 'https://raw.githubusercontent.com/Mac-Huang/xuming.ai/live-data/holo3_state.json';
 const fmtDur = s => { if(s==null) return '–'; s=Math.round(s);
   const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);
   return (d?d+'d ':'')+(h||d?h+'h ':'')+m+'m'; };
@@ -262,6 +277,63 @@ async function load(){
   }
 
   drawChart(st.telemetry_series||[]);
+  renderCompare(st);
+}
+
+// --- edge vs datacenter, four-regimes coefficient comparison ---------------
+function _coeffs(st){
+  const ag=st.aggregate||{}, pr=st.progress||{}, ts=(st.tasks||[]).filter(t=>t.score!=null);
+  const meanPredict = ts.length
+    ? ts.map(t=>t.mean_predict_s).filter(x=>x!=null).reduce((a,b)=>a+b,0)/
+      (ts.map(t=>t.mean_predict_s).filter(x=>x!=null).length||1) : null;
+  const ptok=ag.prompt_tokens_mean, pf=ag.prefill_tps_mean;
+  const pfTime = (ptok&&pf)? ptok/pf : null;            // prefill seconds / step
+  const decTime = (meanPredict!=null&&pfTime!=null)? Math.max(0,meanPredict-pfTime):null;
+  const steps = ts.length? ts.map(t=>t.steps||0).reduce((a,b)=>a+b,0)/ts.length : null;
+  return {
+    prefill_tps: pf, decode_tps: ag.decode_tps_mean, ptok,
+    pf_time: pfTime, dec_time: decTime, step_lat: meanPredict,
+    cache: ag.cache_hit_mean, wall: pr.mean_task_wall_s,
+    energy: ag.energy_wh_per_task_mean, steps,
+    sr: pr.success_rate, scored: pr.scored, total: pr.total,
+  };
+}
+async function renderCompare(a6){
+  let nuc=null;
+  try{ nuc = await (await fetch(NUC_URL+'?t='+Math.floor(Date.now()/60000))).json(); }catch(e){}
+  const A=_coeffs(a6), N=nuc?_coeffs(nuc):null;
+  const f=(x,d=1,u='')=> x==null?'–':(+x).toFixed(d)+u;
+  const ratio=(n,a,lowerBetterForA=true)=>{ if(n==null||a==null||!n||!a) return '';
+    const r = a/n; // A relative to NUC
+    return `<span class="dim">${r>=1? r.toFixed(1)+'× ':(1/r).toFixed(1)+'× '}${lowerBetterForA?(a<n?'faster':'') : ''}</span>`; };
+  const rows = [
+    ['regime', 'evict (prefill-bound)', 'evict (VM-bound)', 'bottleneck inverts', false],
+    ['prefill t/s', f(N?.prefill_tps,0), f(A.prefill_tps,0), A.prefill_tps&&N?.prefill_tps?(A.prefill_tps/N.prefill_tps).toFixed(0)+'× faster':'', false],
+    ['decode t/s', f(N?.decode_tps,1), f(A.decode_tps,1), A.decode_tps&&N?.decode_tps?(A.decode_tps/N.decode_tps).toFixed(1)+'× faster':'', false],
+    ['prompt tokens / step', f(N?.ptok,0), f(A.ptok,0), '', false],
+    ['prefill time / step', f(N?.pf_time,1,' s'), f(A.pf_time,2,' s'), A.pf_time&&N?.pf_time?(N.pf_time/A.pf_time).toFixed(0)+'× faster':'', true],
+    ['decode time / step', f(N?.dec_time,1,' s'), f(A.dec_time,2,' s'), '', true],
+    ['model step latency', f(N?.step_lat,1,' s'), f(A.step_lat,2,' s'), A.step_lat&&N?.step_lat?(N.step_lat/A.step_lat).toFixed(0)+'× faster':'', true],
+    ['KV cache hit', f(N?.cache!=null?N.cache*100:null,0,'%'), f(A.cache!=null?A.cache*100:null,0,'%'), 'moot on GPU', false],
+    ['wall / task', fmtDur(N?.wall), fmtDur(A.wall), A.wall&&N?.wall?(N.wall/A.wall).toFixed(1)+'× faster':'', true],
+    ['energy / task', f(N?.energy,1,' Wh'), f(A.energy,1,' Wh'), A.energy&&N?.energy?(A.energy/N.energy).toFixed(1)+'× MORE':'', false],
+    ['mean steps / task', f(N?.steps,1), f(A.steps,1), '', false],
+    ['success rate', pct(N?.sr), pct(A.sr), '', false],
+  ];
+  let h='<tr><th>coefficient</th><th>NUC16 · CPU edge</th><th>2×A6000 · vLLM</th><th>edge → datacenter</th></tr>';
+  rows.forEach(([k,nv,av,delta,lb],i)=>{
+    const hot = (k==='model step latency'||k==='energy / task'||k==='prefill time / step');
+    h+=`<tr${i===0?' style="color:var(--mut);font-style:italic"':''}><td>${k}</td>`+
+       `<td class="num">${nv}</td><td class="num"${hot?' style="color:var(--grn)"':''}>${av}</td>`+
+       `<td class="dim">${delta}</td></tr>`;
+  });
+  document.getElementById('cmp').innerHTML=h;
+  const nlbl = nuc? `NUC16 n=${N.scored}/${N.total}` : 'NUC16 feed unavailable';
+  document.getElementById('cmp-note').innerHTML =
+    `${nlbl} · A6000 n=${A.scored}/${A.total}. Both runs use the identical screenshot-only local agent `+
+    `(not H Company's cloud surferH), so this is an apples-to-apples device comparison, not a leaderboard score. `+
+    `prefill/decode time per step derived from aggregate t/s × mean prompt tokens and mean per-step predict time. `+
+    `The A6000 VM runs under QEMU-TCG software emulation (no KVM on this host), adding ~15 s/step of environment latency.`;
 }
 
 function drawChart(series){
