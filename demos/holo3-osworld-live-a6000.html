@@ -333,14 +333,15 @@ async function renderCompare(a6){
     `${nlbl} · A6000 n=${A.scored}/${A.total}. Both runs use the identical screenshot-only local agent `+
     `(not H Company's cloud surferH), so this is a device comparison, not a leaderboard score. `+
     `prefill/decode time per step derived from aggregate t/s × mean prompt tokens and mean per-step predict time. `+
-    `<b>Score caveat (root-caused):</b> the A6000 VM runs under QEMU-TCG software emulation (no KVM on this host). `+
-    `Holo3's grounding under vLLM is verified accurate (it localizes small spreadsheet cells to within ~5&nbsp;px on a `+
-    `static screenshot), so the model and serving are correct — but under TCG the clicks/keys land late/imprecisely and `+
-    `screenshots go stale, sending the agent into corrective spirals on small targets. Result: web (chrome) tasks score `+
-    `like the KVM NUC (big targets tolerate it), while LibreOffice/GIMP/Thunderbird/VLC tasks — which the same agent `+
-    `passes ~65–100% under KVM on the NUC — fail under TCG. So the A6000 <i>serving coefficients</i> `+
-    `(prefill/decode/latency/energy) are the robust result here; representative app-domain <i>scores</i> need a `+
-    `KVM-capable VM host (which would make the model's already-correct clicks land).`;
+    `<b>Setup:</b> Holo3 is served by the 2×A6000s (vLLM BF16, TP=2); the OSWorld VM runs on a separate <b>KVM</b> `+
+    `host (a Legion laptop, AMD nested-virt) reached over an SSH tunnel — so the agent's clicks land crisply and `+
+    `scores are <i>representative</i>. (An earlier pass ran the VM under QEMU-TCG software emulation on the GPU box `+
+    `itself — no KVM there — which root-caused a systematic app-domain failure: the model's grounding is accurate `+
+    `(localizes cells to ~5&nbsp;px) but TCG's late/imprecise input spiralled the agent on small targets; moving the `+
+    `VM to KVM fixed it, e.g. the same LibreOffice-Calc task went 0.0→1.0.) Net effect on the A6000 column: KVM tasks `+
+    `finish in ~30–200&nbsp;s (vs minutes under TCG), so per-task energy drops sharply and success rates land near the `+
+    `NUC's. Both runs use the identical screenshot-only local agent (not H Company's cloud surferH), so this is a `+
+    `device comparison, not a leaderboard score.`;
 }
 
 function drawChart(series){
