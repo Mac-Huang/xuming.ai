@@ -337,7 +337,7 @@ async function renderCompare(a6){
     const reg = kind==='reg';
     h+=`<tr${reg?' style="color:var(--mut);font-style:italic"':''}><td>${k}</td>`+
        `<td class="num">${nv}</td>`+
-       `<td class="num"${kind==='hot'?' style="color:var(--grn);font-weight:600"':''}>${av}</td>`+
+       `<td class="num" style="color:var(--grn)${kind==='hot'?';font-weight:600':''}">${av}</td>`+
        `<td class="dim">${delta}</td></tr>`;
   });
   document.getElementById('cmp').innerHTML=h;
