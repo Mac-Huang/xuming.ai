@@ -100,21 +100,28 @@
     <h2>The four regimes, side by side</h2>
     <div class="scroll"><table>
     <tr><th>coefficient</th><th>evict <span class="dim">(baseline)</span></th><th>no-evict</th><th>combinational optimum <span class="dim">(computed)</span></th><th class="g">measured optimum <span class="dim">(genuine patch)</span></th><th class="g">2&times;A6000 <span class="dim">(GPU ref)</span></th></tr>
+    <tr><td colspan="6" style="background:#1a2230;color:#8b98a8;font-weight:600;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;padding:7px 8px 5px;border-top:1px solid #30363d">Setup</td></tr>
     <tr><td>platform</td><td>NUC16 CPU <span class="dim">16C</span></td><td>NUC16 CPU</td><td>NUC16 CPU</td><td>NUC16 CPU</td><td class="g">2&times; RTX A6000 <span class="dim">48GB ea</span></td></tr>
     <tr><td>screenshot context</td><td>last 3 — bounded</td><td class="r">all — grows</td><td>last 3 — bounded</td><td>last 3 — bounded</td><td class="g">last 3</td></tr>
     <tr><td>KV prefix each step</td><td class="r">broken (rewrite)</td><td>stable (append-only)</td><td>prior reused <span class="dim">(assumed)</span></td><td>prior reused <span class="dim">(cache_n=L)</span></td><td class="g">re-prefilled <span class="dim">(no reuse)</span></td></tr>
-    <tr><td>new tokens / step (tok)</td><td class="r">5148</td><td>2353</td><td>2353 <span class="dim">(only-new)</span></td><td class="g">2058 <span class="dim">(only-new)</span></td><td class="g">~5.1K <span class="dim">(re-prefill)</span></td></tr>
+    <tr><td colspan="6" style="background:#1a2230;color:#8b98a8;font-weight:600;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;padding:7px 8px 5px;border-top:1px solid #30363d">Prefill · per step</td></tr>
+    <tr><td>prefill tokens / step (tok)</td><td class="r">5148</td><td>2353</td><td>2353 <span class="dim">(only-new)</span></td><td class="g">2058 <span class="dim">(only-new)</span></td><td class="g">~5.1K <span class="dim">(re-prefill)</span></td></tr>
+    <tr><td>KV cache hit (%)</td><td class="r">~0</td><td>64</td><td>≈64 <span class="dim">(= no-evict)</span></td><td>≈63 <span class="dim">(measured)</span></td><td class="g">—</td></tr>
     <tr><td>prefill throughput (tok/s)</td><td>38.7</td><td>37.5</td><td>37.5</td><td>36.9</td><td class="g"><b>~1.1–2.9K</b> <span class="dim">(28–75&times;)</span></td></tr>
     <tr><td>prefill / step (s)</td><td class="r">131.6</td><td>62.9</td><td>62.9 <span class="dim">(2.09&times;)</span></td><td class="g">55.8 <span class="dim">(2.36&times;)</span></td><td class="g"><b>~1–2</b> <span class="dim">(CUDA)</span></td></tr>
-    <tr><td>KV cache hit (%)</td><td class="r">~0</td><td>64</td><td>≈64 <span class="dim">(= no-evict)</span></td><td>≈63 <span class="dim">(measured)</span></td><td class="g">—</td></tr>
+    <tr><td colspan="6" style="background:#1a2230;color:#8b98a8;font-weight:600;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;padding:7px 8px 5px;border-top:1px solid #30363d">Decode · per step</td></tr>
+    <tr><td>decode tokens / step (tok)</td><td>301</td><td>268</td><td>301 <span class="dim">(= evict)</span></td><td>301 <span class="dim">(= evict)</span></td><td class="g">~300</td></tr>
     <tr><td>decode throughput (tok/s)</td><td>15.0</td><td>13.5</td><td>15.0</td><td>15.0</td><td class="g"><b>~150</b> <span class="dim">(≈10&times;)</span></td></tr>
     <tr><td>decode / step (s)</td><td>19.5</td><td class="r">23.0 <span class="dim">(slows)</span></td><td>19.5 <span class="dim">(= evict)</span></td><td>19.5 <span class="dim">(= evict)</span></td><td class="g"><b>~2</b> <span class="dim">(≈10&times;)</span></td></tr>
+    <tr><td colspan="6" style="background:#1a2230;color:#8b98a8;font-weight:600;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;padding:7px 8px 5px;border-top:1px solid #30363d">Per agent-step</td></tr>
     <tr><td>step latency (s)</td><td class="r">151.2</td><td>85.9</td><td>82.4 <span class="dim">(1.83&times;)</span></td><td class="g">75.3 <span class="dim">(2.01&times;)</span></td><td class="g"><b>~3.5</b></td></tr>
     <tr><td>agent-steps / hour</td><td class="r">23.8</td><td>—</td><td>43.7 <span class="dim">(1.84&times;)</span></td><td class="g">47.8 <span class="dim">(2.01&times;)</span></td><td class="g"><b>~1000</b> <span class="dim">(GPU)</span></td></tr>
+    <tr><td colspan="6" style="background:#1a2230;color:#8b98a8;font-weight:600;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;padding:7px 8px 5px;border-top:1px solid #30363d">Per task</td></tr>
     <tr><td>steps / task</td><td>9.4</td><td>8.1</td><td>9.4 <span class="dim">(= evict)</span></td><td>9.4 <span class="dim">(= evict)</span></td><td class="g">—</td></tr>
     <tr><td>task score</td><td>0.858</td><td class="r">0.782 <span class="dim">(−6.4 pp)</span></td><td>0.858 <span class="dim">(= evict)</span></td><td>0.858 <span class="dim">(= evict)*</span></td><td class="g">0.804 <span class="dim">†</span></td></tr>
     <tr><td>wall / task (s)</td><td class="r">1819</td><td>784</td><td>857 <span class="dim">(2.12&times;)</span></td><td class="g">786 <span class="dim">(2.31&times;)</span></td><td class="g">— <span class="dim">‡</span></td></tr>
     <tr><td>energy / task (Wh)</td><td class="r">18.3</td><td>10.0</td><td>9.5 <span class="dim">(1.93&times;)</span></td><td class="g">8.7 <span class="dim">(2.12&times;)</span></td><td class="g">— <span class="dim">‡</span></td></tr>
+    <tr><td colspan="6" style="background:#1a2230;color:#8b98a8;font-weight:600;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;padding:7px 8px 5px;border-top:1px solid #30363d">Footprint</td></tr>
     <tr><td>peak KV memory</td><td>bounded</td><td class="r">OOM tail</td><td>bounded</td><td>bounded</td><td class="g">bounded</td></tr>
     <tr><td>nature</td><td class="dim">measured</td><td class="dim">measured</td><td class="dim">computed bound</td><td class="dim"><b>measured — genuine run</b></td><td class="dim g">external live run</td></tr>
     </table></div>
