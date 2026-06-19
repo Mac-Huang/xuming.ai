@@ -286,13 +286,15 @@ function _coeffs(st){
   const meanPredict = ts.length
     ? ts.map(t=>t.mean_predict_s).filter(x=>x!=null).reduce((a,b)=>a+b,0)/
       (ts.map(t=>t.mean_predict_s).filter(x=>x!=null).length||1) : null;
-  const ptok=ag.prompt_tokens_mean, pf=ag.prefill_tps_mean;
-  const pfTime = (ptok&&pf)? ptok/pf : null;            // prefill seconds / step
-  const decTime = (meanPredict!=null&&pfTime!=null)? Math.max(0,meanPredict-pfTime):null;
+  const ptok=ag.prompt_tokens_mean, pf=ag.prefill_tps_mean, dtps=ag.decode_tps_mean;
+  const pfTime = (ptok&&pf)? ptok/pf : null;             // prefill SECONDS per step
+  const decTime = (meanPredict!=null&&pfTime!=null)? Math.max(0,meanPredict-pfTime):null; // decode SECONDS per step
+  const decTok = (dtps&&decTime)? dtps*decTime : null;   // decode TOKENS per step = rate × time
   const steps = ts.length? ts.map(t=>t.steps||0).reduce((a,b)=>a+b,0)/ts.length : null;
   return {
-    prefill_tps: pf, decode_tps: ag.decode_tps_mean, ptok,
-    pf_time: pfTime, dec_time: decTime, step_lat: meanPredict,
+    prefill_tps: pf, decode_tps: dtps,
+    pf_tok: ptok, dec_tok: decTok,                       // tokens per step
+    pf_time: pfTime, dec_time: decTime, step_lat: meanPredict,  // seconds per step
     cache: ag.cache_hit_mean, wall: pr.mean_task_wall_s,
     energy: ag.energy_wh_per_task_mean, steps,
     sr: pr.success_rate, scored: pr.scored, total: pr.total,
@@ -306,25 +308,36 @@ async function renderCompare(a6){
   const ratio=(n,a,lowerBetterForA=true)=>{ if(n==null||a==null||!n||!a) return '';
     const r = a/n; // A relative to NUC
     return `<span class="dim">${r>=1? r.toFixed(1)+'× ':(1/r).toFixed(1)+'× '}${lowerBetterForA?(a<n?'faster':'') : ''}</span>`; };
+  // x faster = how many times SMALLER the A6000 value is (for lower-is-better metrics)
+  const xFastLow = (n,a)=> (n&&a)? (n/a).toFixed(a*10<n?0:1)+'× faster' : '';
+  const xMoreHi  = (n,a)=> (n&&a)? (a/n>=1? (a/n).toFixed(1)+'× higher':(n/a).toFixed(1)+'× lower') : '';
   const rows = [
-    ['regime', 'evict (prefill-bound)', 'evict (VM-bound)', 'bottleneck inverts', false],
-    ['prefill t/s', f(N?.prefill_tps,0), f(A.prefill_tps,0), A.prefill_tps&&N?.prefill_tps?(A.prefill_tps/N.prefill_tps).toFixed(0)+'× faster':'', false],
-    ['decode t/s', f(N?.decode_tps,1), f(A.decode_tps,1), A.decode_tps&&N?.decode_tps?(A.decode_tps/N.decode_tps).toFixed(1)+'× faster':'', false],
-    ['prompt tokens / step', f(N?.ptok,0), f(A.ptok,0), '', false],
-    ['prefill time / step', f(N?.pf_time,1,' s'), f(A.pf_time,2,' s'), A.pf_time&&N?.pf_time?(N.pf_time/A.pf_time).toFixed(0)+'× faster':'', true],
-    ['decode time / step', f(N?.dec_time,1,' s'), f(A.dec_time,2,' s'), '', true],
-    ['model step latency', f(N?.step_lat,1,' s'), f(A.step_lat,2,' s'), A.step_lat&&N?.step_lat?(N.step_lat/A.step_lat).toFixed(0)+'× faster':'', true],
-    ['KV cache hit', f(N?.cache!=null?N.cache*100:null,0,'%'), f(A.cache!=null?A.cache*100:null,0,'%'), 'moot on GPU', false],
-    ['wall / task', fmtDur(N?.wall), fmtDur(A.wall), A.wall&&N?.wall?(N.wall/A.wall).toFixed(1)+'× faster':'', true],
-    ['energy / task', f(N?.energy,1,' Wh'), f(A.energy,1,' Wh'), A.energy&&N?.energy?(A.energy/N.energy).toFixed(1)+'× MORE':'', false],
-    ['mean steps / task', f(N?.steps,1), f(A.steps,1), '', false],
-    ['success rate', pct(N?.sr), pct(A.sr), '', false],
+    // kind: 'hdr' section divider | 'hot' highlight A6000 cell | ''
+    ['regime', 'evict · prefill-bound', 'evict · VM-bound', 'bottleneck inverts', 'reg'],
+    ['THROUGHPUT — tokens per second (rate)', '', '', '', 'hdr'],
+    ['prefill throughput (tok/s)', f(N?.prefill_tps,0), f(A.prefill_tps,0), (A.prefill_tps&&N?.prefill_tps)?(A.prefill_tps/N.prefill_tps).toFixed(0)+'× higher':'', 'hot'],
+    ['decode throughput (tok/s)',  f(N?.decode_tps,1), f(A.decode_tps,1), (A.decode_tps&&N?.decode_tps)?(A.decode_tps/N.decode_tps).toFixed(1)+'× higher':'', 'hot'],
+    ['WORK — tokens per agent step (count)', '', '', '', 'hdr'],
+    ['prefill tokens / step (tok)', f(N?.pf_tok,0), f(A.pf_tok,0), '', ''],
+    ['decode tokens / step (tok)',  f(N?.dec_tok,0), f(A.dec_tok,0), '', ''],
+    ['KV cache hit (%)', f(N?.cache!=null?N.cache*100:null,0), f(A.cache!=null?A.cache*100:null,0), 'moot on GPU', ''],
+    ['LATENCY — seconds per agent step (time)', '', '', '', 'hdr'],
+    ['prefill time / step (s)', f(N?.pf_time,1), f(A.pf_time,2), xFastLow(N?.pf_time,A.pf_time), 'hot'],
+    ['decode time / step (s)',  f(N?.dec_time,1), f(A.dec_time,2), xFastLow(N?.dec_time,A.dec_time), ''],
+    ['model step latency (s)',  f(N?.step_lat,1), f(A.step_lat,2), xFastLow(N?.step_lat,A.step_lat), 'hot'],
+    ['PER TASK', '', '', '', 'hdr'],
+    ['steps / task (count)', f(N?.steps,1), f(A.steps,1), '', ''],
+    ['wall-clock / task (s)', f(N?.wall,0), f(A.wall,0), xFastLow(N?.wall,A.wall), 'hot'],
+    ['energy / task (Wh)', f(N?.energy,1), f(A.energy,1), xMoreHi(N?.energy,A.energy), 'hot'],
+    ['task success (%)', f(N?.sr!=null?N.sr*100:null,1), f(A.sr!=null?A.sr*100:null,1), '', ''],
   ];
-  let h='<tr><th>coefficient</th><th>NUC16 · CPU edge</th><th>2×A6000 · vLLM</th><th>edge → datacenter</th></tr>';
-  rows.forEach(([k,nv,av,delta,lb],i)=>{
-    const hot = (k==='model step latency'||k==='energy / task'||k==='prefill time / step');
-    h+=`<tr${i===0?' style="color:var(--mut);font-style:italic"':''}><td>${k}</td>`+
-       `<td class="num">${nv}</td><td class="num"${hot?' style="color:var(--grn)"':''}>${av}</td>`+
+  let h='<tr><th>coefficient (unit)</th><th class="num">NUC16 · CPU edge</th><th class="num">A6000 · vLLM (VM=KVM)</th><th>edge → datacenter</th></tr>';
+  rows.forEach(([k,nv,av,delta,kind])=>{
+    if(kind==='hdr'){ h+=`<tr><td colspan="4" style="color:var(--mut);font-weight:600;font-size:10.5px;letter-spacing:.06em;padding-top:9px">${k}</td></tr>`; return; }
+    const reg = kind==='reg';
+    h+=`<tr${reg?' style="color:var(--mut);font-style:italic"':''}><td>${k}</td>`+
+       `<td class="num">${nv}</td>`+
+       `<td class="num"${kind==='hot'?' style="color:var(--grn);font-weight:600"':''}>${av}</td>`+
        `<td class="dim">${delta}</td></tr>`;
   });
   document.getElementById('cmp').innerHTML=h;
@@ -332,7 +345,9 @@ async function renderCompare(a6){
   document.getElementById('cmp-note').innerHTML =
     `${nlbl} · A6000 n=${A.scored}/${A.total}. Both runs use the identical screenshot-only local agent `+
     `(not H Company's cloud surferH), so this is a device comparison, not a leaderboard score. `+
-    `prefill/decode time per step derived from aggregate t/s × mean prompt tokens and mean per-step predict time. `+
+    `<b>How to read it:</b> tok/s = throughput (rate); tok = tokens processed in one agent step; s = seconds; `+
+    `one "agent step" = one screenshot→action cycle. Derivations: prefill time/step = prefill-tokens ÷ prefill-throughput; `+
+    `decode time/step = model-step-latency − prefill-time/step; decode tokens/step = decode-throughput × decode-time/step. `+
     `<b>Setup:</b> Holo3 is served by the 2×A6000s (vLLM BF16, TP=2); the OSWorld VM runs on a separate <b>KVM</b> `+
     `host (a Legion laptop, AMD nested-virt) reached over an SSH tunnel — so the agent's clicks land crisply and `+
     `scores are <i>representative</i>. (An earlier pass ran the VM under QEMU-TCG software emulation on the GPU box `+
