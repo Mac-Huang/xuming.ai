@@ -328,6 +328,30 @@
       for the per-image figure, one real mid-trajectory step per domain for the per-domain bars.</span></p>
   </div>
 
+  <!-- 3c: encode offload microbench -->
+  <div class="panel full">
+    <h2>3c · Microbench — the ViT encode on iGPU / NPU vs CPU (estimated payoff)</h2>
+    <p class="lead">Before the full bit-parity export, a cheap estimate: latency depends on shapes and ops, not weights,
+      so a <b>random-weight ViT proxy at Holo3's exact vision dims</b> (27 layers, hidden&nbsp;1152, 16 heads, MLP&nbsp;4304,
+      full SDPA attention over ~8120 patches, 2×2 merge&rarr;2048) converted to OpenVINO and run on each device gives a
+      faithful estimate. The proxy's <b>CPU latency (35.2&nbsp;s) lands within 2% of the measured clip encode
+      (~36&nbsp;s)</b> &rarr; the accelerator numbers are trustworthy.</p>
+    <table>
+      <tr><th>device</th><th class="num">encode @ full-res<br>(8120 patches)</th><th class="num">speedup<br>vs CPU</th><th class="num">@ 2048<br>patches</th><th>note</th></tr>
+      <tr><td>CPU — Core Ultra 7 356H</td><td class="num">35.2 s</td><td class="num">1×</td><td class="num">5.0 s</td><td class="dim">matches measured ~36 s ✓ (proxy faithful)</td></tr>
+      <tr><td><b>iGPU — Xe3</b></td><td class="num g">3.3 s</td><td class="num g">10.6×</td><td class="num">0.30 s</td><td>fp16 matrix cores; <b>latency winner</b></td></tr>
+      <tr><td>NPU — AI Boost</td><td class="num g">6.0 s</td><td class="num g">5.9×</td><td class="num">0.30 s</td><td>runs full-res once shapes are static; draw is perf/watt; ~39 min one-time compile</td></tr>
+    </table>
+    <p class="dim" style="margin-top:10px">The encoder — the compute-bound ~60% of per-step prefill (§3b) — drops from
+      <b>~36&nbsp;s on CPU to ~3.4&nbsp;s on the iGPU (10.6×)</b> or ~6.1&nbsp;s on the NPU. End-to-end, offloading just the
+      encode takes a per-step prefill from <b class="g">179&nbsp;s&rarr;~82&nbsp;s (≈2.2×, evict)</b> or
+      <b class="g">53&nbsp;s&rarr;~21&nbsp;s (≈2.5×, KV-optimum)</b> on the iGPU, and frees the CPU during the encode window —
+      stacking on top of the KV-cache lever. The iGPU wins on latency; the NPU is comparable at small sizes and its real
+      draw is energy (perf/watt), which a power measurement would quantify next.
+      <span class="dim">Caveat: this is a latency proxy — it does not model weights, preprocessing, or the deepstack/merger
+      projector, and bit-parity correctness is the real export. Energy not yet measured.</span></p>
+  </div>
+
   <!-- bottom line -->
   <div class="panel full">
     <h2>Bottom line</h2>
@@ -337,7 +361,7 @@
       <tr><td>Terminal slots + state checkpoint</td><td>yes (bounded 3-img KV)</td><td class="g">constant ~6k/step (vs 8–27k)</td><td class="y">buildable now (--ctx-checkpoints); A/B</td></tr>
       <tr><td><code>--cache-reuse</code></td><td>—</td><td>—</td><td class="r">ruled out (inert + unsound)</td></tr>
       <tr><td>iGPU Vulkan offload</td><td>weights+KV in unified mem</td><td class="g">~2× end-to-end</td><td class="r">blocked (2 kernel bugs)</td></tr>
-      <tr><td>Vision-encoder offload (ViT&rarr;iGPU/NPU, OpenVINO)</td><td>accelerator runs the ViT</td><td class="g">~60% of prefill is encode</td><td class="y">prize measured (§3b); hand-off TBD</td></tr>
+      <tr><td>Vision-encoder offload (ViT&rarr;iGPU/NPU, OpenVINO)</td><td>accelerator runs the ViT</td><td class="g">encode 10.6× (iGPU) &rarr; ~2.2–2.5× step</td><td class="y">0a/0b pass; est'd §3c; export = next</td></tr>
       <tr><td>Continuous batching</td><td>yes (4× context)</td><td class="y">~1.8–2.5× throughput (B2–3)</td><td class="y">needs parallel runner</td></tr>
     </table>
     <p class="dim" style="margin-top:12px">
