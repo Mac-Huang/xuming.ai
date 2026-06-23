@@ -183,7 +183,9 @@
                         grounding on a CPU-only NUC: <strong>ScreenSpot-v2 90%</strong>, <strong>ScreenSpot-Pro 66.7%</strong>
                         (above the published Holo1.5-72B 63.3%); on Multimodal-Mind2Web the model picks the right
                         operation 67% of the time but strict full-page point-in-box grounding is the bottleneck.
-                        WebArena (shopping) runs as a single-model screenshot+coordinate agent via BrowserGym.</li>
+                        On <strong>WebArena</strong> (shopping, live) the same model runs as a single-model
+                        screenshot+coordinate agent via BrowserGym: it navigates competently but, solo on CPU,
+                        doesn't crack the hard 3-task slice (0/3) — the 69.6% SOTA is a multi-model stack.</li>
                   </ul>
                   <p style="margin-top:8px;">
                     <a href="demos/holo3-osworld-live.html">[&#128308; Live benchmark tracker]</a>

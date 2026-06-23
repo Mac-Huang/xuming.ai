@@ -2229,6 +2229,695 @@
           "https://arxiv.org/abs/2502.13923"
         ]
       }
+    },
+    {
+      "benchmark": "WebArena (shopping)",
+      "harness": "BrowserGym coord + Holo3 single-model",
+      "site": "shopping (am1n3e/webarena-verified-shopping)",
+      "n_tasks": 3,
+      "success_rate": 0.0,
+      "mean_reward": 0.0,
+      "wall_total_s": 2129.1,
+      "max_steps": 15,
+      "leaderboard": {
+        "metric": "task success rate (%)",
+        "note": "Single-model, screenshot+coordinate agent (BrowserGym coord) on a 3-task shopping slice, strict must_include grading, 15-step budget, CPU-only. Result: 0/3 \u2014 the agent navigates competently (search, scroll, open product/review/order pages) and returns coherent answers, but misses on completeness/precision: it found 1 of 5 required reviewer names, gave a plausible-but-wrong price range, and ran out of steps on the spend-aggregation task. WebArena SOTA = Surfer 2 (H Company) 69.6% pass@1 \u2014 a MULTI-model stack (Claude Sonnet 4.5 navigator + o3 orchestrator + Holo1.5-72B localizer). A solo 35B-A3B at Q4 on CPU is a much harder setting; Holo3's edge shows in grounding (ScreenSpot above), not solo long-horizon web reasoning.",
+        "reference": {
+          "Surfer 2 (multi-model stack)": 69.6,
+          "IBM CUGA": 61.7,
+          "GPT-4 baseline": 14.4,
+          "human": 78.2
+        },
+        "sources": [
+          "https://arxiv.org/abs/2510.19949",
+          "https://arxiv.org/abs/2307.13854"
+        ]
+      },
+      "results": [
+        {
+          "reward": 0.0,
+          "success": false,
+          "answer": "Anglebert Dinkherhump",
+          "steps": 7,
+          "trajectory": [
+            {
+              "step": 0,
+              "action": "mouse_click(906, 509)",
+              "err": "",
+              "reward": 0.0,
+              "url": "http://localhost:7770/6s-wireless-headphones-over-ear-noise-canceling-hi-fi-bass-foldable-"
+            },
+            {
+              "step": 1,
+              "action": "scroll_at(640, 360, 0, 1000)",
+              "err": "",
+              "reward": 0.0,
+              "url": "http://localhost:7770/6s-wireless-headphones-over-ear-noise-canceling-hi-fi-bass-foldable-"
+            },
+            {
+              "step": 2,
+              "action": "scroll_at(640, 360, 0, 1000)",
+              "err": "",
+              "reward": 0.0,
+              "url": "http://localhost:7770/6s-wireless-headphones-over-ear-noise-canceling-hi-fi-bass-foldable-"
+            },
+            {
+              "step": 3,
+              "action": "scroll_at(640, 360, 0, 1000)",
+              "err": "",
+              "reward": 0.0,
+              "url": "http://localhost:7770/6s-wireless-headphones-over-ear-noise-canceling-hi-fi-bass-foldable-"
+            },
+            {
+              "step": 4,
+              "action": "go_back()",
+              "err": "",
+              "reward": 0.0,
+              "url": "about:blank"
+            },
+            {
+              "step": 5,
+              "action": "go_back()",
+              "err": "",
+              "reward": 0.0,
+              "url": "about:blank"
+            },
+            {
+              "step": 6,
+              "action": "send_msg_to_user('Anglebert Dinkherhump')",
+              "err": "",
+              "reward": 0.0,
+              "url": "about:blank"
+            }
+          ],
+          "model_calls": [
+            {
+              "wall_s": 34.08,
+              "timings": {
+                "cache_n": 0,
+                "prompt_n": 1444,
+                "prompt_ms": 23091.134,
+                "prompt_per_token_ms": 15.99109002770083,
+                "prompt_per_second": 62.53482397183266,
+                "predicted_n": 206,
+                "predicted_ms": 10792.665,
+                "predicted_per_token_ms": 52.391577669902915,
+                "predicted_per_second": 19.087037353610064
+              }
+            },
+            {
+              "wall_s": 34.09,
+              "timings": {
+                "cache_n": 1440,
+                "prompt_n": 1046,
+                "prompt_ms": 20356.028,
+                "prompt_per_token_ms": 19.46082982791587,
+                "prompt_per_second": 51.38527025016865,
+                "predicted_n": 253,
+                "predicted_ms": 13638.464,
+                "predicted_per_token_ms": 53.90697233201581,
+                "predicted_per_second": 18.55047606533991
+              }
+            },
+            {
+              "wall_s": 30.16,
+              "timings": {
+                "cache_n": 2482,
+                "prompt_n": 1076,
+                "prompt_ms": 20836.089,
+                "prompt_per_token_ms": 19.36439498141264,
+                "prompt_per_second": 51.64116931925181,
+                "predicted_n": 163,
+                "predicted_ms": 9206.076,
+                "predicted_per_token_ms": 56.47899386503067,
+                "predicted_per_second": 17.705697845640206
+              }
+            },
+            {
+              "wall_s": 76.04,
+              "timings": {
+                "cache_n": 504,
+                "prompt_n": 3207,
+                "prompt_ms": 61080.753,
+                "prompt_per_token_ms": 19.046072029934518,
+                "prompt_per_second": 52.50426431383385,
+                "predicted_n": 258,
+                "predicted_ms": 14650.924,
+                "predicted_per_token_ms": 56.78652713178295,
+                "predicted_per_second": 17.609810821488118
+              }
+            },
+            {
+              "wall_s": 74.35,
+              "timings": {
+                "cache_n": 504,
+                "prompt_n": 3411,
+                "prompt_ms": 62932.043,
+                "prompt_per_token_ms": 18.449734095573145,
+                "prompt_per_second": 54.2013231637816,
+                "predicted_n": 198,
+                "predicted_ms": 11137.505,
+                "predicted_per_token_ms": 56.25002525252525,
+                "predicted_per_second": 17.777769796736344
+              }
+            },
+            {
+              "wall_s": 71.02,
+              "timings": {
+                "cache_n": 504,
+                "prompt_n": 3575,
+                "prompt_ms": 64113.071,
+                "prompt_per_token_ms": 17.933726153846155,
+                "prompt_per_second": 55.76086037120262,
+                "predicted_n": 117,
+                "predicted_ms": 6624.936,
+                "predicted_per_token_ms": 56.623384615384616,
+                "predicted_per_second": 17.660547966048277
+              }
+            },
+            {
+              "wall_s": 81.97,
+              "timings": {
+                "cache_n": 504,
+                "prompt_n": 3697,
+                "prompt_ms": 65462.223,
+                "prompt_per_token_ms": 17.7068496077901,
+                "prompt_per_second": 56.47532012470765,
+                "predicted_n": 282,
+                "predicted_ms": 16219.009,
+                "predicted_per_token_ms": 57.51421631205674,
+                "predicted_per_second": 17.387005580920512
+              }
+            }
+          ],
+          "n_calls": 7,
+          "task_id": 21,
+          "intent": "List out reviewers, if exist, who mention about ear cups being small",
+          "intent_template_id": 222,
+          "eval_types": [
+            "string_match"
+          ],
+          "wall_s": 423.5
+        },
+        {
+          "reward": 0.0,
+          "success": false,
+          "answer": "The price range of wireless earphones in One Stop Market is $4.29 to $99.99.",
+          "steps": 7,
+          "trajectory": [
+            {
+              "step": 0,
+              "action": "mouse_click(1006, 88)",
+              "err": "",
+              "reward": 0.0,
+              "url": "http://localhost:7770/"
+            },
+            {
+              "step": 1,
+              "action": "keyboard_type('wireless earphone')",
+              "err": "",
+              "reward": 0.0,
+              "url": "http://localhost:7770/"
+            },
+            {
+              "step": 2,
+              "action": "mouse_click(1092, 121)",
+              "err": "",
+              "reward": 0.0,
+              "url": "http://localhost:7770/catalogsearch/result/?q=+wireless+earphone"
+            },
+            {
+              "step": 3,
+              "action": "scroll_at(640, 360, 0, 2000)",
+              "err": "",
+              "reward": 0.0,
+              "url": "http://localhost:7770/catalogsearch/result/?q=+wireless+earphone"
+            },
+            {
+              "step": 4,
+              "action": "mouse_click(333, 423)",
+              "err": "",
+              "reward": 0.0,
+              "url": "http://localhost:7770/catalogsearch/result/index/?p=5&q=+wireless+earphone"
+            },
+            {
+              "step": 5,
+              "action": "scroll_at(640, 360, 0, 2000)",
+              "err": "",
+              "reward": 0.0,
+              "url": "http://localhost:7770/catalogsearch/result/index/?p=5&q=+wireless+earphone"
+            },
+            {
+              "step": 6,
+              "action": "send_msg_to_user('The price range of wireless earphones in One Stop Market is $4.29 to $99.99.')",
+              "err": "",
+              "reward": 0.0,
+              "url": "http://localhost:7770/catalogsearch/result/index/?p=5&q=+wireless+earphone"
+            }
+          ],
+          "model_calls": [
+            {
+              "wall_s": 7.4,
+              "timings": {
+                "cache_n": 1441,
+                "prompt_n": 4,
+                "prompt_ms": 111.61,
+                "prompt_per_token_ms": 27.9025,
+                "prompt_per_second": 35.8390825194875,
+                "predicted_n": 136,
+                "predicted_ms": 7061.911,
+                "predicted_per_token_ms": 51.92581617647059,
+                "predicted_per_second": 19.25824327154505
+              }
+            },
+            {
+              "wall_s": 26.8,
+              "timings": {
+                "cache_n": 1441,
+                "prompt_n": 1006,
+                "prompt_ms": 19811.372,
+                "prompt_per_token_ms": 19.69321272365805,
+                "prompt_per_second": 50.77891627091753,
+                "predicted_n": 129,
+                "predicted_ms": 6879.213,
+                "predicted_per_token_ms": 53.327232558139535,
+                "predicted_per_second": 18.752145049150243
+              }
+            },
+            {
+              "wall_s": 26.73,
+              "timings": {
+                "cache_n": 2443,
+                "prompt_n": 998,
+                "prompt_ms": 20490.205,
+                "prompt_per_token_ms": 20.531267535070143,
+                "prompt_per_second": 48.70619888868852,
+                "predicted_n": 110,
+                "predicted_ms": 6088.365,
+                "predicted_per_token_ms": 55.348772727272724,
+                "predicted_per_second": 18.067247939307187
+              }
+            },
+            {
+              "wall_s": 68.01,
+              "timings": {
+                "cache_n": 505,
+                "prompt_n": 3021,
+                "prompt_ms": 59134.767,
+                "prompt_per_token_ms": 19.574567030784507,
+                "prompt_per_second": 51.08669828698234,
+                "predicted_n": 154,
+                "predicted_ms": 8558.76,
+                "predicted_per_token_ms": 55.57636363636364,
+                "predicted_per_second": 17.99326070599012
+              }
+            },
+            {
+              "wall_s": 84.11,
+              "timings": {
+                "cache_n": 505,
+                "prompt_n": 3112,
+                "prompt_ms": 60282.803,
+                "prompt_per_token_ms": 19.371080655526992,
+                "prompt_per_second": 51.623346047794094,
+                "predicted_n": 419,
+                "predicted_ms": 23538.542,
+                "predicted_per_token_ms": 56.177904534606206,
+                "predicted_per_second": 17.80059274699342
+              }
+            },
+            {
+              "wall_s": 75.18,
+              "timings": {
+                "cache_n": 505,
+                "prompt_n": 3335,
+                "prompt_ms": 61962.512,
+                "prompt_per_token_ms": 18.579463868065968,
+                "prompt_per_second": 53.822866316330106,
+                "predicted_n": 227,
+                "predicted_ms": 12929.184,
+                "predicted_per_token_ms": 56.9567577092511,
+                "predicted_per_second": 17.5571791692345
+              }
+            },
+            {
+              "wall_s": 91.1,
+              "timings": {
+                "cache_n": 505,
+                "prompt_n": 3531,
+                "prompt_ms": 63740.974,
+                "prompt_per_token_ms": 18.051819314641744,
+                "prompt_per_second": 55.39607850987655,
+                "predicted_n": 474,
+                "predicted_ms": 27071.248,
+                "predicted_per_token_ms": 57.112337552742616,
+                "predicted_per_second": 17.50935161910526
+              }
+            }
+          ],
+          "n_calls": 7,
+          "task_id": 124,
+          "intent": "What is the price range of wireless earphone in the One Stop Market?",
+          "intent_template_id": 159,
+          "eval_types": [
+            "string_match"
+          ],
+          "wall_s": 400.8
+        },
+        {
+          "reward": 0.0,
+          "success": false,
+          "answer": null,
+          "steps": 15,
+          "trajectory": [
+            {
+              "step": 0,
+              "action": "mouse_click(844, 25)",
+              "err": "",
+              "reward": 0.0,
+              "url": "http://localhost:7770/customer/account/"
+            },
+            {
+              "step": 1,
+              "action": "mouse_click(77, 318)",
+              "err": "",
+              "reward": 0.0,
+              "url": "http://localhost:7770/sales/order/history/"
+            },
+            {
+              "step": 2,
+              "action": "mouse_click(988, 534)",
+              "err": "",
+              "reward": 0.0,
+              "url": "http://localhost:7770/sales/order/view/order_id/180/"
+            },
+            {
+              "step": 3,
+              "action": "scroll_at(640, 432, 0, 1000)",
+              "err": "",
+              "reward": 0.0,
+              "url": "http://localhost:7770/sales/order/view/order_id/180/"
+            },
+            {
+              "step": 4,
+              "action": "go_back()",
+              "err": "",
+              "reward": 0.0,
+              "url": "http://localhost:7770/sales/order/history/"
+            },
+            {
+              "step": 5,
+              "action": "mouse_click(988, 564)",
+              "err": "",
+              "reward": 0.0,
+              "url": "http://localhost:7770/sales/order/history/"
+            },
+            {
+              "step": 6,
+              "action": "mouse_click(979, 562)",
+              "err": "",
+              "reward": 0.0,
+              "url": "http://localhost:7770/sales/order/history/"
+            },
+            {
+              "step": 7,
+              "action": "mouse_click(986, 558)",
+              "err": "",
+              "reward": 0.0,
+              "url": "http://localhost:7770/sales/order/history/"
+            },
+            {
+              "step": 8,
+              "action": "mouse_click(371, 558)",
+              "err": "",
+              "reward": 0.0,
+              "url": "http://localhost:7770/sales/order/history/"
+            },
+            {
+              "step": 9,
+              "action": "mouse_click(966, 558)",
+              "err": "",
+              "reward": 0.0,
+              "url": "http://localhost:7770/sales/order/history/"
+            },
+            {
+              "step": 10,
+              "action": "mouse_click(653, 558)",
+              "err": "",
+              "reward": 0.0,
+              "url": "http://localhost:7770/sales/order/history/"
+            },
+            {
+              "step": 11,
+              "action": "mouse_click(1056, 558)",
+              "err": "",
+              "reward": 0.0,
+              "url": "http://localhost:7770/sales/order/history/"
+            },
+            {
+              "step": 12,
+              "action": "mouse_click(506, 558)",
+              "err": "",
+              "reward": 0.0,
+              "url": "http://localhost:7770/sales/order/history/"
+            },
+            {
+              "step": 13,
+              "action": "mouse_click(992, 565)",
+              "err": "",
+              "reward": 0.0,
+              "url": "http://localhost:7770/sales/order/history/"
+            },
+            {
+              "step": 14,
+              "action": "mouse_click(365, 565)",
+              "err": "",
+              "reward": 0.0,
+              "url": "http://localhost:7770/sales/order/history/"
+            }
+          ],
+          "model_calls": [
+            {
+              "wall_s": 11.69,
+              "timings": {
+                "cache_n": 1441,
+                "prompt_n": 4,
+                "prompt_ms": 100.576,
+                "prompt_per_token_ms": 25.144,
+                "prompt_per_second": 39.77091950365893,
+                "predicted_n": 215,
+                "predicted_ms": 11383.841,
+                "predicted_per_token_ms": 52.948097674418605,
+                "predicted_per_second": 18.886419794513994
+              }
+            },
+            {
+              "wall_s": 32.37,
+              "timings": {
+                "cache_n": 1441,
+                "prompt_n": 1067,
+                "prompt_ms": 20312.392,
+                "prompt_per_token_ms": 19.036918462980317,
+                "prompt_per_second": 52.52951006459505,
+                "predicted_n": 222,
+                "predicted_ms": 11948.397,
+                "predicted_per_token_ms": 53.82160810810811,
+                "predicted_per_second": 18.579898207265792
+              }
+            },
+            {
+              "wall_s": 43.09,
+              "timings": {
+                "cache_n": 2504,
+                "prompt_n": 1115,
+                "prompt_ms": 21163.735,
+                "prompt_per_token_ms": 18.980928251121078,
+                "prompt_per_second": 52.68446235978668,
+                "predicted_n": 386,
+                "predicted_ms": 21782.286,
+                "predicted_per_token_ms": 56.43079274611399,
+                "predicted_per_second": 17.72082140506281
+              }
+            },
+            {
+              "wall_s": 84.16,
+              "timings": {
+                "cache_n": 505,
+                "prompt_n": 3373,
+                "prompt_ms": 62251.377,
+                "prompt_per_token_ms": 18.455789208419805,
+                "prompt_per_second": 54.18354038979732,
+                "predicted_n": 381,
+                "predicted_ms": 21608.488,
+                "predicted_per_token_ms": 56.715191601049874,
+                "predicted_per_second": 17.631960181573092
+              }
+            },
+            {
+              "wall_s": 90.36,
+              "timings": {
+                "cache_n": 505,
+                "prompt_n": 3642,
+                "prompt_ms": 64794.567,
+                "prompt_per_token_ms": 17.790929983525537,
+                "prompt_per_second": 56.208416363057104,
+                "predicted_n": 440,
+                "predicted_ms": 25279.46,
+                "predicted_per_token_ms": 57.45331818181818,
+                "predicted_per_second": 17.405435084451963
+              }
+            },
+            {
+              "wall_s": 89.67,
+              "timings": {
+                "cache_n": 505,
+                "prompt_n": 3954,
+                "prompt_ms": 68182.786,
+                "prompt_per_token_ms": 17.24400252908447,
+                "prompt_per_second": 57.991176834575235,
+                "predicted_n": 352,
+                "predicted_ms": 21193.421,
+                "predicted_per_token_ms": 60.20858238636363,
+                "predicted_per_second": 16.608927836614956
+              }
+            },
+            {
+              "wall_s": 93.31,
+              "timings": {
+                "cache_n": 505,
+                "prompt_n": 4213,
+                "prompt_ms": 70518.211,
+                "prompt_per_token_ms": 16.73824139568004,
+                "prompt_per_second": 59.743432799224024,
+                "predicted_n": 373,
+                "predicted_ms": 22498.489,
+                "predicted_per_token_ms": 60.31766487935657,
+                "predicted_per_second": 16.57889114242294
+              }
+            },
+            {
+              "wall_s": 86.24,
+              "timings": {
+                "cache_n": 505,
+                "prompt_n": 4447,
+                "prompt_ms": 72400.301,
+                "prompt_per_token_ms": 16.280706318866653,
+                "prompt_per_second": 61.422396572633026,
+                "predicted_n": 232,
+                "predicted_ms": 13527.628,
+                "predicted_per_token_ms": 58.30874137931035,
+                "predicted_per_second": 17.150087214107305
+              }
+            },
+            {
+              "wall_s": 99.4,
+              "timings": {
+                "cache_n": 505,
+                "prompt_n": 4669,
+                "prompt_ms": 75062.849,
+                "prompt_per_token_ms": 16.076857785393017,
+                "prompt_per_second": 62.20120954908066,
+                "predicted_n": 401,
+                "predicted_ms": 24029.48,
+                "predicted_per_token_ms": 59.92389027431421,
+                "predicted_per_second": 16.687835109207523
+              }
+            },
+            {
+              "wall_s": 94.42,
+              "timings": {
+                "cache_n": 505,
+                "prompt_n": 4915,
+                "prompt_ms": 77184.917,
+                "prompt_per_token_ms": 15.7039505595117,
+                "prompt_per_second": 63.67824428702826,
+                "predicted_n": 277,
+                "predicted_ms": 16935.893,
+                "predicted_per_token_ms": 61.14040794223827,
+                "predicted_per_second": 16.355795351328684
+              }
+            },
+            {
+              "wall_s": 102.31,
+              "timings": {
+                "cache_n": 505,
+                "prompt_n": 5161,
+                "prompt_ms": 80037.336,
+                "prompt_per_token_ms": 15.508106180972678,
+                "prompt_per_second": 64.48240606109128,
+                "predicted_n": 362,
+                "predicted_ms": 21977.466,
+                "predicted_per_token_ms": 60.711232044198894,
+                "predicted_per_second": 16.47141667742769
+              }
+            },
+            {
+              "wall_s": 100.75,
+              "timings": {
+                "cache_n": 505,
+                "prompt_n": 5399,
+                "prompt_ms": 82330.786,
+                "prompt_per_token_ms": 15.249265789961102,
+                "prompt_per_second": 65.5769276877789,
+                "predicted_n": 294,
+                "predicted_ms": 18121.211,
+                "predicted_per_token_ms": 61.63677210884354,
+                "predicted_per_second": 16.224081271389643
+              }
+            },
+            {
+              "wall_s": 117.03,
+              "timings": {
+                "cache_n": 505,
+                "prompt_n": 5638,
+                "prompt_ms": 84644.289,
+                "prompt_per_token_ms": 15.01317648102164,
+                "prompt_per_second": 66.6081559265032,
+                "predicted_n": 503,
+                "predicted_ms": 32074.042,
+                "predicted_per_token_ms": 63.765491053677934,
+                "predicted_per_second": 15.682463719415221
+              }
+            },
+            {
+              "wall_s": 107.85,
+              "timings": {
+                "cache_n": 505,
+                "prompt_n": 5893,
+                "prompt_ms": 87268.24,
+                "prompt_per_token_ms": 14.808796877651451,
+                "prompt_per_second": 67.52743036871146,
+                "predicted_n": 309,
+                "predicted_ms": 20272.308,
+                "predicted_per_token_ms": 65.60617475728155,
+                "predicted_per_second": 15.242467705206531
+              }
+            },
+            {
+              "wall_s": 116.3,
+              "timings": {
+                "cache_n": 505,
+                "prompt_n": 6142,
+                "prompt_ms": 89667.788,
+                "prompt_per_token_ms": 14.599118853793552,
+                "prompt_per_second": 68.49728466592708,
+                "predicted_n": 405,
+                "predicted_ms": 26315.304,
+                "predicted_per_token_ms": 64.97605925925926,
+                "predicted_per_second": 15.390283919957756
+              }
+            }
+          ],
+          "n_calls": 15,
+          "task_id": 141,
+          "intent": "How much I spent on food-related shopping during March 2023",
+          "intent_template_id": 162,
+          "eval_types": [
+            "string_match"
+          ],
+          "wall_s": 1304.8
+        }
+      ]
     }
   ],
   "deferred_live_env": [
@@ -2236,5 +2925,5 @@
     "AndroidWorld (Android emulator)",
     "TheAgentCompany (OpenHands code-agent \u2014 mismatched for a coordinate-only vision model)"
   ],
-  "deferred_note": "WebArena is ALSO run here, as a single-model screenshot+coordinate shopping slice via BrowserGym (see its own panel/run). The remaining live boards stay infra-gated: WebVoyager / AndroidWorld need a live browser / Android emulator; TheAgentCompany runs on OpenHands (bash + element-id actions, ~47% code-centric tasks) which a coordinate-only vision model cannot drive. OSWorld, the live computer-use board, was run separately (Holo3 = #1 open-weight)."
+  "deferred_note": "WebArena (shopping) IS run here (its own panel). Remaining live boards stay infra-gated: WebVoyager / AndroidWorld need a live browser / Android emulator; TheAgentCompany runs on OpenHands (bash + element-id actions, ~47% code-centric tasks) which a coordinate-only vision model cannot drive. OSWorld, the live computer-use board, was run separately (Holo3 = #1 open-weight)."
 }
