@@ -304,6 +304,30 @@
        which a ~2× GPU path opens. That is a research/upstream effort, not a config flag.</p>
   </div>
 
+  <!-- 3b: vision encoder = the offload target -->
+  <div class="panel full">
+    <h2>3b · The vision encoder is ~60% of per-step prefill — the offload target</h2>
+    <p class="lead">Section&nbsp;3 asked whether the iGPU can speed the <i>text</i> path (bandwidth-bound &rarr; no).
+      The bigger lever is the <b>ViT vision encoder</b>. Measuring on the live CPU server — isolating the encode by a
+      <b>differential</b> (per-step prefill minus a token-exact text baseline at the same length), cross-checked against
+      the server's per-image <code>image&nbsp;processed</code> log — the encode is <b class="g">~36&nbsp;s per
+      screenshot</b> and, strikingly, <b>content- and domain-invariant</b> (every OSWorld screenshot is
+      1920&times;1080 &rarr; ~2030 image tokens; the encode is full ViT attention over ~8100 patches). In the
+      leaderboard <b>evict</b> regime all <b>3</b> screenshots are re-encoded each step &rarr; a near-constant
+      <b class="g">~107&nbsp;s</b> = <b class="g">60%</b> of a ~179&nbsp;s step (46–61% across the 10 domains); in the
+      <b>no-evict / KV-optimum</b> regime one new screenshot is encoded &rarr; <b class="g">66%</b> of a ~53&nbsp;s step.</p>
+    <p style="text-align:center;margin:8px 0">
+      <img src="holo3-vision-encode-decomp.png" alt="ViT encode decomposition per OSWorld domain and by KV regime"
+           style="width:100%;max-width:1000px;border:1px solid var(--bd);border-radius:6px"></p>
+    <p class="dim">Unlike decode, the ViT is <b>compute-bound</b>, not memory-bandwidth-bound — exactly what an iGPU/NPU
+      matrix engine is good at. So the offload that <i>does</i> pay off is: run the ViT on the Xe3/NPU via OpenVINO
+      (the SigLIP tower converts cleanly to IR and dodges the Vulkan CLIP <code>DeviceLostError</code> of §3), feed its
+      image embeddings into the llama.cpp CPU text model, and leave GDN+MoE+decode on the CPU. Encode and the
+      image-token eval are sequential within a step, so there is no shared-bus contention during the hand-off.
+      <span class="dim">Measured on the NUC16 (Holo3-35B-A3B i1-Q4_K_M, <code>-t 8 -tb 16</code>); 5 screenshots ×2 reps
+      for the per-image figure, one real mid-trajectory step per domain for the per-domain bars.</span></p>
+  </div>
+
   <!-- bottom line -->
   <div class="panel full">
     <h2>Bottom line</h2>
@@ -313,6 +337,7 @@
       <tr><td>Terminal slots + state checkpoint</td><td>yes (bounded 3-img KV)</td><td class="g">constant ~6k/step (vs 8–27k)</td><td class="y">buildable now (--ctx-checkpoints); A/B</td></tr>
       <tr><td><code>--cache-reuse</code></td><td>—</td><td>—</td><td class="r">ruled out (inert + unsound)</td></tr>
       <tr><td>iGPU Vulkan offload</td><td>weights+KV in unified mem</td><td class="g">~2× end-to-end</td><td class="r">blocked (2 kernel bugs)</td></tr>
+      <tr><td>Vision-encoder offload (ViT&rarr;iGPU/NPU, OpenVINO)</td><td>accelerator runs the ViT</td><td class="g">~60% of prefill is encode</td><td class="y">prize measured (§3b); hand-off TBD</td></tr>
       <tr><td>Continuous batching</td><td>yes (4× context)</td><td class="y">~1.8–2.5× throughput (B2–3)</td><td class="y">needs parallel runner</td></tr>
     </table>
     <p class="dim" style="margin-top:12px">
