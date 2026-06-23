@@ -304,6 +304,61 @@
        which a ~2× GPU path opens. That is a research/upstream effort, not a config flag.</p>
   </div>
 
+  <!-- 3a: per-step data flow (clean pipeline) -->
+  <div class="panel full">
+    <h2>3a · Per-step data flow — a clean pipeline (where the offload cut goes)</h2>
+    <p class="lead">Each agent step is a strict left-to-right pipeline: every stage runs to completion, then hands the
+      next <b>one tensor</b>. That is what makes the encoder offload clean — the device boundary falls on a single
+      ~8&nbsp;MB embedding hand-off, with <b>no per-layer interleaving and no bus contention</b>.</p>
+    <div style="overflow-x:auto">
+    <svg viewBox="0 0 980 224" style="width:100%;min-width:760px;font-family:system-ui,-apple-system,sans-serif" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="vah" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L6,3 L0,6 Z" fill="#8b949e"/>
+        </marker>
+      </defs>
+      <text x="8" y="18" fill="#8b949e" font-size="11">per agent step — data flows left → right, one stage at a time (a pipeline, not interleaving)</text>
+
+      <!-- S1 screenshot -->
+      <rect x="8" y="44" width="116" height="84" rx="6" fill="#161b22" stroke="#30363d"/>
+      <text text-anchor="middle"><tspan x="66" y="78" font-size="12" font-weight="600" fill="#c9d1d9">screenshot</tspan><tspan x="66" y="96" font-size="11" fill="#8b949e">1920×1080</tspan><tspan x="66" y="113" font-size="11" fill="#8b949e">→ ~8120 patches</tspan></text>
+      <path d="M124,86 H146" stroke="#8b949e" fill="none" marker-end="url(#vah)"/>
+
+      <!-- S2 ViT encode (green = accelerator) -->
+      <rect x="150" y="44" width="182" height="84" rx="6" fill="#10261a" stroke="#3fb950"/>
+      <text text-anchor="middle"><tspan x="241" y="74" font-size="12.5" font-weight="700" fill="#3fb950">ViT encode</tspan><tspan x="241" y="92" font-size="11" fill="#c9d1d9">27 layers · full attention</tspan><tspan x="241" y="110" font-size="11" fill="#c9d1d9">iGPU 3.4 s · CPU 36 s</tspan></text>
+      <path d="M332,86 H354" stroke="#8b949e" fill="none" marker-end="url(#vah)"/>
+
+      <!-- S3 embeddings hand-off (yellow = the seam) -->
+      <rect x="356" y="44" width="120" height="84" rx="6" fill="#2a2410" stroke="#d29922" stroke-dasharray="4 3"/>
+      <text text-anchor="middle"><tspan x="416" y="74" font-size="12" font-weight="700" fill="#d29922">image embeds</tspan><tspan x="416" y="92" font-size="11" fill="#c9d1d9">~2030 × 2048</tspan><tspan x="416" y="110" font-size="11" fill="#8b949e">~8 MB · 1 tensor</tspan></text>
+      <text x="416" y="146" text-anchor="middle" font-size="10.5" fill="#d29922">↑ device boundary</text>
+      <path d="M476,86 H498" stroke="#8b949e" fill="none" marker-end="url(#vah)"/>
+
+      <!-- S4 LLM prefill (blue = CPU) -->
+      <rect x="500" y="44" width="210" height="84" rx="6" fill="#0f1f33" stroke="#58a6ff"/>
+      <text text-anchor="middle"><tspan x="605" y="74" font-size="12.5" font-weight="700" fill="#58a6ff">LLM prefill</tspan><tspan x="605" y="92" font-size="11" fill="#c9d1d9">40 layers: 30 GDN + 10 attn</tspan><tspan x="605" y="110" font-size="11" fill="#c9d1d9">256-expert MoE · img+text</tspan></text>
+      <text x="722" y="80" text-anchor="middle" font-size="10" fill="#8b949e">KV</text>
+      <path d="M710,86 H732" stroke="#8b949e" fill="none" marker-end="url(#vah)"/>
+
+      <!-- S5 decode (blue = CPU) -->
+      <rect x="736" y="44" width="200" height="84" rx="6" fill="#0f1f33" stroke="#58a6ff"/>
+      <text text-anchor="middle"><tspan x="836" y="74" font-size="12.5" font-weight="700" fill="#58a6ff">decode</tspan><tspan x="836" y="92" font-size="11" fill="#c9d1d9">autoregressive</tspan><tspan x="836" y="110" font-size="11" fill="#8b949e">~14.5 t/s · bandwidth-bound</tspan></text>
+
+      <!-- device bands -->
+      <text x="8" y="200" font-size="11" fill="#8b949e">device →</text>
+      <rect x="150" y="188" width="182" height="22" rx="4" fill="#10261a" stroke="#3fb950"/>
+      <text x="241" y="203" text-anchor="middle" font-size="10.5" fill="#3fb950">iGPU / NPU — compute-bound (10.6×)</text>
+      <rect x="500" y="188" width="436" height="22" rx="4" fill="#0f1f33" stroke="#58a6ff"/>
+      <text x="718" y="203" text-anchor="middle" font-size="10.5" fill="#58a6ff">CPU — bandwidth-bound (decode can't beat CPU here)</text>
+    </svg>
+    </div>
+    <p class="dim" style="margin-top:8px"><b>Why the seam matters:</b> the encoder is the one place the model factors cleanly.
+      Splitting <i>inside</i> the LLM (e.g. MoE FFNs on the iGPU, the recurrent GDN on CPU) would bounce all 40 layers
+      across the shared bus every token — interleaved and contended. The pixels→embeddings boundary is a single hand-off
+      that runs once per image, which is exactly why §3b's offload is low-risk and the whole-model routes are not.</p>
+  </div>
+
   <!-- 3b: vision encoder = the offload target -->
   <div class="panel full">
     <h2>3b · The vision encoder is ~60% of per-step prefill — the offload target</h2>
