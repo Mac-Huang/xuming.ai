@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Holo3 · Agentic-benchmark leaderboard check (beyond OSWorld)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{--bg:#0d1117;--panel:#161b22;--bd:#30363d;--fg:#c9d1d9;--mut:#8b949e;
+        --grn:#3fb950;--red:#f85149;--yel:#d29922;--blu:#58a6ff;--pur:#bc8cff}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);
+       font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  header{padding:14px 20px;border-bottom:1px solid var(--bd);display:flex;
+         flex-wrap:wrap;gap:6px 24px;align-items:baseline}
+  h1{font-size:16px;margin:0;color:var(--blu)}
+  .sub{color:var(--mut)}
+  nav{margin-left:auto;display:flex;gap:14px;flex-wrap:wrap}
+  .wrap{padding:16px 20px;display:grid;gap:16px;
+        grid-template-columns:repeat(auto-fit,minmax(380px,1fr))}
+  .panel{background:var(--panel);border:1px solid var(--bd);border-radius:8px;padding:16px}
+  .panel h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;
+            color:var(--mut);margin:0 0 12px}
+  .full{grid-column:1/-1}
+  p{margin:8px 0;font-size:12.5px;line-height:1.62}
+  b{color:var(--fg)}
+  code{background:#21262d;padding:1px 5px;border-radius:4px;color:var(--pur);font-size:12px}
+  a{color:var(--blu);text-decoration:none} a:hover{text-decoration:underline}
+  .dim{color:var(--mut)}
+  table{border-collapse:collapse;width:100%;font-size:12px}
+  th,td{text-align:left;padding:5px 9px;border-bottom:1px solid #21262d;white-space:nowrap}
+  th{color:var(--mut);font-weight:600;vertical-align:bottom}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  .scroll{max-width:100%;overflow:auto;max-height:420px}
+  .lead{font-size:13px;color:var(--fg);margin:0 0 12px;line-height:1.65}
+  .cards{display:flex;flex-wrap:wrap;gap:10px}
+  .card{flex:1 1 200px;background:#0b0f14;border:1px solid var(--bd);border-radius:8px;padding:12px 14px}
+  .card .lab{color:var(--mut);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em}
+  .card .big{font-size:24px;font-weight:700;margin:4px 0 2px}
+  .card .det{color:var(--mut);font-size:11px;line-height:1.5}
+  .g{color:var(--grn)} .r{color:var(--red)} .y{color:var(--yel)} .k{color:var(--blu)} .p{color:var(--pur)}
+  .call{border-left:3px solid var(--blu);padding:8px 0 8px 13px;margin:12px 0;
+        background:#10243a55;border-radius:0 6px 6px 0}
+  .call.fix{border-color:var(--grn);background:#0f240f55}
+  .call.gap{border-color:var(--yel);background:#241d0c55}
+  .barrow{display:flex;align-items:center;gap:10px;margin:6px 0}
+  .barrow .blab{width:190px;color:var(--mut);font-size:11.5px;text-align:right;flex:none}
+  .barrow .btrack{flex:1;height:15px;border-radius:4px;background:#21262d;position:relative;overflow:hidden}
+  .barrow .btrack>i{display:block;height:100%}
+  .barrow .bval{width:54px;text-align:right;font-variant-numeric:tabular-nums;flex:none}
+  .me i{background:linear-gradient(90deg,#1f6feb,#3fb950)}
+  .ref i{background:#3d444d}
+  .holo i{background:linear-gradient(90deg,#8957e5,#bc8cff)}
+  .stat{display:inline-block;padding:2px 9px;border-radius:10px;font-size:11px;font-weight:600}
+  .stat.done{background:#0f240f;color:var(--grn)} .stat.run{background:#241d0c;color:var(--yel)}
+  .small{font-size:11.5px;color:var(--mut);line-height:1.6}
+  .foot{padding:14px 20px;color:var(--mut);font-size:11.5px;border-top:1px solid var(--bd)}
+  .pill{display:inline-block;padding:1px 7px;border-radius:9px;font-size:10.5px;border:1px solid var(--bd);color:var(--mut)}
+  .hit{color:var(--grn)} .miss{color:var(--red)}
+</style>
+</head>
+<body>
+<header>
+  <h1>Holo3 · Agentic-benchmark leaderboard check</h1>
+  <span class="sub">does the OSWorld #1 open-weight model still ground & act beyond OSWorld? &mdash; same i1-Q4_K_M weights on a 96 GB Intel NUC, CPU-only</span>
+  <nav>
+    <a href="holo3-osworld-live.html">OSWorld tracker ↗</a>
+    <a href="holo3-osworld-acceleration.html">acceleration ↗</a>
+    <a href="holo3-optimum-sim.html">KV optimum ↗</a>
+  </nav>
+</header>
+
+<div class="wrap">
+  <div class="panel full">
+    <p class="lead" id="lead">Loading results…</p>
+    <div class="cards" id="cards"></div>
+    <div style="margin-top:10px"><span class="dim">run</span> <span id="statpill"></span> <span class="small" id="runmeta"></span></div>
+  </div>
+
+  <div class="panel full">
+    <h2>Why these benchmarks</h2>
+    <div id="why"></div>
+  </div>
+
+  <div id="benchpanels"></div>
+
+  <div class="panel full">
+    <h2>Deferred — live-environment agent boards</h2>
+    <div id="deferred"></div>
+  </div>
+</div>
+
+<div class="foot" id="foot"></div>
+
+<script>
+const pct = x => (x==null?'—':(x*100).toFixed(1)+'%');
+const pctn = x => (x==null?'—':x.toFixed(1)+'%');
+const el = (t,c,h)=>{const e=document.createElement(t); if(c)e.className=c; if(h!=null)e.innerHTML=h; return e;};
+
+// one comparison bar (value 0..100, kind: me|holo|ref)
+function bar(label, val, kind, max){
+  max = max||100;
+  const w = val==null?0:Math.max(1,Math.min(100, val/max*100));
+  return `<div class="barrow ${kind}"><div class="blab">${label}</div>`
+       + `<div class="btrack"><i style="width:${w}%"></i></div>`
+       + `<div class="bval">${val==null?'—':val.toFixed(1)}</div></div>`;
+}
+
+function tableFromObj(obj, cols, keyhead){
+  // obj: {rowkey:{col:val}}; cols:[{k,label,fmt}]
+  let h = `<div class="scroll"><table><thead><tr><th>${keyhead}</th>`;
+  cols.forEach(c=>h+=`<th class="num">${c.label}</th>`); h+='</tr></thead><tbody>';
+  Object.keys(obj).sort().forEach(rk=>{
+    h+=`<tr><td>${rk}</td>`;
+    cols.forEach(c=>{const v=obj[rk][c.k]; h+=`<td class="num">${c.fmt?c.fmt(v,obj[rk]):v}</td>`;});
+    h+='</tr>';
+  });
+  return h+'</tbody></table></div>';
+}
+
+function ssPanel(b, holoBarName){
+  const lb=b.leaderboard||{}; const ov=b.overall||{};
+  const meas = ov.acc;
+  let bars = bar('Holo3-35B-A3B · NUC16 (this run)', meas==null?null:meas*100, 'me');
+  const hf = lb.holo_family||{};
+  Object.keys(hf).forEach(k=> bars += bar(k+' (published)', hf[k], 'holo'));
+  const rf = lb.reference||{};
+  Object.keys(rf).forEach(k=> bars += bar(k, rf[k], 'ref'));
+  let body = `<p class="small">${b.dataset} · metric: ${lb.metric||'click accuracy'} · n=${ov.n} samples (${b.per_cell} per cell) · wall ${b.wall_total_s}s</p>`;
+  body += bars;
+  if(lb.note) body += `<div class="call gap"><b>note.</b> ${lb.note}</div>`;
+  // breakdown tables
+  const accfmt = (v)=> v==null?'—':`<span class="${v>=0.8?'g':v>=0.5?'y':'r'}">${pct(v)}</span>`;
+  if(b.by_cell) body += `<h2 style="margin-top:14px">By task-type cell</h2>`+
+     tableFromObj(b.by_cell,[{k:'acc',label:'acc',fmt:accfmt},{k:'hits',label:'hits'},{k:'n',label:'n'}],'cell');
+  if(b.by_group){
+    body += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px">`;
+    body += `<div><h2>By application group</h2>`+
+       tableFromObj(b.by_group,[{k:'acc',label:'acc',fmt:accfmt},{k:'hits',label:'h'},{k:'n',label:'n'}],'group')+`</div>`;
+    body += `<div><h2>By element type</h2>`+
+       tableFromObj(b.by_ui_type,[{k:'acc',label:'acc',fmt:accfmt},{k:'hits',label:'h'},{k:'n',label:'n'}],'ui')+`</div>`;
+    body += `</div>`;
+  }
+  body += sampleTable(b, false);
+  return body;
+}
+
+function m2wPanel(b){
+  const lb=b.leaderboard||{}; const ov=b.overall||{};
+  let body = `<p class="small">${b.dataset} · metric: ${lb.metric} · n=${ov.n} steps (${b.per_split} per split) · wall ${b.wall_total_s}s</p>`;
+  // summary cards row
+  body += `<div class="cards" style="margin:6px 0 12px">`+
+    card('Element acc (strict, full-page)', pct(ov.ele_acc), 'point inside GT element box', ov.ele_acc>=0.3?'g':'y')+
+    card('Element near-acc (≤2% of box)', pct(ov.near_acc), 'how often the click lands right beside a thin target', 'k')+
+    card('Operation acc', pct(ov.op_acc), 'CLICK / TYPE / SELECT chosen correctly', ov.op_acc>=0.8?'g':'y')+
+    card('Step success', pct(ov.step_sr), 'element AND operation both correct', 'p')+
+    `</div>`;
+  const fmt=(v)=>v==null?'—':pct(v);
+  body += tableFromObj(b.by_setting,[
+     {k:'ele_acc',label:'Ele.Acc',fmt},{k:'near_acc',label:'near',fmt},
+     {k:'op_acc',label:'Op.acc',fmt},{k:'step_sr',label:'Step SR',fmt},
+     {k:'median_dist_to_box',label:'med.dist',fmt:(v)=>v==null?'—':v.toFixed(3)},{k:'n',label:'n'}],'generalization split');
+  body += `<div class="call gap"><b>protocol caveat.</b> ${lb.note||''} Reference Ele.Acc ≈ `+
+     `${(lb.reference&&lb.reference['UGround Ele.Acc (avg, vision)'])||'—'}% (UGround, vision) comes from a viewport / HTML-candidate setting; `+
+     `here Holo3 sees the raw full-page screenshot (often 4000 px tall) and must hit the exact box — a strict lower bound.</div>`;
+  body += sampleTable(b, true);
+  return body;
+}
+
+function waPanel(b){
+  const lb=b.leaderboard||{};
+  let body=`<p class="small">${b.site||''} · harness: ${b.harness||'BrowserGym coord'} · `
+    +`${b.n_tasks} tasks (max ${b.max_steps} steps) · wall ${b.wall_total_s}s · live self-hosted environment</p>`;
+  body+=`<div class="cards" style="margin:6px 0 12px">`
+    +card('Task success rate', pct(b.success_rate), `${(b.results||[]).filter(r=>r.success).length}/${b.n_tasks} shopping tasks solved end-to-end`, b.success_rate>0?'g':'y')
+    +card('Mean reward', (b.mean_reward==null?'—':b.mean_reward.toFixed(2)), 'WebArena functional checker (0–1)', 'k')
+    +card('Single model', 'Holo3-35B-A3B', 'screenshot → click(x,y); no a11y tree, no Set-of-Marks', 'p')
+    +`</div>`;
+  // per-task table
+  const rs=b.results||[];
+  if(rs.length){
+    body+=`<div class="scroll"><table><thead><tr><th>task</th><th>intent</th><th class="num">success</th><th class="num">reward</th><th class="num">steps</th><th class="num">wall</th><th>answer</th></tr></thead><tbody>`;
+    rs.forEach(r=>{
+      body+=`<tr><td>#${r.task_id}</td><td title="${(r.intent||'').replace(/"/g,'&quot;')}">${(r.intent||'').slice(0,52)}</td>`
+        +`<td class="num ${r.success?'hit':'miss'}">${r.success?'✓':'·'}</td>`
+        +`<td class="num">${r.reward}</td><td class="num dim">${r.steps}</td><td class="num dim">${r.wall_s}s</td>`
+        +`<td class="dim" title="${(r.answer||'').replace(/"/g,'&quot;')}">${(r.answer||'').slice(0,40)}</td></tr>`;
+    });
+    body+=`</tbody></table></div>`;
+  }
+  body+=`<div class="call gap"><b>context.</b> ${lb.note||''}</div>`;
+  return body;
+}
+
+function sampleTable(b, m2w){
+  const s=b.samples||[]; if(!s.length) return '';
+  let h=`<h2 style="margin-top:14px">Per-sample (${s.length})</h2><div class="scroll"><table><thead><tr>`;
+  const cols = m2w
+    ? ['split','task','gt_op','pred op','ele','near','step','sz','s']
+    : ['cell/group','instruction','pred (‰)','hit','wall'];
+  cols.forEach(c=>h+=`<th>${c}</th>`); h+='</tr></thead><tbody>';
+  s.forEach(r=>{
+    if(m2w){
+      const po=(r.pred&&r.pred.operation)||'—';
+      h+=`<tr><td>${r.setting||r.split}</td><td title="${(r.task||'').replace(/"/g,'&quot;')}">${(r.task||'').slice(0,46)}</td>`
+       +`<td>${r.gt_op}</td><td>${po}</td>`
+       +`<td class="${r.ele_hit?'hit':'miss'}">${r.ele_hit?'✓':'·'}</td>`
+       +`<td class="${r.near_hit?'hit':'miss'}">${r.near_hit?'✓':'·'}</td>`
+       +`<td class="${r.step_success?'hit':'miss'}">${r.step_success?'✓':'·'}</td>`
+       +`<td class="dim">${(r.img_size||[]).join('×')}</td><td class="num dim">${r.wall_s}</td></tr>`;
+    } else {
+      const lab = r.cell || ((r.group||'')+' '+(r.ui_type||''));
+      const pp = r.pred_point_1000? r.pred_point_1000.map(v=>Math.round(v)).join(',') : '—';
+      h+=`<tr><td>${lab}</td><td title="${(r.instruction||'').replace(/"/g,'&quot;')}">${(r.instruction||'').slice(0,52)}</td>`
+       +`<td class="num">${pp}</td><td class="${r.hit?'hit':'miss'}">${r.hit?'✓ hit':'· miss'}</td>`
+       +`<td class="num dim">${r.wall_s}s</td></tr>`;
+    }
+  });
+  return h+'</tbody></table></div>';
+}
+
+function card(lab,big,det,cls){
+  return `<div class="card"><div class="lab">${lab}</div><div class="big ${cls||''}">${big}</div><div class="det">${det||''}</div></div>`;
+}
+
+function render(d){
+  // lead + top cards
+  document.getElementById('lead').innerHTML =
+    `<b>${d.model}</b> (${d.quant}) — the model that ranks <b>#1 open-weight on OSWorld-Verified</b> — `
+    +`re-tested on three <b>other</b> agentic benchmarks, served exactly as in the OSWorld run: `
+    +`<code>${d.serving}</code> on <b>${d.host}</b>. `
+    +`Small sample per task type (a smoke test, not a full submission) to check the model still lands near leaderboard quality. ${d.context||''}`;
+  const cardsEl=document.getElementById('cards'); cardsEl.innerHTML='';
+  (d.benchmarks||[]).forEach(b=>{
+    const ov=b.overall||{};
+    if((b.benchmark||'').startsWith('WebArena')){
+      cardsEl.innerHTML += card(b.benchmark, pct(b.success_rate)+' <span class="small">task SR</span>',
+        `${b.n_tasks} live tasks · single-model · vs 69.6% multi-model SOTA`, b.success_rate>0?'g':'y');
+    } else if(b.benchmark==='Multimodal-Mind2Web'){
+      cardsEl.innerHTML += card(b.benchmark, pct(ov.step_sr)+' <span class="small">step SR</span>',
+        `Ele.Acc ${pct(ov.ele_acc)} · Op.acc ${pct(ov.op_acc)} · n=${ov.n}`, 'p');
+    } else {
+      const hf=b.leaderboard&&b.leaderboard.holo_family||{};
+      const bestHolo = Object.values(hf).length? Math.max(...Object.values(hf)) : null;
+      cardsEl.innerHTML += card(b.benchmark, pct(ov.acc),
+        `click accuracy · n=${ov.n}`+(bestHolo!=null?` · Holo1.5 best ${bestHolo}%`:''),
+        ov.acc>=0.85?'g':ov.acc>=0.5?'y':'k');
+    }
+  });
+  document.getElementById('statpill').innerHTML='<span class="stat done">completed</span>';
+  const dt = d.generated_at? new Date(d.generated_at*1000).toISOString().replace('T',' ').slice(0,16)+' UTC':'';
+  document.getElementById('runmeta').textContent = dt;
+
+  document.getElementById('why').innerHTML =
+    `<p>Holo3's public reputation rests on two task families: <b>GUI grounding</b> (point at the right pixel) and `
+    +`<b>full agentic control</b> (multi-step task completion). OSWorld covers the live computer-use agent. `
+    +`To check the model didn't quietly regress on the rest of its résumé, we pick benchmarks from H&nbsp;Company's `
+    +`own advertised board that run <b>offline</b> on this box:</p>`
+    +`<ul class="small"><li><b>ScreenSpot-v2</b> — everyday mobile / desktop / web UIs, text vs icon targets. The grounding board Holo1.5 reports 91–94% on.</li>`
+    +`<li><b>ScreenSpot-Pro</b> — full-resolution 4K screenshots of professional software (IDEs, CAD, DAWs, MATLAB…). Tiny targets, the hardest grounding board (SOTA ~58%).</li>`
+    +`<li><b>Multimodal-Mind2Web</b> — a <i>different kind</i>: predict the next web action (which element + CLICK/TYPE/SELECT + value), across cross-task / -website / -domain splits.</li></ul>`
+    +`<p class="small">Coordinates use H&nbsp;Company's documented localization format — integer <code>{x,y}</code> in [0,1000] normalized to the sent image — so scoring is resize-invariant.</p>`;
+
+  const bp=document.getElementById('benchpanels'); bp.innerHTML='';
+  (d.benchmarks||[]).forEach(b=>{
+    const panel=el('div','panel full');
+    const inner = (b.benchmark||'').startsWith('WebArena') ? waPanel(b)
+                : b.benchmark==='Multimodal-Mind2Web' ? m2wPanel(b) : ssPanel(b);
+    panel.innerHTML = `<h2>${b.benchmark}</h2>` + inner;
+    bp.appendChild(panel);
+  });
+
+  document.getElementById('deferred').innerHTML =
+    `<p class="small">${d.deferred_note||''}</p><p>`+
+    (d.deferred_live_env||[]).map(x=>`<span class="pill">${x}</span>`).join(' ')+`</p>`;
+
+  // sources
+  const srcs=new Set();
+  (d.benchmarks||[]).forEach(b=>(b.leaderboard&&b.leaderboard.sources||[]).forEach(s=>srcs.add(s)));
+  document.getElementById('foot').innerHTML =
+    `Holo3 = <a href="https://huggingface.co/Hcompany/Holo3-35B-A3B">Hcompany/Holo3-35B-A3B</a> · `
+    +`served via llama.cpp on an Intel Core Ultra 7 356H (Panther Lake, 16C) · part of the WukLab edge-inference study. `
+    +`<br>Sources: `+[...srcs].map(s=>`<a href="${s}">${s.replace(/^https?:\/\//,'').slice(0,42)}</a>`).join(' · ');
+}
+
+(async()=>{
+  try{
+    const r=await fetch('holo3-agentic-leaderboard-data.json?_='+Date.now(),{cache:'no-store'});
+    if(r.ok){ render(await r.json()); return; }
+  }catch(e){}
+  document.getElementById('lead').innerHTML='<span class="y">Results JSON not found yet — the benchmark run is still in progress.</span>';
+  document.getElementById('statpill').innerHTML='<span class="stat run">running</span>';
+})();
+</script>
+</body>
+</html>

@@ -179,11 +179,17 @@
                     <li>The Xe3 iGPU is <strong>2.5× faster at prefill</strong> (Vulkan), but full offload is blocked by two
                         localized correctness bugs (248k-vocab output projection, vision encoder crash); <code>--cache-reuse</code>
                         is ruled out as inert &amp; unsound for this hybrid arch. CPU stays the fastest <em>correct</em> path.</li>
+                    <li>Beyond OSWorld, the <strong>same i1-Q4_K_M weights</strong> still hit leaderboard-grade
+                        grounding on a CPU-only NUC: <strong>ScreenSpot-v2 90%</strong>, <strong>ScreenSpot-Pro 66.7%</strong>
+                        (above the published Holo1.5-72B 63.3%); on Multimodal-Mind2Web the model picks the right
+                        operation 67% of the time but strict full-page point-in-box grounding is the bottleneck.
+                        WebArena (shopping) runs as a single-model screenshot+coordinate agent via BrowserGym.</li>
                   </ul>
                   <p style="margin-top:8px;">
                     <a href="demos/holo3-osworld-live.html">[&#128308; Live benchmark tracker]</a>
                     &nbsp; <a href="demos/holo3-osworld-profiling.html">[&#128202; Profiling corpus &amp; schema]</a>
                     &nbsp; <a href="demos/holo3-osworld-acceleration.html">[&#9889; KV-cache &amp; iGPU study]</a>
+                    &nbsp; <a href="demos/holo3-agentic-leaderboard.html">[&#128202; Beyond-OSWorld leaderboard check]</a>
                     &nbsp; <a href="demos/openclaw-workflow.html">[Interactive workflow demo]</a>
                     &nbsp; <a href="demos/memory-hierarchy.html">[Memory hierarchy demo]</a>
                   </p>

@@ -1,0 +1,2240 @@
+{
+  "model": "Hcompany/Holo3-35B-A3B",
+  "quant": "i1-Q4_K_M",
+  "serving": "llama.cpp CPU (-t8/-tb16) + mmproj-f16, OpenAI endpoint :8082, ctx 256k",
+  "host": "wuklab-NUC16 (Intel Core Ultra 7 356H, 16C, 96GB DDR5-5600)",
+  "context": "Same model + serving as the OSWorld-Verified run (Holo3 #1 open-weight, 82.56% there). This verifies Holo3 on additional agentic benchmarks beyond OSWorld.",
+  "generated_at": 1782248138.178793,
+  "benchmarks": [
+    {
+      "benchmark": "ScreenSpot-v2",
+      "dataset": "lmms-lab/ScreenSpot-v2",
+      "per_cell": 5,
+      "wall_total_s": 2774.8,
+      "by_cell": {
+        "desktop-icon": {
+          "n": 5,
+          "hits": 5,
+          "acc": 1.0
+        },
+        "desktop-text": {
+          "n": 5,
+          "hits": 4,
+          "acc": 0.8
+        },
+        "mobile-icon": {
+          "n": 5,
+          "hits": 3,
+          "acc": 0.6
+        },
+        "mobile-text": {
+          "n": 5,
+          "hits": 5,
+          "acc": 1.0
+        },
+        "web-icon": {
+          "n": 5,
+          "hits": 5,
+          "acc": 1.0
+        },
+        "web-text": {
+          "n": 5,
+          "hits": 5,
+          "acc": 1.0
+        }
+      },
+      "overall": {
+        "n": 30,
+        "hits": 27,
+        "acc": 0.9
+      },
+      "samples": [
+        {
+          "idx": 0,
+          "cell": "desktop-icon",
+          "platform": "desktop",
+          "data_type": "icon",
+          "data_source": "windows",
+          "instruction": "close this window",
+          "img_filename": "pc_ede36f9b-1154-4f76-b7f8-c15d7d3f9b6e.png",
+          "img_size": [
+            960,
+            540
+          ],
+          "gt_box_frac": [
+            0.9479,
+            0.1444,
+            0.9938,
+            0.2074
+          ],
+          "pred_point_1000": [
+            967.0,
+            177.0
+          ],
+          "pred_frac": [
+            0.967,
+            0.177
+          ],
+          "hit": true,
+          "parsed": true,
+          "raw": "{\"x\":967,\"y\":177}",
+          "wall_s": 1.08,
+          "timings": {
+            "cache_n": 640,
+            "prompt_n": 4,
+            "prompt_ms": 95.489,
+            "prompt_per_token_ms": 23.87225,
+            "prompt_per_second": 41.889641738839025,
+            "predicted_n": 14,
+            "predicted_ms": 785.884,
+            "predicted_per_token_ms": 56.13457142857143,
+            "predicted_per_second": 17.814333922054654
+          }
+        },
+        {
+          "idx": 1,
+          "cell": "desktop-icon",
+          "platform": "desktop",
+          "data_type": "icon",
+          "data_source": "windows",
+          "instruction": "minimize this window",
+          "img_filename": "pc_5e09e8e9-7ef6-44be-ad54-aeaeac151897.png",
+          "img_size": [
+            960,
+            540
+          ],
+          "gt_box_frac": [
+            0.8698,
+            0.0,
+            0.9073,
+            0.0556
+          ],
+          "pred_point_1000": [
+            887.0,
+            28.0
+          ],
+          "pred_frac": [
+            0.887,
+            0.028
+          ],
+          "hit": true,
+          "parsed": true,
+          "raw": "{\"x\":887,\"y\":28}",
+          "wall_s": 0.93,
+          "timings": {
+            "cache_n": 641,
+            "prompt_n": 4,
+            "prompt_ms": 96.296,
+            "prompt_per_token_ms": 24.074,
+            "prompt_per_second": 41.538589349505685,
+            "predicted_n": 13,
+            "predicted_ms": 698.667,
+            "predicted_per_token_ms": 53.74361538461539,
+            "predicted_per_second": 18.606861351688284
+          }
+        },
+        {
+          "idx": 2,
+          "cell": "desktop-icon",
+          "platform": "desktop",
+          "data_type": "icon",
+          "data_source": "windows",
+          "instruction": "minimize calculator",
+          "img_filename": "pc_f0122b91-3f8b-4510-9a6e-f0239d84b94e.png",
+          "img_size": [
+            960,
+            540
+          ],
+          "gt_box_frac": [
+            0.726,
+            0.1167,
+            0.7615,
+            0.1759
+          ],
+          "pred_point_1000": [
+            741.0,
+            151.0
+          ],
+          "pred_frac": [
+            0.741,
+            0.151
+          ],
+          "hit": true,
+          "parsed": true,
+          "raw": "{\"x\":741,\"y\":151}",
+          "wall_s": 10.23,
+          "timings": {
+            "cache_n": 112,
+            "prompt_n": 532,
+            "prompt_ms": 9396.831,
+            "prompt_per_token_ms": 17.663216165413534,
+            "prompt_per_second": 56.614831106359155,
+            "predicted_n": 14,
+            "predicted_ms": 703.823,
+            "predicted_per_token_ms": 50.27307142857143,
+            "predicted_per_second": 19.891364732326167
+          }
+        },
+        {
+          "idx": 3,
+          "cell": "desktop-icon",
+          "platform": "desktop",
+          "data_type": "icon",
+          "data_source": "windows",
+          "instruction": "open the download page",
+          "img_filename": "pc_354a6cb2-3fe0-4cea-950c-d7f8e01fdf45.png",
+          "img_size": [
+            960,
+            540
+          ],
+          "gt_box_frac": [
+            0.8781,
+            0.013,
+            0.9281,
+            0.0852
+          ],
+          "pred_point_1000": [
+            902.0,
+            53.0
+          ],
+          "pred_frac": [
+            0.902,
+            0.053
+          ],
+          "hit": true,
+          "parsed": true,
+          "raw": "{\"x\":902,\"y\":53}",
+          "wall_s": 10.24,
+          "timings": {
+            "cache_n": 112,
+            "prompt_n": 533,
+            "prompt_ms": 9483.776,
+            "prompt_per_token_ms": 17.793200750469044,
+            "prompt_per_second": 56.201243049182104,
+            "predicted_n": 13,
+            "predicted_ms": 633.899,
+            "predicted_per_token_ms": 48.76146153846154,
+            "predicted_per_second": 20.507998908343442
+          }
+        },
+        {
+          "idx": 4,
+          "cell": "desktop-icon",
+          "platform": "desktop",
+          "data_type": "icon",
+          "data_source": "windows",
+          "instruction": "save the file",
+          "img_filename": "pc_db6b6fa2-11cc-4b06-88cb-22c180f07a3b.png",
+          "img_size": [
+            960,
+            540
+          ],
+          "gt_box_frac": [
+            0.0094,
+            0.0,
+            0.0458,
+            0.0574
+          ],
+          "pred_point_1000": [
+            27.0,
+            27.0
+          ],
+          "pred_frac": [
+            0.027,
+            0.027
+          ],
+          "hit": true,
+          "parsed": true,
+          "raw": "{\"x\":27,\"y\":27}",
+          "wall_s": 10.22,
+          "timings": {
+            "cache_n": 112,
+            "prompt_n": 532,
+            "prompt_ms": 9486.037,
+            "prompt_per_token_ms": 17.830896616541352,
+            "prompt_per_second": 56.08242936433834,
+            "predicted_n": 12,
+            "predicted_ms": 612.824,
+            "predicted_per_token_ms": 51.068666666666665,
+            "predicted_per_second": 19.58147853217237
+          }
+        },
+        {
+          "idx": 5,
+          "cell": "desktop-text",
+          "platform": "desktop",
+          "data_type": "text",
+          "data_source": "windows",
+          "instruction": "view solitaire daily challenges",
+          "img_filename": "pc_2c6dc6ea-fd6f-4cbb-9954-2d6a68610a48.png",
+          "img_size": [
+            1920,
+            1080
+          ],
+          "gt_box_frac": [
+            0.7693,
+            0.4167,
+            0.8651,
+            0.6296
+          ],
+          "pred_point_1000": [
+            817.0,
+            527.0
+          ],
+          "pred_frac": [
+            0.817,
+            0.527
+          ],
+          "hit": true,
+          "parsed": true,
+          "raw": "{\"x\":817,\"y\":527}",
+          "wall_s": 55.26,
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 2176,
+            "prompt_ms": 54305.717,
+            "prompt_per_token_ms": 24.956671415441175,
+            "prompt_per_second": 40.069446095334676,
+            "predicted_n": 14,
+            "predicted_ms": 713.496,
+            "predicted_per_token_ms": 50.964,
+            "predicted_per_second": 19.621693744604034
+          }
+        },
+        {
+          "idx": 6,
+          "cell": "desktop-text",
+          "platform": "desktop",
+          "data_type": "text",
+          "data_source": "windows",
+          "instruction": "open the Microsoft store",
+          "img_filename": "pc_b072d03a-51cb-4dd6-bdeb-152d3fd44e6b.png",
+          "img_size": [
+            960,
+            540
+          ],
+          "gt_box_frac": [
+            0.1833,
+            0.3741,
+            0.2865,
+            0.5611
+          ],
+          "pred_point_1000": [
+            247.0,
+            493.0
+          ],
+          "pred_frac": [
+            0.247,
+            0.493
+          ],
+          "hit": true,
+          "parsed": true,
+          "raw": "{\"x\":247,\"y\":493}",
+          "wall_s": 10.51,
+          "timings": {
+            "cache_n": 112,
+            "prompt_n": 533,
+            "prompt_ms": 9635.745,
+            "prompt_per_token_ms": 18.07832082551595,
+            "prompt_per_second": 55.31487186512304,
+            "predicted_n": 14,
+            "predicted_ms": 708.091,
+            "predicted_per_token_ms": 50.57792857142857,
+            "predicted_per_second": 19.77147005116574
+          }
+        },
+        {
+          "idx": 7,
+          "cell": "desktop-text",
+          "platform": "desktop",
+          "data_type": "text",
+          "data_source": "windows",
+          "instruction": "adjust the style",
+          "img_filename": "pc_ac2d2c5e-fe5a-4233-95b4-2de18ef76a9e.png",
+          "img_size": [
+            960,
+            540
+          ],
+          "gt_box_frac": [
+            0.6615,
+            0.6667,
+            0.7052,
+            0.7833
+          ],
+          "pred_point_1000": [
+            687.0,
+            727.0
+          ],
+          "pred_frac": [
+            0.687,
+            0.727
+          ],
+          "hit": true,
+          "parsed": true,
+          "raw": "{\"x\":687,\"y\":727}",
+          "wall_s": 10.18,
+          "timings": {
+            "cache_n": 112,
+            "prompt_n": 532,
+            "prompt_ms": 9375.92,
+            "prompt_per_token_ms": 17.62390977443609,
+            "prompt_per_second": 56.74109847353647,
+            "predicted_n": 14,
+            "predicted_ms": 680.161,
+            "predicted_per_token_ms": 48.58292857142857,
+            "predicted_per_second": 20.583361880495943
+          }
+        },
+        {
+          "idx": 8,
+          "cell": "desktop-text",
+          "platform": "desktop",
+          "data_type": "text",
+          "data_source": "windows",
+          "instruction": "open the help menu",
+          "img_filename": "pc_d6b09201-c944-4ad9-a0a2-ff78e8f056ce.png",
+          "img_size": [
+            960,
+            540
+          ],
+          "gt_box_frac": [
+            0.001,
+            0.8037,
+            0.0708,
+            0.9259
+          ],
+          "pred_point_1000": [
+            33.0,
+            857.0
+          ],
+          "pred_frac": [
+            0.033,
+            0.857
+          ],
+          "hit": true,
+          "parsed": true,
+          "raw": "{\"x\":33,\"y\":857}",
+          "wall_s": 10.28,
+          "timings": {
+            "cache_n": 112,
+            "prompt_n": 533,
+            "prompt_ms": 9466.4,
+            "prompt_per_token_ms": 17.76060037523452,
+            "prompt_per_second": 56.304402940927915,
+            "predicted_n": 13,
+            "predicted_ms": 689.896,
+            "predicted_per_token_ms": 53.06892307692307,
+            "predicted_per_second": 18.84341987777868
+          }
+        },
+        {
+          "idx": 9,
+          "cell": "desktop-text",
+          "platform": "desktop",
+          "data_type": "text",
+          "data_source": "windows",
+          "instruction": "search for software ",
+          "img_filename": "pc_6dfa677c-7772-46fb-8c83-14a33b0806b4.png",
+          "img_size": [
+            960,
+            540
+          ],
+          "gt_box_frac": [
+            0.3292,
+            0.0,
+            0.9552,
+            0.0704
+          ],
+          "pred_point_1000": null,
+          "pred_frac": null,
+          "hit": false,
+          "parsed": false,
+          "raw": "{\"x\":638,\" y\":37}",
+          "wall_s": 10.23,
+          "timings": {
+            "cache_n": 112,
+            "prompt_n": 532,
+            "prompt_ms": 9467.402,
+            "prompt_per_token_ms": 17.79586842105263,
+            "prompt_per_second": 56.19281826207443,
+            "predicted_n": 13,
+            "predicted_ms": 650.906,
+            "predicted_per_token_ms": 50.06969230769231,
+            "predicted_per_second": 19.97216187898099
+          }
+        },
+        {
+          "idx": 10,
+          "cell": "mobile-icon",
+          "platform": "mobile",
+          "data_type": "icon",
+          "data_source": "ios",
+          "instruction": "check the weather",
+          "img_filename": "mobile_1ca5b944-293a-46a1-af95-eb35bc8a0b2a.png",
+          "img_size": [
+            2360,
+            1640
+          ],
+          "gt_box_frac": [
+            0.0945,
+            0.0476,
+            0.3492,
+            0.4091
+          ],
+          "pred_point_1000": [
+            207.0,
+            178.0
+          ],
+          "pred_frac": [
+            0.207,
+            0.178
+          ],
+          "hit": true,
+          "parsed": true,
+          "raw": "{\"x\":207,\"y\":178}",
+          "wall_s": 134.31,
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 3908,
+            "prompt_ms": 133294.588,
+            "prompt_per_token_ms": 34.108134083930395,
+            "prompt_per_second": 29.31851966863051,
+            "predicted_n": 14,
+            "predicted_ms": 758.46,
+            "predicted_per_token_ms": 54.175714285714285,
+            "predicted_per_second": 18.45845529098436
+          }
+        },
+        {
+          "idx": 11,
+          "cell": "mobile-icon",
+          "platform": "mobile",
+          "data_type": "icon",
+          "data_source": "ios",
+          "instruction": "view world clock",
+          "img_filename": "mobile_1ca5b944-293a-46a1-af95-eb35bc8a0b2a.png",
+          "img_size": [
+            2360,
+            1640
+          ],
+          "gt_box_frac": [
+            0.3725,
+            0.0457,
+            0.6263,
+            0.2098
+          ],
+          "pred_point_1000": [
+            527.0,
+            123.0
+          ],
+          "pred_frac": [
+            0.527,
+            0.123
+          ],
+          "hit": true,
+          "parsed": true,
+          "raw": "{\"x\":527,\"y\":123}",
+          "wall_s": 132.95,
+          "timings": {
+            "cache_n": 112,
+            "prompt_n": 3796,
+            "prompt_ms": 132035.254,
+            "prompt_per_token_ms": 34.78273287671232,
+            "prompt_per_second": 28.749897356958925,
+            "predicted_n": 14,
+            "predicted_ms": 737.463,
+            "predicted_per_token_ms": 52.67592857142857,
+            "predicted_per_second": 18.984003265248564
+          }
+        },
+        {
+          "idx": 12,
+          "cell": "mobile-icon",
+          "platform": "mobile",
+          "data_type": "icon",
+          "data_source": "ios",
+          "instruction": "view the menu",
+          "img_filename": "mobile_6949b916-64c8-431f-8842-a29a9a557641.png",
+          "img_size": [
+            2360,
+            1640
+          ],
+          "gt_box_frac": [
+            0.0169,
+            0.039,
+            0.0508,
+            0.0793
+          ],
+          "pred_point_1000": [
+            498.0,
+            17.0
+          ],
+          "pred_frac": [
+            0.498,
+            0.017
+          ],
+          "hit": false,
+          "parsed": true,
+          "raw": "{\"x\":498,\"y\":17}",
+          "wall_s": 133.88,
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 3908,
+            "prompt_ms": 132875.151,
+            "prompt_per_token_ms": 34.00080629477994,
+            "prompt_per_second": 29.41106723558869,
+            "predicted_n": 13,
+            "predicted_ms": 737.474,
+            "predicted_per_token_ms": 56.72876923076923,
+            "predicted_per_second": 17.627740096600014
+          }
+        },
+        {
+          "idx": 13,
+          "cell": "mobile-icon",
+          "platform": "mobile",
+          "data_type": "icon",
+          "data_source": "ios",
+          "instruction": "select source language",
+          "img_filename": "mobile_6949b916-64c8-431f-8842-a29a9a557641.png",
+          "img_size": [
+            2360,
+            1640
+          ],
+          "gt_box_frac": [
+            0.4564,
+            0.0476,
+            0.4953,
+            0.1177
+          ],
+          "pred_point_1000": [
+            347.0,
+            77.0
+          ],
+          "pred_frac": [
+            0.347,
+            0.077
+          ],
+          "hit": false,
+          "parsed": true,
+          "raw": "{\"x\":347,\"y\":77}",
+          "wall_s": 132.74,
+          "timings": {
+            "cache_n": 112,
+            "prompt_n": 3796,
+            "prompt_ms": 131896.678,
+            "prompt_per_token_ms": 34.746227081138045,
+            "prompt_per_second": 28.78010316529731,
+            "predicted_n": 13,
+            "predicted_ms": 700.499,
+            "predicted_per_token_ms": 53.88453846153846,
+            "predicted_per_second": 18.55819922655136
+          }
+        },
+        {
+          "idx": 14,
+          "cell": "mobile-icon",
+          "platform": "mobile",
+          "data_type": "icon",
+          "data_source": "ios",
+          "instruction": "close the translation",
+          "img_filename": "mobile_6949b916-64c8-431f-8842-a29a9a557641.png",
+          "img_size": [
+            2360,
+            1640
+          ],
+          "gt_box_frac": [
+            0.7343,
+            0.1402,
+            0.7746,
+            0.2012
+          ],
+          "pred_point_1000": [
+            757.0,
+            170.0
+          ],
+          "pred_frac": [
+            0.757,
+            0.17
+          ],
+          "hit": true,
+          "parsed": true,
+          "raw": "{\"x\":757,\"y\":170}",
+          "wall_s": 132.79,
+          "timings": {
+            "cache_n": 112,
+            "prompt_n": 3796,
+            "prompt_ms": 131898.792,
+            "prompt_per_token_ms": 34.74678398314014,
+            "prompt_per_second": 28.779641893915148,
+            "predicted_n": 14,
+            "predicted_ms": 758.069,
+            "predicted_per_token_ms": 54.14778571428571,
+            "predicted_per_second": 18.467975870270383
+          }
+        },
+        {
+          "idx": 15,
+          "cell": "mobile-text",
+          "platform": "mobile",
+          "data_type": "text",
+          "data_source": "ios",
+          "instruction": "open facetime app",
+          "img_filename": "mobile_1ca5b944-293a-46a1-af95-eb35bc8a0b2a.png",
+          "img_size": [
+            2360,
+            1640
+          ],
+          "gt_box_frac": [
+            0.2619,
+            0.4927,
+            0.3169,
+            0.589
+          ],
+          "pred_point_1000": [
+            297.0,
+            537.0
+          ],
+          "pred_frac": [
+            0.297,
+            0.537
+          ],
+          "hit": true,
+          "parsed": true,
+          "raw": "{\"x\":297,\"y\":537}",
+          "wall_s": 133.16,
+          "timings": {
+            "cache_n": 112,
+            "prompt_n": 3797,
+            "prompt_ms": 132061.021,
+            "prompt_per_token_ms": 34.78035844087437,
+            "prompt_per_second": 28.751860096553393,
+            "predicted_n": 14,
+            "predicted_ms": 753.31,
+            "predicted_per_token_ms": 53.80785714285714,
+            "predicted_per_second": 18.584646427101728
+          }
+        },
+        {
+          "idx": 16,
+          "cell": "mobile-text",
+          "platform": "mobile",
+          "data_type": "text",
+          "data_source": "ios",
+          "instruction": "open the camera",
+          "img_filename": "mobile_1ca5b944-293a-46a1-af95-eb35bc8a0b2a.png",
+          "img_size": [
+            2360,
+            1640
+          ],
+          "gt_box_frac": [
+            0.8203,
+            0.4915,
+            0.8712,
+            0.5927
+          ],
+          "pred_point_1000": [
+            847.0,
+            537.0
+          ],
+          "pred_frac": [
+            0.847,
+            0.537
+          ],
+          "hit": true,
+          "parsed": true,
+          "raw": "{\"x\":847,\"y\":537}",
+          "wall_s": 133.07,
+          "timings": {
+            "cache_n": 112,
+            "prompt_n": 3796,
+            "prompt_ms": 132099.716,
+            "prompt_per_token_ms": 34.79971443624868,
+            "prompt_per_second": 28.735867986271828,
+            "predicted_n": 14,
+            "predicted_ms": 772.59,
+            "predicted_per_token_ms": 55.185,
+            "predicted_per_second": 18.12086617740328
+          }
+        },
+        {
+          "idx": 17,
+          "cell": "mobile-text",
+          "platform": "mobile",
+          "data_type": "text",
+          "data_source": "ios",
+          "instruction": "click the search bar",
+          "img_filename": "mobile_a1366f87-f1f1-402c-911a-d239eb60eac8.png",
+          "img_size": [
+            2360,
+            1640
+          ],
+          "gt_box_frac": [
+            0.3496,
+            0.0439,
+            0.7089,
+            0.0909
+          ],
+          "pred_point_1000": [
+            487.0,
+            68.0
+          ],
+          "pred_frac": [
+            0.487,
+            0.068
+          ],
+          "hit": true,
+          "parsed": true,
+          "raw": "{\"x\":487,\"y\":68}",
+          "wall_s": 134.59,
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 3909,
+            "prompt_ms": 133632.963,
+            "prompt_per_token_ms": 34.18597160399079,
+            "prompt_per_second": 29.251764776030598,
+            "predicted_n": 13,
+            "predicted_ms": 687.169,
+            "predicted_per_token_ms": 52.859153846153845,
+            "predicted_per_second": 18.918199162069303
+          }
+        },
+        {
+          "idx": 18,
+          "cell": "mobile-text",
+          "platform": "mobile",
+          "data_type": "text",
+          "data_source": "ios",
+          "instruction": "check shared files",
+          "img_filename": "mobile_a1366f87-f1f1-402c-911a-d239eb60eac8.png",
+          "img_size": [
+            2360,
+            1640
+          ],
+          "gt_box_frac": [
+            0.1322,
+            0.1207,
+            0.1869,
+            0.1994
+          ],
+          "pred_point_1000": [
+            157.0,
+            157.0
+          ],
+          "pred_frac": [
+            0.157,
+            0.157
+          ],
+          "hit": true,
+          "parsed": true,
+          "raw": "{\"x\":157,\"y\":157}",
+          "wall_s": 133.11,
+          "timings": {
+            "cache_n": 112,
+            "prompt_n": 3796,
+            "prompt_ms": 132207.373,
+            "prompt_per_token_ms": 34.828075079030555,
+            "prompt_per_second": 28.71246825243249,
+            "predicted_n": 14,
+            "predicted_ms": 762.232,
+            "predicted_per_token_ms": 54.445142857142855,
+            "predicted_per_second": 18.36711132568562
+          }
+        },
+        {
+          "idx": 19,
+          "cell": "mobile-text",
+          "platform": "mobile",
+          "data_type": "text",
+          "data_source": "ios",
+          "instruction": "search event",
+          "img_filename": "mobile_c71efbd9-cd10-4564-949e-50b3b034328a.png",
+          "img_size": [
+            2360,
+            1640
+          ],
+          "gt_box_frac": [
+            0.7936,
+            0.0372,
+            0.9856,
+            0.086
+          ],
+          "pred_point_1000": [
+            877.0,
+            62.0
+          ],
+          "pred_frac": [
+            0.877,
+            0.062
+          ],
+          "hit": true,
+          "parsed": true,
+          "raw": "{\"x\":877,\"y\":62}",
+          "wall_s": 134.02,
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 3907,
+            "prompt_ms": 133011.255,
+            "prompt_per_token_ms": 34.044344765804965,
+            "prompt_per_second": 29.373454148673357,
+            "predicted_n": 13,
+            "predicted_ms": 738.762,
+            "predicted_per_token_ms": 56.82784615384615,
+            "predicted_per_second": 17.59700688449054
+          }
+        },
+        {
+          "idx": 20,
+          "cell": "web-icon",
+          "platform": "web",
+          "data_type": "icon",
+          "data_source": "shop",
+          "instruction": "open vscode",
+          "img_filename": "pc_1inyhi.png",
+          "img_size": [
+            2560,
+            1440
+          ],
+          "gt_box_frac": [
+            0.0047,
+            0.3007,
+            0.0309,
+            0.3451
+          ],
+          "pred_point_1000": [
+            13.0,
+            328.0
+          ],
+          "pred_frac": [
+            0.013,
+            0.328
+          ],
+          "hit": true,
+          "parsed": true,
+          "raw": "{\"x\":13,\"y\":328}",
+          "wall_s": 124.86,
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 3733,
+            "prompt_ms": 123833.36,
+            "prompt_per_token_ms": 33.17261184034289,
+            "prompt_per_second": 30.145350170584084,
+            "predicted_n": 13,
+            "predicted_ms": 683.942,
+            "predicted_per_token_ms": 52.61092307692308,
+            "predicted_per_second": 19.00745969687488
+          }
+        },
+        {
+          "idx": 21,
+          "cell": "web-icon",
+          "platform": "web",
+          "data_type": "icon",
+          "data_source": "shop",
+          "instruction": "adjust font color",
+          "img_filename": "pc_8g2jf6.png",
+          "img_size": [
+            2560,
+            1440
+          ],
+          "gt_box_frac": [
+            0.3113,
+            0.0889,
+            0.3309,
+            0.1146
+          ],
+          "pred_point_1000": [
+            325.0,
+            100.0
+          ],
+          "pred_frac": [
+            0.325,
+            0.1
+          ],
+          "hit": true,
+          "parsed": true,
+          "raw": "{\"x\":325,\"y\":100}",
+          "wall_s": 124.82,
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 3734,
+            "prompt_ms": 123766.942,
+            "prompt_per_token_ms": 33.14594054633101,
+            "prompt_per_second": 30.16960700216703,
+            "predicted_n": 14,
+            "predicted_ms": 827.472,
+            "predicted_per_token_ms": 59.10514285714286,
+            "predicted_per_second": 16.919001488872134
+          }
+        },
+        {
+          "idx": 22,
+          "cell": "web-icon",
+          "platform": "web",
+          "data_type": "icon",
+          "data_source": "shop",
+          "instruction": "download microsoft word from cloud",
+          "img_filename": "pc_drcjo3.png",
+          "img_size": [
+            2880,
+            1800
+          ],
+          "gt_box_frac": [
+            0.9344,
+            0.8717,
+            0.9625,
+            0.9083
+          ],
+          "pred_point_1000": [
+            947.0,
+            887.0
+          ],
+          "pred_frac": [
+            0.947,
+            0.887
+          ],
+          "hit": true,
+          "parsed": true,
+          "raw": "{\"x\":947,\"y\":887}",
+          "wall_s": 146.72,
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 4136,
+            "prompt_ms": 145581.571,
+            "prompt_per_token_ms": 35.19863902321083,
+            "prompt_per_second": 28.410189363872163,
+            "predicted_n": 14,
+            "predicted_ms": 843.686,
+            "predicted_per_token_ms": 60.263285714285715,
+            "predicted_per_second": 16.593851266940543
+          }
+        },
+        {
+          "idx": 23,
+          "cell": "web-icon",
+          "platform": "web",
+          "data_type": "icon",
+          "data_source": "shop",
+          "instruction": "adjust mouse speed",
+          "img_filename": "pc_dyxzuj.png",
+          "img_size": [
+            2560,
+            1440
+          ],
+          "gt_box_frac": [
+            0.5223,
+            0.191,
+            0.6418,
+            0.2243
+          ],
+          "pred_point_1000": [
+            587.0,
+            210.0
+          ],
+          "pred_frac": [
+            0.587,
+            0.21
+          ],
+          "hit": true,
+          "parsed": true,
+          "raw": "{\"x\":587,\"y\":210}",
+          "wall_s": 125.56,
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 3734,
+            "prompt_ms": 124521.675,
+            "prompt_per_token_ms": 33.34806507766471,
+            "prompt_per_second": 29.986747287169077,
+            "predicted_n": 14,
+            "predicted_ms": 795.922,
+            "predicted_per_token_ms": 56.85157142857143,
+            "predicted_per_second": 17.58966330871618
+          }
+        },
+        {
+          "idx": 24,
+          "cell": "web-icon",
+          "platform": "web",
+          "data_type": "icon",
+          "data_source": "shop",
+          "instruction": "empty the trash",
+          "img_filename": "pc_dzpr8m.png",
+          "img_size": [
+            2560,
+            1440
+          ],
+          "gt_box_frac": [
+            0.5762,
+            0.3285,
+            0.6137,
+            0.3528
+          ],
+          "pred_point_1000": [
+            598.0,
+            343.0
+          ],
+          "pred_frac": [
+            0.598,
+            0.343
+          ],
+          "hit": true,
+          "parsed": true,
+          "raw": "{\"x\":598,\"y\":343}",
+          "wall_s": 125.74,
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 3734,
+            "prompt_ms": 124549.629,
+            "prompt_per_token_ms": 33.35555141938939,
+            "prompt_per_second": 29.980017042041933,
+            "predicted_n": 14,
+            "predicted_ms": 862.724,
+            "predicted_per_token_ms": 61.62314285714286,
+            "predicted_per_second": 16.22766956755579
+          }
+        },
+        {
+          "idx": 25,
+          "cell": "web-text",
+          "platform": "web",
+          "data_type": "text",
+          "data_source": "shop",
+          "instruction": "view battery usage of last 10 days",
+          "img_filename": "pc_b5q1tt.png",
+          "img_size": [
+            2880,
+            1800
+          ],
+          "gt_box_frac": [
+            0.5372,
+            0.1989,
+            0.6906,
+            0.2239
+          ],
+          "pred_point_1000": [
+            627.0,
+            210.0
+          ],
+          "pred_frac": [
+            0.627,
+            0.21
+          ],
+          "hit": true,
+          "parsed": true,
+          "raw": "{\"x\":627,\"y\":210}",
+          "wall_s": 152.05,
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 4140,
+            "prompt_ms": 150783.412,
+            "prompt_per_token_ms": 36.421114009661835,
+            "prompt_per_second": 27.45660112798084,
+            "predicted_n": 14,
+            "predicted_ms": 857.313,
+            "predicted_per_token_ms": 61.236642857142854,
+            "predicted_per_second": 16.330091810109028
+          }
+        },
+        {
+          "idx": 26,
+          "cell": "web-text",
+          "platform": "web",
+          "data_type": "text",
+          "data_source": "shop",
+          "instruction": "open google drive",
+          "img_filename": "pc_gtda7d.png",
+          "img_size": [
+            2560,
+            1440
+          ],
+          "gt_box_frac": [
+            0.9473,
+            0.2799,
+            0.9801,
+            0.3347
+          ],
+          "pred_point_1000": [
+            967.0,
+            307.0
+          ],
+          "pred_frac": [
+            0.967,
+            0.307
+          ],
+          "hit": true,
+          "parsed": true,
+          "raw": "{\"x\":967,\"y\":307}",
+          "wall_s": 131.02,
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 3734,
+            "prompt_ms": 129937.614,
+            "prompt_per_token_ms": 34.7985040171398,
+            "prompt_per_second": 28.736867524749222,
+            "predicted_n": 14,
+            "predicted_ms": 819.592,
+            "predicted_per_token_ms": 58.54228571428571,
+            "predicted_per_second": 17.081669904049818
+          }
+        },
+        {
+          "idx": 27,
+          "cell": "web-text",
+          "platform": "web",
+          "data_type": "text",
+          "data_source": "shop",
+          "instruction": "install LXD app",
+          "img_filename": "pc_j6tmln.png",
+          "img_size": [
+            2560,
+            1440
+          ],
+          "gt_box_frac": [
+            0.3539,
+            0.1257,
+            0.3965,
+            0.1493
+          ],
+          "pred_point_1000": [
+            374.0,
+            137.0
+          ],
+          "pred_frac": [
+            0.374,
+            0.137
+          ],
+          "hit": true,
+          "parsed": true,
+          "raw": "{\"x\":374,\"y\":137}",
+          "wall_s": 125.05,
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 3735,
+            "prompt_ms": 124057.491,
+            "prompt_per_token_ms": 33.21485702811245,
+            "prompt_per_second": 30.107009015682898,
+            "predicted_n": 14,
+            "predicted_ms": 745.625,
+            "predicted_per_token_ms": 53.25892857142857,
+            "predicted_per_second": 18.776194467728416
+          }
+        },
+        {
+          "idx": 28,
+          "cell": "web-text",
+          "platform": "web",
+          "data_type": "text",
+          "data_source": "shop",
+          "instruction": "click to restart the computer",
+          "img_filename": "pc_js1st2.png",
+          "img_size": [
+            2560,
+            1440
+          ],
+          "gt_box_frac": [
+            0.8902,
+            0.2757,
+            0.9945,
+            0.2972
+          ],
+          "pred_point_1000": [
+            983.0,
+            288.0
+          ],
+          "pred_frac": [
+            0.983,
+            0.288
+          ],
+          "hit": true,
+          "parsed": true,
+          "raw": "{\"x\":983,\"y\":288}",
+          "wall_s": 124.6,
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 3736,
+            "prompt_ms": 123491.183,
+            "prompt_per_token_ms": 33.05438517130621,
+            "prompt_per_second": 30.253172001761452,
+            "predicted_n": 14,
+            "predicted_ms": 764.897,
+            "predicted_per_token_ms": 54.6355,
+            "predicted_per_second": 18.30311793614042
+          }
+        },
+        {
+          "idx": 29,
+          "cell": "web-text",
+          "platform": "web",
+          "data_type": "text",
+          "data_source": "shop",
+          "instruction": "select all folders",
+          "img_filename": "pc_o4nd16.png",
+          "img_size": [
+            2560,
+            1440
+          ],
+          "gt_box_frac": [
+            0.2762,
+            0.4472,
+            0.35,
+            0.4681
+          ],
+          "pred_point_1000": [
+            297.0,
+            457.0
+          ],
+          "pred_frac": [
+            0.297,
+            0.457
+          ],
+          "hit": true,
+          "parsed": true,
+          "raw": "{\"x\":297,\"y\":457}",
+          "wall_s": 124.81,
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 3734,
+            "prompt_ms": 123713.172,
+            "prompt_per_token_ms": 33.131540439207285,
+            "prompt_per_second": 30.182719751135313,
+            "predicted_n": 14,
+            "predicted_ms": 765.883,
+            "predicted_per_token_ms": 54.70592857142857,
+            "predicted_per_second": 18.279554448917132
+          }
+        }
+      ],
+      "leaderboard": {
+        "metric": "avg click accuracy (%)",
+        "holo_family": {
+          "Holo1.5-3B": 91.66,
+          "Holo1.5-7B": 93.31,
+          "Holo1.5-72B": 94.41
+        },
+        "reference": {
+          "SOTA (UI-Venus-1.5 / MAI-UI)": 96.2,
+          "UI-TARS-7B": 91.6,
+          "OS-Atlas-7B": 87.1,
+          "Qwen2.5-VL-7B": 60.7,
+          "Qwen2.5-VL-72B": 93.3
+        },
+        "note": "Holo3's own ScreenSpot-v2 cell is image-only on its card; Holo1.5 is the text-published H-family bar. Benchmark is largely saturated (>=94% SOTA band).",
+        "sources": [
+          "https://www.hcompany.ai/blog/holo-1-5",
+          "https://huggingface.co/Hcompany/Holo1.5-7B",
+          "https://arxiv.org/abs/2410.23218",
+          "https://huggingface.co/datasets/lmms-lab/ScreenSpot-v2"
+        ]
+      }
+    },
+    {
+      "benchmark": "ScreenSpot-Pro",
+      "dataset": "likaixin/ScreenSpot-Pro",
+      "per_cell": 1,
+      "wall_total_s": 1657.2,
+      "by_group": {
+        "CAD": {
+          "n": 2,
+          "hits": 1,
+          "acc": 0.5
+        },
+        "Creative": {
+          "n": 2,
+          "hits": 1,
+          "acc": 0.5
+        },
+        "Dev": {
+          "n": 2,
+          "hits": 1,
+          "acc": 0.5
+        },
+        "OS": {
+          "n": 2,
+          "hits": 1,
+          "acc": 0.5
+        },
+        "Office": {
+          "n": 2,
+          "hits": 2,
+          "acc": 1.0
+        },
+        "Scientific": {
+          "n": 2,
+          "hits": 2,
+          "acc": 1.0
+        }
+      },
+      "by_ui_type": {
+        "icon": {
+          "n": 6,
+          "hits": 2,
+          "acc": 0.3333
+        },
+        "text": {
+          "n": 6,
+          "hits": 6,
+          "acc": 1.0
+        }
+      },
+      "overall": {
+        "n": 12,
+        "hits": 8,
+        "acc": 0.6667
+      },
+      "samples": [
+        {
+          "idx": 0,
+          "id": "autocad_windows_3",
+          "group": "CAD",
+          "ui_type": "icon",
+          "application": "autocad",
+          "platform": "windows",
+          "instruction": "Specify geometric tolerances.",
+          "img_size": [
+            3840,
+            1080
+          ],
+          "gt_box_frac": [
+            0.0721,
+            0.0685,
+            0.0818,
+            0.0852
+          ],
+          "pred_point_1000": [
+            77.0,
+            123.0
+          ],
+          "pred_frac": [
+            0.077,
+            0.123
+          ],
+          "hit": false,
+          "parsed": true,
+          "raw": "{\"x\":77,\"y\":123}",
+          "wall_s": 151.21,
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 4216,
+            "prompt_ms": 150192.534,
+            "prompt_per_token_ms": 35.624415085388996,
+            "prompt_per_second": 28.070636320710854,
+            "predicted_n": 13,
+            "predicted_ms": 705.813,
+            "predicted_per_token_ms": 54.29330769230769,
+            "predicted_per_second": 18.418476281961368
+          }
+        },
+        {
+          "idx": 1,
+          "id": "autocad_windows_0",
+          "group": "CAD",
+          "ui_type": "text",
+          "application": "autocad",
+          "platform": "windows",
+          "instruction": "Hand-draw cloud line",
+          "img_size": [
+            3840,
+            1080
+          ],
+          "gt_box_frac": [
+            0.0237,
+            0.2574,
+            0.0448,
+            0.287
+          ],
+          "pred_point_1000": [
+            34.0,
+            274.0
+          ],
+          "pred_frac": [
+            0.034,
+            0.274
+          ],
+          "hit": true,
+          "parsed": true,
+          "raw": "{\"x\":34,\"y\":274}",
+          "wall_s": 151.37,
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 4216,
+            "prompt_ms": 150363.22,
+            "prompt_per_token_ms": 35.66490037950664,
+            "prompt_per_second": 28.038771715583106,
+            "predicted_n": 13,
+            "predicted_ms": 701.736,
+            "predicted_per_token_ms": 53.979692307692304,
+            "predicted_per_second": 18.525485367716634
+          }
+        },
+        {
+          "idx": 2,
+          "id": "blender_windows_10",
+          "group": "Creative",
+          "ui_type": "icon",
+          "application": "blender",
+          "platform": "windows",
+          "instruction": "mesh view",
+          "img_size": [
+            2560,
+            1440
+          ],
+          "gt_box_frac": [
+            0.7852,
+            0.0361,
+            0.7926,
+            0.0479
+          ],
+          "pred_point_1000": [
+            822.0,
+            204.0
+          ],
+          "pred_frac": [
+            0.822,
+            0.204
+          ],
+          "hit": false,
+          "parsed": true,
+          "raw": "{\"x\":822,\"y\":204}",
+          "wall_s": 124.75,
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 3733,
+            "prompt_ms": 123760.037,
+            "prompt_per_token_ms": 33.152969997321186,
+            "prompt_per_second": 30.163210116040933,
+            "predicted_n": 14,
+            "predicted_ms": 743.715,
+            "predicted_per_token_ms": 53.1225,
+            "predicted_per_second": 18.82441526660078
+          }
+        },
+        {
+          "idx": 3,
+          "id": "blender_windows_0",
+          "group": "Creative",
+          "ui_type": "text",
+          "application": "blender",
+          "platform": "windows",
+          "instruction": "Change position along Y axis using text input",
+          "img_size": [
+            2560,
+            1440
+          ],
+          "gt_box_frac": [
+            0.3984,
+            0.7556,
+            0.4477,
+            0.7736
+          ],
+          "pred_point_1000": [
+            427.0,
+            766.0
+          ],
+          "pred_frac": [
+            0.427,
+            0.766
+          ],
+          "hit": true,
+          "parsed": true,
+          "raw": "{\"x\":427,\"y\":766}",
+          "wall_s": 124.6,
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 3739,
+            "prompt_ms": 123598.066,
+            "prompt_per_token_ms": 33.05644985290185,
+            "prompt_per_second": 30.2512824108429,
+            "predicted_n": 14,
+            "predicted_ms": 762.655,
+            "predicted_per_token_ms": 54.47535714285714,
+            "predicted_per_second": 18.35692416623506
+          }
+        },
+        {
+          "idx": 4,
+          "id": "android_studio_macos_0",
+          "group": "Dev",
+          "ui_type": "icon",
+          "application": "android_studio",
+          "platform": "macos",
+          "instruction": "modify the highlights of the photo with in the virtual android machine in android studio",
+          "img_size": [
+            3840,
+            2160
+          ],
+          "gt_box_frac": [
+            0.462,
+            0.7343,
+            0.5503,
+            0.7491
+          ],
+          "pred_point_1000": [
+            506.0,
+            700.0
+          ],
+          "pred_frac": [
+            0.506,
+            0.7
+          ],
+          "hit": false,
+          "parsed": true,
+          "raw": "{\"x\":506,\"y\":700}",
+          "wall_s": 151.4,
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 4226,
+            "prompt_ms": 150078.318,
+            "prompt_per_token_ms": 35.51308991954567,
+            "prompt_per_second": 28.1586311488379,
+            "predicted_n": 14,
+            "predicted_ms": 766.975,
+            "predicted_per_token_ms": 54.783928571428575,
+            "predicted_per_second": 18.25352847224486
+          }
+        },
+        {
+          "idx": 5,
+          "id": "android_studio_macos_1",
+          "group": "Dev",
+          "ui_type": "text",
+          "application": "android_studio",
+          "platform": "macos",
+          "instruction": "open contacts of the android machine",
+          "img_size": [
+            3840,
+            2160
+          ],
+          "gt_box_frac": [
+            0.5349,
+            0.7755,
+            0.5576,
+            0.8051
+          ],
+          "pred_point_1000": [
+            544.0,
+            787.0
+          ],
+          "pred_frac": [
+            0.544,
+            0.787
+          ],
+          "hit": true,
+          "parsed": true,
+          "raw": "{\"x\":544,\"y\":787}",
+          "wall_s": 151.94,
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 4217,
+            "prompt_ms": 150684.3,
+            "prompt_per_token_ms": 35.732582404553,
+            "prompt_per_second": 27.98566273991385,
+            "predicted_n": 14,
+            "predicted_ms": 833.562,
+            "predicted_per_token_ms": 59.54014285714286,
+            "predicted_per_second": 16.795391344615037
+          }
+        },
+        {
+          "idx": 6,
+          "id": "linux_common_linux_0",
+          "group": "OS",
+          "ui_type": "icon",
+          "application": "linux_common",
+          "platform": "linux",
+          "instruction": "collapse pkgs folder",
+          "img_size": [
+            3456,
+            2160
+          ],
+          "gt_box_frac": [
+            0.1577,
+            0.1861,
+            0.1629,
+            0.1968
+          ],
+          "pred_point_1000": [
+            161.0,
+            202.0
+          ],
+          "pred_frac": [
+            0.161,
+            0.202
+          ],
+          "hit": false,
+          "parsed": true,
+          "raw": "{\"x\":161,\"y\":202}",
+          "wall_s": 146.94,
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 4135,
+            "prompt_ms": 145716.403,
+            "prompt_per_token_ms": 35.23975888754534,
+            "prompt_per_second": 28.37703865089231,
+            "predicted_n": 14,
+            "predicted_ms": 849.066,
+            "predicted_per_token_ms": 60.64757142857143,
+            "predicted_per_second": 16.488706413871242
+          }
+        },
+        {
+          "idx": 7,
+          "id": "linux_common_linux_2",
+          "group": "OS",
+          "ui_type": "text",
+          "application": "linux_common",
+          "platform": "linux",
+          "instruction": "open a terminal and set the terminal to the current folder",
+          "img_size": [
+            3456,
+            2160
+          ],
+          "gt_box_frac": [
+            0.579,
+            0.4208,
+            0.6412,
+            0.4352
+          ],
+          "pred_point_1000": [
+            607.0,
+            425.0
+          ],
+          "pred_frac": [
+            0.607,
+            0.425
+          ],
+          "hit": true,
+          "parsed": true,
+          "raw": "{\"x\":607,\"y\":425}",
+          "wall_s": 147.37,
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 4142,
+            "prompt_ms": 146092.293,
+            "prompt_per_token_ms": 35.27095436986963,
+            "prompt_per_second": 28.351940509277927,
+            "predicted_n": 14,
+            "predicted_ms": 830.312,
+            "predicted_per_token_ms": 59.308,
+            "predicted_per_second": 16.86113171916099
+          }
+        },
+        {
+          "idx": 8,
+          "id": "excel_macos_13",
+          "group": "Office",
+          "ui_type": "icon",
+          "application": "excel",
+          "platform": "macos",
+          "instruction": "redo",
+          "img_size": [
+            3456,
+            2234
+          ],
+          "gt_box_frac": [
+            0.0972,
+            0.034,
+            0.103,
+            0.0439
+          ],
+          "pred_point_1000": [
+            102.0,
+            38.0
+          ],
+          "pred_frac": [
+            0.102,
+            0.038
+          ],
+          "hit": true,
+          "parsed": true,
+          "raw": "{\"x\":102,\"y\":38}",
+          "wall_s": 148.03,
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 4161,
+            "prompt_ms": 146969.317,
+            "prompt_per_token_ms": 35.32067219418409,
+            "prompt_per_second": 28.312031959704896,
+            "predicted_n": 13,
+            "predicted_ms": 696.776,
+            "predicted_per_token_ms": 53.59815384615384,
+            "predicted_per_second": 18.657359036476574
+          }
+        },
+        {
+          "idx": 9,
+          "id": "excel_macos_0",
+          "group": "Office",
+          "ui_type": "text",
+          "application": "excel",
+          "platform": "macos",
+          "instruction": "change selected cells to type \"Text\"",
+          "img_size": [
+            3456,
+            2234
+          ],
+          "gt_box_frac": [
+            0.3406,
+            0.4145,
+            0.3762,
+            0.4217
+          ],
+          "pred_point_1000": [
+            354.0,
+            418.0
+          ],
+          "pred_frac": [
+            0.354,
+            0.418
+          ],
+          "hit": true,
+          "parsed": true,
+          "raw": "{\"x\":354,\"y\":418}",
+          "wall_s": 148.59,
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 4168,
+            "prompt_ms": 147453.368,
+            "prompt_per_token_ms": 35.37748752399232,
+            "prompt_per_second": 28.26656356876162,
+            "predicted_n": 14,
+            "predicted_ms": 762.195,
+            "predicted_per_token_ms": 54.4425,
+            "predicted_per_second": 18.36800293888047
+          }
+        },
+        {
+          "idx": 10,
+          "id": "eviews_windows_5",
+          "group": "Scientific",
+          "ui_type": "icon",
+          "application": "eviews",
+          "platform": "windows",
+          "instruction": "choose default add-ins directory",
+          "img_size": [
+            2160,
+            1440
+          ],
+          "gt_box_frac": [
+            0.6412,
+            0.6312,
+            0.6546,
+            0.6431
+          ],
+          "pred_point_1000": [
+            644.0,
+            637.0
+          ],
+          "pred_frac": [
+            0.644,
+            0.637
+          ],
+          "hit": true,
+          "parsed": true,
+          "raw": "{\"x\":644,\"y\":637}",
+          "wall_s": 97.45,
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 3196,
+            "prompt_ms": 96383.449,
+            "prompt_per_token_ms": 30.157524718397994,
+            "prompt_per_second": 33.15922010634834,
+            "predicted_n": 14,
+            "predicted_ms": 792.572,
+            "predicted_per_token_ms": 56.61228571428571,
+            "predicted_per_second": 17.664010335969476
+          }
+        },
+        {
+          "idx": 11,
+          "id": "eviews_windows_0",
+          "group": "Scientific",
+          "ui_type": "text",
+          "application": "eviews",
+          "platform": "windows",
+          "instruction": "reset to Eviews defaults",
+          "img_size": [
+            2160,
+            1440
+          ],
+          "gt_box_frac": [
+            0.4995,
+            0.4854,
+            0.5856,
+            0.4979
+          ],
+          "pred_point_1000": [
+            545.0,
+            492.0
+          ],
+          "pred_frac": [
+            0.545,
+            0.492
+          ],
+          "hit": true,
+          "parsed": true,
+          "raw": "{\"x\":545,\"y\":492}",
+          "wall_s": 97.65,
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 3196,
+            "prompt_ms": 96673.542,
+            "prompt_per_token_ms": 30.248292240300376,
+            "prompt_per_second": 33.05971762160116,
+            "predicted_n": 14,
+            "predicted_ms": 734.898,
+            "predicted_per_token_ms": 52.492714285714285,
+            "predicted_per_second": 19.050262757552748
+          }
+        }
+      ],
+      "leaderboard": {
+        "metric": "avg click accuracy (%)",
+        "holo_family": {
+          "Holo1.5-3B": 51.49,
+          "Holo1.5-7B": 57.94,
+          "Holo1.5-72B": 63.25
+        },
+        "reference": {
+          "GTA1-72B": 58.4,
+          "GTA1-7B": 50.1,
+          "Qwen2.5-VL-72B": 55.6,
+          "UI-TARS-72B": 38.1,
+          "Qwen2.5-VL-7B": 29.0,
+          "OS-Atlas-7B": 18.9
+        },
+        "note": "High-resolution professional-software grounding; tiny targets in 4K -> hard, low absolute band. Holo3 advertised 'top-tier'; exact cell image-only on card.",
+        "sources": [
+          "https://arxiv.org/abs/2504.07981",
+          "https://huggingface.co/Hcompany/Holo1.5-7B",
+          "https://arxiv.org/abs/2507.05791",
+          "https://huggingface.co/datasets/likaixin/ScreenSpot-Pro"
+        ]
+      }
+    },
+    {
+      "benchmark": "Multimodal-Mind2Web",
+      "dataset": "osunlp/Multimodal-Mind2Web",
+      "per_split": 2,
+      "wall_total_s": 984.5,
+      "by_setting": {
+        "Cross-Task": {
+          "n": 2,
+          "ele_acc": 0.5,
+          "near_acc": 1.0,
+          "op_acc": 1.0,
+          "step_sr": 0.5,
+          "median_dist_to_box": 0.0009
+        },
+        "Cross-Website": {
+          "n": 2,
+          "ele_acc": 0.0,
+          "near_acc": 0.0,
+          "op_acc": 0.5,
+          "step_sr": 0.0,
+          "median_dist_to_box": 0.4171
+        },
+        "Cross-Domain": {
+          "n": 2,
+          "ele_acc": 0.0,
+          "near_acc": 0.0,
+          "op_acc": 0.5,
+          "step_sr": 0.0,
+          "median_dist_to_box": 0.3559
+        }
+      },
+      "overall": {
+        "n": 6,
+        "ele_acc": 0.1667,
+        "near_acc": 0.3333,
+        "op_acc": 0.6667,
+        "step_sr": 0.1667,
+        "median_dist_to_box": 0.1997
+      },
+      "samples": [
+        {
+          "split": "test_task",
+          "setting": "Cross-Task",
+          "website": "budget",
+          "domain": "Travel",
+          "task": "Rent a truck with the lowest rent with two dozen furniture pads for 100 miles at zip 08817 on April 12 at 2:30 pm rented truck is to be returned to the exact lo",
+          "step_idx": 0,
+          "history_len": 0,
+          "img_size": [
+            1280,
+            4171
+          ],
+          "gt_op": "CLICK",
+          "gt_value": "",
+          "gt_box_frac": [
+            0.4172,
+            0.0108,
+            0.5352,
+            0.0161
+          ],
+          "pred": {
+            "element": "Reservations",
+            "x": 477,
+            "y": 17,
+            "operation": "CLICK",
+            "value": ""
+          },
+          "pred_point_1000": [
+            477.0,
+            17.0
+          ],
+          "pred_frac": [
+            0.477,
+            0.017
+          ],
+          "ele_hit": false,
+          "near_hit": true,
+          "dist_to_box": 0.0009,
+          "op_match": true,
+          "value_ok": true,
+          "step_success": false,
+          "wall_s": 157.81,
+          "raw": "{\"element\":\"Reservations\",\"x\":477,\"y\":17,\"operation\":\"CLICK\",\"value\":\"\"}"
+        },
+        {
+          "split": "test_task",
+          "setting": "Cross-Task",
+          "website": "budget",
+          "domain": "Travel",
+          "task": "Rent a truck with the lowest rent with two dozen furniture pads for 100 miles at zip 08817 on April 12 at 2:30 pm rented truck is to be returned to the exact lo",
+          "step_idx": 1,
+          "history_len": 1,
+          "img_size": [
+            1280,
+            4171
+          ],
+          "gt_op": "CLICK",
+          "gt_value": "",
+          "gt_box_frac": [
+            0.4172,
+            0.0424,
+            0.6281,
+            0.0525
+          ],
+          "pred": {
+            "element": "Click on 'Budget Truck' in the dropdown menu under 'Reservations'.",
+            "x": 470,
+            "y": 49,
+            "operation": "CLICK",
+            "value": ""
+          },
+          "pred_point_1000": [
+            470.0,
+            49.0
+          ],
+          "pred_frac": [
+            0.47,
+            0.049
+          ],
+          "ele_hit": true,
+          "near_hit": true,
+          "dist_to_box": 0.0,
+          "op_match": true,
+          "value_ok": true,
+          "step_success": true,
+          "wall_s": 161.17,
+          "raw": "{\"element\":\"Click on 'Budget Truck' in the dropdown menu under 'Reservations'.\",\"x\":470,\"y\":49,\"operation\":\"CLICK\",\"value\":\"\"}"
+        },
+        {
+          "split": "test_website",
+          "setting": "Cross-Website",
+          "website": "tiktok.music",
+          "domain": "Entertainment",
+          "task": "What are the romantic reggae musics from BCD Studio that can be used in tik tok series in andorra",
+          "step_idx": 0,
+          "history_len": 0,
+          "img_size": [
+            1280,
+            3464
+          ],
+          "gt_op": "CLICK",
+          "gt_value": "",
+          "gt_box_frac": [
+            0.2781,
+            0.1331,
+            0.5281,
+            0.1429
+          ],
+          "pred": {
+            "element": "Select the 'Reggae' option in the Genre section.",
+            "x": 100,
+            "y": 520,
+            "operation": "SELECT",
+            "value": "Reggae"
+          },
+          "pred_point_1000": [
+            100.0,
+            520.0
+          ],
+          "pred_frac": [
+            0.1,
+            0.52
+          ],
+          "ele_hit": false,
+          "near_hit": false,
+          "dist_to_box": 0.4171,
+          "op_match": false,
+          "value_ok": true,
+          "step_success": false,
+          "wall_s": 158.37,
+          "raw": "{\"element\":\"Select the 'Reggae' option in the Genre section.\",\"x\":100,\"y\":520,\"operation\":\"SELECT\",\"value\":\"Reggae\"}"
+        },
+        {
+          "split": "test_website",
+          "setting": "Cross-Website",
+          "website": "tiktok.music",
+          "domain": "Entertainment",
+          "task": "What are the romantic reggae musics from BCD Studio that can be used in tik tok series in andorra",
+          "step_idx": 1,
+          "history_len": 1,
+          "img_size": [
+            1280,
+            3464
+          ],
+          "gt_op": "CLICK",
+          "gt_value": "",
+          "gt_box_frac": [
+            0.2844,
+            0.08,
+            0.5203,
+            0.0863
+          ],
+          "pred": {
+            "element": "Select TikTok series",
+            "x": 100,
+            "y": 163,
+            "operation": "CLICK",
+            "value": ""
+          },
+          "pred_point_1000": [
+            100.0,
+            163.0
+          ],
+          "pred_frac": [
+            0.1,
+            0.163
+          ],
+          "ele_hit": false,
+          "near_hit": false,
+          "dist_to_box": 0.1997,
+          "op_match": true,
+          "value_ok": true,
+          "step_success": false,
+          "wall_s": 158.84,
+          "raw": "{\"element\":\"Select TikTok series\",\"x\":100,\"y\":163,\"operation\":\"CLICK\",\"value\":\"\"}"
+        },
+        {
+          "split": "test_domain",
+          "setting": "Cross-Domain",
+          "website": "usps",
+          "domain": "Service",
+          "task": "Book an appointment for applying new passport for one adult, Ellen Walker, with phone number 123-456-7890 and email address EW@gmail.com on April 4, 2023 at 1 p",
+          "step_idx": 0,
+          "history_len": 0,
+          "img_size": [
+            1318,
+            5283
+          ],
+          "gt_op": "CLICK",
+          "gt_value": "",
+          "gt_box_frac": [
+            0.2102,
+            0.0069,
+            0.3212,
+            0.015
+          ],
+          "pred": {
+            "element": "Click on the 'Go Now' button under the 'Passport Services' section to proceed with scheduling the appointment.",
+            "x": 158,
+            "y": 367,
+            "operation": "CLICK",
+            "value": ""
+          },
+          "pred_point_1000": [
+            158.0,
+            367.0
+          ],
+          "pred_frac": [
+            0.158,
+            0.367
+          ],
+          "ele_hit": false,
+          "near_hit": false,
+          "dist_to_box": 0.3559,
+          "op_match": true,
+          "value_ok": true,
+          "step_success": false,
+          "wall_s": 157.24,
+          "raw": "{\"element\":\"Click on the 'Go Now' button under the 'Passport Services' section to proceed with scheduling the appointment.\",\"x\":158,\"y\":367,\"operation\":\"CLICK\",\"value\":\"\"}"
+        },
+        {
+          "split": "test_domain",
+          "setting": "Cross-Domain",
+          "website": "usps",
+          "domain": "Service",
+          "task": "Book an appointment for applying new passport for one adult, Ellen Walker, with phone number 123-456-7890 and email address EW@gmail.com on April 4, 2023 at 1 p",
+          "step_idx": 1,
+          "history_len": 1,
+          "img_size": [
+            1318,
+            5283
+          ],
+          "gt_op": "CLICK",
+          "gt_value": "",
+          "gt_box_frac": [
+            0.4044,
+            0.015,
+            0.4992,
+            0.0433
+          ],
+          "pred": {
+            "type": "object",
+            "properties": {
+              "element": "Passport Services -> Go Now",
+              "x": "157",
+              "y": "368",
+              "operation": "CLICK",
+              "value": ""
+            }
+          },
+          "pred_point_1000": null,
+          "pred_frac": null,
+          "ele_hit": false,
+          "near_hit": false,
+          "dist_to_box": null,
+          "op_match": false,
+          "value_ok": true,
+          "step_success": false,
+          "wall_s": 155.34,
+          "raw": "{\"type\":\"object\",\"properties\": {\"element\": \"Passport Services -> Go Now\", \"x\": \"157\", \"y\": \"368\", \"operation\": \"CLICK\", \"value\": \"\"}}"
+        }
+      ],
+      "leaderboard": {
+        "metric": "Ele.Acc / Op.acc / Step SR (%)",
+        "holo_family": {},
+        "reference": {
+          "UGround Ele.Acc (avg, vision)": 46.8,
+          "GPT-4 SoM Ele.Acc (vision)": 25.6,
+          "Qwen2.5-VL-3B Ele.Acc (avg)": 54.3,
+          "Qwen2.5-VL-3B Op.F1 (avg)": 88.2
+        },
+        "note": "No Holo number is published for Mind2Web. Reference Ele.Acc figures come from HTML-candidate / viewport-screenshot protocols; this smoke test uses the harsher FULL-PAGE screenshot + strict point-in-box, so Ele.Acc is a lower bound. median_dist_to_box and near_acc show how close near-misses land.",
+        "sources": [
+          "https://huggingface.co/datasets/osunlp/Multimodal-Mind2Web",
+          "https://arxiv.org/abs/2410.05243",
+          "https://arxiv.org/abs/2502.13923"
+        ]
+      }
+    }
+  ],
+  "deferred_live_env": [
+    "WebVoyager (live browser)",
+    "AndroidWorld (Android emulator)",
+    "TheAgentCompany (OpenHands code-agent \u2014 mismatched for a coordinate-only vision model)"
+  ],
+  "deferred_note": "WebArena is ALSO run here, as a single-model screenshot+coordinate shopping slice via BrowserGym (see its own panel/run). The remaining live boards stay infra-gated: WebVoyager / AndroidWorld need a live browser / Android emulator; TheAgentCompany runs on OpenHands (bash + element-id actions, ~47% code-centric tasks) which a coordinate-only vision model cannot drive. OSWorld, the live computer-use board, was run separately (Holo3 = #1 open-weight)."
+}
