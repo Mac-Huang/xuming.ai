@@ -2231,6 +2231,126 @@
       }
     },
     {
+      "benchmark": "MiniWoB++",
+      "harness": "BrowserGym coord + Holo3 single-model",
+      "n_tasks": 12,
+      "success_rate": 0.1667,
+      "mean_reward": 0.1667,
+      "wall_total_s": 4097.4,
+      "max_steps": 15,
+      "leaderboard": {
+        "metric": "task success rate (%)",
+        "note": "MiniWoB++ = 125 tiny synthetic GUI tasks (classic web-agent grounding benchmark). Strong supervised/specialist agents (CC-Net, WebGUM, Pix2Act, Synapse) reach ~90-96% with task-specific training; zero/few-shot LLM-vision agents (no MiniWoB training) are far lower. This is a single-model, screenshot+coordinate, zero-shot Holo3 run on a CPU NUC \u2014 a generalist probe.",
+        "reference": {
+          "CC-Net (specialist)": 96.0,
+          "WebGUM": 94.2,
+          "Pix2Act (pixel-only)": 96.2
+        },
+        "sources": [
+          "https://github.com/Farama-Foundation/miniwob-plusplus",
+          "https://arxiv.org/abs/2210.03945"
+        ]
+      },
+      "results": [
+        {
+          "reward": 1.0,
+          "success": true,
+          "steps": 1,
+          "n_calls": 1,
+          "task": "click-button",
+          "wall_s": 17.9
+        },
+        {
+          "reward": 0.0,
+          "success": false,
+          "steps": 3,
+          "n_calls": 3,
+          "task": "click-checkboxes",
+          "wall_s": 44.4
+        },
+        {
+          "reward": 0.0,
+          "success": false,
+          "steps": 15,
+          "n_calls": 15,
+          "task": "click-dialog",
+          "wall_s": 435.6
+        },
+        {
+          "reward": 0.0,
+          "success": false,
+          "steps": 15,
+          "n_calls": 15,
+          "task": "click-tab",
+          "wall_s": 648.6
+        },
+        {
+          "reward": 0.0,
+          "success": false,
+          "steps": 15,
+          "n_calls": 15,
+          "task": "click-link",
+          "wall_s": 401.6
+        },
+        {
+          "reward": 0.0,
+          "success": false,
+          "steps": 15,
+          "n_calls": 15,
+          "task": "click-option",
+          "wall_s": 529.4
+        },
+        {
+          "reward": 0.0,
+          "success": false,
+          "steps": 15,
+          "n_calls": 15,
+          "task": "enter-text",
+          "wall_s": 381.3
+        },
+        {
+          "reward": 0.0,
+          "success": false,
+          "steps": 15,
+          "n_calls": 15,
+          "task": "enter-date",
+          "wall_s": 389.4
+        },
+        {
+          "reward": 1.0,
+          "success": true,
+          "steps": 1,
+          "n_calls": 1,
+          "task": "focus-text",
+          "wall_s": 16.6
+        },
+        {
+          "reward": 0.0,
+          "success": false,
+          "steps": 15,
+          "n_calls": 15,
+          "task": "login-user",
+          "wall_s": 363.6
+        },
+        {
+          "reward": 0.0,
+          "success": false,
+          "steps": 15,
+          "n_calls": 15,
+          "task": "choose-list",
+          "wall_s": 386.0
+        },
+        {
+          "reward": 0.0,
+          "success": false,
+          "steps": 15,
+          "n_calls": 15,
+          "task": "use-slider",
+          "wall_s": 483.2
+        }
+      ]
+    },
+    {
       "benchmark": "WebArena (shopping)",
       "harness": "BrowserGym coord + Holo3 single-model",
       "site": "shopping (am1n3e/webarena-verified-shopping)",

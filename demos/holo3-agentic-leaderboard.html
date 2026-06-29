@@ -166,24 +166,31 @@ function m2wPanel(b){
   return body;
 }
 
-function waPanel(b){
-  const lb=b.leaderboard||{};
-  let body=`<p class="small">${b.site||''} · harness: ${b.harness||'BrowserGym coord'} · `
-    +`${b.n_tasks} tasks (max ${b.max_steps} steps) · wall ${b.wall_total_s}s · live self-hosted environment</p>`;
+function waPanel(b){  // generic "agent-flow" panel: WebArena / MiniWoB++ / WebVoyager
+  const lb=b.leaderboard||{}; const rs=b.results||[];
+  const solved=rs.filter(r=>r.success).length;
+  const meta=[b.site, b.harness||'BrowserGym coord', `${b.n_tasks} tasks (max ${b.max_steps} steps)`,
+              `wall ${b.wall_total_s}s`, b.judge?`judge ${b.judge}`:null].filter(Boolean).join(' · ');
+  let body=`<p class="small">${meta}</p>`;
   body+=`<div class="cards" style="margin:6px 0 12px">`
-    +card('Task success rate', pct(b.success_rate), `${(b.results||[]).filter(r=>r.success).length}/${b.n_tasks} shopping tasks solved end-to-end`, b.success_rate>0?'g':'y')
-    +card('Mean reward', (b.mean_reward==null?'—':b.mean_reward.toFixed(2)), 'WebArena functional checker (0–1)', 'k')
+    +card('Task success rate', pct(b.success_rate), `${solved}/${b.n_tasks} solved end-to-end`, b.success_rate>0?'g':'y')
     +card('Single model', 'Holo3-35B-A3B', 'screenshot → click(x,y); no a11y tree, no Set-of-Marks', 'p')
     +`</div>`;
-  // per-task table
-  const rs=b.results||[];
   if(rs.length){
-    body+=`<div class="scroll"><table><thead><tr><th>task</th><th>intent</th><th class="num">success</th><th class="num">reward</th><th class="num">steps</th><th class="num">wall</th><th>answer</th></tr></thead><tbody>`;
+    const lbl=r=> r.task_id!=null?('#'+r.task_id) : (r.site||r.task||r.id||'');
+    const desc=r=> r.intent||r.question||'';
+    const note=r=> r.answer||r.judge_verdict||r.error||'';
+    const hasDesc=rs.some(desc), hasNote=rs.some(note);
+    body+=`<div class="scroll"><table><thead><tr><th>task</th>`
+      +(hasDesc?`<th>goal</th>`:``)+`<th class="num">ok</th><th class="num">steps</th><th class="num">wall</th>`
+      +(hasNote?`<th>answer / verdict</th>`:``)+`</tr></thead><tbody>`;
     rs.forEach(r=>{
-      body+=`<tr><td>#${r.task_id}</td><td title="${(r.intent||'').replace(/"/g,'&quot;')}">${(r.intent||'').slice(0,52)}</td>`
+      body+=`<tr><td>${lbl(r)}</td>`
+        +(hasDesc?`<td title="${(desc(r)).replace(/"/g,'&quot;')}">${desc(r).slice(0,48)}</td>`:``)
         +`<td class="num ${r.success?'hit':'miss'}">${r.success?'✓':'·'}</td>`
-        +`<td class="num">${r.reward}</td><td class="num dim">${r.steps}</td><td class="num dim">${r.wall_s}s</td>`
-        +`<td class="dim" title="${(r.answer||'').replace(/"/g,'&quot;')}">${(r.answer||'').slice(0,40)}</td></tr>`;
+        +`<td class="num dim">${r.steps}</td><td class="num dim">${r.wall_s}s</td>`
+        +(hasNote?`<td class="dim" title="${(note(r)).replace(/"/g,'&quot;')}">${note(r).slice(0,46)}</td>`:``)
+        +`</tr>`;
     });
     body+=`</tbody></table></div>`;
   }
@@ -232,9 +239,11 @@ function render(d){
   const cardsEl=document.getElementById('cards'); cardsEl.innerHTML='';
   (d.benchmarks||[]).forEach(b=>{
     const ov=b.overall||{};
-    if((b.benchmark||'').startsWith('WebArena')){
+    if(b.success_rate!==undefined){
+      const refs=b.leaderboard&&b.leaderboard.reference||{};
+      const topRef=Object.keys(refs).length?` · vs ${Math.max(...Object.values(refs))}% best ref`:'';
       cardsEl.innerHTML += card(b.benchmark, pct(b.success_rate)+' <span class="small">task SR</span>',
-        `${b.n_tasks} live tasks · single-model · vs 69.6% multi-model SOTA`, b.success_rate>0?'g':'y');
+        `${b.n_tasks} tasks · single-model${topRef}`, b.success_rate>0?'g':'y');
     } else if(b.benchmark==='Multimodal-Mind2Web'){
       cardsEl.innerHTML += card(b.benchmark, pct(ov.step_sr)+' <span class="small">step SR</span>',
         `Ele.Acc ${pct(ov.ele_acc)} · Op.acc ${pct(ov.op_acc)} · n=${ov.n}`, 'p');
@@ -263,7 +272,7 @@ function render(d){
   const bp=document.getElementById('benchpanels'); bp.innerHTML='';
   (d.benchmarks||[]).forEach(b=>{
     const panel=el('div','panel full');
-    const inner = (b.benchmark||'').startsWith('WebArena') ? waPanel(b)
+    const inner = (b.success_rate!==undefined) ? waPanel(b)
                 : b.benchmark==='Multimodal-Mind2Web' ? m2wPanel(b) : ssPanel(b);
     panel.innerHTML = `<h2>${b.benchmark}</h2>` + inner;
     bp.appendChild(panel);
