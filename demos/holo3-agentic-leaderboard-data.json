@@ -3038,6 +3038,102 @@
           "wall_s": 1304.8
         }
       ]
+    },
+    {
+      "benchmark": "WebVoyager",
+      "harness": "BrowserGym openended + Holo3 single-model (pixel, no SoM)",
+      "judge": "gpt-4o",
+      "n_tasks": 6,
+      "success_rate": 0.5,
+      "wall_total_s": 3057.4,
+      "max_steps": 13,
+      "leaderboard": {
+        "metric": "task success rate (%, GPT-4o judge)",
+        "note": "WebVoyager SOTA is Holo-LINEAGE: Surfer-H/Holo1 92.2%, Surfer-2/Holo2 ~97% \u2014 but those are multi-component agent scaffolds. This is a SINGLE-model, pixel-native (no Set-of-Marks) Holo3 run on CPU over a one-per-site live slice; live sites are non-reproducible (drift/CAPTCHA/bot-walls) \u2014 a capability probe.",
+        "reference": {
+          "Surfer-2/Holo2": 97.0,
+          "Surfer-H/Holo1": 92.2,
+          "GPT-4V (orig)": 57.1
+        },
+        "sources": [
+          "https://arxiv.org/abs/2401.13919",
+          "https://arxiv.org/abs/2506.02865"
+        ]
+      },
+      "results": [
+        {
+          "site": "Allrecipes",
+          "id": "Allrecipes--0",
+          "question": "Provide a recipe for vegetarian lasagna with more than 100 reviews and a rating of at least 4.5 stars suitable for 6 people.",
+          "answer": "N/A - Unable to complete the task due to Cloudflare human verification system blocking access to the website. After multiple attempts to verify human status, the verification popup persists and prevents access to website content needed to search for vegetarian lasagna recipes meeting the specified c",
+          "success": false,
+          "judge_verdict": "NOT SUCCESS - The agent was unable to access the necessary information due to a verification block and did not provide a recipe.",
+          "steps": 11,
+          "n_calls": 11,
+          "error": null,
+          "wall_s": 820.9
+        },
+        {
+          "site": "ArXiv",
+          "id": "ArXiv--0",
+          "question": "Search for the latest preprints about 'quantum computing'.",
+          "answer": "The latest preprints about quantum computing on arXiv are displayed in order of announcement date (newest first). The most recent preprint is:\n\n**arXiv:2606.28275** (June 26, 2026)\n- **Title:** \"Revealing precision bounds on neutrino oscillation parameters with quantum estimation theory\"\n- **Authors",
+          "success": false,
+          "judge_verdict": "NOT SUCCESS\n\nThe preprint mentioned is dated June 26, 2026, which is in the future, indicating an error in the search results.",
+          "steps": 4,
+          "n_calls": 4,
+          "error": null,
+          "wall_s": 204.8
+        },
+        {
+          "site": "BBC News",
+          "id": "BBC News--0",
+          "question": "Find a report on the BBC News website about recent developments in renewable energy technologies in the UK.",
+          "answer": "I found a BBC News report on recent developments in renewable energy technologies in the UK:\n\n**Article:** \"Giant turbine convoy makes its way to wind farm\"\n**Date:** 12 June 2026\n**Author:** Giancarlo Rinaldi (South Scotland reporter)\n\n**Key Details:**\n- Renewables firm CWP Energy successfully tran",
+          "success": true,
+          "judge_verdict": "SUCCESS\n\nThe agent successfully found a BBC News report detailing recent developments in renewable energy technologies in the UK, specifically focusing on the transportation of turbine blades to a wind farm, which is a relevant advancement in renewable energy infrastructure.",
+          "steps": 6,
+          "n_calls": 6,
+          "error": null,
+          "wall_s": 584.6
+        },
+        {
+          "site": "Cambridge Dictionary",
+          "id": "Cambridge Dictionary--0",
+          "question": "Look up the pronunciation and definition of the word \"sustainability\" on the Cambridge Dictionary.",
+          "answer": "N/A",
+          "success": false,
+          "judge_verdict": "NOT SUCCESS\n\nThe agent was unable to access the Cambridge Dictionary due to security verification issues and did not provide the pronunciation or definition of \"sustainability.\"",
+          "steps": 12,
+          "n_calls": 12,
+          "error": null,
+          "wall_s": 974.0
+        },
+        {
+          "site": "GitHub",
+          "id": "GitHub--0",
+          "question": "Search for an open-source project related to 'climate change data visualization' on GitHub and report the project with the most stars.",
+          "answer": "The open-source project related to 'climate change data visualization' with the most stars on GitHub is **resource-watch/resource-watch** with 73 stars. This repository features hundreds of data sets about the planet's resources and citizens in one place, with visualization capabilities. It is built",
+          "success": true,
+          "judge_verdict": "SUCCESS\n\nThe agent correctly identified the open-source project with the most stars related to 'climate change data visualization' on GitHub as **resource-watch/resource-watch** with 73 stars, as verified by the screenshots.",
+          "steps": 6,
+          "n_calls": 6,
+          "error": null,
+          "wall_s": 356.5
+        },
+        {
+          "site": "Wolfram Alpha",
+          "id": "Wolfram Alpha--0",
+          "question": "derivative of x^2 when x=5.6",
+          "answer": "11.2",
+          "success": true,
+          "judge_verdict": "SUCCESS\n\nThe agent correctly calculated the derivative of \\(x^2\\) at \\(x = 5.6\\) as 11.2, which matches the expected result.",
+          "steps": 3,
+          "n_calls": 3,
+          "error": null,
+          "wall_s": 116.6
+        }
+      ]
     }
   ],
   "deferred_live_env": [
