@@ -89,9 +89,10 @@
       hides as <b>active-core power</b> — cores held at <b>27&nbsp;W</b> (<b>~24&nbsp;W above
       idle</b>) starved for data — not as DRAM power. The real energy hogs are the
       <b>repeated 8k-token prefill</b> (~63%) and a fixed <b>27% platform tax</b>. Offloading
-      the compute-bound prefill to the iGPU cuts its energy <span class="win">8.6×</span> on a
-      real model, but — on this <b>unified-memory SoC</b>, with today's backends —
-      <span class="lose">doesn't help</span> memory-bound decode.
+      the compute-bound prefill of the <b>full Holo3-35B</b> to the iGPU cuts its energy
+      <span class="win">4.1×</span> and frees the cores (58→1.6 W), but — on this
+      <b>unified-memory SoC</b> — memory-bound decode is actually <span class="lose">~1.9× worse</span>
+      on the iGPU and belongs on the CPU.
     </div>
     <div class="cards">
       <div class="card"><div class="lab">Total metered</div><div class="big">9.8 kWh</div><div class="det">141 tasks · 2,136 steps · <b>132 h</b> of pure inference</div></div>
@@ -99,7 +100,7 @@
       <div class="card"><div class="lab">CPU cores</div><div class="big k">67%</div><div class="det">of platform energy</div></div>
       <div class="card"><div class="lab">DRAM devices</div><div class="big r">1.4%</div><div class="det">the "movement" domain — tiny</div></div>
       <div class="card"><div class="lab">Platform tax</div><div class="big y">27%</div><div class="det">VRM · rails · I/O — always on</div></div>
-      <div class="card"><div class="lab">iGPU prefill</div><div class="big g">8.6×</div><div class="det">less energy — real model<br><span class="dim">33× on synthetic fp16 matmul</span></div></div>
+      <div class="card"><div class="lab">iGPU prefill</div><div class="big g">4.1×</div><div class="det">less energy — full Holo3-35B<br><span class="dim">frees cores 58 W→1.6 W</span></div></div>
     </div>
     <p class="dim" style="margin-top:10px">
       <span class="tag">RAPL psys/package/core/dram</span><span class="tag">llama.cpp Q4_K_M</span>
@@ -127,9 +128,9 @@
       already on disk; (M2) STREAM + variable-arithmetic-intensity microkernels in C
       (<code>-O3 -march=native</code>, OpenMP); (M3/M4) identical matmul + memory workloads
       on CPU/iGPU/NPU via OpenVINO, plus a real transformer (Qwen2.5-1.5B) on CPU vs. iGPU
-      via llama.cpp Vulkan. Full-model Holo3-on-iGPU was skipped (21&nbsp;GB would OOM the
-      shared box); the offload numbers below are the controlled synthetic + small-model
-      measurements, not a projection.
+      via llama.cpp Vulkan; (M5) the <b>full Holo3-35B loaded onto the iGPU</b> (all 21&nbsp;GB,
+      <code>-ngl 99</code>, after freeing ~54&nbsp;GB) and metered on CPU vs. iGPU across seven
+      OSWorld task sizes. Every offload number below is a direct measurement, not a projection.
     </p>
   </section>
 
@@ -249,33 +250,45 @@
   <!-- ============ 4. ACCELERATORS ============ -->
   <section class="panel full">
     <h2>4 · Per processor — CPU vs iGPU vs NPU</h2>
-    <p>Same workloads, three engines. The user directive: quality irrelevant, just measure the
-      energy.</p>
+    <p>The decisive test: run the <b>full Holo3-35B on the iGPU</b>. We freed ~54 GB, loaded all
+      21 GB of the model onto the Xe3 via llama.cpp Vulkan (<code>-ngl 99</code>), and metered
+      prefill + decode energy across seven OSWorld task sizes on CPU vs iGPU.</p>
+    <figure>
+      <img src="holo3-energy-figs/fig8_holo3_offload.png" alt="Full Holo3-35B prefill and decode energy, CPU vs iGPU, across OSWorld task sizes">
+      <figcaption>Full Holo3-35B-A3B, CPU vs iGPU, seven OSWorld task sizes.
+        <b>Prefill:</b> the iGPU uses <b class="g">4.1× less energy</b> (≈170 vs ≈700 mJ/tok)
+        and frees the cores (<b>58 → 1.6 W</b>) — though the MoE-on-Vulkan path caps throughput,
+        so it is not faster (92 vs 107 tps). <b>Decode:</b> the iGPU is <b class="r">~1.9× worse</b>
+        on energy and (the robust signal) <b>2.5× slower</b> (8 vs 20 tps) — memory-bound work stays on the CPU.</figcaption>
+    </figure>
+    <p style="margin-top:14px">Why 4.1×, and not more? Two supporting probes bracket the ceiling:</p>
     <div class="cards">
       <div style="flex:1 1 340px"><figure>
         <img src="holo3-energy-figs/fig5_accelerators.png" alt="Compute energy per FLOP and freed core power across CPU/iGPU/NPU">
-        <figcaption>Identical 137-GFLOP matmul. The <b class="a">iGPU (Xe3)</b> and
-          <b class="p">NPU</b> do it at <b>~35× less energy per FLOP</b> than the CPU
-          (2.6–2.8 vs 93 pJ/FLOP) and <b>~25× faster</b> — and, because the work leaves the
-          cores, CPU-core power collapses from 41 W to 3–6 W.</figcaption>
+        <figcaption>Ideal ceiling — identical 137-GFLOP matmul. The <b class="a">iGPU</b> and
+          <b class="p">NPU</b> do it at <b>~35× less energy per FLOP</b> (2.6–2.8 vs 93) and
+          ~25× faster; core power collapses 41 W → 3–6 W. This is fp16/int8 vs fp32, the
+          engines' native precisions.</figcaption>
       </figure></div>
       <div style="flex:1 1 340px"><figure>
         <img src="holo3-energy-figs/fig6_offload.png" alt="Real transformer prefill/decode energy CPU vs iGPU">
-        <figcaption>Real transformer (Qwen2.5-1.5B, llama.cpp Vulkan). The iGPU wins
-          <b>prefill</b> <b class="g">8.6×</b> on energy (36 vs 311 mJ/tok) and runs it
-          faster — but <b>ties decode</b> (915 vs 930 mJ/tok) and is actually <i>slower</i>
-          at it.</figcaption>
+        <figcaption>Small dense model — Qwen2.5-1.5B, llama.cpp Vulkan. The iGPU wins
+          <b>prefill</b> <b class="g">8.6×</b> (36 vs 311 mJ/tok) and runs it <i>faster</i> —
+          because a 1.5B dense model actually saturates the iGPU. Decode still ties/loses.</figcaption>
       </figure></div>
     </div>
+    <p>The iGPU's raw compute is ~35× more efficient per FLOP; a 1.5B <i>dense</i> model captures
+      8.6× of that. But Holo3-35B is a <b>Mixture-of-Experts</b>, and the Vulkan MoE prefill
+      tops out near CPU speed — so the realized energy win on the <i>actual deployed model</i> is
+      <b>4.1×</b>, earned entirely by <b>freeing the cores</b>, not by going faster. The win grows
+      as the backend matures.</p>
     <div class="call gap">
       <b>The unified-memory catch.</b> CPU, iGPU and NPU share one DDR5 pool, so throwing more
-      compute at a <b>memory-bound</b> op cannot make DRAM faster — the ceiling on
-      decode-offload savings is small by construction. Measured: with today's llama.cpp Vulkan
-      backend the iGPU <b>ties</b> the CPU on decode energy (915 vs 930 mJ/tok) and runs
-      <b>1.9× slower</b>, reaching only 38% of the DRAM roofline — so this particular tie is
-      partly backend immaturity, not a fully-proven hard wall. Either way the robust takeaway
-      holds: accelerators pay off on the <b>compute-bound</b> prefill; memory-bound decode is a
-      wash at best. <b>Offload prefill, not decode.</b>
+      compute at a <b>memory-bound</b> op cannot make DRAM faster. On the real 35B, iGPU decode
+      is <b>~1.9× worse</b> on energy and 2.5× slower — it reaches only ~40% of the DRAM roofline
+      (immature MoE-Vulkan decode) on top of the shared-memory ceiling. The takeaway is
+      unambiguous: <b>offload prefill to the iGPU (4.1× energy, cores freed); keep decode on the
+      CPU.</b>
     </div>
     <div class="scroll">
       <table>
@@ -286,10 +299,11 @@
       </table>
     </div>
     <p class="dim" style="margin-top:8px">The synthetic 33×/36× compares <b>iGPU fp16 / NPU
-      int8</b> against <b>CPU fp32</b> (the realistic deployment precision for each engine, per
-      the "quality irrelevant" directive) — it is a device+precision figure, an upper bound on
-      the device-alone gain. The apples-to-apples number is the real-model prefill
-      <b>8.6×</b>. NPU real-model prefill was not run (the 1.5B GGUF path targets CPU/Vulkan).</p>
+      int8</b> against <b>CPU fp32</b> (each engine's native precision) — a device+precision
+      figure, the upper bound on the device-alone gain. The <b>real deployed model</b> realizes
+      less: full Holo3-35B (MoE) prefill on the iGPU is <b>4.1×</b> (≈700 → ≈170 mJ/tok); a 1.5B
+      dense model gets <b>8.6×</b>. NPU was not run on the GGUF models (llama.cpp targets
+      CPU/Vulkan). The "real-model prefill" column below is the 1.5B point.</p>
   </section>
 
   <!-- ============ 5. OPTIMIZATION ============ -->
@@ -310,8 +324,9 @@
         <tr>
           <td class="p">2</td><td><b>Offload prefill to iGPU / NPU</b></td>
           <td>prefill compute</td><td class="num">63%</td>
-          <td>Prefill is compute-bound ⇒ <span class="win">8.6×</span> less energy on a real
-            model (up to 33× on synthetic fp16 matmul), and frees the cores.</td>
+          <td>Prefill is compute-bound ⇒ <span class="win">4.1×</span> less energy on the full
+            Holo3-35B (8.6× on a 1.5B dense model; 33× synthetic ceiling), and frees the cores
+            (58→1.6 W). Keep decode on the CPU.</td>
         </tr>
         <tr>
           <td class="p">3</td><td><b>Race-to-idle</b></td>
@@ -331,8 +346,8 @@
     <div class="call fix">
       <b>Bottom line.</b> The lever is the <b>prefill</b>, which is ~63% of the energy: shrink
       the 8k-token prompt that is re-sent every step, and push the unavoidable prefill compute
-      onto the iGPU (<span class="win">8.6×</span> less energy on a real model). Race-to-idle
-      then reclaims part of the 27% platform tax for free. The DRAM chips were never the
+      onto the iGPU (<span class="win">4.1×</span> less energy on the full 35B, cores freed).
+      Race-to-idle then reclaims part of the 27% platform tax for free. The DRAM chips were never the
       problem — the <i>traffic pattern</i> and the <i>always-on platform</i> are.
     </div>
   </section>
@@ -370,9 +385,14 @@
       and the intercept independently matches idle-power × inference-time. (3) Per-domain
       <b>watts</b> are raw (busy); <b>pJ/byte</b> and <b>pJ/FLOP</b> are net of the idle
       baseline. (4) The accelerator 33×/36× is fp16/int8 vs fp32 (device+precision); the
-      real-model 8.6× is the apples-to-apples figure. (5) iGPU/NPU energy is a controlled
-      synthetic workload + a 1.5B real transformer; the 35B Holo3 itself was not run on the
-      iGPU (would OOM the shared box). (6) Absolute totals use the consistent per-step
+      real-model figures are <b>4.1×</b> (full Holo3-35B MoE) and 8.6× (1.5B dense). (5) The
+      full 35B iGPU run is <b>text-only</b> (no vision projector — <code>mmproj</code> is not yet
+      Vulkan-compatible, so the vision-encode energy is characterized on CPU only, via full361);
+      prefill prompts are token-matched to real OSWorld sizes (this is the robust, headline
+      comparison). Decode is a weaker probe: greedy generation hit EOS after only ~17 tokens on
+      the short prompt, so the decode <i>energy</i> ratio (~1.9×) carries real uncertainty — the
+      firm signal that decode belongs on the CPU is the clean <b>2.5× throughput deficit</b>
+      (server-side timing), and the absolute decode energy is a lower bound vs a full 8k KV cache. (6) Absolute totals use the consistent per-step
       integration; the shipped per-task <code>energy_j</code> field under-counts psys and was
       discarded.
     </p>
