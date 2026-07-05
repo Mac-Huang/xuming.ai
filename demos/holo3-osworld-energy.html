@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Holo3 · OSWorld inference energy profile (task → step → byte)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Fine-grained energy profiling of Holo3-35B-A3B agentic inference on the OSWorld benchmark, on an Intel NUC 16 (Panther Lake). RAPL per-domain energy at task, step, and computation-vs-data-movement granularity; iGPU/NPU offload.">
+<style>
+  :root{--bg:#0d1117;--panel:#161b22;--bd:#30363d;--fg:#c9d1d9;--mut:#8b949e;
+        --grn:#3fb950;--red:#f85149;--yel:#d29922;--blu:#58a6ff;--pur:#bc8cff;--aqua:#39c5bb}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);
+       font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  header{padding:14px 20px;border-bottom:1px solid var(--bd);display:flex;
+         flex-wrap:wrap;gap:6px 24px;align-items:baseline;position:sticky;top:0;
+         background:#0d1117ee;backdrop-filter:blur(6px);z-index:9}
+  h1{font-size:16px;margin:0;color:var(--blu)}
+  .sub{color:var(--mut)}
+  nav{margin-left:auto;display:flex;gap:14px;flex-wrap:wrap}
+  a{color:var(--blu);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{padding:16px 20px;display:grid;gap:16px;max-width:1180px;margin:0 auto;
+        grid-template-columns:repeat(auto-fit,minmax(360px,1fr))}
+  .panel{background:var(--panel);border:1px solid var(--bd);border-radius:8px;padding:16px}
+  .panel h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;
+            color:var(--mut);margin:0 0 12px}
+  .full{grid-column:1/-1}
+  p{margin:8px 0;font-size:12.7px;line-height:1.66}
+  b{color:#e6edf3}
+  code{background:#21262d;padding:1px 5px;border-radius:4px;color:var(--pur);font-size:12px}
+  .dim{color:var(--mut)}
+  .lead{font-size:13.5px;color:#e6edf3;margin:0 0 12px;line-height:1.7}
+  table{border-collapse:collapse;width:100%;font-size:12px}
+  th,td{text-align:left;padding:5px 9px;border-bottom:1px solid #21262d;white-space:nowrap}
+  th{color:var(--mut);font-weight:600;vertical-align:bottom}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  .scroll{max-width:100%;overflow:auto}
+  figure{margin:0}
+  figure img{width:100%;height:auto;border-radius:8px;border:1px solid var(--bd);display:block;background:var(--panel)}
+  figcaption{color:var(--mut);font-size:11.5px;margin-top:8px;line-height:1.55}
+  .cards{display:flex;flex-wrap:wrap;gap:10px}
+  .card{flex:1 1 170px;background:#0b0f14;border:1px solid var(--bd);border-radius:8px;padding:12px 14px}
+  .card .lab{color:var(--mut);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em}
+  .card .big{font-size:24px;font-weight:700;margin:4px 0 2px;color:#e6edf3}
+  .card .det{color:var(--mut);font-size:11px;line-height:1.5}
+  .g{color:var(--grn)} .r{color:var(--red)} .y{color:var(--yel)} .k{color:var(--blu)} .p{color:var(--pur)} .a{color:var(--aqua)}
+  .call{border-left:3px solid var(--blu);padding:9px 0 9px 14px;margin:13px 0;
+        background:#10243a55;border-radius:0 6px 6px 0}
+  .call.fix{border-color:var(--grn);background:#0f240f55}
+  .call.gap{border-color:var(--yel);background:#241d0c55}
+  .call.key{border-color:var(--pur);background:#1c142e55}
+  .call b{color:#e6edf3}
+  ul{margin:8px 0;padding-left:18px} li{margin:5px 0;font-size:12.5px;line-height:1.6}
+  .foot{padding:16px 20px;color:var(--mut);font-size:11.5px;border-top:1px solid var(--bd);
+        max-width:1180px;margin:0 auto}
+  .tag{display:inline-block;padding:1px 8px;border-radius:9px;font-size:10.5px;border:1px solid var(--bd);color:var(--mut);margin-right:4px}
+  .hl{background:#1f6feb22;border-radius:3px;padding:0 3px}
+  .win{color:var(--grn);font-weight:700}.lose{color:var(--red);font-weight:700}
+</style>
+</head>
+<body>
+<header>
+  <h1>OSWorld inference energy profile</h1>
+  <span class="sub">Holo3-35B-A3B · Intel NUC 16 (Panther Lake) · RAPL per-domain</span>
+  <nav>
+    <a href="holo3-agentic-leaderboard.html">← leaderboard</a>
+    <a href="holo3-osworld-profiling.html">latency profile</a>
+    <a href="../research.html">research</a>
+  </nav>
+</header>
+
+<div class="wrap">
+
+  <!-- ============ HERO ============ -->
+  <section class="panel full">
+    <p class="lead">
+      We ran the <b>full OSWorld test set</b> (all 10 desktop-app categories) through
+      <b>Holo3-35B-A3B</b> on a fanless <b>Intel Core Ultra 7 356H</b> mini-PC and metered
+      energy with Intel <b>RAPL</b> at three granularities — <b>per task</b>, <b>per agent
+      step</b>, and <b>per computation vs. data movement</b> — then re-ran the workload on
+      the <b>iGPU</b> and <b>NPU</b>. The starting hypothesis: <i>moving data between DRAM and
+      the processors dominates the energy.</i>
+    </p>
+    <div class="call key">
+      <b>The verdict is a "yes, but".</b> The DRAM <b>chips</b> are nearly free — the
+      <b>dram</b> RAPL domain stays at <b>~1.4%</b> of platform energy (and that is a
+      <i>lower bound</i> — see caveats). Yet data movement <i>is</i> the bottleneck:
+      memory-bound decode is <span class="win">4.6×</span> more energy-costly per token than
+      prefill, because each token streams the whole active weight set from DRAM. Its cost
+      hides as <b>active-core power</b> — cores held at <b>27&nbsp;W</b> (<b>~24&nbsp;W above
+      idle</b>) starved for data — not as DRAM power. The real energy hogs are the
+      <b>repeated 8k-token prefill</b> (~63%) and a fixed <b>27% platform tax</b>. Offloading
+      the compute-bound prefill to the iGPU cuts its energy <span class="win">8.6×</span> on a
+      real model, but — on this <b>unified-memory SoC</b>, with today's backends —
+      <span class="lose">doesn't help</span> memory-bound decode.
+    </div>
+    <div class="cards">
+      <div class="card"><div class="lab">Total metered</div><div class="big">9.8 kWh</div><div class="det">141 tasks · 2,136 steps · <b>132 h</b> of pure inference</div></div>
+      <div class="card"><div class="lab">Per task</div><div class="big">70 Wh</div><div class="det">~56 min of compute · one desktop task</div></div>
+      <div class="card"><div class="lab">CPU cores</div><div class="big k">67%</div><div class="det">of platform energy</div></div>
+      <div class="card"><div class="lab">DRAM devices</div><div class="big r">1.4%</div><div class="det">the "movement" domain — tiny</div></div>
+      <div class="card"><div class="lab">Platform tax</div><div class="big y">27%</div><div class="det">VRM · rails · I/O — always on</div></div>
+      <div class="card"><div class="lab">iGPU prefill</div><div class="big g">8.6×</div><div class="det">less energy — real model<br><span class="dim">33× on synthetic fp16 matmul</span></div></div>
+    </div>
+    <p class="dim" style="margin-top:10px">
+      <span class="tag">RAPL psys/package/core/dram</span><span class="tag">llama.cpp Q4_K_M</span>
+      <span class="tag">OpenVINO 2026.0 iGPU+NPU</span><span class="tag">no root · powercap sysfs</span>
+      <span class="tag">run 2026-07-05</span>
+    </p>
+  </section>
+
+  <!-- ============ METHOD IN BRIEF ============ -->
+  <section class="panel full">
+    <h2>How the energy was measured</h2>
+    <p>
+      The only reliable energy instrument on this box (no root ⇒ <code>turbostat</code>,
+      <code>perf</code>, <code>intel_gpu_top</code> are all blocked) is the <b>powercap RAPL
+      sysfs</b> — which is the gold standard anyway and, crucially, exposes a separate
+      <b>dram</b> domain. We read five domains: <code>psys</code> (whole platform),
+      <code>package-0</code> (CPU chip), <code>core</code>, <code>uncore</code> (iGPU/fabric),
+      and <code>dram</code> (the DIMMs). Energy is <code>Δenergy_uj</code> across each work
+      window; power traces are sampled at 10–20&nbsp;Hz with a background thread that also
+      logs iGPU frequency and NPU busy-time. Idle baselines (psys 19.5&nbsp;W) are subtracted
+      so the fixed platform draw is separated from the work.
+    </p>
+    <p class="dim">
+      Data sources: (A) a complete 141-task OSWorld run with per-step, per-domain energy
+      already on disk; (M2) STREAM + variable-arithmetic-intensity microkernels in C
+      (<code>-O3 -march=native</code>, OpenMP); (M3/M4) identical matmul + memory workloads
+      on CPU/iGPU/NPU via OpenVINO, plus a real transformer (Qwen2.5-1.5B) on CPU vs. iGPU
+      via llama.cpp Vulkan. Full-model Holo3-on-iGPU was skipped (21&nbsp;GB would OOM the
+      shared box); the offload numbers below are the controlled synthetic + small-model
+      measurements, not a projection.
+    </p>
+  </section>
+
+  <!-- ============ 1. WHERE THE JOULES GO ============ -->
+  <section class="panel full">
+    <h2>1 · Per task — where the Joules go</h2>
+    <figure>
+      <img src="holo3-energy-figs/fig1_breakdown.png" alt="Energy breakdown by hardware domain and by inference phase">
+      <figcaption>Platform (psys) energy split two ways. <b>Left:</b> by hardware domain —
+        CPU cores dominate (67%), the DRAM devices are a 1.4% sliver, and a 27% "platform
+        tax" (VRM/rails/I/O) is spent just keeping the board powered. <b>Right:</b> by
+        inference phase — the giant repeated prefill is ~63%, decode only ~10%, fixed
+        overhead ~27% (prefill/fixed split is predictor-dependent; see caveats).</figcaption>
+    </figure>
+    <p style="margin-top:14px">
+      Across 141 completed tasks the agent spent <b>132 hours</b> in the model for
+      <b>135 hours</b> of wall time — <b>98% of the run is inference</b>, not the desktop
+      environment. That is the macro-inefficiency: an average desktop task costs <b>70 Wh</b>
+      and <b>~56 minutes of compute</b>. The counter-intuitive first result is that the
+      <b>dram</b> domain — the literal DRAM chips your data moves to and from — draws under
+      <b>1&nbsp;W</b> even at full tilt and is only <b>1.4%</b> of the energy. If "data
+      movement" meant "DRAM-device power," the hypothesis would be dead on arrival. It isn't
+      — see §3.
+    </p>
+  </section>
+
+  <!-- ============ 2. PER CATEGORY ============ -->
+  <section class="panel full">
+    <h2>2 · Per OSWorld category</h2>
+    <div class="cards" style="margin-bottom:14px">
+      <div style="flex:2 1 420px"><figure>
+        <img src="holo3-energy-figs/fig2_per_category.png" alt="Energy per agent step by OSWorld category">
+        <figcaption>Energy per agent step by category. The spread (11.3–19.1 kJ/step) tracks
+          prompt size × step count, not the app itself: multi_apps, calc and vs_code push the
+          largest accessibility trees. The DRAM-device share is a near-constant ~1.3–1.4%
+          <i>everywhere</i> — a fixed, tiny fraction independent of task.</figcaption>
+      </figure></div>
+      <div style="flex:1 1 300px" class="scroll">
+        <table>
+          <tr><th>category</th><th class="num">tasks</th><th class="num">steps</th><th class="num">Wh</th><th class="num">kJ/step</th><th class="num">DRAM%</th></tr>
+          <tr><td>multi_apps</td><td class="num">12</td><td class="num">258</td><td class="num">1370</td><td class="num">19.1</td><td class="num">1.3</td></tr>
+          <tr><td>libreoffice_calc</td><td class="num">13</td><td class="num">386</td><td class="num">2011</td><td class="num">18.8</td><td class="num">1.3</td></tr>
+          <tr><td>vs_code</td><td class="num">12</td><td class="num">183</td><td class="num">942</td><td class="num">18.5</td><td class="num">1.3</td></tr>
+          <tr><td>chrome</td><td class="num">32</td><td class="num">535</td><td class="num">2593</td><td class="num">17.4</td><td class="num">1.4</td></tr>
+          <tr><td>vlc</td><td class="num">12</td><td class="num">175</td><td class="num">702</td><td class="num">14.4</td><td class="num">1.4</td></tr>
+          <tr><td>libreoffice_writer</td><td class="num">11</td><td class="num">147</td><td class="num">588</td><td class="num">14.4</td><td class="num">1.4</td></tr>
+          <tr><td>thunderbird</td><td class="num">12</td><td class="num">132</td><td class="num">517</td><td class="num">14.1</td><td class="num">1.4</td></tr>
+          <tr><td>libreoffice_impress</td><td class="num">13</td><td class="num">150</td><td class="num">579</td><td class="num">13.9</td><td class="num">1.4</td></tr>
+          <tr><td>os</td><td class="num">11</td><td class="num">81</td><td class="num">263</td><td class="num">11.7</td><td class="num">1.4</td></tr>
+          <tr><td>gimp</td><td class="num">13</td><td class="num">89</td><td class="num">278</td><td class="num">11.3</td><td class="num">1.4</td></tr>
+        </table>
+        <p class="dim" style="margin-top:8px">Step energy is integrated from the consistent
+          per-step profiles (core ≤ package ≤ psys). The as-shipped per-<i>task</i> summary
+          field under-counts psys on ~10% of tasks and was not used.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 3. THE HYPOTHESIS TEST ============ -->
+  <section class="panel full">
+    <h2>3 · Per computation vs. data movement — testing the hypothesis</h2>
+    <p class="lead">Two inference phases sit on opposite sides of the roofline:
+      <b class="k">prefill</b> reads the 8k-token prompt and is <b>compute-bound</b> (weights
+      reused across many tokens); <b class="r">decode</b> generates one token at a time and is
+      <b>memory-bound</b> — every token streams the model's active weights from DRAM once.</p>
+
+    <figure>
+      <img src="holo3-energy-figs/fig3_per_token.png" alt="Per-token energy: prefill vs decode across domains">
+      <figcaption>A single <b class="r">decode</b> token costs <b>~4.6×</b> more platform
+        energy than a <b class="k">prefill</b> token (5.9 J vs 1.3 J), and <b>~11.8×</b> more
+        in the DRAM domain — because each decode token streams the full active weight set from
+        DRAM once, while a prefill token amortizes that same read across the whole prompt. From
+        a per-step regression over 2,136 real steps (R²=0.96); ratios are predictor-dependent
+        (~4.2–5.3× psys, ~11–13× dram).</figcaption>
+    </figure>
+
+    <div class="cards" style="margin-top:16px">
+      <div style="flex:1 1 340px"><figure>
+        <img src="holo3-energy-figs/fig7_stall.png" alt="Core vs DRAM power for STREAM vs GEMM">
+        <figcaption>The mechanism. Streaming from DRAM (STREAM triad, 56 GB/s, negligible
+          arithmetic) holds the cores at <b>27 W</b> — <b>~24 W above idle</b> — starved for
+          data. The DRAM devices themselves draw only <b>2.8 W</b>. The energy cost of data
+          movement is real, but RAPL bills it to <code>core</code>, not <code>dram</code>.</figcaption>
+      </figure></div>
+      <div style="flex:1 1 340px"><figure>
+        <img src="holo3-energy-figs/fig4_roofline.png" alt="Energy per FLOP vs arithmetic intensity">
+        <figcaption>Energy per FLOP vs. arithmetic intensity (one variable-AI kernel).
+          Streaming from DRAM at low intensity costs ~<b>5,000 pJ/FLOP</b> — roughly <b>48×</b>
+          the true BLAS-GEMM compute floor (105 pJ/FLOP). Holo3 decode (AI ≈ 3.6) actually
+          sits <i>near the efficient knee</i>: its per-token premium comes from the bytes it
+          moves per token (left), not a low-intensity FLOP penalty.</figcaption>
+      </figure></div>
+    </div>
+
+    <div class="call">
+      <b>Reframing the hypothesis.</b> You were right that data movement is the
+      <i>bottleneck</i> — decode is memory-bound and 4.6× more energy-costly per token. You
+      were off about <i>where the meter sees it</i>: the DRAM chips sip &lt;1 W; the cost is
+      paid as high-power cores <b>held active but starved</b> on the DDR5 bus. A byte moved
+      to/from DRAM registers <b>39 pJ</b> in the <code>dram</code> domain but <b>768 pJ</b> at
+      the platform (~20×) — because slow movement keeps the whole ~20 W platform awake longer.
+      <span class="dim">Caveat: on this client SoC the RAPL <code>dram</code> domain is a
+      partial/modeled estimate of DRAM access energy (it excludes refresh, I/O, termination and
+      the on-die memory-controller/PHY, which fold into <code>package</code>), so the 1.4% and
+      39 pJ/byte are lower bounds on true memory-system energy — which strengthens, not weakens,
+      the point that movement cost is hidden outside the <code>dram</code> meter.</span>
+    </div>
+    <p>
+      So why isn't decode the top energy line? Because the OSWorld agent re-sends a
+      <b>~8,000-token</b> prompt (three screenshots + accessibility tree) <i>every step</i>
+      but generates only <b>~284</b> tokens — a <b>28.5×</b> prefill:decode token ratio.
+      Prefill is cheap <i>per token</i> yet enormous <i>in aggregate</i> (~63% of energy);
+      decode is expensive per token but small in volume (~10%).
+    </p>
+  </section>
+
+  <!-- ============ 4. ACCELERATORS ============ -->
+  <section class="panel full">
+    <h2>4 · Per processor — CPU vs iGPU vs NPU</h2>
+    <p>Same workloads, three engines. The user directive: quality irrelevant, just measure the
+      energy.</p>
+    <div class="cards">
+      <div style="flex:1 1 340px"><figure>
+        <img src="holo3-energy-figs/fig5_accelerators.png" alt="Compute energy per FLOP and freed core power across CPU/iGPU/NPU">
+        <figcaption>Identical 137-GFLOP matmul. The <b class="a">iGPU (Xe3)</b> and
+          <b class="p">NPU</b> do it at <b>~35× less energy per FLOP</b> than the CPU
+          (2.6–2.8 vs 93 pJ/FLOP) and <b>~25× faster</b> — and, because the work leaves the
+          cores, CPU-core power collapses from 41 W to 3–6 W.</figcaption>
+      </figure></div>
+      <div style="flex:1 1 340px"><figure>
+        <img src="holo3-energy-figs/fig6_offload.png" alt="Real transformer prefill/decode energy CPU vs iGPU">
+        <figcaption>Real transformer (Qwen2.5-1.5B, llama.cpp Vulkan). The iGPU wins
+          <b>prefill</b> <b class="g">8.6×</b> on energy (36 vs 311 mJ/tok) and runs it
+          faster — but <b>ties decode</b> (915 vs 930 mJ/tok) and is actually <i>slower</i>
+          at it.</figcaption>
+      </figure></div>
+    </div>
+    <div class="call gap">
+      <b>The unified-memory catch.</b> CPU, iGPU and NPU share one DDR5 pool, so throwing more
+      compute at a <b>memory-bound</b> op cannot make DRAM faster — the ceiling on
+      decode-offload savings is small by construction. Measured: with today's llama.cpp Vulkan
+      backend the iGPU <b>ties</b> the CPU on decode energy (915 vs 930 mJ/tok) and runs
+      <b>1.9× slower</b>, reaching only 38% of the DRAM roofline — so this particular tie is
+      partly backend immaturity, not a fully-proven hard wall. Either way the robust takeaway
+      holds: accelerators pay off on the <b>compute-bound</b> prefill; memory-bound decode is a
+      wash at best. <b>Offload prefill, not decode.</b>
+    </div>
+    <div class="scroll">
+      <table>
+        <tr><th>engine</th><th class="num">GFLOP/s</th><th class="num">pJ/FLOP (compute)</th><th class="num">vs CPU energy</th><th class="num">core W during work</th><th class="num">real-model prefill mJ/tok</th></tr>
+        <tr><td>CPU · 16C AVX2</td><td class="num">474</td><td class="num">93.2</td><td class="num">1×</td><td class="num">40.5</td><td class="num">311</td></tr>
+        <tr><td>iGPU · Xe3</td><td class="num">11,951</td><td class="num g">2.84</td><td class="num g">33×</td><td class="num">5.9</td><td class="num g">36</td></tr>
+        <tr><td>NPU · AI Boost</td><td class="num">11,408</td><td class="num g">2.61</td><td class="num g">36×</td><td class="num">2.9</td><td class="num">—</td></tr>
+      </table>
+    </div>
+    <p class="dim" style="margin-top:8px">The synthetic 33×/36× compares <b>iGPU fp16 / NPU
+      int8</b> against <b>CPU fp32</b> (the realistic deployment precision for each engine, per
+      the "quality irrelevant" directive) — it is a device+precision figure, an upper bound on
+      the device-alone gain. The apples-to-apples number is the real-model prefill
+      <b>8.6×</b>. NPU real-model prefill was not run (the 1.5B GGUF path targets CPU/Vulkan).</p>
+  </section>
+
+  <!-- ============ 5. OPTIMIZATION ============ -->
+  <section class="panel full">
+    <h2>5 · What's most inefficient — and what to fix</h2>
+    <p>Ranked by measured leverage against the 9.8 kWh total:</p>
+    <div class="scroll">
+      <table>
+        <tr><th>#</th><th>lever</th><th>attacks</th><th class="num">share</th><th>mechanism / measured basis</th></tr>
+        <tr>
+          <td class="p">1</td><td><b>Shrink the re-sent prompt</b> (downscale/crop screenshots, prune the a11y tree) + cache the stable head</td>
+          <td>repeated prefill</td><td class="num">≤63%</td>
+          <td>8,078 prompt tokens re-encoded <i>every</i> step. The screenshot + a11y tree is
+            fresh each step (the screen changes after each action), so prefix caching only
+            removes the stable head (system + task) — a fraction of the 63%; the bigger lever is
+            making the per-step prompt smaller.</td>
+        </tr>
+        <tr>
+          <td class="p">2</td><td><b>Offload prefill to iGPU / NPU</b></td>
+          <td>prefill compute</td><td class="num">63%</td>
+          <td>Prefill is compute-bound ⇒ <span class="win">8.6×</span> less energy on a real
+            model (up to 33× on synthetic fp16 matmul), and frees the cores.</td>
+        </tr>
+        <tr>
+          <td class="p">3</td><td><b>Race-to-idle</b></td>
+          <td>platform tax</td><td class="num">27%</td>
+          <td>A fixed ~20 W (VRM/rails/I/O) is billed for every second the box is awake.
+            Levers 1–2 shorten wall time ⇒ shrink the fixed-power × time integral directly.</td>
+        </tr>
+        <tr>
+          <td class="p">4</td><td><b>Cut bytes/token</b> (lower-bit quant, fewer active experts, spec-decode)</td>
+          <td>decode</td><td class="num">10%</td>
+          <td>Decode is memory-bound; offload barely helps (shared DRAM). The lever that works is
+            moving fewer bytes per token — decode pays a 4.6×/token premium (11.8× in the DRAM
+            domain) precisely because it re-streams the active weights each token.</td>
+        </tr>
+      </table>
+    </div>
+    <div class="call fix">
+      <b>Bottom line.</b> The lever is the <b>prefill</b>, which is ~63% of the energy: shrink
+      the 8k-token prompt that is re-sent every step, and push the unavoidable prefill compute
+      onto the iGPU (<span class="win">8.6×</span> less energy on a real model). Race-to-idle
+      then reclaims part of the 27% platform tax for free. The DRAM chips were never the
+      problem — the <i>traffic pattern</i> and the <i>always-on platform</i> are.
+    </div>
+  </section>
+
+  <!-- ============ APPENDIX ============ -->
+  <section class="panel full">
+    <h2>Appendix · instruments, operating points & caveats</h2>
+    <div class="cards">
+      <div class="card" style="flex:1 1 260px"><div class="lab">Busy vs idle power</div>
+        <div class="det" style="font-size:11.5px;line-height:1.7;margin-top:6px">
+          busy: psys <b>76.6 W</b> · pkg 55.0 · core 52.1 · dram 0.93<br>
+          idle: psys <b>19.5 W</b> · pkg 9.1 · core 7.1 · dram 0.55<br>
+          <span class="dim">203k / 7k samples @ 2 s</span></div></div>
+      <div class="card" style="flex:1 1 260px"><div class="lab">Microbench roofline</div>
+        <div class="det" style="font-size:11.5px;line-height:1.7;margin-top:6px">
+          DRAM roof <b>56 GB/s</b> · compute roof <b>555 GFLOP/s</b> (AVX2 GEMM)<br>
+          memory byte: 39 pJ (DIMM) / 768 pJ (platform)<br>
+          compute FLOP: 105 pJ (platform)</div></div>
+      <div class="card" style="flex:1 1 260px"><div class="lab">Workload shape</div>
+        <div class="det" style="font-size:11.5px;line-height:1.7;margin-top:6px">
+          8,078 prefill + 284 decode tokens / step<br>
+          prefill:decode <b>28.5×</b><br>
+          <span class="dim">17.3M prefill vs 0.6M decode tokens total</span></div></div>
+    </div>
+    <p class="dim" style="margin-top:12px">
+      <b>Honesty notes.</b> (1) <code>uncore</code> reads ~0 during CPU inference — on Panther
+      Lake the memory-controller/PHY energy folds into <code>package</code>, so the on-chip
+      data-movement cost sits inside the <code>core</code>/<code>package</code> figures, not
+      separately metered; and the <code>dram</code> domain is a partial/modeled client-SoC
+      estimate, so the 1.4% share is a lower bound. (2) The phase split is an OLS regression on
+      2,136 real steps (R²=0.96), with prefill work defined as
+      <code>max(0, prompt_tokens − cached_tokens)</code> (tokens actually re-encoded). It is
+      predictor-dependent: prefill lands at <b>56–74%</b> and fixed at <b>16–34%</b> depending
+      on whether cached tokens are counted; <b>decode ~10%</b> is robust across definitions,
+      and the intercept independently matches idle-power × inference-time. (3) Per-domain
+      <b>watts</b> are raw (busy); <b>pJ/byte</b> and <b>pJ/FLOP</b> are net of the idle
+      baseline. (4) The accelerator 33×/36× is fp16/int8 vs fp32 (device+precision); the
+      real-model 8.6× is the apples-to-apples figure. (5) iGPU/NPU energy is a controlled
+      synthetic workload + a 1.5B real transformer; the 35B Holo3 itself was not run on the
+      iGPU (would OOM the shared box). (6) Absolute totals use the consistent per-step
+      integration; the shipped per-task <code>energy_j</code> field under-counts psys and was
+      discarded.
+    </p>
+  </section>
+
+</div>
+
+<div class="foot">
+  Holo3-35B-A3B (Q4_K_M, llama.cpp) · OSWorld full test set · Intel Core Ultra 7 356H
+  (4P+8E+4LP, 96 GB DDR5-5600, Xe3 iGPU, NPU 5) · Ubuntu 24.04 / kernel 6.17 · Intel RAPL
+  powercap · run <code>2026-07-05_osworld-energy-profile</code> ·
+  <a href="../research.html">Xuming Huang</a>
+</div>
+</body>
+</html>
