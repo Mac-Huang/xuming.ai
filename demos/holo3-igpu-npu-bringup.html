@@ -87,7 +87,7 @@
     </div>
     <div class="call fix">
       <p style="margin:0"><b class="g">Outcome.</b> After two focused bring-up agents: the <b>LLM now runs correctly on the
-      iGPU</b> (~1.6× prefill, ~1.45× end-to-end — June's "garbage" is gone), and the <b>vision encoder runs on the NPU</b>
+      iGPU</b> (~1.6× prefill, ~1.45× end-to-end — June's output-head "garbage" did not reproduce), and the <b>vision encoder runs on the NPU</b>
       (0.32–6.0 s static f16, fastest device at the merged shape). Remaining hard limits: vision-on-GPU crashes the Vulkan
       device, and the <b>LLM on the NPU is architecturally impossible</b> — now measured, not assumed.</p>
     </div>
@@ -164,10 +164,11 @@
   <!-- RESULTS: iGPU -->
   <div class="panel full">
     <h2>3 · Result — Agent A (iGPU) &nbsp;<span class="pill yes">LLM now runs correctly</span></h2>
-    <p class="lead">Re-running the probes on the current Vulkan build settled the contradiction — and the answer changed
-      since June. <b>Text now decodes correctly at full offload</b> (<code>-ngl 99</code>); the earlier "garbage" is gone.
-      The prefill win is real (~1.6×), decode is modestly slower (bandwidth-bound), and one hard bug remains:
-      <b>the vision projector crashes the GPU.</b></p>
+    <p class="lead">Re-running the probes on the current Vulkan build settled the contradiction. <b>Text now decodes
+      correctly at full offload</b> (<code>-ngl 99</code>) — the earlier "garbage" did not reproduce (the binary is
+      unchanged, so the likely cause is a Mesa driver update since early June). The prefill win is real (~1.5–1.7×), decode
+      is modestly slower (bandwidth-bound), and <b>full multimodal serving works with the vision encoder on CPU</b> — the
+      one hard bug is that offloading the vision projector to the GPU crashes it.</p>
 
     <div style="display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr))">
       <div>
@@ -179,9 +180,10 @@
           <tr><td><code>-ngl 99</code></td><td>blocks + output head</td><td class="ok">correct ✱</td></tr>
           <tr><td><code>-ngl 99 -fa on</code></td><td>+ flash-attn</td><td class="ok">correct</td></tr>
           <tr><td><code>-ngl 99 -ot out=CPU</code></td><td>blocks only, head pinned</td><td class="ok">correct</td></tr>
-          <tr><td><code>--mmproj-offload</code></td><td>vision projector</td><td class="bad">CRASH — vk::DeviceLostError</td></tr>
+          <tr><td><code>--no-mmproj-offload</code> + image</td><td>blocks (ViT on CPU)</td><td class="ok">correct — reads the screenshot</td></tr>
+          <tr><td><code>--mmproj-offload</code></td><td>vision projector on GPU</td><td class="bad">CRASH — vk::DeviceLostError</td></tr>
         </table></div>
-        <p class="dim" style="font-size:11.5px">✱ June reported this as garbage (upstream #21888). It does not reproduce on the current build — the text/output-head offload bug is effectively resolved here.</p>
+        <p class="dim" style="font-size:11.5px">✱ June reported this as garbage (upstream #21888). It did not reproduce here — greedy, the same few-shot prompt plus a ~6k-token needle, all coherent. The llama.cpp binary is unchanged, so the trigger was outside it; most likely a Mesa driver update since early June.</p>
       </div>
       <div>
         <p class="tag">throughput — llama-bench, tokens/s</p>
@@ -205,9 +207,10 @@
     </div>
     <div class="call fix">
       <p style="margin:0"><b class="g">Winning config (correct + useful).</b>
-      <code>llama-server … --device Vulkan0 -ngl 99 -fa on -c 32768 --jinja</code> — LLM blocks + experts + output head on
-      the Xe3, <b>vision projector left on CPU</b> (no <code>--mmproj-offload</code>). Correct output, ~1.6× prefill,
-      ~1.45× end-to-end for the prefill-bound agent loop.</p>
+      <code>llama-server … --device Vulkan0 -ngl 99 --no-mmproj-offload -fa on -c 32768 --jinja</code> — all 40 blocks +
+      256-expert MoE + output head on the Xe3, <b>vision projector on CPU</b>. Full multimodal serving works (it correctly
+      reads a screenshot): ~1.5–1.7× prefill, ~1.45× end-to-end for the prefill-bound agent loop. One-line fix to the
+      parked GPU serve script: <code>--mmproj-offload</code> → <code>--no-mmproj-offload</code>.</p>
     </div>
   </div>
 
