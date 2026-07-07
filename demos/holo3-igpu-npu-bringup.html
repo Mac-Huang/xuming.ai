@@ -280,9 +280,54 @@
       NPU — a hard architecture limit (<code>qwen3_5_moe</code>: dynamic 256-expert MoE + Gated-DeltaNet SSM vs. a
       static-shape compiler with no exporter), not a bug to be fixed. That boundary is now measured, not assumed.</p>
     </div>
-    <p class="dim" style="font-size:11.5px">Open items: (1) the <code>--mmproj-offload</code> Vulkan device-lost crash
-      (keep vision off the GPU meanwhile); (2) real-weight NPU vision parity (weights already local in the mmproj GGUF);
-      (3) a fused three-device serving path (NPU encode → iGPU prefill → CPU decode) in one runner.</p>
+    <p class="dim" style="font-size:11.5px">Open items (see §6 for the 2026-07-07 fix attempts): (1) the
+      <code>--mmproj-offload</code> Vulkan device-lost crash — confirmed unresolved on llama.cpp master, keep vision off the
+      GPU meanwhile; (2) real-weight NPU vision parity (weights already local in the mmproj GGUF); (3) a fused three-device
+      serving path (NPU encode → iGPU prefill → CPU decode) in one runner.</p>
+  </div>
+
+  <!-- ATTEMPTED FIXES -->
+  <div class="panel full">
+    <h2>6 · Can the two hard blockers be fixed? — attempted 2026-07-07</h2>
+    <p class="lead">Two follow-up bring-up agents tried to actually repair the two remaining walls — the vision-on-GPU crash and
+      the missing OpenVINO exporter — on the current toolchain (network available; latest packages). Both were pushed to a
+      definitive, reproducible outcome. Neither is fixable on this box today; here is exactly why, and the precise unblock
+      condition for each.</p>
+
+    <div class="agent">
+      <h3><span class="p">▸ Vision-projector GPU crash</span> &nbsp;<span class="pill no">not fixed upstream</span></h3>
+      <p>Built llama.cpp at <b>upstream master</b> (<code>bec4772</code>, a month past our <code>da87e9b</code>) in an
+        isolated worktree and re-tested <code>--mmproj-offload</code> with real screenshots. <b>The crash still fires:</b>
+        <code>mtmd_batch_encode: vk::Device::waitForFences: ErrorDeviceLost → terminate</code>, reproduced on 2 of 3 runs;
+        the one run that survived returned a <b>hallucination</b> (called an Ubuntu desktop "a website … guide to Ubuntu"),
+        i.e. the crash is merely traded for silently corrupted vision embeddings. Control on the same prompt (read the top-bar
+        clock, truth <code>09:13</code>): <b class="g">vision-on-CPU + LLM-on-GPU answers "09:13"</b>; full-CPU answers "09:13";
+        <b class="r">vision-on-GPU crashes</b>. Verdict: an <b>unresolved upstream llama.cpp Vulkan bug</b> for the Holo3
+        (<code>qwen3_5_moe</code>) CLIP path on Intel Xe3 — a rebuild does not fix it. <b class="g">Working config stands:</b>
+        <code>-ngl 99 --no-mmproj-offload</code> (LLM incl. output head on the iGPU, vision encode on CPU — or on the NPU).</p>
+    </div>
+
+    <div class="agent">
+      <h3><span class="p">▸ qwen3_5_moe → OpenVINO exporter</span> &nbsp;<span class="pill maybe">arch recognized</span><span class="pill no">export blocked</span></h3>
+      <p>Stood up a fresh env with the newest packages. Good news: <b class="g"><code>transformers 5.13</code> now recognizes
+        <code>qwen3_5_moe</code></b> (arch + modeling class present) — the "unrecognized architecture" half is real-fixable by
+        upgrading transformers. Bad news: the only OpenVINO exporter, <b><code>optimum-intel 2.0.0</code></b> (released
+        <i>and</i> git-main), hard-pins <b><code>transformers&lt;5.1</code></b> — which does <i>not</i> know the arch
+        (<code>KeyError: qwen3_5_moe</code>) — and it <b>fails to even import</b> under <code>transformers 5.13</code>
+        (API-incompatible). So <b>no installable combination</b> both recognizes the arch <i>and</i> loads the exporter: a
+        <b class="r">dependency deadlock</b>. Export to OpenVINO IR is <b>not runnable today</b>; unblock condition =
+        optimum-intel shipping transformers-5.2+ support. And two walls remain even after that: the <b>NPU has no kernels</b>
+        for the Gated-DeltaNet / 256-expert MoE family (documented CPU&amp;GPU-only; NPU is static-shape, caps ~8B — the 35B
+        LLM cannot run on it regardless), and a full 35B export is <b>disk-gated</b> (~70&nbsp;GB safetensors + ~70&nbsp;GB IR
+        &gt; 123&nbsp;GB free). The already-working iGPU path for the Holo3 LLM is <b>llama.cpp Vulkan</b>, not OpenVINO.</p>
+    </div>
+
+    <div class="call gap">
+      <p style="margin:0"><b class="y">Net.</b> Neither blocker is a config mistake — both are upstream gaps with named
+      unblock conditions: a llama.cpp Vulkan CLIP fix, and optimum-intel transformers-5.2+ support. The NPU-for-LLM boundary
+      is a genuine hardware/vendor limit, not a bug. Everything that <i>does</i> work today (LLM on iGPU via llama.cpp,
+      vision on NPU via OpenVINO, decode on CPU) is unchanged and correct.</p>
+    </div>
   </div>
 
   <div class="panel full">
