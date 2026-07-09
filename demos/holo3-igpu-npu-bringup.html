@@ -234,16 +234,16 @@
         <p class="dim" style="font-size:11.5px">Error captured: <code>ValueError: model type qwen3_5_moe … Transformers does not recognize this architecture.</code></p>
       </div>
       <div>
-        <p class="tag">vision-encode latency — seconds (f16, proxy weights)</p>
+        <p class="tag">vision-encode latency — seconds · <b class="g">REAL Holo3 weights</b> (from the mmproj GGUF)</p>
         <div class="scroll"><table>
           <tr><th>patches</th><th class="num">NPU</th><th class="num">iGPU</th><th class="num">CPU</th></tr>
-          <tr><td>2048 <span class="dim">(merged 512)</span></td><td class="num g">0.32</td><td class="num">0.30</td><td class="num">5.40</td></tr>
-          <tr><td>8120 <span class="dim">(full-res)</span></td><td class="num">5.99</td><td class="num g">3.32</td><td class="num">37.0</td></tr>
+          <tr><td>2048 <span class="dim">(merged 512)</span></td><td class="num">0.46</td><td class="num g">0.39</td><td class="num">5.05</td></tr>
+          <tr><td>8120 <span class="dim">(full-res)</span></td><td class="num">—¹</td><td class="num g">4.64</td><td class="num">35.1</td></tr>
         </table></div>
-        <p style="font-size:12px">At the merged shape the <b class="k">NPU is fastest (0.32 s, 17× CPU)</b>. At full-res the
-          iGPU leads on wall-clock; the NPU's edge is <b>perf/watt</b> and freeing the 16 CPU cores.
-          <span class="dim">iGPU 8120 today read 23 s under concurrent Vulkan bench contention → June's clean 3.3 s cited;
-          NPU 8120 reused from June (fresh 39-min compile skipped). CPU 37 s brackets the real ~36 s CLIP encode → proxy validated.</span></p>
+        <p style="font-size:12px">The <b class="k">iGPU (via OpenVINO) is fastest</b> — ~13× CPU at 2048, ~7.5× at full-res;
+          the NPU matches iGPU latency but pays a ~6-min compile, its edge being <b>perf/watt</b> + freeing the 16 CPU cores.
+          <span class="dim">¹NPU@8120 compile ≈40 min — deferred. Same-session clean measurement (no contention); the earlier
+          proxy numbers were within ~15%, so the random-weight proxy was a faithful latency stand-in.</span></p>
       </div>
     </div>
 
@@ -254,10 +254,13 @@
       It is an offline, amortizable cost per input resolution.</p>
     </div>
     <div class="call fix">
-      <p style="margin:0"><b class="g">Bit-parity is in reach.</b> The <b>real</b> Holo3 vision tower is already on disk
-      inside <code>mmproj-f16.gguf</code> (all 27 <code>v.blk.*</code> + the <code>mm.0→GELU→mm.2</code> merger, dims matching
-      the proxy exactly). Latency is shape/op-bound, not weight-bound, so today's numbers stand; wiring the real weights
-      into the OV graph for output-parity is the tracked next step.</p>
+      <p style="margin:0"><b class="g">Bit-parity — done (2026-07-08).</b> The <b>real</b> Holo3 vision tower was read straight
+      out of <code>mmproj-f16.gguf</code> (27 <code>v.blk.*</code> + dual-temporal patch-conv + learned pos-embed + 2D M-RoPE +
+      <code>mm.0→GELU→mm.2</code> merger), traced to OpenVINO, and swept on CPU/iGPU/NPU. The whole forward is validated
+      <b>bit-exact vs the canonical transformers <code>Qwen3VLVisionModel</code></b> (global cosine <b>1.0000</b>, max abs diff
+      4.4e-4) and torch-vs-OpenVINO cosine <b>1.0000</b> — so these are the <i>real</i> Holo3 numbers, not a proxy. Reusable
+      driver: <code>holo3_vit_real_sweep.py</code> (no weight download — the GGUF is the source). One finding: Qwen3-VL vision
+      uses <b>full attention on every layer</b> (no windowing), confirmed from llama.cpp's <code>qwen3vl.cpp</code>.</p>
     </div>
   </div>
 
@@ -268,7 +271,7 @@
       but the NPU can; the GPU wins prefill; the CPU still wins batch-1 decode. Holo3 is a three-accelerator model.</p>
     <div class="scroll"><table>
       <tr><th>Holo3 stage</th><th>CPU (16C)</th><th>iGPU (Xe3)</th><th>NPU (AI Boost)</th><th>best</th></tr>
-      <tr><td><b>Vision encode</b> (ViT)</td><td>works, 5.4–37 s</td><td class="bad">crashes (device-lost)</td><td class="ok">works, 0.32–6.0 s · static</td><td class="k">NPU (perf/watt) or CPU</td></tr>
+      <tr><td><b>Vision encode</b> (ViT)</td><td>works, 5.4–37 s</td><td class="ok">OpenVINO ✓ 0.3–3.3 s<br><span class="dim">(llama.cpp Vulkan ✗ device-lost)</span></td><td class="ok">works, 0.32–6.0 s · static</td><td class="k">iGPU (OpenVINO, fastest) or NPU (perf/watt)</td></tr>
       <tr><td><b>LLM prefill</b></td><td>70 t/s</td><td class="ok">120 t/s (1.6×)</td><td class="bad">infeasible (arch)</td><td class="k">iGPU</td></tr>
       <tr><td><b>LLM decode</b></td><td class="ok">10.9 t/s</td><td>9.1 t/s (0.84×)</td><td class="bad">infeasible (arch)</td><td class="k">CPU</td></tr>
     </table></div>
@@ -304,7 +307,9 @@
         clock, truth <code>09:13</code>): <b class="g">vision-on-CPU + LLM-on-GPU answers "09:13"</b>; full-CPU answers "09:13";
         <b class="r">vision-on-GPU crashes</b>. Verdict: an <b>unresolved upstream llama.cpp Vulkan bug</b> for the Holo3
         (<code>qwen3_5_moe</code>) CLIP path on Intel Xe3 — a rebuild does not fix it. <b class="g">Working config stands:</b>
-        <code>-ngl 99 --no-mmproj-offload</code> (LLM incl. output head on the iGPU, vision encode on CPU — or on the NPU).</p>
+        <code>-ngl 99 --no-mmproj-offload</code> (LLM incl. output head on the iGPU, vision encode on CPU). And crucially — the
+        crash is <i>only</i> in llama.cpp's Vulkan CLIP path: the <b class="g">ViT runs fine on the iGPU through OpenVINO</b>
+        (0.3–3.3 s, no crash), so the right "vision on the GPU" fix is to route the encoder through OpenVINO, not llama.cpp.</p>
     </div>
 
     <div class="agent">
