@@ -81,12 +81,13 @@
       <tr><td rowspan="2"><b>iGPU</b></td><td>llama.cpp&nbsp;(Vulkan)</td>
           <td>The LLM offloads fine, but the <b class="r">vision part crashes the GPU</b> (<code>vk::DeviceLostError</code>).</td></tr>
       <tr><td>OpenVINO</td>
-          <td><b class="r">No exporter</b> for this brand-new architecture (the Intel tool was pinned to older transformers), and a whole-model export needs <b>~66&nbsp;GB RAM</b>.</td></tr>
+          <td>The exporter <b class="g">now exists</b> (we fixed it — see below) and the <b class="g">ViT already runs on the iGPU</b>. But the 35B <b>LLM</b> won't export: the converter's tracer <b class="r">rejects its data-dependent branching</b>, and even if it didn't, building the graph needs <b class="r">≥94&nbsp;GB RAM</b>.</td></tr>
       <tr><td><b>NPU</b></td><td>OpenVINO only</td>
           <td>The NPU needs <b class="r">fixed shapes and no dynamic branching</b> — but the MoE routing and the SSM scan are both dynamic. It also tops out around 8B; the LLM is 35B.</td></tr>
     </table></div>
     <p class="dim" style="margin-bottom:0">In plain terms: the <b>CPU works because llama.cpp already implements this whole
-      architecture</b>. The accelerators don't — the model is new and unusual, and the Intel toolchains haven't caught up.</p>
+      architecture</b>. The accelerators are catching up — the vision half is now unblocked on both; the 35B language half is
+      the stubborn part.</p>
   </div>
 
   <!-- 2 -->
@@ -99,7 +100,9 @@
       <tr><td><b>Vision on the iGPU</b> (llama.cpp Vulkan)</td>
           <td class="bad">✗ Still crashes even on the newest build — an unresolved bug in llama.cpp's vision path on Intel.</td></tr>
       <tr><td><b>OpenVINO exporter</b> for the arch</td>
-          <td class="run">◑ Broke the tooling deadlock with a community fork (<code>rkazants</code>) + newer transformers. A <i>small</i> <code>qwen3_5_moe</code> now exports and runs on CPU&nbsp;+&nbsp;iGPU. The <b>real 35B OOM'd</b> — the tool builds a 66&nbsp;GB fp16 graph before shrinking to 4-bit, more RAM than we had.</td></tr>
+          <td class="ok">✓ Broke the tooling deadlock with a community fork (<code>rkazants</code>) + newer transformers. A <i>small</i> <code>qwen3_5_moe</code> exports and runs on CPU&nbsp;+&nbsp;iGPU — so the exporter itself is real.</td></tr>
+      <tr><td><b>Whole 35B → OpenVINO</b> (the goal)</td>
+          <td class="bad">✗ Two walls. The converter's <b>tracer rejects the LLM's data-dependent branches</b> (the mask update + the image-token position logic) — it dies before touching memory. And the graph build needs <b>≥94&nbsp;GB RAM</b> (measured: OOM-killed at 94&nbsp;GB, still climbing). We tried disk-offload + 71&nbsp;GB swap — no help, because the wall is tracing, not RAM.</td></tr>
       <tr><td><b>Vision on OpenVINO</b> (CPU/iGPU/NPU)</td>
           <td class="ok">✓ Exported the real vision tower (weights pulled from the GGUF), verified <b>bit-exact</b> vs the reference (cosine 1.0). Runs everywhere — <b>iGPU is fastest</b> (~0.4&nbsp;s vs ~5&nbsp;s on CPU).</td></tr>
       <tr><td><b>LLM on the NPU</b></td>
@@ -128,9 +131,14 @@
     </div>
     <div class="call">
       <p style="margin:0"><b class="k">What can be done right now.</b> A <b>hybrid runner</b> — LLM on the iGPU (llama.cpp)
-      + vision on the iGPU (OpenVINO) in one server — which removes the CPU vision bottleneck that made OSWorld a wash. And
-      after cleaning the box (<b>116&nbsp;GB disk free</b>; stopping the server frees ~34&nbsp;GB RAM → <b>~73&nbsp;GB</b>), the
-      <b>whole-model OpenVINO export is now plausible on this machine</b> — it was simply RAM-starved before.</p>
+      + vision on the iGPU (OpenVINO) in one server — which removes the CPU vision bottleneck that made OSWorld a wash. That is
+      the whole pipeline on the iGPU <i>today</i>, without a full OpenVINO export.</p>
+    </div>
+    <div class="call warn">
+      <p style="margin:0"><b class="y">What still can't be done here.</b> Running the <b>whole model as one pure-OpenVINO
+      graph</b>. We freed the box (116&nbsp;GB disk, 89&nbsp;GB RAM) and gave it 71&nbsp;GB of swap, but the 35B export dies at the
+      <b>tracer</b> (data-dependent control flow) before memory even matters — and behind that sits the <b>≥94&nbsp;GB</b> graph-build
+      wall. Neither is fixable by freeing more RAM.</p>
     </div>
   </div>
 
@@ -138,13 +146,15 @@
   <div class="panel">
     <h2>4 · What to try next</h2>
     <ol>
-      <li><b>Run the whole model on OpenVINO (the goal).</b> Stop the server to free RAM (~73&nbsp;GB &gt; the 66&nbsp;GB export
-        peak), run the fork's 4-bit export of the full model, then load LLM&nbsp;+&nbsp;vision together on the iGPU. Two honest
-        unknowns: it may still run out of RAM, and even if it exports, the linear-attention&nbsp;+&nbsp;MoE LLM could fail to
-        compile on the iGPU. This is the experiment that finally answers <i>"can the whole thing run on OpenVINO?"</i></li>
-      <li><b>Ship the hybrid runner (the safe win).</b> If the full export walls, wire up LLM-on-iGPU (llama.cpp) +
-        vision-on-iGPU (OpenVINO). This alone fixes the real bottleneck — the vision encode moves off the CPU, which is where
-        the OSWorld speedup actually lives (not in LLM placement).</li>
+      <li><b>Make the LLM trace-safe (the real unblock).</b> Patch the handful of data-dependent branches in the model's
+        forward — the mask update and the image-token position logic — into static / trace-safe forms. This is the same trick
+        that got a static-dense <code>qwen3_5_moe</code> onto the NPU. Fix that and the fork's exporter should go through.</li>
+      <li><b>Then export on a bigger box.</b> Even once it traces, the graph build needs <b>≥94&nbsp;GB RAM</b> (offload/swap
+        can't help — the graph must be fully materialized). Export on a ≥128&nbsp;GB machine, then copy the ~18&nbsp;GB 4-bit IR
+        back — inference fits the NUC fine.</li>
+      <li><b>Ship the hybrid runner (works today).</b> LLM on the iGPU (llama.cpp) + vision on the iGPU (OpenVINO) in one
+        server — the whole pipeline on the iGPU without the full export, and it fixes the real OSWorld bottleneck (vision off
+        the CPU).</li>
       <li><b>Keep the NUC as the model server.</b> Benchmark runs (OSWorld, etc.) move to the Legion box over the network;
         the NUC just serves Holo3.</li>
     </ol>
