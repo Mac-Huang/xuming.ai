@@ -313,7 +313,7 @@
     </div>
 
     <div class="agent">
-      <h3><span class="p">▸ qwen3_5_moe → OpenVINO exporter</span> &nbsp;<span class="pill maybe">arch recognized</span><span class="pill no">export blocked</span></h3>
+      <h3><span class="p">▸ qwen3_5_moe → OpenVINO exporter</span> &nbsp;<span class="pill maybe">arch recognized</span><span class="pill yes">unblocked via fork</span></h3>
       <p>Stood up a fresh env with the newest packages. Good news: <b class="g"><code>transformers 5.13</code> now recognizes
         <code>qwen3_5_moe</code></b> (arch + modeling class present) — the "unrecognized architecture" half is real-fixable by
         upgrading transformers. Bad news: the only OpenVINO exporter, <b><code>optimum-intel 2.0.0</code></b> (released
@@ -325,13 +325,37 @@
         for the Gated-DeltaNet / 256-expert MoE family (documented CPU&amp;GPU-only; NPU is static-shape, caps ~8B — the 35B
         LLM cannot run on it regardless), and a full 35B export is <b>disk-gated</b> (~70&nbsp;GB safetensors + ~70&nbsp;GB IR
         &gt; 123&nbsp;GB free). The already-working iGPU path for the Holo3 LLM is <b>llama.cpp Vulkan</b>, not OpenVINO.</p>
+      <p style="margin-top:8px"><b class="g">Update (2026-07-08) — deadlock broken.</b> A community fork
+        (<code>rkazants/optimum-intel@support_qwen3_5</code>, which carries <i>no</i> <code>transformers&lt;5.1</code> pin) +
+        nightly OpenVINO 2026.3 + <code>transformers 5.2.0</code> installed last all coexist: the arch is recognized natively,
+        the exporter imports, <code>qwen3_5_moe</code> is registered, and a tiny int4 VLM <b class="g">exports to OpenVINO IR and
+        compiles on CPU + Xe3 iGPU</b> (validated live, even alongside the running Vulkan server). The export path is real. The
+        real 35B is still gated: <b>no turnkey GGUF→safetensors converter</b> for this MoE+vision hybrid (we only hold the Q4
+        GGUF), and ~70&nbsp;GB fp16 won't fit in RAM beside the live services — the clean path is to download the original HF
+        safetensors on an idle box. Still CPU/iGPU only via this route.</p>
+    </div>
+
+    <div class="agent">
+      <h3><span class="p">▸ Forcing the LLM onto the NPU</span> &nbsp;<span class="pill yes">proof-of-execution ✓</span></h3>
+      <p>The NPU rejects the <i>efficient</i> model because vpux needs static shapes + no data-dependent control flow, and stock
+        <code>qwen3_5_moe</code> dies on two ops: the MoE router (<code>one_hot→nonzero→where→index_add_</code>) and the
+        Gated-DeltaNet recurrent scan + <code>causal_conv1d</code>. But that's the <i>dynamic ops</i>, not the NPU's math.
+        Reformulated <b>static + dense</b> — fixed S=128 shapes; MoE runs <b>all E experts with top-k as a pure-arithmetic
+        value-mask</b> (no gather/where/scatter); GDN as a fixed-trip unrolled scan — a tiny random-weight <code>qwen3_5_moe</code>
+        <b class="g">compiled AND ran on the NPU</b> (compile 49 s, ~26 ms), tracking a torch fp32 reference at <b>cosine 0.99979</b>
+        (argmax 121/128 — ordinary fp16 error). So the NPU <i>can</i> execute this architecture's math. The catch is cost:
+        dense-MoE multiplies expert FLOPs by <b>E/k</b> — 4× at this tiny 8/2, <b>32×</b> at the real 256-expert/top-8 — and the
+        NPU still caps ~8B, so the real 35B stays out. It's a proof-of-execution + a blowup measurement, not a deployment.</p>
     </div>
 
     <div class="call gap">
-      <p style="margin:0"><b class="y">Net.</b> Neither blocker is a config mistake — both are upstream gaps with named
-      unblock conditions: a llama.cpp Vulkan CLIP fix, and optimum-intel transformers-5.2+ support. The NPU-for-LLM boundary
-      is a genuine hardware/vendor limit, not a bug. Everything that <i>does</i> work today (LLM on iGPU via llama.cpp,
-      vision on NPU via OpenVINO, decode on CPU) is unchanged and correct.</p>
+      <p style="margin:0"><b class="y">Net (updated 2026-07-08).</b> Two of the three "walls" turned out crossable: the
+      OpenVINO export deadlock is <b class="g">broken</b> by the rkazants fork (tiny model exports + compiles on CPU/iGPU), and the
+      NPU is <b class="g">not fundamentally incapable</b> — it ran a static+dense <code>qwen3_5_moe</code> (proof-of-execution,
+      cosine 0.99979) at a 4–32× dense-MoE cost. What stays genuinely blocked: the llama.cpp Vulkan <i>vision</i> crash
+      (unresolved upstream — use OpenVINO for vision instead), a real-35B OpenVINO export (needs the HF safetensors + RAM, not
+      the GGUF), and an <i>efficient</i> 35B-on-NPU (dynamic MoE + ~8B capacity). Everything already working — LLM on the iGPU via
+      llama.cpp, vision on the iGPU/NPU via OpenVINO, decode on CPU — is unchanged and correct.</p>
     </div>
   </div>
 
