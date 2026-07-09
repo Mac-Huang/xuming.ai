@@ -333,6 +333,15 @@
         real 35B is still gated: <b>no turnkey GGUF→safetensors converter</b> for this MoE+vision hybrid (we only hold the Q4
         GGUF), and ~70&nbsp;GB fp16 won't fit in RAM beside the live services — the clean path is to download the original HF
         safetensors on an idle box. Still CPU/iGPU only via this route.</p>
+      <p style="margin-top:8px"><b class="r">Measured 2026-07-09 — the 35B export is a capacity wall on THIS box.</b>
+        Downloaded the real 70&nbsp;GB safetensors and attempted the int4 VLM export here: it <b class="r">OOM-killed at
+        45.6&nbsp;GB</b> during OV graph construction (systemd-oomd; disk never filled). Root cause: optimum builds the
+        language-model OV graph in <b>fp16 first</b> (~66&nbsp;GB of Constant nodes) and only <i>then</i> compresses to int4 —
+        so int4's ~18&nbsp;GB target doesn't lower peak memory, and ~66&nbsp;GB exceeds <i>both</i> the box's ~51&nbsp;GB free
+        RAM and ~42&nbsp;GB free disk. So exporting the 35B LLM to OpenVINO needs ~80–100&nbsp;GB RAM / ≥70&nbsp;GB disk (a
+        bigger box) or a layer-streaming exporter optimum doesn't have for this arch. The <b class="g">vision tower alone runs
+        on the iGPU via OpenVINO</b> (compile 1.4&nbsp;s, 416&nbsp;ms, cosine 1.0) — but the <b>whole model can't run on the iGPU
+        via OpenVINO on this machine</b>, because the LLM half can't be exported here.</p>
     </div>
 
     <div class="agent">
