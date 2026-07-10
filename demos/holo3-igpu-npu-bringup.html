@@ -70,13 +70,13 @@
     <p>There are two ways to reach the accelerators, and each hits a different wall:</p>
     <div class="scroll"><table>
       <tr><th>Device</th><th>Path</th><th>What blocks the 35B</th></tr>
-      <tr><td rowspan="2"><b>iGPU</b></td><td>llama.cpp&nbsp;(Vulkan)</td>
+      <tr><td rowspan="2"><b>iGPU</b></td><td>OpenVINO</td>
+          <td>The exporter exists and the <b class="g">ViT runs on the iGPU</b>, but the 35B <b>LLM won't export</b>: the
+              converter's tracer rejects its data-dependent branching, and even past that the graph build needs <b class="r">≥94&nbsp;GB RAM</b>.</td></tr>
+      <tr><td>llama.cpp&nbsp;(Vulkan)</td>
           <td>The LLM offloads fine, but the <b class="r">vision part crashes the GPU</b> — I reproduced it exactly this
               round: <code>vk::DeviceLostError</code> inside <code>clip_image_batch_encode</code>, and it's <b>size-triggered</b>
               (a small image encodes fine; a real screenshot loses the device).</td></tr>
-      <tr><td>OpenVINO</td>
-          <td>The exporter exists and the <b class="g">ViT runs on the iGPU</b>, but the 35B <b>LLM won't export</b>: the
-              converter's tracer rejects its data-dependent branching, and even past that the graph build needs <b class="r">≥94&nbsp;GB RAM</b>.</td></tr>
       <tr><td><b>NPU</b></td><td>OpenVINO only</td>
           <td>The NPU wants <b class="r">fixed shapes and no dynamic branching</b> — but the MoE routing and the SSM scan are
               both dynamic, and it tops out around 8B while the LLM is 35B.</td></tr>
