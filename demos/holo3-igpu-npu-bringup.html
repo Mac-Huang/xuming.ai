@@ -67,13 +67,14 @@
 
   <!-- WIN banner -->
   <div class="panel" style="border-color:#22502a">
-    <p style="margin:0 0 6px" class="win">✓ Holo-3.1-9B, whole model on the Xe3 iGPU via OpenVINO — solved a live OSWorld task locally (score 1.0).</p>
+    <p style="margin:0 0 6px" class="win">✓ Holo-3.1-9B runs whole-model on the Xe3 iGPU via OpenVINO, solved live OSWorld tasks locally — and the full LLM now compiles on the NPU too.</p>
     <div class="scroll"><table>
       <tr><th>What</th><th>Result</th></tr>
       <tr><td>Whole-model OpenVINO export (int8)</td><td class="ok">✓ 298&nbsp;s, <b>peak 44&nbsp;GB RAM</b> — fits the 96&nbsp;GB box (the 35B needed ≥94&nbsp;GB)</td></tr>
-      <tr><td>Compile &amp; run on the iGPU</td><td class="ok">✓ correct grounding — reads the screen, clicks the right button</td></tr>
-      <tr><td><b>OSWorld, run entirely on the NUC</b> (docker VM + agent + model)</td><td class="ok">✓ <b>"make Bing the default search engine" → score 1.0</b>, 7 steps, ~3&nbsp;tok/s</td></tr>
+      <tr><td>Compile &amp; run on the iGPU</td><td class="ok">✓ correct grounding — reads the screen, clicks the right button (~200 tok/s prefill, ~4 tok/s decode)</td></tr>
+      <tr><td><b>OSWorld, run entirely on the NUC</b> (docker VM + agent + model)</td><td class="ok">✓ single task <b>score 1.0</b>; one-per-domain subset <b>5/10</b> (chrome, writer, multi-apps, os, thunderbird)</td></tr>
       <tr><td>Vision tower on the NPU</td><td class="ok">✓ ViT compiles &amp; runs on the NPU (cosine 0.999995 vs CPU)</td></tr>
+      <tr><td><b>Full 9B LLM on the NPU</b> (re-exported stateless)</td><td class="ok">✓ the Gated-DeltaNet LLM <b>compiles on the NPU</b> (174 s) once its KV+SSM state is made explicit — graph-level wall crossed</td></tr>
     </table></div>
   </div>
 
@@ -156,9 +157,10 @@
               NPU-supported</i>, yet the stateful KV + Gated-DeltaNet SSM/conv state (mutable <code>ReadValue</code>/<code>Assign</code>
               memory) won't assemble into the NPU's static dataflow.</td></tr>
       <tr><td class="ok"><b>9B LLM on the NPU</b> — re-exported <b>stateless</b> (the fix)</td>
-          <td class="run">◑ Re-exporting with <code>stateful=False</code> lifts the KV <i>and</i> the SSM/conv state out as
-              <b>explicit static inputs</b>. On a tiny proxy this already <b>compiles and runs on the NPU</b> — the approach works;
-              the full-9B version is the next run.</td></tr>
+          <td class="ok">✓ <b>The fix works.</b> Re-exporting with <code>stateful=False</code> lifts the KV <i>and</i> the
+              Gated-DeltaNet SSM/conv state out as <b>explicit static inputs</b> — the mutable memory is gone. The <b>full 9B
+              LLM then compiles on the NPU</b> (174 s), and runs (finite logits). The graph-level wall is crossed; with the vision
+              tower already on the NPU, <b>every part of the 9B now has an NPU-compilable form</b>.</td></tr>
     </table></div>
   </div>
 
@@ -204,25 +206,58 @@
       mutable internal memory — <code>ReadValue</code>/<code>Assign</code> nodes that persist and update across tokens. Even
       after I pin every tensor to a fixed shape, that persistent mutable state is something the NPU compiler can't assemble into
       its static graph. So it dies at the <b>whole-graph</b> level, not on any single op.</p>
-      <p style="margin:0"><b class="k">What would fix it:</b> make the model <b>stateless</b> — lift the KV and SSM state out
+      <p style="margin:0"><b class="g">The fix — and it works.</b> Make the model <b>stateless</b>: lift the KV and SSM state out
       of the graph and pass them as <b>explicit inputs and outputs</b>, so one step becomes a pure function
       <code>(state_in, tokens) → (logits, state_out)</code> at fixed shapes. Then the NPU sees a static feed-forward graph with
-      no hidden memory. That's the next experiment.</p>
+      no hidden memory. Re-exporting the 9B with <code>stateful=False</code> does exactly this — the KV <i>and</i> the
+      Gated-DeltaNet conv/SSM states become explicit static inputs — and the <b>full 9B LLM then compiles and runs on the NPU</b>
+      (174 s to compile). The graph-level wall is crossed.</p>
     </div>
   </div>
 
   <!-- 4 -->
   <div class="panel">
-    <h2>4 · What to try next</h2>
+    <h2>4 · The four regimes, side by side</h2>
+    <p class="lead" style="margin-bottom:6px">Where the NUC's own accelerators land next to the three regimes from the
+      <a href="holo3-kvcache-optimum.html">KV-cache study</a> — the CPU <b>baseline</b>, the CPU <b>measured optimum</b>
+      (fake-prefix patch), and the datacenter <b>2×A6000</b>. <b class="y">One caveat up front:</b> the NUC column is a
+      <b>different, smaller model</b> — the dense <b>Holo-3.1-9B</b>, not the 35B in the other three columns — so this is not a
+      like-for-like race. It answers a different question: <i>what can the NUC run on its own silicon, whole-model, no cloud?</i></p>
+    <div class="scroll"><table>
+      <tr><th></th><th>evict baseline</th><th>measured optimum</th><th>2×A6000 <span class="dim">(GPU ref)</span></th>
+          <th class="k">NUC iGPU/NPU <span class="dim">(this work)</span></th></tr>
+      <tr><td class="dim">model</td><td>Holo3-35B</td><td>Holo3-35B</td><td>Holo3-35B</td><td class="k"><b>Holo-3.1-9B</b> dense</td></tr>
+      <tr><td class="dim">device · runtime</td><td>NUC CPU 16C · llama.cpp</td><td>NUC CPU · llama.cpp +patch</td><td>2× RTX A6000 · cloud</td><td class="k">Xe3 iGPU + NPU · <b>OpenVINO</b></td></tr>
+      <tr><td class="dim">weights</td><td>Q4 GGUF</td><td>Q4 GGUF</td><td>—</td><td class="k">int8 OV</td></tr>
+      <tr><td class="dim">screenshot context</td><td>last 3</td><td>last 3</td><td>last 3</td><td class="k">last 1 (bounded)</td></tr>
+      <tr><td class="dim">prefill · tok/step</td><td class="num">5,148</td><td class="num">2,058</td><td class="num">~5.1K</td><td class="num k">~0.9–2.2K</td></tr>
+      <tr><td class="dim">prefill · tok/s</td><td class="num">38.7</td><td class="num">36.9</td><td class="num">~1.1–2.9K</td><td class="num k">~200</td></tr>
+      <tr><td class="dim">decode · tok/s</td><td class="num">15.0</td><td class="num">15.0</td><td class="num">~150</td><td class="num k">~4</td></tr>
+      <tr><td class="dim">step latency</td><td class="num">151 s</td><td class="num">75 s</td><td class="num">~3.5 s</td><td class="num k">~37 s</td></tr>
+      <tr><td class="dim">OSWorld score</td><td class="num">0.858 <span class="dim">n=78</span></td><td class="num">0.858 <span class="dim">n=78</span></td><td class="num">0.804 <span class="dim">n=361</span></td><td class="num k">0.50 <span class="dim">n=10 †</span></td></tr>
+      <tr><td class="dim">footprint</td><td>bounded</td><td>bounded</td><td>datacenter</td><td class="k">~18 GB unified</td></tr>
+    </table></div>
+    <p class="src" style="margin:8px 0 0">Baseline / optimum / A6000 columns from the
+      <a href="holo3-kvcache-optimum.html">KV-cache study</a> (Holo3-35B). NUC column measured this session: prefill ~200 tok/s
+      &amp; decode ~4 tok/s on a 910-tok prompt. <b>†</b> NUC score = the one-per-domain OSWorld subset (10 tasks, one per
+      domain, Holo-3.1-9B, no-thinking) — a coverage snapshot, <i>not</i> comparable to the 35B's n=78 / n=361 sets.
+      Takeaway: the NUC's <b>decode (~4 tok/s) is the weak point</b> — the Gated-DeltaNet is under-optimized on the OV GPU
+      plugin — but its <b>prefill (~200 tok/s) already beats the 35B CPU baseline's 38.7</b>, and it runs the <b>whole</b>
+      agentic loop (LLM + vision) on a mini-PC's own iGPU/NPU, which neither the CPU baseline (vision stuck) nor a cloud GPU
+      (not local) does.</p>
+  </div>
+
+  <!-- 5 -->
+  <div class="panel">
+    <h2>5 · What to try next</h2>
     <ol>
-      <li><b>Speed up 9B decode on the iGPU.</b> ~3&nbsp;tok/s is the bottleneck. Try int4 weights, and profile the
-        Gated-DeltaNet ops in the OpenVINO GPU plugin — the SSM scan / conv1d are the likely culprits.</li>
-      <li><b>Bound the context for long episodes.</b> Cap or summarize the text history so multi-step OSWorld tasks stay under
-        the GPU's <code>CL_OUT_OF_RESOURCES</code> ceiling — then run a real subset of the benchmark.</li>
-      <li><b>Get the 9B LLM onto the NPU.</b> Every op is already NPU-supported; the blocker is the stateful graph. Re-export
-        it <b>stateless</b> with the KV / SSM state as explicit static inputs/outputs, then compile with fixed prefill/decode shapes.</li>
-      <li><b>Push the vision half onto the NPU in the live path.</b> The ViT already runs there — route it to the NPU while the
-        LLM stays on the iGPU, freeing iGPU cycles for decode.</li>
+      <li><b>Speed up 9B decode on the iGPU.</b> ~4&nbsp;tok/s is the bottleneck (prefill is a healthy ~200&nbsp;tok/s). Try int4
+        weights, and profile the Gated-DeltaNet ops in the OpenVINO GPU plugin — the SSM scan / conv1d are the likely culprits.</li>
+      <li><b>Run the whole 9B on the NPU.</b> The stateless LLM now <b>compiles on the NPU</b> and the vision tower already runs
+        there — the remaining work is wiring a <b>stateless decode loop</b> (feed the KV/SSM state in and out each step) plus a
+        static prefill graph, so the entire model runs on the NPU. Then compare NPU decode against the iGPU's ~4&nbsp;tok/s.</li>
+      <li><b>Split the pipeline across accelerators.</b> ViT on the NPU, LLM on the iGPU (or vice-versa) — each device does the
+        half it's best at, in one live server.</li>
       <li><b>Revisit the 35B only if needed.</b> If the 35B's quality is required, the trace-safe patch + a ≥128&nbsp;GB export
         box, or the llama.cpp&nbsp;+&nbsp;OpenVINO hybrid, remain the two routes.</li>
     </ol>
