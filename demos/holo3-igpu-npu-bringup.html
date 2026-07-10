@@ -55,30 +55,6 @@
 
 <div class="wrap">
 
-  <div class="panel">
-    <p class="lead" style="margin:0">
-      Holo3 serves fine on the NUC's <b>CPU</b> (llama.cpp, 4-bit GGUF). Getting it onto the <b>Xe3 iGPU</b> or the
-      <b>NPU</b> was the hard part. I spent weeks fighting the <b>35B</b> — and it stayed stubborn. Then I switched to the
-      smaller, <b>dense</b> sibling, <b>Holo-3.1-9B</b>, and the whole thing fell into place: the entire model exports to
-      <b>OpenVINO</b>, runs on the <b>iGPU</b>, and <b class="g">solved a real OSWorld task on this machine</b>. This is the
-      honest story — why it failed, everything I tried, what finally worked, and what's next.
-    </p>
-  </div>
-
-  <!-- WIN banner -->
-  <div class="panel" style="border-color:#22502a">
-    <p style="margin:0 0 6px" class="win">✓ Holo-3.1-9B runs whole-model on the Xe3 iGPU via OpenVINO, solved live OSWorld tasks locally — and the full LLM now compiles on the NPU too.</p>
-    <div class="scroll"><table>
-      <tr><th>What</th><th>Result</th></tr>
-      <tr><td>Whole-model OpenVINO export (int8)</td><td class="ok">✓ 298&nbsp;s, <b>peak 44&nbsp;GB RAM</b> — fits the 96&nbsp;GB box (the 35B needed ≥94&nbsp;GB)</td></tr>
-      <tr><td>Compile &amp; run on the iGPU</td><td class="ok">✓ correct grounding — reads the screen, clicks the right button (~200 tok/s prefill, ~4 tok/s decode)</td></tr>
-      <tr><td><b>OSWorld, run entirely on the NUC</b> (docker VM + agent + model)</td><td class="ok">✓ single task <b>score 1.0</b>; one-per-domain subset <b>5/10</b> (chrome, writer, multi-apps, os, thunderbird)</td></tr>
-      <tr><td>Vision tower on the NPU</td><td class="ok">✓ ViT compiles &amp; runs on the NPU (cosine 0.999995 vs CPU)</td></tr>
-      <tr><td><b>Full 9B LLM on the NPU</b> (re-exported stateless)</td><td class="ok">✓ the Gated-DeltaNet LLM <b>compiles on the NPU</b> (174 s) once its KV+SSM state is made explicit — graph-level wall crossed</td></tr>
-      <tr><td><b>Holo-3.1-4B</b> — same pipeline, smaller model</td><td class="ok">✓ <b>~1.8× faster decode</b> (~7.2 tok/s, 27 s/step), also solved the OSWorld chrome task (1.0); its stateless LLM compiles on the NPU too</td></tr>
-    </table></div>
-  </div>
-
   <!-- 1 -->
   <div class="panel">
     <h2>1 · Why the 35B wouldn't run</h2>
@@ -111,109 +87,74 @@
   <!-- 2 -->
   <div class="panel">
     <h2>2 · Everything I tried</h2>
-    <p class="dim" style="margin:0 0 10px">Grouped by device. On the <b>iGPU</b> I tried both runtimes — llama.cpp and
-      OpenVINO — for the LLM and the vision half. The <b>NPU</b> is a separate story, in its own table below.</p>
+    <p class="dim" style="margin:0 0 10px">Grouped by device, then by runtime. The <b>35B</b> is the hard case; the dense
+      <b>4B/9B</b> are where it works.</p>
 
     <p style="margin:6px 0 4px"><b class="k">▸ On the iGPU (Xe3)</b></p>
     <div class="scroll"><table>
       <tr><th>Attempt</th><th>Result</th></tr>
-      <tr><td><b>LLM</b> — llama.cpp (Vulkan)</td>
-          <td class="ok">✓ Works and is correct. The June "garbage output" bug did not return (a driver update fixed it). ~1.6× faster prefill than CPU.</td></tr>
-      <tr><td><b>LLM</b> — OpenVINO</td>
-          <td class="ok">✓ <b>(9B)</b> the dense-9B LLM runs on the iGPU under OpenVINO — correct output — as part of the
-              whole-model graph (below). Decode is <b>~3&nbsp;tok/s</b>: the Gated-DeltaNet layers are under-optimized in the
-              OpenVINO GPU plugin, so it's slower than llama.cpp's Vulkan prefill or CPU decode. <b class="r">✗ (35B)</b> no
-              standalone path — the whole-model export fails first (below).</td></tr>
-      <tr><td><b>Vision</b> — llama.cpp (Vulkan)</td>
-          <td class="bad">✗ <code>vk::DeviceLostError</code>. The LLM decode and a <i>small</i> ViT both run on Vulkan0, but a
-              full-size screenshot's ViT encode loses the device (GPU hang) inside <code>clip_image_batch_encode</code>. Unresolved bug in llama.cpp's Intel-Vulkan vision path.</td></tr>
-      <tr><td><b>Vision</b> — OpenVINO</td>
-          <td class="ok">✓ The real ViT exports and runs on the iGPU, verified <b>bit-exact</b> vs the reference (cosine 1.0). iGPU is the fastest device for it.</td></tr>
-      <tr><td><b>Hybrid: LLM via llama.cpp + vision via OpenVINO</b></td>
-          <td class="run">◑ <b>Designed &amp; located the splice</b> — feed OpenVINO's ViT embeddings straight into llama.cpp at
-              <code>clip_image_batch_encode</code> so its M-RoPE / decode machinery is reused unchanged, skipping the crashing
-              Vulkan ViT. It would give the whole pipeline on the iGPU today. I didn't need to ship it — the 9B (below) let the
-              <i>whole</i> model export to OpenVINO, which is cleaner.</td></tr>
-      <tr><td><b>Whole 35B → OpenVINO</b></td>
-          <td class="bad">✗ Two walls. The converter's tracer rejects the LLM's data-dependent branches, and the graph build
-              needs <b>≥94&nbsp;GB RAM</b> (OOM-killed at 94&nbsp;GB, still climbing). Disk-offload + 71&nbsp;GB swap didn't help —
-              the wall is tracing, not RAM.</td></tr>
-      <tr><td class="ok"><b>Whole 9B → OpenVINO</b> (Holo-3.1-9B, <code>qwen3_5</code> <b>dense</b>)</td>
-          <td class="ok">✓ <b>This is the one.</b> The dense 9B has the same Gated-DeltaNet layers but <b>no MoE</b>, so the
-              export traces (the fork's model-patcher handles the branching) and the graph fits: <b>peak 44&nbsp;GB</b>, 298&nbsp;s,
-              18.9&nbsp;GB int8 IR. It then <b>compiles and runs on the iGPU</b> and grounds the screen correctly.</td></tr>
-      <tr><td class="ok"><b>OSWorld on the iGPU</b> (9B, run on the NUC)</td>
-          <td class="ok">✓ End-to-end: OpenVINO 9B on the iGPU + OSWorld's Ubuntu VM in docker/KVM + the agent, all on this
-              box. Solved a chrome task, <b>score 1.0</b>, 7 steps, 100% valid actions.</td></tr>
+      <tr><td colspan="2" style="border-bottom:1px solid var(--bd);padding-top:10px"><b class="k">OpenVINO</b></td></tr>
+      <tr><td>35B · Vision (ViT)</td><td class="ok">✓ exports + runs on the iGPU, <b>bit-exact</b> vs reference (cosine 1.0) — fastest device for it.</td></tr>
+      <tr><td>35B · LLM</td><td class="bad">✗ no standalone path — the whole-model export fails first (next row).</td></tr>
+      <tr><td>35B · whole</td><td class="bad">✗ two walls: the converter's tracer rejects the data-dependent branches, and the graph build needs <b>≥94&nbsp;GB RAM</b> (OOM at 94&nbsp;GB; disk-offload + 71&nbsp;GB swap didn't help — the wall is tracing, not RAM).</td></tr>
+      <tr><td colspan="2" style="border-bottom:1px solid var(--bd);padding-top:10px"><b>llama.cpp (Vulkan)</b></td></tr>
+      <tr><td>35B · Vision (ViT)</td><td class="bad">✗ <code>vk::DeviceLostError</code> inside <code>clip_image_batch_encode</code> — a full-size screenshot's ViT encode hangs the GPU (a small image is fine). Unresolved Intel-Vulkan bug.</td></tr>
+      <tr><td>35B · LLM</td><td class="ok">✓ works and is correct, ~1.6× faster prefill than CPU. (The June garbage-output bug did not return.)</td></tr>
+      <tr><td>35B · whole</td><td class="bad">✗ the LLM offloads fine, but the vision crash blocks the whole pipeline on the iGPU.</td></tr>
+      <tr><td colspan="2" style="border-bottom:1px solid var(--bd);padding-top:10px"><b class="p">Hybrid</b></td></tr>
+      <tr><td>LLM via llama.cpp + Vision via OpenVINO</td><td class="run">◑ designed &amp; located the splice — feed OpenVINO's ViT embeddings into llama.cpp at <code>clip_image_batch_encode</code>, reusing its M-RoPE / decode. Didn't need to ship it — the dense whole-model export (below) is cleaner.</td></tr>
+      <tr><td colspan="2" style="border-bottom:1px solid var(--bd);padding-top:10px"><b class="g">Other models</b></td></tr>
+      <tr><td class="ok"><b>4B / 9B · whole → OpenVINO</b> (dense <code>qwen3_5</code>)</td>
+          <td class="ok">✓ <b>the win.</b> No MoE, so the export traces and the graph fits (9B: 44&nbsp;GB peak, 18.9&nbsp;GB IR; 4B:
+              9.7&nbsp;GB). Both <b>compile and run the whole model on the iGPU</b> and ground the screen correctly
+              (4B ~257 / 7.2&nbsp;tok/s, 9B ~200 / 4).</td></tr>
     </table></div>
 
     <p style="margin:16px 0 4px"><b class="p">▸ On the NPU (NPU 5 · Intel AI Boost)</b></p>
     <div class="scroll"><table>
       <tr><th>Attempt</th><th>Result</th></tr>
-      <tr><td><b>Vision tower + token embeddings</b> — static shapes</td>
-          <td class="ok">✓ The whole vision tower (patch-embed + spatial-merge + pos) and the token embeddings compile
-              <i>and run</i> on the NPU — the ViT matches CPU to cosine 0.999995, ~22&nbsp;ms.</td></tr>
-      <tr><td><b>9B LLM on the NPU</b> — as exported (stateful)</td>
-          <td class="bad">✗ Compilation fails — but at the <b>graph level</b>, not on any op: <i>all 7,450 ops are individually
-              NPU-supported</i>, yet the stateful KV + Gated-DeltaNet SSM/conv state (mutable <code>ReadValue</code>/<code>Assign</code>
-              memory) won't assemble into the NPU's static dataflow.</td></tr>
-      <tr><td class="ok"><b>9B LLM on the NPU</b> — re-exported <b>stateless</b> (the fix)</td>
-          <td class="ok">✓ <b>The fix works.</b> Re-exporting with <code>stateful=False</code> lifts the KV <i>and</i> the
-              Gated-DeltaNet SSM/conv state out as <b>explicit static inputs</b> — the mutable memory is gone. The <b>full 9B
-              LLM then compiles on the NPU</b> (174 s), and runs (finite logits). The graph-level wall is crossed; with the vision
-              tower already on the NPU, <b>every part of the 9B now has an NPU-compilable form</b>.</td></tr>
+      <tr><td colspan="2" style="border-bottom:1px solid var(--bd);padding-top:10px"><b>35B (<code>qwen3_5_moe</code>)</b></td></tr>
+      <tr><td>35B · Vision / LLM / whole</td>
+          <td class="bad">✗ out of scope for the NPU: it caps ~8B and needs fixed shapes + no dynamic branching, but the MoE
+              routing and the SSM scan are both dynamic. (A tiny static-dense proxy did compile — proof it's possible — but the
+              full 35B doesn't fit.)</td></tr>
+      <tr><td colspan="2" style="border-bottom:1px solid var(--bd);padding-top:10px"><b class="k">4B / 9B (<code>qwen3_5</code> dense) — the real problem: make the LLM static</b></td></tr>
+      <tr><td>Vision tower + token embeddings</td>
+          <td class="ok">✓ compile <i>and run</i> on the NPU with fixed shapes — the ViT matches CPU to cosine 0.999995 (~22&nbsp;ms).</td></tr>
+      <tr><td>LLM — as exported (<b>stateful</b>)</td>
+          <td class="bad">✗ compile fails at the <b>graph level</b>, not on any op: all 7,450 ops are individually supported, but the
+              mutable KV + Gated-DeltaNet SSM/conv state (<code>ReadValue</code>/<code>Assign</code>) won't assemble into the NPU's
+              static dataflow.</td></tr>
+      <tr><td class="ok">LLM — re-exported <b>stateless</b> (the fix)</td>
+          <td class="ok">✓ <code>stateful=False</code> lifts the KV <i>and</i> the SSM/conv state out as <b>explicit static inputs</b>.
+              Then the <b>full LLM compiles on the NPU</b> — the <b>9B compiles + runs</b> (174&nbsp;s, finite logits) and the
+              <b>4B compiles</b> (97&nbsp;s). The graph-level wall is crossed.</td></tr>
     </table></div>
   </div>
 
   <!-- 3 -->
   <div class="panel">
     <h2>3 · Where I am now</h2>
-    <p class="lead" style="margin-bottom:8px">Two working stories, one per model size:</p>
+    <p class="dim" style="margin:0 0 8px">Per stage, where it runs — with throughput where a device runs it. The fastest in
+      each row is <b class="g">green</b>.</p>
     <div class="scroll"><table>
-      <tr><th>Stage</th><th>35B (<code>qwen3_5_moe</code>)</th><th>9B (<code>qwen3_5</code> dense)</th></tr>
-      <tr><td><b>Vision encode</b> (ViT)</td><td class="ok">iGPU via OpenVINO ✓ · NPU ✓</td><td class="ok">iGPU / NPU via OpenVINO ✓</td></tr>
-      <tr><td><b>LLM prefill</b></td><td class="ok">iGPU via llama.cpp ✓</td><td class="ok">iGPU via OpenVINO ✓</td></tr>
-      <tr><td><b>LLM decode</b></td><td class="ok">CPU (fastest single-stream)</td><td class="run">iGPU via OpenVINO — correct but <b>~3&nbsp;tok/s</b></td></tr>
-      <tr><td><b>Whole model, one runtime</b></td><td class="bad">✗ no pure-OpenVINO path (RAM + tracer)</td><td class="ok"><b>iGPU via OpenVINO ✓</b></td></tr>
-      <tr><td><b>Whole agentic loop, on the NUC</b></td><td class="ok">CPU (llama.cpp), served on <code>:8082</code></td><td class="ok"><b>iGPU (OpenVINO) — OSWorld score 1.0</b></td></tr>
+      <tr><th>Stage</th><th>35B <span class="dim">(MoE)</span></th><th>9B <span class="dim">(dense)</span></th><th>4B <span class="dim">(dense)</span></th></tr>
+      <tr><td><b>Vision encode</b> (ViT)</td><td class="ok">iGPU + NPU ✓</td><td class="ok">iGPU + NPU ✓</td><td class="ok">iGPU + NPU ✓</td></tr>
+      <tr><td><b>LLM prefill</b></td>
+          <td>iGPU · 124 tok/s <span class="dim">(llama.cpp)</span></td>
+          <td>iGPU · 200 tok/s <span class="dim">(OV)</span></td>
+          <td>iGPU · <b class="g">257 tok/s</b> <span class="dim">(OV)</span></td></tr>
+      <tr><td><b>LLM decode</b></td>
+          <td>iGPU · <b class="g">~9 tok/s</b> <span class="dim">(llama.cpp, MoE)</span></td>
+          <td>iGPU · 4 tok/s <span class="dim">(OV)</span></td>
+          <td>iGPU · 7.2 tok/s <span class="dim">(OV)</span></td></tr>
+      <tr><td><b>Whole model, one runtime on the iGPU</b></td><td class="bad">✗</td><td class="ok">✓ OpenVINO</td><td class="ok">✓ OpenVINO</td></tr>
+      <tr><td><b>LLM on the NPU</b> (stateless)</td><td class="bad">✗</td><td class="ok">✓ compiles + runs</td><td class="ok">✓ compiles</td></tr>
+      <tr><td><b>OSWorld, whole loop, local</b></td>
+          <td class="dim">CPU only</td>
+          <td class="ok">iGPU · 5/10 · 37 s/step</td>
+          <td class="ok">iGPU · <b class="g">27 s/step</b> <span class="dim">(subset running)</span></td></tr>
     </table></div>
-    <div class="call good">
-      <p style="margin:0"><b class="g">What I achieved.</b> The <b>whole 9B runs on the iGPU as one OpenVINO graph</b> —
-      the thing the 35B could never do — and it <b>drove a full OSWorld episode to a correct result on this machine</b>: no Legion
-      box, no remoting. The <b>vision half also runs on the NPU</b> (verified correct). The three walls that looked fatal on the
-      35B — the Vulkan ViT crash, the OpenVINO export, the NPU — are all crossed on the 9B, or crossed for the half that matters.</p>
-    </div>
-    <div class="call">
-      <p style="margin:0"><b class="k">How the 9B run is wired.</b> A small OpenAI-compatible server wraps the OpenVINO model
-      on the iGPU (<code>:8091</code>); the OSWorld agent talks to it exactly like it did the CPU server. Two serving details
-      matter: the turn-stop token had to be corrected (<code>&lt;|im_end|&gt;</code>, or it runs away), and image size is
-      capped — the OpenVINO GPU plugin throws <code>CL_OUT_OF_RESOURCES</code> on a big prefill, so I bound the screenshot to
-      ~1&nbsp;280×720 and keep one image in context.</p>
-    </div>
-    <div class="call warn">
-      <p style="margin:0"><b class="y">The honest limits.</b> Decode on the iGPU is <b>~3&nbsp;tok/s</b> — the Gated-DeltaNet
-      layers aren't well-optimized in the OpenVINO GPU plugin — so a full 369-task OSWorld sweep is <b>days, not hours</b>. And
-      the context grows ~170 tokens/step, so long episodes eventually approach the same GPU memory ceiling. The <b>35B</b> still
-      has <b>no pure-OpenVINO path</b> (RAM + tracer).</p>
-    </div>
-    <div class="call warn">
-      <p style="margin:0 0 6px"><b class="y">Why the NPU can't run the LLM (yet) — it's not an unsupported op.</b>
-      The natural guess is that the Gated-DeltaNet has some exotic operation the NPU lacks. It doesn't: I asked the NPU compiler
-      to vote on every node, and <b>all 7,450 ops in the LLM are individually supported</b>. It still fails to compile.</p>
-      <p style="margin:0 0 6px">The real reason is that the NPU is a <b>static dataflow</b> engine: it wants the whole
-      computation as one fixed-shape graph with <b>no runtime branching and no mutable memory</b>. The ViT is exactly that — a
-      pure feed-forward pass — so it compiles and runs (verified). The LLM is not: it is <b>stateful</b>. It carries a <b>KV
-      cache</b> (for the full-attention layers) <i>and</i> a <b>recurrent SSM state</b> (for the Gated-DeltaNet layers) as
-      mutable internal memory — <code>ReadValue</code>/<code>Assign</code> nodes that persist and update across tokens. Even
-      after I pin every tensor to a fixed shape, that persistent mutable state is something the NPU compiler can't assemble into
-      its static graph. So it dies at the <b>whole-graph</b> level, not on any single op.</p>
-      <p style="margin:0"><b class="g">The fix — and it works.</b> Make the model <b>stateless</b>: lift the KV and SSM state out
-      of the graph and pass them as <b>explicit inputs and outputs</b>, so one step becomes a pure function
-      <code>(state_in, tokens) → (logits, state_out)</code> at fixed shapes. Then the NPU sees a static feed-forward graph with
-      no hidden memory. Re-exporting the 9B with <code>stateful=False</code> does exactly this — the KV <i>and</i> the
-      Gated-DeltaNet conv/SSM states become explicit static inputs — and the <b>full 9B LLM then compiles and runs on the NPU</b>
-      (174 s to compile). The graph-level wall is crossed.</p>
-    </div>
   </div>
 
   <!-- 4 -->
