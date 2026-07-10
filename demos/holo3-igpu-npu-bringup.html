@@ -129,8 +129,10 @@
               static dataflow.</td></tr>
       <tr><td class="ok">LLM — re-exported <b>stateless</b> (the fix)</td>
           <td class="ok">✓ <code>stateful=False</code> lifts the KV <i>and</i> the SSM/conv state out as <b>explicit static inputs</b>.
-              Then the <b>full LLM compiles on the NPU</b> — the <b>9B compiles + runs</b> (174&nbsp;s, finite logits) and the
-              <b>4B compiles</b> (97&nbsp;s). The graph-level wall is crossed.</td></tr>
+              Then the <b>full Gated-DeltaNet LLM compiles <i>and generates real text</i> on the NPU</b> — with a static decode
+              loop (fixed-size KV buffer + GDN conv/SSM state fed back each step): the <b>4B answers "the capital of France is
+              Paris" at 6.4 step/s</b>, the 9B at 3.9 step/s. The graph-level wall is crossed — the whole LLM runs on the NPU,
+              not just compiles.</td></tr>
     </table></div>
   </div>
 
@@ -154,7 +156,7 @@
           <td>iGPU · 4 tok/s <span class="dim">(OV)</span></td>
           <td>iGPU · 7.2 tok/s <span class="dim">(OV)</span></td></tr>
       <tr><td><b>Whole model, one runtime on the iGPU</b></td><td class="bad">✗</td><td class="ok">✓ OpenVINO</td><td class="ok">✓ OpenVINO</td></tr>
-      <tr><td><b>LLM on the NPU</b> (stateless)</td><td class="bad">✗</td><td class="ok">✓ compiles + runs</td><td class="ok">✓ compiles</td></tr>
+      <tr><td><b>LLM on the NPU</b> (stateless, generates)</td><td class="bad">✗</td><td class="ok">✓ 3.9 step/s</td><td class="ok"><b class="g">✓ 6.4 step/s</b></td></tr>
       <tr><td><b>OSWorld, whole loop, local</b></td>
           <td class="dim">CPU only</td>
           <td class="ok">iGPU · 5/10 · 37 s/step</td>
@@ -203,9 +205,10 @@
     <ol>
       <li><b>Speed up 9B decode on the iGPU.</b> ~4&nbsp;tok/s is the bottleneck (prefill is a healthy ~200&nbsp;tok/s). Try int4
         weights, and profile the Gated-DeltaNet ops in the OpenVINO GPU plugin — the SSM scan / conv1d are the likely culprits.</li>
-      <li><b>Run the whole 9B on the NPU.</b> The stateless LLM now <b>compiles on the NPU</b> and the vision tower already runs
-        there — the remaining work is wiring a <b>stateless decode loop</b> (feed the KV/SSM state in and out each step) plus a
-        static prefill graph, so the entire model runs on the NPU. Then compare NPU decode against the iGPU's ~4&nbsp;tok/s.</li>
+      <li><b>Run the whole VLM on the NPU.</b> The LLM already <b>generates text on the NPU</b> (static decode loop) and the
+        vision tower runs there too — the remaining step is to <b>splice the NPU ViT's image embeddings into the decode loop</b>
+        so an image→text query runs end-to-end on the NPU. Then optimize the loop (the KV-buffer copies are done in Python today)
+        and compare against the iGPU.</li>
       <li><b>Split the pipeline across accelerators.</b> ViT on the NPU, LLM on the iGPU (or vice-versa) — each device does the
         half it's best at, in one live server.</li>
       <li><b>Revisit the 35B only if needed.</b> If the 35B's quality is required, the trace-safe patch + a ≥128&nbsp;GB export
