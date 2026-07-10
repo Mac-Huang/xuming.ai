@@ -133,6 +133,15 @@
               loop (fixed-size KV buffer + GDN conv/SSM state fed back each step): the <b>4B answers "the capital of France is
               Paris" at 6.4 step/s</b>, the 9B at 3.9 step/s. The graph-level wall is crossed — the whole LLM runs on the NPU,
               not just compiles.</td></tr>
+      <tr><td class="ok"><b>Image→text</b> — full VLM step (vision iGPU → LLM NPU)</td>
+          <td class="ok">✓ a real screenshot → the LLM decodes the answer <b>on the NPU</b>: 4B "Go to DataAccess (unsafe)",
+              9B "the app is requesting access to sensitive Google-account info" — correct grounding. (The vision runs on the
+              iGPU; the NPU ViT is static-shape and would need manual orchestration to join the loop.)</td></tr>
+      <tr><td class="run"><b>OSWorld served on the NPU</b></td>
+          <td class="run">◑ a real agent step runs end-to-end on the NPU — and <b>decode is fast (5.8 tok/s)</b> — but prefill
+              is token-by-token, so a ~1.1k-token OSWorld prompt takes <b>~205 s to prefill</b> (~216 s/step). A full 10-task ×
+              2-model sweep is therefore ~hours; I ran a <b>scoped demo</b>, not the full subset. A batched prefill graph would
+              close most of that gap.</td></tr>
     </table></div>
   </div>
 
@@ -205,10 +214,13 @@
     <ol>
       <li><b>Speed up 9B decode on the iGPU.</b> ~4&nbsp;tok/s is the bottleneck (prefill is a healthy ~200&nbsp;tok/s). Try int4
         weights, and profile the Gated-DeltaNet ops in the OpenVINO GPU plugin — the SSM scan / conv1d are the likely culprits.</li>
-      <li><b>Run the whole VLM on the NPU.</b> The LLM already <b>generates text on the NPU</b> (static decode loop) and the
-        vision tower runs there too — the remaining step is to <b>splice the NPU ViT's image embeddings into the decode loop</b>
-        so an image→text query runs end-to-end on the NPU. Then optimize the loop (the KV-buffer copies are done in Python today)
-        and compare against the iGPU.</li>
+      <li><b>Make the NPU practical for OSWorld.</b> Image→text already runs with the <b>LLM on the NPU</b>, and decode is fast
+        (~6 tok/s), but prefill is done one token at a time — a ~1.1k-token OSWorld prompt costs ~205 s. A <b>batched prefill
+        graph</b> (process the prompt in one/few NPU calls) is the fix; that alone would take an OSWorld step from ~216 s to
+        ~15 s. Then run the full subset on the NPU.</li>
+      <li><b>Move the vision onto the NPU too.</b> The ViT compiles on the NPU but the OV model's vision sub-models are
+        dynamic-shaped — reshape them static and orchestrate the merger's rotary/mask from <code>grid_thw</code> to run the
+        whole VLM (vision + LLM) on the NPU.</li>
       <li><b>Split the pipeline across accelerators.</b> ViT on the NPU, LLM on the iGPU (or vice-versa) — each device does the
         half it's best at, in one live server.</li>
       <li><b>Revisit the 35B only if needed.</b> If the 35B's quality is required, the trace-safe patch + a ≥128&nbsp;GB export
