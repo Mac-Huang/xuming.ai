@@ -127,21 +127,22 @@
           <td class="bad">✗ compile fails at the <b>graph level</b>, not on any op: all 7,450 ops are individually supported, but the
               mutable KV + Gated-DeltaNet SSM/conv state (<code>ReadValue</code>/<code>Assign</code>) won't assemble into the NPU's
               static dataflow.</td></tr>
-      <tr><td class="ok">LLM — re-exported <b>stateless</b> (the fix)</td>
-          <td class="ok">✓ <code>stateful=False</code> lifts the KV <i>and</i> the SSM/conv state out as <b>explicit static inputs</b>.
-              Then the <b>full Gated-DeltaNet LLM compiles <i>and generates real text</i> on the NPU</b> — with a static decode
-              loop (fixed-size KV buffer + GDN conv/SSM state fed back each step): the <b>4B answers "the capital of France is
-              Paris" at 6.4 step/s</b>, the 9B at 3.9 step/s. The graph-level wall is crossed — the whole LLM runs on the NPU,
-              not just compiles.</td></tr>
+      <tr><td class="run">LLM — re-exported <b>stateless</b> (the fix — <span class="y">partial</span>)</td>
+          <td class="run">◑ <code>stateful=False</code> lifts the KV <i>and</i> the SSM/conv state out as <b>explicit static
+              inputs</b>, and the <b>LLM decode runs on the NPU</b> (static T=1 loop): 4B "the capital of France is Paris" at
+              6.4 step/s, 9B at 3.9. <b>But only decode.</b> A batched <b>prefill graph (T&gt;1) will not compile on the NPU</b> —
+              the multi-token Gated-DeltaNet scan is rejected, exactly like the stateful graph (tried chunk sizes 64–512, contexts
+              512–2048; all fail). So a real prompt is prefilled either <b>token-by-token on the NPU</b> (~0.18 s/token → ~205 s for
+              a 1.1k-token OSWorld prompt) <b>or on the iGPU</b> — hence <b class="y">partial</b>, not a full-NPU win.</td></tr>
       <tr><td class="ok"><b>Image→text</b> — full VLM step (vision iGPU → LLM NPU)</td>
           <td class="ok">✓ a real screenshot → the LLM decodes the answer <b>on the NPU</b>: 4B "Go to DataAccess (unsafe)",
               9B "the app is requesting access to sensitive Google-account info" — correct grounding. (The vision runs on the
               iGPU; the NPU ViT is static-shape and would need manual orchestration to join the loop.)</td></tr>
       <tr><td class="run"><b>OSWorld served on the NPU</b></td>
           <td class="run">◑ a real agent step runs end-to-end on the NPU — and <b>decode is fast (5.8 tok/s)</b> — but prefill
-              is token-by-token, so a ~1.1k-token OSWorld prompt takes <b>~205 s to prefill</b> (~216 s/step). A full 10-task ×
-              2-model sweep is therefore ~hours; I ran a <b>scoped demo</b>, not the full subset. A batched prefill graph would
-              close most of that gap.</td></tr>
+              must be token-by-token (the batched prefill graph <b>won't compile on the NPU</b>, above), so a ~1.1k-token OSWorld
+              prompt takes <b>~205 s to prefill</b> (~216 s/step). A full 10-task × 2-model sweep is therefore ~8 h; I ran a
+              <b>scoped demo</b>, not the full subset.</td></tr>
     </table></div>
   </div>
 
@@ -214,10 +215,10 @@
     <ol>
       <li><b>Speed up 9B decode on the iGPU.</b> ~4&nbsp;tok/s is the bottleneck (prefill is a healthy ~200&nbsp;tok/s). Try int4
         weights, and profile the Gated-DeltaNet ops in the OpenVINO GPU plugin — the SSM scan / conv1d are the likely culprits.</li>
-      <li><b>Make the NPU practical for OSWorld.</b> Image→text already runs with the <b>LLM on the NPU</b>, and decode is fast
-        (~6 tok/s), but prefill is done one token at a time — a ~1.1k-token OSWorld prompt costs ~205 s. A <b>batched prefill
-        graph</b> (process the prompt in one/few NPU calls) is the fix; that alone would take an OSWorld step from ~216 s to
-        ~15 s. Then run the full subset on the NPU.</li>
+      <li><b>Speed up NPU prefill — the open problem.</b> NPU decode is fast (~6 tok/s), but prefill is one token at a time
+        (~205 s for a 1.1k-token OSWorld prompt) and the batched prefill graph <b>won't compile on the NPU</b> (the T&gt;1 GDN
+        scan is rejected). Getting a multi-token prefill onto the NPU — a different scan formulation, or a smaller static
+        context — is what a full NPU-only OSWorld run needs.</li>
       <li><b>Move the vision onto the NPU too.</b> The ViT compiles on the NPU but the OV model's vision sub-models are
         dynamic-shaped — reshape them static and orchestrate the merger's rotary/mask from <code>grid_thw</code> to run the
         whole VLM (vision + LLM) on the NPU.</li>
