@@ -134,7 +134,7 @@
               the multi-token Gated-DeltaNet scan is rejected, exactly like the stateful graph (tried chunk sizes 64–512, contexts
               512–2048; all fail). So a real prompt is prefilled either <b>token-by-token on the NPU</b> (~0.18 s/token → ~205 s for
               a 1.1k-token OSWorld prompt) <b>or on the iGPU</b> — hence <b class="y">partial</b>, not a full-NPU win.
-              <b>And there's a second wall:</b> even token-by-token, the NPU's <b>int8</b> Gated-DeltaNet recurrence only stays
+              <b>And there's a second wall:</b> even token-by-token, the NPU's <b>fp16</b> Gated-DeltaNet recurrence only stays
               coherent for short contexts — past ~a few hundred tokens it drifts and reverts to <b>echoing the prompt</b>. The
               identical loop on the iGPU stays correct to 1.5k tokens, so this is NPU numerics, not a bug (sweep below).</td></tr>
       <tr><td class="ok"><b>Image→text</b> — full VLM step (vision iGPU → LLM NPU)</td>
@@ -143,16 +143,20 @@
               iGPU; the NPU ViT is static-shape and would need manual orchestration to join the loop.)</td></tr>
       <tr><td class="bad"><b>OSWorld served on the NPU</b></td>
           <td class="bad">✗ I ran the <b>full one-per-domain 4B subset on the NPU</b> (10 tasks, ~15 h) → <b>0/10</b>. The pipeline
-              runs end-to-end, but at OSWorld prompt lengths the int8 decode is <b>incoherent</b>: every step it echoes the tool schema /
+              runs end-to-end, but at OSWorld prompt lengths the decode is <b>incoherent</b>: every step it echoes the tool schema /
               prior screenshot instead of emitting an action, so all 10 tasks fall back to <code>WAIT</code>. I confirmed the cause with
-              an iGPU-vs-NPU sweep — the <b>same</b> token-by-token loop and the <b>same</b> int8 IR, only the device changes:
+              an iGPU-vs-NPU sweep — the <b>same</b> token-by-token loop and the <b>same</b> IR, only the device changes:
               <div class="dim" style="margin:6px 0 1px">prompt tokens → does it still answer "capital of France?"</div>
               <div style="font-family:monospace;font-size:12px;margin-bottom:2px">
                 12&nbsp;·&nbsp;250&nbsp;·&nbsp;488&nbsp;·&nbsp;998&nbsp;·&nbsp;1508 &nbsp; iGPU <b class="g">✓ ✓ ✓ ✓ ✓</b> &nbsp;·&nbsp;
                 NPU <b class="bad">~ ✗ ✗ ✗ ✗</b> <span class="dim">(NPU echoes the prompt from ~250 tokens on; iGPU is correct to 1.5k)</span>
               </div>
-              So NPU-served OSWorld is blocked by <b>two</b> walls: slow token-by-token prefill (~205 s/step) <i>and</i> this int8-GDN
-              coherence wall at length. The <b>9B subset never ran</b> — a stray 93 GB export OOM-killed the overnight compile.</td></tr>
+              And it's a <b>hardware precision ceiling, not a quantization artifact</b>: the weights are 16-bit (they were bf16 all
+              along — the "int8" export was silently ignored), and re-exporting them as <b>true fp16 gives the identical failure</b>.
+              The cause is <b>f16 accumulation</b> in the Gated-DeltaNet recurrence — and the NPU <b>can only accumulate in f16</b>
+              (it hard-rejects an f32 hint: <code>Supported values: f16, i8</code>), while the iGPU keeps the state in f32. So NPU-served
+              OSWorld is blocked by <b>two</b> walls: slow token-by-token prefill (~205 s/step) <i>and</i> this f16-accumulation
+              coherence wall — with <b>no software fix</b> on this NPU. The <b>9B subset never ran</b> — a stray 93 GB export OOM-killed the overnight compile.</td></tr>
     </table></div>
   </div>
 
@@ -202,7 +206,7 @@
           <th class="k">NUC · 9B</th><th class="p">NUC · 4B</th></tr>
       <tr><td class="dim">model</td><td>Holo3-35B</td><td>Holo3-35B</td><td>Holo3-35B</td><td class="k"><b>Holo-3.1-9B</b> dense</td><td class="p"><b>Holo-3.1-4B</b> dense</td></tr>
       <tr><td class="dim">device · runtime</td><td>NUC CPU 16C · llama.cpp</td><td>NUC CPU · llama.cpp +patch</td><td>2× RTX A6000 · cloud</td><td class="k">Xe3 iGPU + NPU · <b>OpenVINO</b></td><td class="p">Xe3 iGPU + NPU · <b>OpenVINO</b></td></tr>
-      <tr><td class="dim">weights</td><td>Q4 GGUF</td><td>Q4 GGUF</td><td>—</td><td class="k">int8 OV</td><td class="p">int8 OV</td></tr>
+      <tr><td class="dim">weights</td><td>Q4 GGUF</td><td>Q4 GGUF</td><td>—</td><td class="k">16-bit OV (bf16)</td><td class="p">16-bit OV (bf16)</td></tr>
       <tr><td class="dim">screenshot context</td><td>last 3</td><td>last 3</td><td>last 3</td><td class="k">last 1 (bounded)</td><td class="p">last 1 (bounded)</td></tr>
       <tr><td class="dim">prefill · tok/step</td><td class="num">5,148</td><td class="num">2,058</td><td class="num">~5.1K</td><td class="num k">~0.9–2.2K</td><td class="num p">~0.9–2.2K</td></tr>
       <tr><td class="dim">prefill · tok/s</td><td class="num">38.7</td><td class="num">36.9</td><td class="num">~1.1–2.9K</td><td class="num k">~200</td><td class="num p">~257</td></tr>
@@ -229,11 +233,16 @@
     <ol>
       <li><b>Speed up 9B decode on the iGPU.</b> ~4&nbsp;tok/s is the bottleneck (prefill is a healthy ~200&nbsp;tok/s). Try int4
         weights, and profile the Gated-DeltaNet ops in the OpenVINO GPU plugin — the SSM scan / conv1d are the likely culprits.</li>
-      <li><b>The NPU needs numerical precision first, not just speed.</b> Two walls block NPU-served OSWorld: (a) the batched
-        prefill graph won't compile (the T&gt;1 Gated-DeltaNet scan is rejected), forcing ~205 s token-by-token prefill; and (b)
-        more fundamentally, the <b>int8</b> GDN recurrence loses coherence past ~a few hundred tokens on the NPU (it echoes the
-        prompt) while the identical loop on the iGPU is fine to 1.5k+. Fix (b) before (a): try an <b>fp16 stateless export</b> on
-        the NPU (or keep the conv/SSM state in fp32) so the recurrence stops drifting — precision is the blocker, speed is second.</li>
+      <li><b>The NPU hits a precision ceiling on this architecture — confirmed, no software fix.</b> Two walls block NPU-served
+        OSWorld: (a) the batched prefill graph won't compile (the T&gt;1 Gated-DeltaNet scan is rejected), forcing ~205 s
+        token-by-token prefill; and (b) more fundamentally, the GDN recurrence loses coherence past ~a few hundred tokens on the
+        NPU (it echoes the prompt) while the identical loop on the iGPU is fine to 1.5k+. I chased (b) to the bottom: it is
+        <b>not</b> weight precision (the weights are 16-bit, and true <b>fp16 fails identically to bf16</b>) — it's <b>f16
+        accumulation</b> in the recurrent state, and this NPU <b>can only accumulate in f16 or i8</b> (it rejects an f32 hint:
+        <code>OPTIMIZATION_CAPABILITIES=[FP16, INT8]</code>), whereas the iGPU keeps the state in f32. So a full NPU-only run
+        needs either f32 state support in silicon or a <b>chunked prefill that resets the recurrent state often enough to bound the
+        drift</b> — the only remaining software lever. Until then the NPU is a <b>decode-of-short-context</b> device here, not an
+        agentic one.</li>
       <li><b>Move the vision onto the NPU too.</b> The ViT compiles on the NPU but the OV model's vision sub-models are
         dynamic-shaped — reshape them static and orchestrate the merger's rotary/mask from <code>grid_thw</code> to run the
         whole VLM (vision + LLM) on the NPU.</li>
