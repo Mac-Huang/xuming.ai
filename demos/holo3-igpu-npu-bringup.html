@@ -133,16 +133,26 @@
               6.4 step/s, 9B at 3.9. <b>But only decode.</b> A batched <b>prefill graph (T&gt;1) will not compile on the NPU</b> —
               the multi-token Gated-DeltaNet scan is rejected, exactly like the stateful graph (tried chunk sizes 64–512, contexts
               512–2048; all fail). So a real prompt is prefilled either <b>token-by-token on the NPU</b> (~0.18 s/token → ~205 s for
-              a 1.1k-token OSWorld prompt) <b>or on the iGPU</b> — hence <b class="y">partial</b>, not a full-NPU win.</td></tr>
+              a 1.1k-token OSWorld prompt) <b>or on the iGPU</b> — hence <b class="y">partial</b>, not a full-NPU win.
+              <b>And there's a second wall:</b> even token-by-token, the NPU's <b>int8</b> Gated-DeltaNet recurrence only stays
+              coherent for short contexts — past ~a few hundred tokens it drifts and reverts to <b>echoing the prompt</b>. The
+              identical loop on the iGPU stays correct to 1.5k tokens, so this is NPU numerics, not a bug (sweep below).</td></tr>
       <tr><td class="ok"><b>Image→text</b> — full VLM step (vision iGPU → LLM NPU)</td>
           <td class="ok">✓ a real screenshot → the LLM decodes the answer <b>on the NPU</b>: 4B "Go to DataAccess (unsafe)",
               9B "the app is requesting access to sensitive Google-account info" — correct grounding. (The vision runs on the
               iGPU; the NPU ViT is static-shape and would need manual orchestration to join the loop.)</td></tr>
-      <tr><td class="run"><b>OSWorld served on the NPU</b></td>
-          <td class="run">◑ a real agent step runs end-to-end on the NPU — and <b>decode is fast (5.8 tok/s)</b> — but prefill
-              must be token-by-token (the batched prefill graph <b>won't compile on the NPU</b>, above), so a ~1.1k-token OSWorld
-              prompt takes <b>~205 s to prefill</b> (~216 s/step). A full 10-task × 2-model sweep is therefore ~8 h; I ran a
-              <b>scoped demo</b>, not the full subset.</td></tr>
+      <tr><td class="bad"><b>OSWorld served on the NPU</b></td>
+          <td class="bad">✗ I ran the <b>full one-per-domain 4B subset on the NPU</b> (10 tasks, ~15 h) → <b>0/10</b>. The pipeline
+              runs end-to-end, but at OSWorld prompt lengths the int8 decode is <b>incoherent</b>: every step it echoes the tool schema /
+              prior screenshot instead of emitting an action, so all 10 tasks fall back to <code>WAIT</code>. I confirmed the cause with
+              an iGPU-vs-NPU sweep — the <b>same</b> token-by-token loop and the <b>same</b> int8 IR, only the device changes:
+              <div class="dim" style="margin:6px 0 1px">prompt tokens → does it still answer "capital of France?"</div>
+              <div style="font-family:monospace;font-size:12px;margin-bottom:2px">
+                12&nbsp;·&nbsp;250&nbsp;·&nbsp;488&nbsp;·&nbsp;998&nbsp;·&nbsp;1508 &nbsp; iGPU <b class="g">✓ ✓ ✓ ✓ ✓</b> &nbsp;·&nbsp;
+                NPU <b class="bad">~ ✗ ✗ ✗ ✗</b> <span class="dim">(NPU echoes the prompt from ~250 tokens on; iGPU is correct to 1.5k)</span>
+              </div>
+              So NPU-served OSWorld is blocked by <b>two</b> walls: slow token-by-token prefill (~205 s/step) <i>and</i> this int8-GDN
+              coherence wall at length. The <b>9B subset never ran</b> — a stray 93 GB export OOM-killed the overnight compile.</td></tr>
     </table></div>
   </div>
 
@@ -171,6 +181,10 @@
           <td class="dim">CPU only</td>
           <td class="ok">iGPU · 5/10 · 37 s/step</td>
           <td class="ok">iGPU · <b class="g">7/10</b> · <b class="g">28 s/step</b></td></tr>
+      <tr><td><b>OSWorld on the NPU</b> <span class="dim">(LLM decode)</span></td>
+          <td class="dim">—</td>
+          <td class="bad">✗ not run <span class="dim">(export OOM)</span></td>
+          <td class="bad">✗ 0/10 <span class="dim">(incoherent ≥~250 tok)</span></td></tr>
     </table></div>
   </div>
 
@@ -215,10 +229,11 @@
     <ol>
       <li><b>Speed up 9B decode on the iGPU.</b> ~4&nbsp;tok/s is the bottleneck (prefill is a healthy ~200&nbsp;tok/s). Try int4
         weights, and profile the Gated-DeltaNet ops in the OpenVINO GPU plugin — the SSM scan / conv1d are the likely culprits.</li>
-      <li><b>Speed up NPU prefill — the open problem.</b> NPU decode is fast (~6 tok/s), but prefill is one token at a time
-        (~205 s for a 1.1k-token OSWorld prompt) and the batched prefill graph <b>won't compile on the NPU</b> (the T&gt;1 GDN
-        scan is rejected). Getting a multi-token prefill onto the NPU — a different scan formulation, or a smaller static
-        context — is what a full NPU-only OSWorld run needs.</li>
+      <li><b>The NPU needs numerical precision first, not just speed.</b> Two walls block NPU-served OSWorld: (a) the batched
+        prefill graph won't compile (the T&gt;1 Gated-DeltaNet scan is rejected), forcing ~205 s token-by-token prefill; and (b)
+        more fundamentally, the <b>int8</b> GDN recurrence loses coherence past ~a few hundred tokens on the NPU (it echoes the
+        prompt) while the identical loop on the iGPU is fine to 1.5k+. Fix (b) before (a): try an <b>fp16 stateless export</b> on
+        the NPU (or keep the conv/SSM state in fp32) so the recurrence stops drifting — precision is the blocker, speed is second.</li>
       <li><b>Move the vision onto the NPU too.</b> The ViT compiles on the NPU but the OV model's vision sub-models are
         dynamic-shaped — reshape them static and orchestrate the merger's rotary/mask from <code>grid_thw</code> to run the
         whole VLM (vision + LLM) on the NPU.</li>
@@ -233,7 +248,8 @@
     <p class="src" style="margin:0">Measured on wuklab-NUC16 · Intel Core Ultra 7 356H (Panther Lake) · Xe3 iGPU · NPU&nbsp;5 (Intel AI Boost) · 96&nbsp;GB.
     Models <code>Hcompany/Holo3-35B-A3B</code> (<code>qwen3_5_moe</code>) and <code>Hcompany/Holo-3.1-9B</code> (<code>qwen3_5</code> dense) ·
     llama.cpp Vulkan · OpenVINO 2026.3 (rkazants fork). OSWorld via the docker provider (KVM) on the NUC.
-    Runs under <code>/data/runs/2026-07-0{7,8,9}_wuklab-NUC16_holo3*</code>.</p>
+    Runs under <code>/data/runs/2026-07-{07..11}_wuklab-NUC16_holo3*</code>, including the 4B NPU subset (0/10) and the
+    iGPU-vs-NPU coherence sweep.</p>
   </div>
 
 </div>
