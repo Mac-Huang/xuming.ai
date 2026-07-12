@@ -134,9 +134,10 @@
               the multi-token Gated-DeltaNet scan is rejected, exactly like the stateful graph (tried chunk sizes 64–512, contexts
               512–2048; all fail). So a real prompt is prefilled either <b>token-by-token on the NPU</b> (~0.18 s/token → ~205 s for
               a 1.1k-token OSWorld prompt) <b>or on the iGPU</b> — hence <b class="y">partial</b>, not a full-NPU win.
-              <b>And there's a second wall:</b> even token-by-token, the NPU's <b>fp16</b> Gated-DeltaNet recurrence only stays
-              coherent for short contexts — past ~a few hundred tokens it drifts and reverts to <b>echoing the prompt</b>. The
-              identical loop on the iGPU stays correct to 1.5k tokens, so this is NPU numerics, not a bug (sweep below).</td></tr>
+              <b>And there's a second wall:</b> even token-by-token, the NPU output goes <b>incoherent</b> past ~250 tokens and
+              reverts to <b>echoing the prompt</b>. It is <b>not</b> precision (the iGPU runs the same f16 and stays correct to
+              1.5k) and <b>not</b> a bug in my loop — I root-caused it to a specific NPU op-lowering fault in the Gated-DeltaNet
+              layers (sweep + op-level diff below).</td></tr>
       <tr><td class="ok"><b>Image→text</b> — full VLM step (vision iGPU → LLM NPU)</td>
           <td class="ok">✓ a real screenshot → the LLM decodes the answer <b>on the NPU</b>: 4B "Go to DataAccess (unsafe)",
               9B "the app is requesting access to sensitive Google-account info" — correct grounding. (The vision runs on the
@@ -151,12 +152,15 @@
                 12&nbsp;·&nbsp;250&nbsp;·&nbsp;488&nbsp;·&nbsp;998&nbsp;·&nbsp;1508 &nbsp; iGPU <b class="g">✓ ✓ ✓ ✓ ✓</b> &nbsp;·&nbsp;
                 NPU <b class="bad">~ ✗ ✗ ✗ ✗</b> <span class="dim">(NPU echoes the prompt from ~250 tokens on; iGPU is correct to 1.5k)</span>
               </div>
-              And it's a <b>hardware precision ceiling, not a quantization artifact</b>: the weights are 16-bit (they were bf16 all
-              along — the "int8" export was silently ignored), and re-exporting them as <b>true fp16 gives the identical failure</b>.
-              The cause is <b>f16 accumulation</b> in the Gated-DeltaNet recurrence — and the NPU <b>can only accumulate in f16</b>
-              (it hard-rejects an f32 hint: <code>Supported values: f16, i8</code>), while the iGPU keeps the state in f32. So NPU-served
-              OSWorld is blocked by <b>two</b> walls: slow token-by-token prefill (~205 s/step) <i>and</i> this f16-accumulation
-              coherence wall — with <b>no software fix</b> on this NPU. The <b>9B subset never ran</b> — a stray 93 GB export OOM-killed the overnight compile.</td></tr>
+              I then root-caused it, and it is a <b>fixable op-lowering fault, not a hardware wall</b>. Ruled out: precision (both
+              devices run f16), weights (bf16 <i>and</i> true fp16 fail identically), and f32 (the NPU has none — but it doesn't need
+              it, the iGPU is fine at f16). An op-level differential (teacher-forced NPU-vs-iGPU, per-layer state diff) shows the heavy
+              Gated-DeltaNet ops are each <b>NPU-exact in isolation</b> (the delta-rule SSM cell and the causal conv1d both match CPU to
+              cosine 1.0). The corruption comes from a <b>data-dependent varlen index-gather in every GDN layer</b>
+              (<code>Range→Less→NonZero→GatherND</code>) — <code>NonZero</code> has a <b>dynamic output shape</b>, which a static-shape
+              NPU can't compute correctly — and it poisons each layer's input, compounding through depth. So the fix is to remove that
+              decode-time varlen path (like inlining the once-only scan <code>Loop</code>, which I've already done); it's in progress,
+              not a dead end. The <b>9B subset never ran</b> — a stray 93 GB export OOM-killed the overnight compile.</td></tr>
     </table></div>
   </div>
 
@@ -233,16 +237,16 @@
     <ol>
       <li><b>Speed up 9B decode on the iGPU.</b> ~4&nbsp;tok/s is the bottleneck (prefill is a healthy ~200&nbsp;tok/s). Try int4
         weights, and profile the Gated-DeltaNet ops in the OpenVINO GPU plugin — the SSM scan / conv1d are the likely culprits.</li>
-      <li><b>The NPU hits a precision ceiling on this architecture — confirmed, no software fix.</b> Two walls block NPU-served
+      <li><b>Finish the NPU coherence fix — it's an op-lowering fault, not a hardware wall.</b> Two things block NPU-served
         OSWorld: (a) the batched prefill graph won't compile (the T&gt;1 Gated-DeltaNet scan is rejected), forcing ~205 s
-        token-by-token prefill; and (b) more fundamentally, the GDN recurrence loses coherence past ~a few hundred tokens on the
-        NPU (it echoes the prompt) while the identical loop on the iGPU is fine to 1.5k+. I chased (b) to the bottom: it is
-        <b>not</b> weight precision (the weights are 16-bit, and true <b>fp16 fails identically to bf16</b>) — it's <b>f16
-        accumulation</b> in the recurrent state, and this NPU <b>can only accumulate in f16 or i8</b> (it rejects an f32 hint:
-        <code>OPTIMIZATION_CAPABILITIES=[FP16, INT8]</code>), whereas the iGPU keeps the state in f32. So a full NPU-only run
-        needs either f32 state support in silicon or a <b>chunked prefill that resets the recurrent state often enough to bound the
-        drift</b> — the only remaining software lever. Until then the NPU is a <b>decode-of-short-context</b> device here, not an
-        agentic one.</li>
+        token-by-token prefill; and (b) the GDN decode goes incoherent past ~250 tokens while the identical f16 loop on the iGPU is
+        fine to 1.5k+. I chased (b) to the bottom: <b>not</b> precision, <b>not</b> the weights — an op-level differential shows the
+        delta-rule SSM cell and the causal conv1d are each <b>NPU-exact in isolation</b> (cos 1.0 vs CPU), so the culprit is a
+        <b>data-dependent varlen index-gather</b> in every GDN layer (<code>Range→Less→NonZero→GatherND</code>; <code>NonZero</code>
+        emits a dynamic shape a static-shape NPU can't compute), which poisons each layer's input and compounds through depth.
+        The fix is to strip that varlen path for single-sequence decode (it's a no-op there — <code>apply_mask_to_padding_states</code>
+        already skips it at batch/seq&nbsp;=&nbsp;1) — the same move as inlining the once-only scan <code>Loop</code>, which is done.
+        This makes the NPU a real <b>pure-NPU</b> path, not just a short-context toy.</li>
       <li><b>Move the vision onto the NPU too.</b> The ViT compiles on the NPU but the OV model's vision sub-models are
         dynamic-shaped — reshape them static and orchestrate the merger's rotary/mask from <code>grid_thw</code> to run the
         whole VLM (vision + LLM) on the NPU.</li>
