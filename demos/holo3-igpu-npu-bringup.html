@@ -247,8 +247,9 @@
         layer is bit-perfect on the NPU, and every distinctive op (SSM cell, conv1d, gated RMSNorm) is NPU-exact in isolation (cos 1.0).
         Removing the once-only <code>Loop</code> and the shape-derived <code>NonZero</code> varlen gather changed nothing, and no
         compiler-backend toggle helps. The same graph is correct on CPU-f16 and the iGPU, so the NPU's fusion/lowering of the 32-layer
-        graph is at fault. The right move is a <b>minimal-repro OpenVINO NPU bug report</b> (isolated ops pass, full graph fails); until
-        Intel fixes it, the <b>iGPU is the whole-model path</b>. (Also still open: the T&gt;1 prefill graph won't compile on the NPU at
+        graph is at fault. The right move is a <b>minimal-repro OpenVINO NPU bug report</b> (isolated ops pass, full graph fails) — and
+        I confirmed it survives the <b>latest NPU driver</b> (upgraded the compiler stack 1.32.1 → 1.33.0, June 2026; still echoes at
+        250), so it's an unfixed defect, not a stale-driver artifact. Until Intel fixes it, the <b>iGPU is the whole-model path</b>. (Also still open: the T&gt;1 prefill graph won't compile on the NPU at
         all, so even a fixed decode would need token-by-token prefill or an iGPU prefill hand-off.)</li>
       <li><b>Move the vision onto the NPU too.</b> The ViT compiles on the NPU but the OV model's vision sub-models are
         dynamic-shaped — reshape them static and orchestrate the merger's rotary/mask from <code>grid_thw</code> to run the
