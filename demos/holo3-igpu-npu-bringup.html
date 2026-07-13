@@ -152,15 +152,19 @@
                 12&nbsp;·&nbsp;250&nbsp;·&nbsp;488&nbsp;·&nbsp;998&nbsp;·&nbsp;1508 &nbsp; iGPU <b class="g">✓ ✓ ✓ ✓ ✓</b> &nbsp;·&nbsp;
                 NPU <b class="bad">~ ✗ ✗ ✗ ✗</b> <span class="dim">(NPU echoes the prompt from ~250 tokens on; iGPU is correct to 1.5k)</span>
               </div>
-              I then root-caused it, and it is a <b>fixable op-lowering fault, not a hardware wall</b>. Ruled out: precision (both
-              devices run f16), weights (bf16 <i>and</i> true fp16 fail identically), and f32 (the NPU has none — but it doesn't need
-              it, the iGPU is fine at f16). An op-level differential (teacher-forced NPU-vs-iGPU, per-layer state diff) shows the heavy
-              Gated-DeltaNet ops are each <b>NPU-exact in isolation</b> (the delta-rule SSM cell and the causal conv1d both match CPU to
-              cosine 1.0). The corruption comes from a <b>data-dependent varlen index-gather in every GDN layer</b>
-              (<code>Range→Less→NonZero→GatherND</code>) — <code>NonZero</code> has a <b>dynamic output shape</b>, which a static-shape
-              NPU can't compute correctly — and it poisons each layer's input, compounding through depth. So the fix is to remove that
-              decode-time varlen path (like inlining the once-only scan <code>Loop</code>, which I've already done); it's in progress,
-              not a dead end. The <b>9B subset never ran</b> — a stray 93 GB export OOM-killed the overnight compile.</td></tr>
+              I then chased it all the way down, and it is an <b>Intel NPU-compiler miscompute</b> — <b>not</b> precision, not the
+              weights, and not any single op. Ruled out one by one: precision (<b>CPU forced to f16 is coherent</b>, and both devices
+              default to f16); weights (bf16 <i>and</i> true fp16 fail identically). A per-layer differential shows the very first GDN
+              layer is <b>bit-perfect</b> on the NPU (conv &amp; SSM state cos 1.0) and divergence only appears at layer 1 and
+              <b>compounds through depth</b>. Every distinctive op is <b>NPU-exact in isolation</b> — the delta-rule SSM cell, the causal
+              conv1d, and the gated RMSNorm all match CPU to cosine 1.0. And the two structural oddities I could remove — the once-only
+              scan <code>Loop</code> (inlined away) and a shape-derived <code>NonZero</code> varlen gather (constant-folded away) —
+              changed <b>nothing</b>. No compiler-backend toggle helps (<code>DRIVER</code>≡<code>PLUGIN</code>; <code>ACCURACY</code>
+              mode makes it worse — NaN). So: every op is right alone, the <b>same graph is right on CPU-f16 and the iGPU</b>, but the
+              NPU's fusion/lowering of the full 32-layer Gated-DeltaNet decode graph is wrong — a compiler defect, not something fixable
+              from user space. <b>Verdict: the NPU can't run this architecture correctly today; the iGPU (whole-model, 4B 7/10) is the
+              path, and this is a clean OpenVINO NPU bug to file.</b> The <b>9B subset never ran</b> — a stray 93 GB export OOM-killed the
+              overnight compile.</td></tr>
     </table></div>
   </div>
 
@@ -237,16 +241,15 @@
     <ol>
       <li><b>Speed up 9B decode on the iGPU.</b> ~4&nbsp;tok/s is the bottleneck (prefill is a healthy ~200&nbsp;tok/s). Try int4
         weights, and profile the Gated-DeltaNet ops in the OpenVINO GPU plugin — the SSM scan / conv1d are the likely culprits.</li>
-      <li><b>Finish the NPU coherence fix — it's an op-lowering fault, not a hardware wall.</b> Two things block NPU-served
-        OSWorld: (a) the batched prefill graph won't compile (the T&gt;1 Gated-DeltaNet scan is rejected), forcing ~205 s
-        token-by-token prefill; and (b) the GDN decode goes incoherent past ~250 tokens while the identical f16 loop on the iGPU is
-        fine to 1.5k+. I chased (b) to the bottom: <b>not</b> precision, <b>not</b> the weights — an op-level differential shows the
-        delta-rule SSM cell and the causal conv1d are each <b>NPU-exact in isolation</b> (cos 1.0 vs CPU), so the culprit is a
-        <b>data-dependent varlen index-gather</b> in every GDN layer (<code>Range→Less→NonZero→GatherND</code>; <code>NonZero</code>
-        emits a dynamic shape a static-shape NPU can't compute), which poisons each layer's input and compounds through depth.
-        The fix is to strip that varlen path for single-sequence decode (it's a no-op there — <code>apply_mask_to_padding_states</code>
-        already skips it at batch/seq&nbsp;=&nbsp;1) — the same move as inlining the once-only scan <code>Loop</code>, which is done.
-        This makes the NPU a real <b>pure-NPU</b> path, not just a short-context toy.</li>
+      <li><b>File the NPU-compiler bug; don't expect a user-space NPU fix for this architecture.</b> NPU-served OSWorld is blocked
+        by an <b>Intel NPU-compiler miscompute</b> of the full Gated-DeltaNet decode graph, which I chased to the bottom: it is
+        <b>not</b> precision (CPU forced to f16 is coherent), <b>not</b> the weights, and <b>not</b> any single op — the first GDN
+        layer is bit-perfect on the NPU, and every distinctive op (SSM cell, conv1d, gated RMSNorm) is NPU-exact in isolation (cos 1.0).
+        Removing the once-only <code>Loop</code> and the shape-derived <code>NonZero</code> varlen gather changed nothing, and no
+        compiler-backend toggle helps. The same graph is correct on CPU-f16 and the iGPU, so the NPU's fusion/lowering of the 32-layer
+        graph is at fault. The right move is a <b>minimal-repro OpenVINO NPU bug report</b> (isolated ops pass, full graph fails); until
+        Intel fixes it, the <b>iGPU is the whole-model path</b>. (Also still open: the T&gt;1 prefill graph won't compile on the NPU at
+        all, so even a fixed decode would need token-by-token prefill or an iGPU prefill hand-off.)</li>
       <li><b>Move the vision onto the NPU too.</b> The ViT compiles on the NPU but the OV model's vision sub-models are
         dynamic-shaped — reshape them static and orchestrate the merger's rotary/mask from <code>grid_thw</code> to run the
         whole VLM (vision + LLM) on the NPU.</li>
