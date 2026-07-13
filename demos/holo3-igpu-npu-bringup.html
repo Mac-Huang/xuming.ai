@@ -137,34 +137,55 @@
               <b>And there's a second wall:</b> even token-by-token, the NPU output goes <b>incoherent</b> past ~250 tokens and
               reverts to <b>echoing the prompt</b>. It is <b>not</b> precision (the iGPU runs the same f16 and stays correct to
               1.5k) and <b>not</b> a bug in my loop — I root-caused it to a specific NPU op-lowering fault in the Gated-DeltaNet
-              layers (sweep + op-level diff below).</td></tr>
+              layers (sweep + op-level diff below) — then <b class="g">worked around it</b> with an NPUW hybrid that keeps ~98% of the
+              model on the NPU and offloads only those layers (below).</td></tr>
       <tr><td class="ok"><b>Image→text</b> — full VLM step (vision iGPU → LLM NPU)</td>
           <td class="ok">✓ a real screenshot → the LLM decodes the answer <b>on the NPU</b>: 4B "Go to DataAccess (unsafe)",
               9B "the app is requesting access to sensitive Google-account info" — correct grounding. (The vision runs on the
               iGPU; the NPU ViT is static-shape and would need manual orchestration to join the loop.)</td></tr>
-      <tr><td class="bad"><b>OSWorld served on the NPU</b></td>
-          <td class="bad">✗ I ran the <b>full one-per-domain 4B subset on the NPU</b> (10 tasks, ~15 h) → <b>0/10</b>. The pipeline
-              runs end-to-end, but at OSWorld prompt lengths the decode is <b>incoherent</b>: every step it echoes the tool schema /
-              prior screenshot instead of emitting an action, so all 10 tasks fall back to <code>WAIT</code>. I confirmed the cause with
-              an iGPU-vs-NPU sweep — the <b>same</b> token-by-token loop and the <b>same</b> IR, only the device changes:
+      <tr><td class="bad"><b>NPU decode — why it first failed</b></td>
+          <td class="bad">✗ The first NPU subset (10 tasks) scored <b>0/10</b>: at OSWorld prompt lengths the decode went
+              <b>incoherent</b> — every step echoed the tool schema / prior screenshot instead of an action, so all tasks fell back to
+              <code>WAIT</code>. An iGPU-vs-NPU sweep (<b>same</b> loop, <b>same</b> IR, only the device changes) localized it:
               <div class="dim" style="margin:6px 0 1px">prompt tokens → does it still answer "capital of France?"</div>
               <div style="font-family:monospace;font-size:12px;margin-bottom:2px">
                 12&nbsp;·&nbsp;250&nbsp;·&nbsp;488&nbsp;·&nbsp;998&nbsp;·&nbsp;1508 &nbsp; iGPU <b class="g">✓ ✓ ✓ ✓ ✓</b> &nbsp;·&nbsp;
-                NPU <b class="bad">~ ✗ ✗ ✗ ✗</b> <span class="dim">(NPU echoes the prompt from ~250 tokens on; iGPU is correct to 1.5k)</span>
+                NPU <b class="bad">~ ✗ ✗ ✗ ✗</b> <span class="dim">(NPU echoes from ~250 tokens on; iGPU is correct to 1.5k)</span>
               </div>
-              I then chased it all the way down, and it is an <b>Intel NPU-compiler miscompute</b> — <b>not</b> precision, not the
-              weights, and not any single op. Ruled out one by one: precision (<b>CPU forced to f16 is coherent</b>, and both devices
-              default to f16); weights (bf16 <i>and</i> true fp16 fail identically). A per-layer differential shows the very first GDN
-              layer is <b>bit-perfect</b> on the NPU (conv &amp; SSM state cos 1.0) and divergence only appears at layer 1 and
-              <b>compounds through depth</b>. Every distinctive op is <b>NPU-exact in isolation</b> — the delta-rule SSM cell, the causal
-              conv1d, and the gated RMSNorm all match CPU to cosine 1.0. And the two structural oddities I could remove — the once-only
-              scan <code>Loop</code> (inlined away) and a shape-derived <code>NonZero</code> varlen gather (constant-folded away) —
-              changed <b>nothing</b>. No compiler-backend toggle helps (<code>DRIVER</code>≡<code>PLUGIN</code>; <code>ACCURACY</code>
-              mode makes it worse — NaN). So: every op is right alone, the <b>same graph is right on CPU-f16 and the iGPU</b>, but the
-              NPU's fusion/lowering of the full 32-layer Gated-DeltaNet decode graph is wrong — a compiler defect, not something fixable
-              from user space. <b>Verdict: the NPU can't run this architecture correctly today; the iGPU (whole-model, 4B 7/10) is the
-              path, and this is a clean OpenVINO NPU bug to file.</b> The <b>9B subset never ran</b> — a stray 93 GB export OOM-killed the
-              overnight compile.</td></tr>
+              Chased to the bottom, it is an <b>Intel NPU-compiler miscompute</b> — <b>not</b> precision (<b>CPU forced to f16 is
+              coherent</b>; both devices default to f16), not the weights (bf16 <i>and</i> true fp16 fail identically), and not any single
+              op. Per-layer diff: the <b>first</b> Gated-DeltaNet layer is bit-perfect on the NPU (conv &amp; SSM cos 1.0) and divergence
+              appears at layer 1 and <b>compounds through depth</b> — while every distinctive op (delta-rule SSM cell, causal conv1d,
+              gated RMSNorm) is <b>NPU-exact in isolation</b> (cos 1.0). Removing the once-only scan <code>Loop</code> and the
+              shape-derived <code>NonZero</code> gather changed nothing; no compiler toggle helps (<code>optimization-level=0</code> ⇒
+              the bug is in <b>mandatory</b> DPU lowering, not fusion); it <b>survives the latest driver</b> (1.32.1 → 1.33.0). So the
+              NPU's lowering of the deep repeated 32-layer GDN graph is wrong — a fileable compiler defect (matches open
+              <code><a href="https://github.com/openvinotoolkit/openvino/issues/35222">openvino#35222</a></code>; Intel lists Qwen3-Next/3.5
+              GDN as CPU+GPU-only, NPU unvalidated).</td></tr>
+      <tr><td class="run"><b>NPU decode — the fix: NPUW hybrid</b></td>
+          <td class="run">◑ <b class="g">Coherence solved on the NPU.</b> Since the miscompute is confined to the GDN recurrence, I use
+              OpenVINO's <b>NPUW online partitioner</b> to keep the model on the NPU while offloading just those ops to CPU-f16
+              (proven coherent): <code>NPU_USE_NPUW=YES · NPUW_ONLINE_AVOID=Op:GroupConvolution/NPU,Op:Loop/NPU,Op:Scatter…/NPU</code>.
+              The dumped partition plan: <b>NPU 52 groups / 2613 layers</b> (all MatMuls, the 8 full-attention layers, FFN, norms,
+              LM-head) vs <b>CPU 50 groups / 51 layers</b> — exactly the 24 <code>GroupConvolution</code> + 24 <code>Loop</code> + 3
+              <code>Scatter</code> GDN primitives. <b>~98% of ops stay on the NPU</b>; the decode is now <b class="g">coherent to 1113+
+              tokens</b> where it used to echo. Cost: the offloaded recurrence forces ~48 NPU↔CPU handoffs/token → <b>~1.7 tok/s</b>
+              (vs iGPU 7.2), and the NPUW runtime GP-faults after ~1–2.5k inferences — worked around with a supervisor that
+              auto-restarts (~24 s, cached) and an agent that retries the in-flight step.</td></tr>
+      <tr><td class="ok"><b>End-to-end on the NPU</b> — image→action</td>
+          <td class="ok">✓ Through the hybrid decoder (vision on the iGPU), a real Google-auth screenshot at a 1113-token prompt →
+              a coherent grounded action: it read the page, found the Cancel/Continue buttons, and emitted
+              <code>click("Continue", 750,820)</code>. In a live OSWorld episode it produced <b>8/8 parsed, coherent</b> click/drag
+              actions and — surviving a mid-run GP-fault via the auto-restart — ran the full 8-step episode to completion. This is a
+              real change from the old <b>gibberish</b>: the model now takes sensible actions on the NPU.</td></tr>
+      <tr><td class="run"><b>OSWorld subset on the NPU</b> (hybrid, coherent)</td>
+          <td class="run">◑ Re-ran the one-per-domain subset on the coherent hybrid → <b>0/10 solved</b>, but for a <b>different, honest
+              reason than before</b>. Every step is now <b>coherent</b> (27/32 parsed; a mix of click/drag/answer), and every task
+              scored happens to be one the iGPU 4B <i>solved</i> at full resolution — so the ceiling is <b>grounding precision</b>, not
+              coherence: the NPU's ~1.7 tok/s (~13 min/step) forces tiny <b>400×400</b> screenshots, and the clicks land slightly off.
+              The iGPU runs the same model at <b>1280×720</b> and 7.2 tok/s → 7/10. <b>So: coherence + stability are solved on the NPU;
+              task accuracy is throttled by the resolution the NPU's speed demands.</b> The right next step for a fair NPU accuracy
+              number is a standard-transformer VLM with no GDN penalty — <a href="#next"><b>Holo1.5-7B (Qwen2.5-VL)</b></a>, in progress.</td></tr>
     </table></div>
   </div>
 
@@ -237,20 +258,22 @@
 
   <!-- 5 -->
   <div class="panel">
-    <h2>5 · What to try next</h2>
+    <h2 id="next">5 · What to try next</h2>
     <ol>
-      <li><b>Speed up 9B decode on the iGPU.</b> ~4&nbsp;tok/s is the bottleneck (prefill is a healthy ~200&nbsp;tok/s). Try int4
-        weights, and profile the Gated-DeltaNet ops in the OpenVINO GPU plugin — the SSM scan / conv1d are the likely culprits.</li>
-      <li><b>File the NPU-compiler bug; don't expect a user-space NPU fix for this architecture.</b> NPU-served OSWorld is blocked
-        by an <b>Intel NPU-compiler miscompute</b> of the full Gated-DeltaNet decode graph, which I chased to the bottom: it is
-        <b>not</b> precision (CPU forced to f16 is coherent), <b>not</b> the weights, and <b>not</b> any single op — the first GDN
-        layer is bit-perfect on the NPU, and every distinctive op (SSM cell, conv1d, gated RMSNorm) is NPU-exact in isolation (cos 1.0).
-        Removing the once-only <code>Loop</code> and the shape-derived <code>NonZero</code> varlen gather changed nothing, and no
-        compiler-backend toggle helps. The same graph is correct on CPU-f16 and the iGPU, so the NPU's fusion/lowering of the 32-layer
-        graph is at fault. The right move is a <b>minimal-repro OpenVINO NPU bug report</b> (isolated ops pass, full graph fails) — and
-        I confirmed it survives the <b>latest NPU driver</b> (upgraded the compiler stack 1.32.1 → 1.33.0, June 2026; still echoes at
-        250), so it's an unfixed defect, not a stale-driver artifact. Until Intel fixes it, the <b>iGPU is the whole-model path</b>. (Also still open: the T&gt;1 prefill graph won't compile on the NPU at
-        all, so even a fixed decode would need token-by-token prefill or an iGPU prefill hand-off.)</li>
+      <li><b>Try Holo1.5-7B (Qwen2.5-VL) for a real NPU accuracy number.</b> The 4B/9B are <code>qwen3_5</code> with
+        Gated-DeltaNet — the exact thing the NPU miscompiles, which forces the slow CPU-offload hybrid and the tiny 400&nbsp;px
+        screenshots that cap accuracy. <b>Holo1.5-7B is a plain full-attention transformer</b> (Qwen2.5-VL, no GDN) and a
+        first-class OpenVINO arch, so it should run <b>directly and coherently on the NPU</b> — no hybrid, no recurrence ping-pong,
+        so it can afford full-resolution screenshots. <b>In progress:</b> export stateless → NPU coherence check → OSWorld
+        one-per-domain on <b>both iGPU and NPU</b> for an apples-to-apples device comparison.</li>
+      <li><b>File the NPU-compiler bug (the GDN path), and keep the hybrid as the workaround.</b> The Gated-DeltaNet decode graph
+        is miscompiled by the Intel NPU compiler — chased to the bottom (not precision, not weights, not any single op; first GDN
+        layer bit-perfect, divergence compounds through depth; every op NPU-exact in isolation; <code>optimization-level=0</code>
+        doesn't help ⇒ mandatory lowering; survives driver 1.32.1 → 1.33.0). A <b>minimal repro is assembled</b> (isolated ops pass,
+        full graph fails; matches open <code>openvino#35222</code>). Meanwhile the <b>NPUW hybrid runs it coherently on the NPU</b>
+        (98% of ops on-device, GDN recurrence on CPU) — the practical workaround until Intel fixes lowering. A <b>second</b> bug also
+        surfaced: the NPUW runtime GP-faults after ~1–2.5k inferences (worked around with an auto-restart supervisor). Also still
+        open: the T&gt;1 prefill graph won't compile on the NPU, so prefill stays token-by-token.</li>
       <li><b>Move the vision onto the NPU too.</b> The ViT compiles on the NPU but the OV model's vision sub-models are
         dynamic-shaped — reshape them static and orchestrate the merger's rotary/mask from <code>grid_thw</code> to run the
         whole VLM (vision + LLM) on the NPU.</li>
@@ -263,9 +286,10 @@
 
   <div class="panel">
     <p class="src" style="margin:0">Measured on wuklab-NUC16 · Intel Core Ultra 7 356H (Panther Lake) · Xe3 iGPU · NPU&nbsp;5 (Intel AI Boost) · 96&nbsp;GB.
-    Models <code>Hcompany/Holo3-35B-A3B</code> (<code>qwen3_5_moe</code>) and <code>Hcompany/Holo-3.1-9B</code> (<code>qwen3_5</code> dense) ·
-    llama.cpp Vulkan · OpenVINO 2026.3 (rkazants fork). OSWorld via the docker provider (KVM) on the NUC.
-    Runs under <code>/data/runs/2026-07-{07..11}_wuklab-NUC16_holo3*</code>, including the 4B NPU subset (0/10) and the
+    Models <code>Hcompany/Holo3-35B-A3B</code> (<code>qwen3_5_moe</code>) and <code>Hcompany/Holo-3.1-9B</code>/<code>-4B</code>
+    (<code>qwen3_5</code> dense) · llama.cpp Vulkan · OpenVINO 2026.3 (rkazants fork) · NPU driver 1.33.0. OSWorld via the docker
+    provider (KVM) on the NUC. Runs under <code>/data/runs/2026-07-{07..13}_wuklab-NUC16_holo3*</code>, including the first NPU
+    subset (0/10, incoherent), the <b>NPUW-hybrid</b> coherent subset (0/10, resolution-limited but 27/32 steps coherent), and the
     iGPU-vs-NPU coherence sweep.</p>
   </div>
 
