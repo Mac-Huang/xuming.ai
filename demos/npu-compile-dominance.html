@@ -26,6 +26,7 @@ th,td{border-bottom:1px solid var(--bd);padding:6px 9px;text-align:left}
 th{color:var(--mut);font-weight:600;position:sticky;top:0;background:var(--bg)}
 td.num{text-align:right;font-variant-numeric:tabular-nums}
 tr.hot td{background:rgba(249,117,131,.09)}
+tr.hot2 td{background:rgba(88,166,255,.08)}
 .bar-cell{position:relative}
 .mini{display:inline-block;height:9px;border-radius:2px;vertical-align:middle;margin-right:6px}
 p{margin:12px 0} code{background:#1c2230;padding:1px 6px;border-radius:5px;font-size:13px}
@@ -109,6 +110,23 @@ Rows where FeasibleAllocation is the single #1 pass are tinted.</p>
 <tr class='hot'><td>ViT (vision encoder)</td><td>0.3B</td><td>—</td><td class='num'>21.1s</td><td>FeasibleAllocation</td><td class='num'>10.43%</td><td class='num bar-cell'><span class="mini" style="width:16px;background:#6e7681"></span>17.55%</td><td class='num bar-cell'><span class="mini" style="width:15px;background:#6e7681"></span>17.02%</td><td class='num bar-cell'><span class="mini" style="width:24px;background:#58a6ff"></span>27.04%</td></tr>
 </table>
 
+<h2>Which architectures even compile on NPU 5?</h2>
+<p>Before profiling, each family has to compile at all — and that turns out to be a
+real filter. We tried five architecture families; only <b>dense-attention decoders</b>
+and <b>vision encoders</b> compile. Both <b>sparse-MoE</b> and <b>hybrid-SSM</b> models
+fail, and for the same underlying reason: they emit <b>data-dependent dynamic shapes</b>
+(variable tokens-per-expert; SSM state) that the NPU's fully-static compiler can't lower.</p>
+<table>
+<tr><th>architecture family</th><th>example</th><th>compiles on NPU 5?</th><th>why</th></tr>
+<tr class="hot2"><td>Vision encoder (ViT)</td><td>ViT-B/L</td><td>✅ yes</td><td>fully static</td></tr>
+<tr class="hot2"><td>Dense attention decoder</td><td>Qwen2 0.5–7B</td><td>✅ yes</td><td>static after NPUW_LLM windowing</td></tr>
+<tr><td>Sparse MoE</td><td>Granite-3.0-MoE</td><td>❌ no</td><td><code>to_shape on dynamic shape</code> — dynamic expert dispatch</td></tr>
+<tr><td>Hybrid attn+SSM</td><td>Qwen3.5 / Holo3.1</td><td>❌ no</td><td>compiler <b>core-dump</b> on the SSM concat</td></tr>
+<tr><td>MoE (OLMoE)</td><td>OLMoE-1B-7B</td><td>❌ n/a</td><td>not exportable by optimum-intel</td></tr>
+</table>
+<p>So the dominance results above are, necessarily, the story for the architectures the
+NPU can run — and that class is narrower than the model zoo suggests.</p>
+
 <h2>What this says to optimize</h2>
 <p>The bottleneck is <b>regime-specific</b>, so the lever depends on your workload:</p>
 <ul>
@@ -130,6 +148,7 @@ OpenVINO 2026.0, driver-compiler 1.33. INT8 weights, cold compiles
 compile for ViT. Per-pass times are the VPUX compiler's own MLIR PassTiming (wall column,
 inclusive of each pass's analyses; pipeline groups excluded to avoid double-counting),
 summed across NPUW sub-models. Parallelism = user/wall from the two-column report.
-Qwen3.5 (hybrid attention+SSM) and OLMoE are noted as not compilable / not exportable on
-this stack. Mean over repeats.</p>
+Granite-3.0-MoE and Qwen3.5 (hybrid attention+SSM) export cleanly but fail to
+<em>compile</em> on the NPU (dynamic expert-dispatch / SSM shapes); OLMoE isn't
+exportable by optimum-intel. Mean over repeats.</p>
 </div>
