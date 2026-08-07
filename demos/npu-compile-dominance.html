@@ -7540,7 +7540,117 @@ cut the unresolvable share from 56% to <b>7%</b>. Those remaining stacks are sti
 "⚠ unwind truncated" rather than drawn as if their depth were measured — the library is built
 <code>-O3</code> without frame pointers, so <code>perf</code> cannot always unwind it.</p>
 
-<h2>9 · The fixable pattern → what to optimize</h2>
+
+<h2>9 · The sort in FeasibleAllocation — what it costs, and a fix that is free</h2>
+<p>§8 found that the heaviest frames inside FeasibleAllocation are a sort reached through
+<code>vpux::AsyncDepsInfo::getDepsVec</code>, and called it a data-structure problem rather than an
+algorithmic one. This section tests that claim directly, by patching the compiler and measuring.</p>
+
+<h3>What is being sorted</h3>
+<p><code>getDepsVec</code> materialises one task's dependency set — a <code>DenseSet&lt;size_t&gt;</code>
+of <code>async.execute</code> indices — into a vector and sorts it, on <b>every</b> call. Its own
+comment explains why the order matters:</p>
+<pre><code>SmallVector&lt;size_t&gt; vpux::AsyncDepsInfo::getDepsVec(const llvm::DenseSet&lt;size_t&gt;&amp; deps) const {
+    SmallVector&lt;size_t&gt; vec(deps.begin(), deps.end());
+    /* The order of dependencies may impact order of prefetched DMA.
+     * Experiments show that arbitrary order of these dependencies may impact
+     * inference accuracy (E102917) hence sorting.
+     */
+    llvm::sort(vec.begin(), vec.end());
+    return vec;
+}</code></pre>
+<p>Instrumenting the call with counters, one cold Qwen2.5-7B INT8 compile at window 2048 runs
+<b>33,334,741 calls</b> over <b>1,847,107,541 indices</b> — 14.8&nbsp;GB of
+<code>size_t</code> materialised out of hash sets, at a mean of 55 elements per call and
+70% of calls above 16. It is a real sorting workload, not a handful of small ones.</p>
+
+<p><b>And <code>llvm::sort</code> is not <code>std::sort</code>.</b> For trivially-copyable types it
+forwards to <code>llvm::array_pod_sort</code>, which calls glibc <code>qsort</code> — a merge sort
+that allocates a temporary buffer and dispatches every comparison through a function pointer. LLVM
+does this deliberately, and says so:</p>
+<pre><code>/// array_pod_sort - ... it calls qsort instead of using an inlined template.
+/// qsort is slightly slower than std::sort, but <b>most sorts are not performance
+/// critical in LLVM</b> and std::sort has to be template instantiated for each
+/// type, leading to significant measured code bloat.</code></pre>
+<p>Confirmed in the object file, not just the header — <code>getDepsVec</code> is the only function
+in its translation unit that references <code>qsort@PLT</code>. The assumption behind that trade is
+false here: this sort sits on the hot path of the pass that dominates 7B compiles.</p>
+
+<h3>Three patches, measured</h3>
+<p>All arms are the same binary — the sort strategy is chosen by an environment variable, so nothing
+differs between them but the one decision. Cold compiles, 3 repeats, medians.</p>
+<table>
+<tr><th>arm</th><th>W=128</th><th>W=512</th><th>W=1024</th><th>W=2048</th><th>W=8192</th><th>W=32768</th><th>schedule</th></tr>
+<tr><td><code>prefetching=false</code></td><td>39.1%</td><td>33.0%</td><td>36.4%</td><td>33.9%</td><td>37.2%</td><td>33.6%</td><td><span class='warn'>reorders deps</span></td></tr><tr><td><code>no sort</code></td><td>1.5%<span class='muted'>&nbsp;~</span></td><td>2.5%</td><td>15.3%</td><td>13.8%</td><td>12.9%</td><td>9.1%</td><td><span class='warn'>reorders deps</span></td></tr><tr><td><code>memoised</code></td><td>1.3%<span class='muted'>&nbsp;~</span></td><td>3.0%</td><td>15.4%</td><td>14.2%</td><td>13.0%</td><td>9.0%</td><td><span class='ok'>order-preserving</span></td></tr><tr><td><code>std::sort</code></td><td>0.9%<span class='muted'>&nbsp;~</span></td><td>2.2%</td><td>6.2%</td><td>5.2%</td><td>5.3%</td><td>3.7%</td><td><span class='ok'>order-preserving</span></td></tr><tr><td><code>memoised + std::sort</code></td><td>1.0%<span class='muted'>&nbsp;~</span></td><td>2.6%</td><td>15.5%</td><td>14.0%</td><td>12.8%</td><td>9.3%</td><td><span class='ok'>order-preserving</span></td></tr>
+</table>
+<p class="figcap">Compile time saved vs stock. <span class="muted">~</span> marks a delta smaller
+than the within-arm spread, which is reported without a direction rather than as a result.</p>
+<figure><img src="sort_savings.png" alt="sort savings"></figure>
+
+<p><b>Not recomputing beats sorting faster, by 3×.</b> Memoising the sorted vector — same order,
+same scheduler decisions — is worth up to <b>15.4%</b> of total compile time, while
+swapping <code>qsort</code> for <code>std::sort</code> across all 1.8&nbsp;billion
+elements is worth only <b>6.2%</b>. The counters say why: the memo answers
+<b>95.6%</b> of lookups from cache, cutting calls by
+94% and elements by
+99%. Nearly all of this work was being redone on sets
+that had not changed. Combining both fixes adds nothing measurable over the memo alone — once 94% of
+the calls are gone, the primitive no longer matters.</p>
+<figure><img src="deps_hist.png" alt="deps hist"></figure>
+
+
+<h3>Is it a cache-locality problem? No.</h3>
+<p>"Sorting out of a hash set 33 million times" sounds like a locality problem, so it was measured
+rather than assumed. The two arms isolate cleanly: <code>std::sort</code> touches <b>exactly the same
+memory</b> as stock and only changes the sort primitive, while the memo keeps the sort and removes
+99.1% of the loads (1.85&nbsp;billion elements down to 16.5&nbsp;million).</p>
+<table>
+<tr><th>counter (vs stock)</th><th>std::sort</th><th>memoised</th><th>counted on</th></tr>
+<tr><td><code>cycles</code></td><td>-9.7%</td><td>-13.8%</td><td class='muted'>both</td></tr><tr><td><code>instructions</code></td><td>-11.2%</td><td>-12.2%</td><td class='muted'>both</td></tr><tr><td><code>cache-misses</code></td><td>-4.1%</td><td>-3.3%</td><td class='muted'>both</td></tr><tr><td><code>LLC-load-misses</code></td><td>-9.3%</td><td>-13.6%</td><td class='muted'>E-cores only</td></tr><tr><td><code>L1-dcache-load-misses</code></td><td>-0.8%</td><td>+1.3%</td><td class='muted'>P-cores only</td></tr><tr><td><code>dTLB-load-misses</code></td><td>-4.1%</td><td>-2.2%</td><td class='muted'>both</td></tr>
+</table>
+<p><b>Deleting 99.1% of the memory traffic moved total cache misses by 3.3%</b> — and P-core L1 misses
+went slightly <i>up</i>. If misses on the <code>DenseSet</code> walk were the cost, those counters
+would have collapsed. What moved instead is instruction count: cycles &minus;13.8% tracking
+instructions &minus;12.2%, with IPC essentially unchanged (~2.2 on the P-cores in both arms). The cost
+is <b>instruction retirement, not memory stalls</b> — 1.85&nbsp;billion comparisons and moves driven
+through an out-of-line <code>qsort</code> with an indirect comparator. Memoising wins by not
+executing them, not by making them hit cache.</p>
+<p class="figcap">hybrid CPU: LLC-load-misses counted on E-core PMU only, L1-dcache-load-misses on P-core PMU only; cache-misses counted on both. Partial-coverage rows are labelled rather than presented as
+machine-wide; <code>cache-misses</code>, the row carrying the argument, counted on both PMUs.</p>
+<h3>Does it cost accuracy?</h3>
+<p>The E102917 comment implies reordering dependencies can move model outputs, so every arm was
+scored on 500 ARC-Easy questions, greedy, one forward pass each. Equivalence is judged on the
+answers themselves — whether two arms produce the same letter for the same question — not on the
+blob hash, for a reason given below.</p>
+<table>
+<tr><th>arm</th><th>ARC-Easy</th><th>accuracy</th><th>vs stock, answer by answer</th></tr>
+<tr><td><code>stock</code></td><td>459/500</td><td>91.8%</td><td><span class='ok'>500/500 identical</span></td></tr><tr><td><code>pf_off</code></td><td>459/500</td><td>91.8%</td><td><span class='ok'>500/500 identical</span></td></tr><tr><td><code>nosort</code></td><td>459/500</td><td>91.8%</td><td><span class='ok'>500/500 identical</span></td></tr><tr><td><code>memo</code></td><td>459/500</td><td>91.8%</td><td><span class='ok'>500/500 identical</span></td></tr><tr><td><code>stdsort</code></td><td>459/500</td><td>91.8%</td><td><span class='ok'>500/500 identical</span></td></tr><tr><td><code>memo_stdsort</code></td><td>459/500</td><td>91.8%</td><td><span class='ok'>500/500 identical</span></td></tr>
+</table>
+
+
+<p class="note"><b>The blob hash is not an equivalence test here, and was nearly used as one.</b>
+The order-preserving arms were expected to emit a byte-identical blob, and on a plain-static
+ResNet-50 they do. Under NPUW_LLM they do not — but neither does stock: two stock compiles of the
+same model at the same window, with identical settings, produce different hashes
+(<code>6e958e5354f4</code> vs <code>fe405d709f96</code>). NPUW_LLM blob serialisation is not
+reproducible run-to-run, so a hash mismatch says nothing about whether the compiled program differs.
+Hashes are kept on this page as provenance only; the accuracy table above is the evidence.</p>
+
+<p class="note"><b>One arm is not a controlled comparison.</b> <code>no sort</code> looks as good as
+the memo, but it is solving a different problem: with dependency order changed, the scheduler makes
+different decisions and the counters move with it (15,106,679
+calls instead of 33,334,741). Its saving is partly a smaller graph, not purely cheaper work. The memo
+is the controlled arm — identical order, identical decisions — and it lands at the same number.</p>
+
+<p><b>Ranked, for anyone wanting to act on this.</b> (1) Memoise <code>getDepsVec</code>, invalidated
+on <code>addDependency</code> — ~15% of compile time, order-preserving, roughly ten
+lines. (2) Return <code>ArrayRef</code> instead of a by-value <code>SmallVector</code>, removing the
+copy §8 measured at ~9% of the pass. (3) Store <code>_depsMap</code> as a sorted vector rather than a
+<code>DenseSet</code>, which removes the materialise-and-sort entirely at k≈55. (4) Use
+<code>std::sort</code> — ~6%, one line, but strictly the smallest of the four. Turning
+the whole prefetch feature off remains larger still at 39%, and §7 covers what that
+costs.</p>
+<h2>10 · The fixable pattern → what to optimize</h2>
 <p>Because cost is driven by IR/schedule size in a known regime, the levers are direct:</p>
 <table>
 <tr><th>regime (when)</th><th>dominant pass</th><th>root cause</th><th>fix</th></tr>
