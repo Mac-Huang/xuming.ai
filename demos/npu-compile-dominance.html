@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>NPU Compilation Optimization</title>
 <style>
 :root{--bg:#0d1117;--panel:#161b22;--bd:#30363d;--tx:#e6edf3;--mut:#9da7b3;
@@ -30,9 +31,11 @@ code{background:#1c2230;padding:1px 6px;border-radius:5px;font-size:12.5px}
 .foot{color:var(--mut);font-size:12.5px;margin-top:36px;border-top:1px solid var(--bd);padding-top:14px}
 .c-blue{color:var(--blue)} .c-red{color:var(--red)} .c-gold{color:var(--gold)}
 .c-green{color:#3fb950}
+.ok{color:#3fb950} .warn{color:var(--red)} .muted{color:var(--mut)}
 .flame{background:var(--panel);border:1px solid var(--bd);border-radius:11px;
 padding:8px;margin:8px 0;overflow-x:auto}
 .flame svg{display:block;min-width:900px;max-width:100%;height:auto}
+.flame-external object{display:block;width:100%;min-width:900px;height:360px;border:0}
 .figcap{color:var(--mut);font-size:13px;margin:2px 4px 10px}
 .note{background:#12181f;border:1px solid var(--bd);border-left:3px solid var(--mut);
 border-radius:6px;padding:11px 14px;color:var(--mut);font-size:13px;margin:14px 0}
@@ -7527,7 +7530,7 @@ cycles across all threads, merged from three profiles. Frame labels are the exac
 <b>81%</b> of the pass enters through <code>(anonymous namespace)::FeasibleAllocationPass::safeRunOnFunc</code>.</p>
 <table>
 <tr><th>heaviest frames by self time (exact symbol)</th><th>share of the pass</th></tr>
-<tr><td><code>msort_with_tmp</code></td><td>29.2%</td></tr><tr><td><code>llvm::array_pod_sort_comparator<unsigned long></code></td><td>19.3%</td></tr><tr><td><code>vpux::AsyncDepsInfo::getDepsVec</code></td><td>11.7%</td></tr><tr><td><code>__memmove_avx_unaligned_erms</code></td><td>8.6%</td></tr><tr><td><code>_int_free</code></td><td>3.8%</td></tr><tr><td><code>malloc</code></td><td>3.6%</td></tr><tr><td><code>_int_malloc</code></td><td>1.4%</td></tr><tr><td><code>vpux::PrefetchDataOps::prefetchDataOps</code></td><td>1.0%</td></tr><tr><td><code>memcpy@@GLIBC_2.14@plt</code></td><td>0.6%</td></tr>
+<tr><td><code>msort_with_tmp</code></td><td>29.2%</td></tr><tr><td><code>llvm::array_pod_sort_comparator&lt;unsigned long&gt;</code></td><td>19.3%</td></tr><tr><td><code>vpux::AsyncDepsInfo::getDepsVec</code></td><td>11.7%</td></tr><tr><td><code>__memmove_avx_unaligned_erms</code></td><td>8.6%</td></tr><tr><td><code>_int_free</code></td><td>3.8%</td></tr><tr><td><code>malloc</code></td><td>3.6%</td></tr><tr><td><code>_int_malloc</code></td><td>1.4%</td></tr><tr><td><code>vpux::PrefetchDataOps::prefetchDataOps</code></td><td>1.0%</td></tr><tr><td><code>memcpy@@GLIBC_2.14@plt</code></td><td>0.6%</td></tr>
 </table>
 <p class="note"><b>Two corrections to an earlier version of this section.</b> It reported the pass at
 7.4% of CPU against 17.2% of wall and concluded it was "wall-heavy and CPU-light — serialization,
@@ -7541,12 +7544,13 @@ cut the unresolvable share from 56% to <b>7%</b>. Those remaining stacks are sti
 <code>-O3</code> without frame pointers, so <code>perf</code> cannot always unwind it.</p>
 
 
-<h2>9 &middot; The sort in FeasibleAllocation &mdash; what it costs, and a fix that is free</h2>
+<h2>9 &middot; The sort in FeasibleAllocation &mdash; what it costs, and an order-preserving cache</h2>
 <p class="lede">&sect;8 profiled this pass and found its heaviest frames were a sort, reached through
 <code>vpux::AsyncDepsInfo::getDepsVec</code>. That was an inference from a profile. This section
 patches the compiler and measures: <b>how much time is that sort worth, and what does taking it back
-cost you?</b> The short answer is 15% of total compile time, for free &mdash; the winning
-fix provably cannot change the compiled model.</p>
+cost you?</b> The short answer is 15% of total compile time while preserving dependency order and
+tested output quality. The trade-off is cache storage plus correct invalidation whenever a task's
+dependencies change.</p>
 
 <h3>Step 1 &mdash; what the function does</h3>
 <p>Every task in the scheduler's graph (an <code>async.execute</code> op) has a set of other tasks it
@@ -7574,15 +7578,64 @@ measured rather than argued.</p>
 <tr><td>calls</td><td><b>33,334,741</b></td><td>how many times some task's set was asked for</td></tr>
 <tr><td>elements</td><td><b>1,847,107,541</b></td><td>the sum of all those set sizes &mdash; not one big
 set, but 33 million small ones averaging 55 entries</td></tr>
-<tr><td>bytes moved</td><td><b>14.8 GB</b></td><td>1,847,107,541 &times; 8 bytes per
-<code>size_t</code>, copied out of hash sets and sorted</td></tr>
+<tr><td>logical vector payload</td><td><b>14.8 GB</b></td><td>1,847,107,541 &times; 8 bytes per
+<code>size_t</code> materialised across all returned vectors; not a memory-traffic counter (hash
+reads, vector writes, and sort moves are additional)</td></tr>
 <tr><td>largest set</td><td>5,184</td><td>the worst single case</td></tr>
 </table>
 <p>70% of calls carry more than 16 entries, so this is a real sorting workload rather than a
 few trivial ones.</p>
 <figure><img src="deps_hist.png" alt="dependency set size histogram"></figure>
+<h3>Step 3 &mdash; one complete compiler call, sampled end to end</h3>
+<p>This is <b>one</b> cold Qwen2.5-7B INT8 compile at W=2048, not an average of several
+profiles: <b>420.80 seconds wall time</b>. The graph is then re-rooted at every
+<code>getDepsVec</code> occurrence inside that call. So it shows the aggregate of the millions of
+small requests made by this one compiler invocation; it does <i>not</i> pretend that one
+microsecond-scale request can be isolated reliably with a 99 Hz sampler.</p>
+<div class="kpis">
+<div class="kpi"><div class="n">420.80s</div><div class="l">one complete call, wall time</div></div>
+<div class="kpi"><div class="n c-red">13.7%</div><div class="l"><code>getDepsVec</code> share of sampled compile CPU</div></div>
+<div class="kpi"><div class="n c-gold">≥11.4%</div><div class="l">directly visible sorting CPU; 13.7% subtree ceiling</div></div>
+<div class="kpi"><div class="n c-green">14.17%</div><div class="l">wall time recovered by memoising</div></div>
+</div>
+<table>
+<tr><th>scope</th><th>measured cost</th><th>denominator / meaning</th></tr>
+<tr><td>whole compiler call</td><td><b>420.80 s wall</b></td><td>one cold invocation</td></tr>
+<tr><td>all sampled compile work</td><td>465.7 s CPU</td><td>estimated from
+46,100 samples at 99 Hz, summed across all threads</td></tr>
+<tr><td>FeasibleAllocation pass</td><td><b>73.81 s wall</b></td><td>17.54% of this call's wall time</td></tr>
+<tr><td><code>getDepsVec</code>, inclusive</td><td><b>63.8 s CPU</b></td>
+<td>13.7% of the compiler call's sampled CPU</td></tr>
+<tr><td>sorting frames directly visible beneath <code>getDepsVec</code></td>
+<td><b>53.0 s CPU</b></td><td>11.4% lower bound of compiler-call CPU;
+83.1% of sampled <code>getDepsVec</code> CPU contained a visible sort frame</td></tr>
+<tr><td>memoised A/B result</td><td><b>&minus;59.03 s wall
+(&minus;14.17%)</b></td><td>median 416.45 s stock →
+357.42 s cached, 3 / 3 cold repeats</td></tr>
+<tr><td>amortised per request</td><td>1.92 &micro;s CPU in <code>getDepsVec</code></td><td>33,334,741 calls from a separate instrumented stock run; an average, not one timed invocation</td></tr>
+<tr><td>amortised per non-trivial sort</td><td>1.95 &micro;s CPU</td><td>27,212,539 requests had at least two elements; cross-run estimate</td></tr>
+</table>
+<div class="flame flame-external"><object data="deps-sort-single-flame.svg" type="image/svg+xml"
+aria-label="CPU flame graph rooted at vpux AsyncDepsInfo getDepsVec">
+<a href="deps-sort-single-flame.svg">Open the focused sorting flame graph</a></object></div>
+<p class="figcap">Click a frame to zoom; use <b>Search</b> inside the graph to highlight symbols.
+Frame width is sampled user CPU time from this one compiler call, in CPU milliseconds. The
+sorting number is a <b>union</b>: a sampled stack containing <code>qsort_r</code>,
+<code>msort_with_tmp</code>, or LLVM's POD-sort comparator counts once, so nested frames are not
+double-counted. Shallow stacks are marked as unattributed and account for 17.1% of this
+subtree; they can be genuine self work or profiler unwind loss, so no stronger claim is made.</p>
+<p class="figcap">That makes the attribution deliberately conservative: directly visible sorting
+is <b>at least 11.4%</b> of compile CPU; the inclusive <code>getDepsVec</code> total puts
+the ceiling at <b>13.7%</b>. The A/B result below is the causal wall-time answer.</p>
+<p class="note"><b>How to reconcile the two answers.</b> The flame graph attributes sampled CPU;
+memoisation's &minus;14.17% is causal wall-clock A/B. It avoids repeated
+<code>DenseSet</code>-to-vector materialisation, sorting, qsort temporary allocation, and indirect
+comparisons; the cached <code>SmallVector</code> is still returned by value. CPU seconds sum concurrent
+threads and therefore are not subtracted directly from wall seconds. The profile uses the retained
+symbol-rich stock compiler from the same base commit as the mode-selectable A/B build; its build ID
+is checked against <code>perf.data</code> before this graph is generated.</p>
 
-<h3>Step 3 &mdash; two candidate explanations</h3>
+<h3>Step 4 &mdash; two candidate explanations</h3>
 <p><b>(a) The sort primitive is slow.</b> <code>llvm::sort</code> reads like an ordinary fast C++
 sort, but for plain copyable values like integers it forwards to <code>llvm::array_pod_sort</code>,
 which calls the C library's <code>qsort</code>. <code>std::sort</code> is a template, so the
@@ -7604,7 +7657,7 @@ task's dependencies over and over. If the set has not changed since last time, r
 re-sorting it is wasted.</p>
 <p>These predict different fixes, so both were built.</p>
 
-<h3>Step 4 &mdash; the patches</h3>
+<h3>Step 5 &mdash; the patches</h3>
 <p>All arms are the <b>same binary</b>; the strategy is picked by an environment variable, so nothing
 differs between them but the one decision.</p>
 <table>
@@ -7612,7 +7665,7 @@ differs between them but the one decision.</p>
 <tr><td><code>memoise</code></td><td>Cache the sorted vector per task; recompute only when that task's dependencies actually change.</td><td><span class=ok>yes</span></td></tr><tr><td><code>std::sort</code></td><td>Replace <code>llvm::sort</code> with <code>std::sort</code>, so the comparison inlines instead of going through a function pointer.</td><td><span class=ok>yes</span></td></tr><tr><td><code>memoise + std::sort</code></td><td>Both of the above.</td><td><span class=ok>yes</span></td></tr><tr><td><code>delete the sort</code></td><td>Return the dependency set unsorted.</td><td><span class=warn>no</span></td></tr><tr><td><code>prefetching=false</code></td><td>Turn the whole prefetch feature off (&sect;7's lever), which removes most of the calls at their source.</td><td><span class=warn>no</span></td></tr>
 </table>
 
-<h3>Step 5 &mdash; results</h3>
+<h3>Step 6 &mdash; results</h3>
 <p>Compile time saved vs stock. Cold compiles, 3 repeats, medians.
 <span class="muted">~</span> marks a delta smaller than the within-arm spread, reported without a
 direction rather than as a result.</p>
@@ -7622,7 +7675,7 @@ direction rather than as a result.</p>
 </table>
 <figure><img src="sort_savings.png" alt="compile time saved by arm"></figure>
 
-<h3>Step 6 &mdash; redundancy wins, by 3&times;</h3>
+<h3>Step 7 &mdash; redundancy wins, by 3&times;</h3>
 <p>Explanation (b) is the dominant one. Memoising is worth up to <b>15.4%</b> of total
 compile time; fixing the primitive across all 1.8 billion elements is worth only
 <b>6.2%</b>. The counters say why: the cache answers <b>95.6%</b> of
@@ -7630,27 +7683,29 @@ lookups, cutting calls by 94% and elements by 99%. Doing both
 (15.5%) adds nothing over memoising alone &mdash; once 94% of the
 calls are gone, which sort you use stops mattering.</p>
 
-<h3>Step 7 &mdash; is it a cache-locality problem? No.</h3>
-<p>A third explanation is worth killing explicitly: "copying out of a hash set 33 million times"
-sounds like a cache problem. It was measured rather than assumed, and the two arms isolate it
-cleanly &mdash; <code>std::sort</code> touches <b>exactly the same memory</b> as stock and changes
-only the primitive, while memoising keeps the sort and removes 99.1% of the loads
+<h3>Step 8 &mdash; is it a cache-locality problem? No.</h3>
+<p>A third explanation is worth testing explicitly: "copying out of a hash set 33 million times"
+sounds like a cache problem. <code>std::sort</code> receives the same vectors and elements as stock,
+but uses an in-place introsort where glibc qsort uses temporary merge buffers, so it is a useful
+primitive comparison rather than a claim of identical memory touches. Memoising keeps the ordering
+rule while reducing dependency elements rematerialised and sorted by 99.1%
 (1.85&nbsp;billion elements down to 16.5&nbsp;million).</p>
 <table>
 <tr><th>counter (vs stock)</th><th>std::sort</th><th>memoised</th><th>counted on</th></tr>
 <tr><td><code>cycles</code></td><td>-9.7%</td><td>-13.8%</td><td class='muted'>both</td></tr><tr><td><code>instructions</code></td><td>-11.2%</td><td>-12.2%</td><td class='muted'>both</td></tr><tr><td><code>cache-misses</code></td><td>-4.1%</td><td>-3.3%</td><td class='muted'>both</td></tr><tr><td><code>LLC-load-misses</code></td><td>-9.3%</td><td>-13.6%</td><td class='muted'>E-cores only</td></tr><tr><td><code>L1-dcache-load-misses</code></td><td>-0.8%</td><td>+1.3%</td><td class='muted'>P-cores only</td></tr><tr><td><code>dTLB-load-misses</code></td><td>-4.1%</td><td>-2.2%</td><td class='muted'>both</td></tr>
 </table>
-<p><b>Deleting 99.1% of the memory traffic moved total cache misses by 3.3%</b> — and P-core L1 misses
-went slightly <i>up</i>. If misses on the <code>DenseSet</code> walk were the cost, those counters
-would have collapsed. What moved instead is instruction count: cycles &minus;13.8% tracking
+<p><b>Processing 99.1% fewer dependency elements moved total cache misses by only 3.3%</b> — and
+P-core L1 misses went slightly <i>up</i>. That is much smaller than the reduction in elements and
+argues against cache misses being the dominant cost. What moved instead is instruction count:
+cycles &minus;13.8% tracking
 instructions &minus;12.2%, with IPC essentially unchanged (~2.2 on the P-cores in both arms). The cost
-is <b>instruction retirement, not memory stalls</b> — 1.85&nbsp;billion comparisons and moves driven
+is <b>primarily instruction retirement, not memory stalls</b> — work over 1.85&nbsp;billion dependency elements driven
 through an out-of-line <code>qsort</code> with an indirect comparator. Memoising wins by not
 executing them, not by making them hit cache.</p>
 <p class="figcap">hybrid CPU: LLC-load-misses counted on E-core PMU only, L1-dcache-load-misses on P-core PMU only; cache-misses counted on both. Partial-coverage rows are labelled rather than presented as
 machine-wide; <code>cache-misses</code>, the row carrying the argument, counted on both PMUs.</p>
 
-<h3>Step 8 &mdash; does any of it cost accuracy?</h3>
+<h3>Step 9 &mdash; does any of it cost accuracy?</h3>
 <p>Step 1 predicts the three order-preserving arms cannot change the model, and leaves the other two
 open &mdash; the E102917 comment exists precisely because reordering might matter. Every arm was
 scored on 500 ARC-Easy questions, greedy, one forward pass each, and compared to stock
@@ -7664,7 +7719,7 @@ cache invalidation is correct, since a stale entry would have shown up here. The
 come back identical too, so E102917's warning did not reproduce on this workload. That is a weaker
 claim than it looks: see the limits below.</p>
 
-<h3>Step 9 &mdash; what to do</h3>
+<h3>Step 10 &mdash; what to do</h3>
 <ol>
 <li><b>Memoise <code>getDepsVec</code></b>, invalidated on <code>addDependency</code>.
 ~15% of compile time, order-preserving, roughly ten lines.</li>
