@@ -36,6 +36,11 @@ code{background:#1c2230;padding:1px 6px;border-radius:5px;font-size:12.5px}
 padding:8px;margin:8px 0;overflow-x:auto}
 .flame svg{display:block;min-width:900px;max-width:100%;height:auto}
 .flame-external object{display:block;width:100%;min-width:900px;height:360px;border:0}
+.sharebar{display:flex;width:100%;height:46px;margin:14px 0 8px;border:1px solid var(--bd);
+border-radius:8px;overflow:hidden;font-size:12px;font-weight:700}
+.sharebar>div{display:flex;align-items:center;justify-content:center;white-space:nowrap;overflow:hidden}
+.share-sort{background:var(--red);color:#161b22} .share-deps{background:var(--gold);color:#161b22}
+.share-other{background:#30363d;color:var(--tx)}
 .figcap{color:var(--mut);font-size:13px;margin:2px 4px 10px}
 .note{background:#12181f;border:1px solid var(--bd);border-left:3px solid var(--mut);
 border-radius:6px;padding:11px 14px;color:var(--mut);font-size:13px;margin:14px 0}
@@ -7586,7 +7591,34 @@ reads, vector writes, and sort moves are additional)</td></tr>
 <p>70% of calls carry more than 16 entries, so this is a real sorting workload rather than a
 few trivial ones.</p>
 <figure><img src="deps_hist.png" alt="dependency set size histogram"></figure>
-<h3>Step 3 &mdash; the amortised average <code>getDepsVec</code> call</h3>
+<h3>Step 3 &mdash; sorting and <code>getDepsVec</code> as shares of all FeasibleAllocation</h3>
+<p>Here the denominator is the <b>entire FeasibleAllocation pass</b>, not one
+<code>getDepsVec</code> request and not the whole compiler. The retained full-pass profile from
+&sect;8 classifies every sampled cycle by the frames visible on its stack:</p>
+<div class="kpis">
+<div class="kpi"><div class="n c-red">68.9%</div><div class="l"><code>getDepsVec</code> inclusive share of FeasibleAllocation</div></div>
+<div class="kpi"><div class="n c-gold">57.0%</div><div class="l">visible <code>qsort</code> subtree share of FeasibleAllocation</div></div>
+<div class="kpi"><div class="n">82.7%</div><div class="l">sorting share inside <code>getDepsVec</code></div></div>
+<div class="kpi"><div class="n c-blue">11.7%</div><div class="l"><code>getDepsVec</code> self time in FeasibleAllocation</div></div>
+</div>
+<div class="sharebar" role="img" aria-label="FeasibleAllocation sampled CPU: sorting 57.0 percent, other getDepsVec work 11.9 percent, all other pass work 31.1 percent">
+<div class="share-sort" style="width:56.984244%" title="Visible qsort subtree: 56.98%">sorting 57.0%</div>
+<div class="share-deps" style="width:11.937843%" title="Other visible getDepsVec work: 11.94%">+11.9%</div>
+<div class="share-other" style="width:31.077913%" title="All other FeasibleAllocation work: 31.08%">other FA 31.1%</div>
+</div>
+<table>
+<tr><th>whole-pass classification</th><th>share of FeasibleAllocation sampled CPU</th><th>relationship</th></tr>
+<tr><td>stack contains <code>getDepsVec</code></td><td><b>68.92%</b></td><td>inclusive: sorting plus other work below that frame</td></tr>
+<tr><td>stack contains the visible <code>qsort</code> subtree</td><td><b>56.98%</b></td><td>inside <code>getDepsVec</code>; 82.68% of its inclusive CPU</td></tr>
+<tr><td><code>getDepsVec</code> without a visible <code>qsort</code> frame</td><td>11.94%</td><td>vector materialisation, self work, and any unresolved descendants</td></tr>
+<tr><td>no visible <code>getDepsVec</code> frame</td><td>31.08%</td><td>the rest of FeasibleAllocation</td></tr>
+<tr><td><code>getDepsVec</code> self time</td><td>11.7%</td><td>not additive; already contained in its inclusive 68.92%</td></tr>
+</table>
+<p class="figcap">The first three bar segments partition 100% of sampled FeasibleAllocation CPU.
+Because the optimized library lacks frame pointers, the visible <code>getDepsVec</code> and sorting
+subtrees are conservative semantic lower bounds when unwinding loses a frame.</p>
+
+<h3>Step 4 &mdash; the amortised average <code>getDepsVec</code> call</h3>
 <p>This graph answers the per-call question. Every stack weight from the one cold Qwen2.5-7B INT8
 W=2048 profile is divided by <b>33,334,741 <code>getDepsVec</code> requests</b> counted in the matching
 instrumented stock run. It therefore shows the <b>amortised average call</b>, not the aggregate of all
@@ -7636,7 +7668,7 @@ threads and therefore are not subtracted directly from wall seconds. The profile
 symbol-rich stock compiler from the same base commit as the mode-selectable A/B build; its build ID
 is checked against <code>perf.data</code> before this graph is generated.</p>
 
-<h3>Step 4 &mdash; two candidate explanations</h3>
+<h3>Step 5 &mdash; two candidate explanations</h3>
 <p><b>(a) The sort primitive is slow.</b> <code>llvm::sort</code> reads like an ordinary fast C++
 sort, but for plain copyable values like integers it forwards to <code>llvm::array_pod_sort</code>,
 which calls the C library's <code>qsort</code>. <code>std::sort</code> is a template, so the
@@ -7658,7 +7690,7 @@ task's dependencies over and over. If the set has not changed since last time, r
 re-sorting it is wasted.</p>
 <p>These predict different fixes, so both were built.</p>
 
-<h3>Step 5 &mdash; the patches</h3>
+<h3>Step 6 &mdash; the patches</h3>
 <p>All arms are the <b>same binary</b>; the strategy is picked by an environment variable, so nothing
 differs between them but the one decision.</p>
 <table>
@@ -7666,7 +7698,7 @@ differs between them but the one decision.</p>
 <tr><td><code>memoise</code></td><td>Cache the sorted vector per task; recompute only when that task's dependencies actually change.</td><td><span class=ok>yes</span></td></tr><tr><td><code>std::sort</code></td><td>Replace <code>llvm::sort</code> with <code>std::sort</code>, so the comparison inlines instead of going through a function pointer.</td><td><span class=ok>yes</span></td></tr><tr><td><code>memoise + std::sort</code></td><td>Both of the above.</td><td><span class=ok>yes</span></td></tr><tr><td><code>delete the sort</code></td><td>Return the dependency set unsorted.</td><td><span class=warn>no</span></td></tr><tr><td><code>prefetching=false</code></td><td>Turn the whole prefetch feature off (&sect;7's lever), which removes most of the calls at their source.</td><td><span class=warn>no</span></td></tr>
 </table>
 
-<h3>Step 6 &mdash; results</h3>
+<h3>Step 7 &mdash; results</h3>
 <p>Compile time saved vs stock. Cold compiles, 3 repeats, medians.
 <span class="muted">~</span> marks a delta smaller than the within-arm spread, reported without a
 direction rather than as a result.</p>
@@ -7676,7 +7708,7 @@ direction rather than as a result.</p>
 </table>
 <figure><img src="sort_savings.png" alt="compile time saved by arm"></figure>
 
-<h3>Step 7 &mdash; redundancy wins, by 3&times;</h3>
+<h3>Step 8 &mdash; redundancy wins, by 3&times;</h3>
 <p>Explanation (b) is the dominant one. Memoising is worth up to <b>15.4%</b> of total
 compile time; fixing the primitive across all 1.8 billion elements is worth only
 <b>6.2%</b>. The counters say why: the cache answers <b>95.6%</b> of
@@ -7684,7 +7716,7 @@ lookups, cutting calls by 94% and elements by 99%. Doing both
 (15.5%) adds nothing over memoising alone &mdash; once 94% of the
 calls are gone, which sort you use stops mattering.</p>
 
-<h3>Step 8 &mdash; is it a cache-locality problem? No.</h3>
+<h3>Step 9 &mdash; is it a cache-locality problem? No.</h3>
 <p>A third explanation is worth testing explicitly: "copying out of a hash set 33 million times"
 sounds like a cache problem. <code>std::sort</code> receives the same vectors and elements as stock,
 but uses an in-place introsort where glibc qsort uses temporary merge buffers, so it is a useful
@@ -7706,7 +7738,7 @@ executing them, not by making them hit cache.</p>
 <p class="figcap">hybrid CPU: LLC-load-misses counted on E-core PMU only, L1-dcache-load-misses on P-core PMU only; cache-misses counted on both. Partial-coverage rows are labelled rather than presented as
 machine-wide; <code>cache-misses</code>, the row carrying the argument, counted on both PMUs.</p>
 
-<h3>Step 9 &mdash; does any of it cost accuracy?</h3>
+<h3>Step 10 &mdash; does any of it cost accuracy?</h3>
 <p>Step 1 predicts the three order-preserving arms cannot change the model, and leaves the other two
 open &mdash; the E102917 comment exists precisely because reordering might matter. Every arm was
 scored on 500 ARC-Easy questions, greedy, one forward pass each, and compared to stock
@@ -7720,7 +7752,7 @@ cache invalidation is correct, since a stale entry would have shown up here. The
 come back identical too, so E102917's warning did not reproduce on this workload. That is a weaker
 claim than it looks: see the limits below.</p>
 
-<h3>Step 10 &mdash; what to do</h3>
+<h3>Step 11 &mdash; what to do</h3>
 <ol>
 <li><b>Memoise <code>getDepsVec</code></b>, invalidated on <code>addDependency</code>.
 ~15% of compile time, order-preserving, roughly ten lines.</li>
