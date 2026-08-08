@@ -1,0 +1,666 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" width="1200" height="326" onload="init(evt)" viewBox="0 0 1200 326" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<!-- Flame graph stack visualization. See https://github.com/brendangregg/FlameGraph for latest version, and http://www.brendangregg.com/flamegraphs.html for examples. -->
+<!-- NOTES:  -->
+<defs>
+	<linearGradient id="background" y1="0" y2="1" x1="0" x2="0" >
+		<stop stop-color="#eeeeee" offset="5%" />
+		<stop stop-color="#eeeeb0" offset="95%" />
+	</linearGradient>
+</defs>
+<style type="text/css">
+	text { font-family:Verdana; font-size:12px; fill:rgb(0,0,0); }
+	#search, #ignorecase { opacity:0.1; cursor:pointer; }
+	#search:hover, #search.show, #ignorecase:hover, #ignorecase.show { opacity:1; }
+	#subtitle { text-anchor:middle; font-color:rgb(160,160,160); }
+	#title { text-anchor:middle; font-size:17px}
+	#unzoom { cursor:pointer; }
+	#frames > *:hover { stroke:black; stroke-width:0.5; cursor:pointer; }
+	.hide { display:none; }
+	.parent { opacity:0.5; }
+</style>
+<script type="text/ecmascript">
+<![CDATA[
+	"use strict";
+	var details, searchbtn, unzoombtn, matchedtxt, svg, searching, currentSearchTerm, ignorecase, ignorecaseBtn;
+	function init(evt) {
+		details = document.getElementById("details").firstChild;
+		searchbtn = document.getElementById("search");
+		ignorecaseBtn = document.getElementById("ignorecase");
+		unzoombtn = document.getElementById("unzoom");
+		matchedtxt = document.getElementById("matched");
+		svg = document.getElementsByTagName("svg")[0];
+		searching = 0;
+		currentSearchTerm = null;
+
+		// use GET parameters to restore a flamegraphs state.
+		var params = get_params();
+		if (params.x && params.y)
+			zoom(find_group(document.querySelector('[x="' + params.x + '"][y="' + params.y + '"]')));
+                if (params.s) search(params.s);
+	}
+
+	// event listeners
+	window.addEventListener("click", function(e) {
+		var target = find_group(e.target);
+		if (target) {
+			if (target.nodeName == "a") {
+				if (e.ctrlKey === false) return;
+				e.preventDefault();
+			}
+			if (target.classList.contains("parent")) unzoom(true);
+			zoom(target);
+			if (!document.querySelector('.parent')) {
+				// we have basically done a clearzoom so clear the url
+				var params = get_params();
+				if (params.x) delete params.x;
+				if (params.y) delete params.y;
+				history.replaceState(null, null, parse_params(params));
+				unzoombtn.classList.add("hide");
+				return;
+			}
+
+			// set parameters for zoom state
+			var el = target.querySelector("rect");
+			if (el && el.attributes && el.attributes.y && el.attributes._orig_x) {
+				var params = get_params()
+				params.x = el.attributes._orig_x.value;
+				params.y = el.attributes.y.value;
+				history.replaceState(null, null, parse_params(params));
+			}
+		}
+		else if (e.target.id == "unzoom") clearzoom();
+		else if (e.target.id == "search") search_prompt();
+		else if (e.target.id == "ignorecase") toggle_ignorecase();
+	}, false)
+
+	// mouse-over for info
+	// show
+	window.addEventListener("mouseover", function(e) {
+		var target = find_group(e.target);
+		if (target) details.nodeValue = "Function: " + g_to_text(target);
+	}, false)
+
+	// clear
+	window.addEventListener("mouseout", function(e) {
+		var target = find_group(e.target);
+		if (target) details.nodeValue = ' ';
+	}, false)
+
+	// ctrl-F for search
+	// ctrl-I to toggle case-sensitive search
+	window.addEventListener("keydown",function (e) {
+		if (e.keyCode === 114 || (e.ctrlKey && e.keyCode === 70)) {
+			e.preventDefault();
+			search_prompt();
+		}
+		else if (e.ctrlKey && e.keyCode === 73) {
+			e.preventDefault();
+			toggle_ignorecase();
+		}
+	}, false)
+
+	// functions
+	function get_params() {
+		var params = {};
+		var paramsarr = window.location.search.substr(1).split('&');
+		for (var i = 0; i < paramsarr.length; ++i) {
+			var tmp = paramsarr[i].split("=");
+			if (!tmp[0] || !tmp[1]) continue;
+			params[tmp[0]]  = decodeURIComponent(tmp[1]);
+		}
+		return params;
+	}
+	function parse_params(params) {
+		var uri = "?";
+		for (var key in params) {
+			uri += key + '=' + encodeURIComponent(params[key]) + '&';
+		}
+		if (uri.slice(-1) == "&")
+			uri = uri.substring(0, uri.length - 1);
+		if (uri == '?')
+			uri = window.location.href.split('?')[0];
+		return uri;
+	}
+	function find_child(node, selector) {
+		var children = node.querySelectorAll(selector);
+		if (children.length) return children[0];
+	}
+	function find_group(node) {
+		var parent = node.parentElement;
+		if (!parent) return;
+		if (parent.id == "frames") return node;
+		return find_group(parent);
+	}
+	function orig_save(e, attr, val) {
+		if (e.attributes["_orig_" + attr] != undefined) return;
+		if (e.attributes[attr] == undefined) return;
+		if (val == undefined) val = e.attributes[attr].value;
+		e.setAttribute("_orig_" + attr, val);
+	}
+	function orig_load(e, attr) {
+		if (e.attributes["_orig_"+attr] == undefined) return;
+		e.attributes[attr].value = e.attributes["_orig_" + attr].value;
+		e.removeAttribute("_orig_"+attr);
+	}
+	function g_to_text(e) {
+		var text = find_child(e, "title").firstChild.nodeValue;
+		return (text)
+	}
+	function g_to_func(e) {
+		var func = g_to_text(e);
+		// if there's any manipulation we want to do to the function
+		// name before it's searched, do it here before returning.
+		return (func);
+	}
+	function update_text(e) {
+		var r = find_child(e, "rect");
+		var t = find_child(e, "text");
+		var w = parseFloat(r.attributes.width.value) -3;
+		var txt = find_child(e, "title").textContent.replace(/\([^(]*\)$/,"");
+		t.attributes.x.value = parseFloat(r.attributes.x.value) + 3;
+
+		// Smaller than this size won't fit anything
+		if (w < 2 * 12 * 0.59) {
+			t.textContent = "";
+			return;
+		}
+
+		t.textContent = txt;
+		var sl = t.getSubStringLength(0, txt.length);
+		// check if only whitespace or if we can fit the entire string into width w
+		if (/^ *$/.test(txt) || sl < w)
+			return;
+
+		// this isn't perfect, but gives a good starting point
+		// and avoids calling getSubStringLength too often
+		var start = Math.floor((w/sl) * txt.length);
+		for (var x = start; x > 0; x = x-2) {
+			if (t.getSubStringLength(0, x + 2) <= w) {
+				t.textContent = txt.substring(0, x) + "..";
+				return;
+			}
+		}
+		t.textContent = "";
+	}
+
+	// zoom
+	function zoom_reset(e) {
+		if (e.attributes != undefined) {
+			orig_load(e, "x");
+			orig_load(e, "width");
+		}
+		if (e.childNodes == undefined) return;
+		for (var i = 0, c = e.childNodes; i < c.length; i++) {
+			zoom_reset(c[i]);
+		}
+	}
+	function zoom_child(e, x, ratio) {
+		if (e.attributes != undefined) {
+			if (e.attributes.x != undefined) {
+				orig_save(e, "x");
+				e.attributes.x.value = (parseFloat(e.attributes.x.value) - x - 10) * ratio + 10;
+				if (e.tagName == "text")
+					e.attributes.x.value = find_child(e.parentNode, "rect[x]").attributes.x.value + 3;
+			}
+			if (e.attributes.width != undefined) {
+				orig_save(e, "width");
+				e.attributes.width.value = parseFloat(e.attributes.width.value) * ratio;
+			}
+		}
+
+		if (e.childNodes == undefined) return;
+		for (var i = 0, c = e.childNodes; i < c.length; i++) {
+			zoom_child(c[i], x - 10, ratio);
+		}
+	}
+	function zoom_parent(e) {
+		if (e.attributes) {
+			if (e.attributes.x != undefined) {
+				orig_save(e, "x");
+				e.attributes.x.value = 10;
+			}
+			if (e.attributes.width != undefined) {
+				orig_save(e, "width");
+				e.attributes.width.value = parseInt(svg.width.baseVal.value) - (10 * 2);
+			}
+		}
+		if (e.childNodes == undefined) return;
+		for (var i = 0, c = e.childNodes; i < c.length; i++) {
+			zoom_parent(c[i]);
+		}
+	}
+	function zoom(node) {
+		var attr = find_child(node, "rect").attributes;
+		var width = parseFloat(attr.width.value);
+		var xmin = parseFloat(attr.x.value);
+		var xmax = parseFloat(xmin + width);
+		var ymin = parseFloat(attr.y.value);
+		var ratio = (svg.width.baseVal.value - 2 * 10) / width;
+
+		// XXX: Workaround for JavaScript float issues (fix me)
+		var fudge = 0.0001;
+
+		unzoombtn.classList.remove("hide");
+
+		var el = document.getElementById("frames").children;
+		for (var i = 0; i < el.length; i++) {
+			var e = el[i];
+			var a = find_child(e, "rect").attributes;
+			var ex = parseFloat(a.x.value);
+			var ew = parseFloat(a.width.value);
+			var upstack;
+			// Is it an ancestor
+			if (0 == 0) {
+				upstack = parseFloat(a.y.value) > ymin;
+			} else {
+				upstack = parseFloat(a.y.value) < ymin;
+			}
+			if (upstack) {
+				// Direct ancestor
+				if (ex <= xmin && (ex+ew+fudge) >= xmax) {
+					e.classList.add("parent");
+					zoom_parent(e);
+					update_text(e);
+				}
+				// not in current path
+				else
+					e.classList.add("hide");
+			}
+			// Children maybe
+			else {
+				// no common path
+				if (ex < xmin || ex + fudge >= xmax) {
+					e.classList.add("hide");
+				}
+				else {
+					zoom_child(e, xmin, ratio);
+					update_text(e);
+				}
+			}
+		}
+		search();
+	}
+	function unzoom(dont_update_text) {
+		unzoombtn.classList.add("hide");
+		var el = document.getElementById("frames").children;
+		for(var i = 0; i < el.length; i++) {
+			el[i].classList.remove("parent");
+			el[i].classList.remove("hide");
+			zoom_reset(el[i]);
+			if(!dont_update_text) update_text(el[i]);
+		}
+		search();
+	}
+	function clearzoom() {
+		unzoom();
+
+		// remove zoom state
+		var params = get_params();
+		if (params.x) delete params.x;
+		if (params.y) delete params.y;
+		history.replaceState(null, null, parse_params(params));
+	}
+
+	// search
+	function toggle_ignorecase() {
+		ignorecase = !ignorecase;
+		if (ignorecase) {
+			ignorecaseBtn.classList.add("show");
+		} else {
+			ignorecaseBtn.classList.remove("show");
+		}
+		reset_search();
+		search();
+	}
+	function reset_search() {
+		var el = document.querySelectorAll("#frames rect");
+		for (var i = 0; i < el.length; i++) {
+			orig_load(el[i], "fill")
+		}
+		var params = get_params();
+		delete params.s;
+		history.replaceState(null, null, parse_params(params));
+	}
+	function search_prompt() {
+		if (!searching) {
+			var term = prompt("Enter a search term (regexp " +
+			    "allowed, eg: ^ext4_)"
+			    + (ignorecase ? ", ignoring case" : "")
+			    + "\nPress Ctrl-i to toggle case sensitivity", "");
+			if (term != null) search(term);
+		} else {
+			reset_search();
+			searching = 0;
+			currentSearchTerm = null;
+			searchbtn.classList.remove("show");
+			searchbtn.firstChild.nodeValue = "Search"
+			matchedtxt.classList.add("hide");
+			matchedtxt.firstChild.nodeValue = ""
+		}
+	}
+	function search(term) {
+		if (term) currentSearchTerm = term;
+		if (currentSearchTerm === null) return;
+
+		var re = new RegExp(currentSearchTerm, ignorecase ? 'i' : '');
+		var el = document.getElementById("frames").children;
+		var matches = new Object();
+		var maxwidth = 0;
+		for (var i = 0; i < el.length; i++) {
+			var e = el[i];
+			var func = g_to_func(e);
+			var rect = find_child(e, "rect");
+			if (func == null || rect == null)
+				continue;
+
+			// Save max width. Only works as we have a root frame
+			var w = parseFloat(rect.attributes.width.value);
+			if (w > maxwidth)
+				maxwidth = w;
+
+			if (func.match(re)) {
+				// highlight
+				var x = parseFloat(rect.attributes.x.value);
+				orig_save(rect, "fill");
+				rect.attributes.fill.value = "rgb(230,0,230)";
+
+				// remember matches
+				if (matches[x] == undefined) {
+					matches[x] = w;
+				} else {
+					if (w > matches[x]) {
+						// overwrite with parent
+						matches[x] = w;
+					}
+				}
+				searching = 1;
+			}
+		}
+		if (!searching)
+			return;
+		var params = get_params();
+		params.s = currentSearchTerm;
+		history.replaceState(null, null, parse_params(params));
+
+		searchbtn.classList.add("show");
+		searchbtn.firstChild.nodeValue = "Reset Search";
+
+		// calculate percent matched, excluding vertical overlap
+		var count = 0;
+		var lastx = -1;
+		var lastw = 0;
+		var keys = Array();
+		for (k in matches) {
+			if (matches.hasOwnProperty(k))
+				keys.push(k);
+		}
+		// sort the matched frames by their x location
+		// ascending, then width descending
+		keys.sort(function(a, b){
+			return a - b;
+		});
+		// Step through frames saving only the biggest bottom-up frames
+		// thanks to the sort order. This relies on the tree property
+		// where children are always smaller than their parents.
+		var fudge = 0.0001;	// JavaScript floating point
+		for (var k in keys) {
+			var x = parseFloat(keys[k]);
+			var w = matches[keys[k]];
+			if (x >= lastx + lastw - fudge) {
+				count += w;
+				lastx = x;
+				lastw = w;
+			}
+		}
+		// display matched percent
+		matchedtxt.classList.remove("hide");
+		var pct = 100 * count / maxwidth;
+		if (pct != 100) pct = pct.toFixed(1)
+		matchedtxt.firstChild.nodeValue = "Matched: " + pct + "%";
+	}
+]]>
+</script>
+<rect x="0.0" y="0" width="1200.0" height="326.0" fill="url(#background)"  />
+<text id="title" x="600.00" y="24" >Average getDepsVec call - 1.915 us CPU (33,334,741 requests)</text>
+<text id="details" x="10.00" y="309" > </text>
+<text id="unzoom" x="10.00" y="24" class="hide">Reset Zoom</text>
+<text id="search" x="1090.00" y="24" >Search</text>
+<text id="ignorecase" x="1174.00" y="24" >ic</text>
+<text id="matched" x="1090.00" y="309" > </text>
+<g id="frames">
+<g >
+<title>memcpy@@GLIBC_2.14@plt (1 CPU ns/call, 0.05%)</title><rect x="385.9" y="165" width="0.6" height="15.0" fill="rgb(231,144,29)" rx="2" ry="2" />
+<text  x="388.87" y="175.5" ></text>
+</g>
+<g >
+<title>__memmove_avx_unaligned_erms (16 CPU ns/call, 0.84%)</title><rect x="142.5" y="197" width="9.8" height="15.0" fill="rgb(231,151,28)" rx="2" ry="2" />
+<text  x="145.48" y="207.5" ></text>
+</g>
+<g >
+<title>llvm::array_pod_sort_comparator&lt;unsigned long&gt; (59 CPU ns/call, 3.08%)</title><rect x="244.8" y="181" width="36.3" height="15.0" fill="rgb(245,88,44)" rx="2" ry="2" />
+<text  x="247.77" y="191.5" >llv..</text>
+</g>
+<g >
+<title>⚠ shallow / unattributed (1 CPU ns/call, 0.05%)</title><rect x="992.8" y="229" width="0.6" height="15.0" fill="rgb(247,92,46)" rx="2" ry="2" />
+<text  x="995.82" y="239.5" ></text>
+</g>
+<g >
+<title>llvm::array_pod_sort_comparator&lt;unsigned long&gt; (38 CPU ns/call, 1.98%)</title><rect x="816.6" y="85" width="23.4" height="15.0" fill="rgb(245,88,44)" rx="2" ry="2" />
+<text  x="819.59" y="95.5" >l..</text>
+</g>
+<g >
+<title>msort_with_tmp (1,448 CPU ns/call, 75.61%)</title><rect x="93.8" y="213" width="892.2" height="15.0" fill="rgb(234,123,32)" rx="2" ry="2" />
+<text  x="96.80" y="223.5" >msort_with_tmp</text>
+</g>
+<g >
+<title>__memmove_avx_unaligned_erms (36 CPU ns/call, 1.88%)</title><rect x="874.5" y="69" width="22.2" height="15.0" fill="rgb(231,151,28)" rx="2" ry="2" />
+<text  x="877.51" y="79.5" >_..</text>
+</g>
+<g >
+<title>llvm::array_pod_sort_comparator&lt;unsigned long&gt; (59 CPU ns/call, 3.08%)</title><rect x="452.4" y="149" width="36.4" height="15.0" fill="rgb(245,88,44)" rx="2" ry="2" />
+<text  x="455.42" y="159.5" >llv..</text>
+</g>
+<g >
+<title>memcpy@@GLIBC_2.14@plt (2 CPU ns/call, 0.10%)</title><rect x="911.5" y="69" width="1.2" height="15.0" fill="rgb(231,144,29)" rx="2" ry="2" />
+<text  x="914.48" y="79.5" ></text>
+</g>
+<g >
+<title>msort_with_tmp (1,577 CPU ns/call, 82.35%)</title><rect x="14.3" y="229" width="971.7" height="15.0" fill="rgb(234,123,32)" rx="2" ry="2" />
+<text  x="17.31" y="239.5" >msort_with_tmp</text>
+</g>
+<g >
+<title>qsort (1 CPU ns/call, 0.05%)</title><rect x="992.2" y="245" width="0.6" height="15.0" fill="rgb(238,171,36)" rx="2" ry="2" />
+<text  x="995.20" y="255.5" ></text>
+</g>
+<g >
+<title>memcpy@@GLIBC_2.14@plt (1 CPU ns/call, 0.05%)</title><rect x="185.0" y="197" width="0.6" height="15.0" fill="rgb(231,144,29)" rx="2" ry="2" />
+<text  x="188.00" y="207.5" ></text>
+</g>
+<g >
+<title>__memmove_avx_unaligned_erms (3 CPU ns/call, 0.16%)</title><rect x="979.9" y="37" width="1.8" height="15.0" fill="rgb(231,151,28)" rx="2" ry="2" />
+<text  x="982.88" y="47.5" ></text>
+</g>
+<g >
+<title>msort_with_tmp (653 CPU ns/call, 34.10%)</title><rect x="583.7" y="133" width="402.3" height="15.0" fill="rgb(234,123,32)" rx="2" ry="2" />
+<text  x="586.67" y="143.5" >msort_with_tmp</text>
+</g>
+<g >
+<title>__memmove_avx_unaligned_erms (9 CPU ns/call, 0.47%)</title><rect x="65.5" y="213" width="5.5" height="15.0" fill="rgb(231,151,28)" rx="2" ry="2" />
+<text  x="68.46" y="223.5" ></text>
+</g>
+<g >
+<title>llvm::array_pod_sort_comparator&lt;unsigned long&gt; (23 CPU ns/call, 1.20%)</title><rect x="955.2" y="53" width="14.2" height="15.0" fill="rgb(245,88,44)" rx="2" ry="2" />
+<text  x="958.23" y="63.5" ></text>
+</g>
+<g >
+<title>__memmove_avx_unaligned_erms (21 CPU ns/call, 1.10%)</title><rect x="538.1" y="133" width="12.9" height="15.0" fill="rgb(231,151,28)" rx="2" ry="2" />
+<text  x="541.07" y="143.5" ></text>
+</g>
+<g >
+<title>msort_with_tmp (119 CPU ns/call, 6.21%)</title><rect x="912.7" y="69" width="73.3" height="15.0" fill="rgb(234,123,32)" rx="2" ry="2" />
+<text  x="915.72" y="79.5" >msort_wi..</text>
+</g>
+<g >
+<title>msort_with_tmp (357 CPU ns/call, 18.64%)</title><rect x="766.1" y="101" width="219.9" height="15.0" fill="rgb(234,123,32)" rx="2" ry="2" />
+<text  x="769.06" y="111.5" >msort_with_tmp</text>
+</g>
+<g >
+<title>qsort@plt (1 CPU ns/call, 0.05%)</title><rect x="992.8" y="245" width="0.6" height="15.0" fill="rgb(231,171,29)" rx="2" ry="2" />
+<text  x="995.82" y="255.5" ></text>
+</g>
+<g >
+<title>msort_with_tmp (497 CPU ns/call, 25.95%)</title><rect x="679.8" y="117" width="306.2" height="15.0" fill="rgb(234,123,32)" rx="2" ry="2" />
+<text  x="682.80" y="127.5" >msort_with_tmp</text>
+</g>
+<g >
+<title>msort_with_tmp (26 CPU ns/call, 1.36%)</title><rect x="970.0" y="53" width="16.0" height="15.0" fill="rgb(234,123,32)" rx="2" ry="2" />
+<text  x="973.02" y="63.5" ></text>
+</g>
+<g >
+<title>msort_with_tmp (806 CPU ns/call, 42.09%)</title><rect x="489.4" y="149" width="496.6" height="15.0" fill="rgb(234,123,32)" rx="2" ry="2" />
+<text  x="492.39" y="159.5" >msort_with_tmp</text>
+</g>
+<g >
+<title>memcpy@@GLIBC_2.14@plt (1 CPU ns/call, 0.05%)</title><rect x="969.4" y="53" width="0.6" height="15.0" fill="rgb(231,144,29)" rx="2" ry="2" />
+<text  x="972.40" y="63.5" ></text>
+</g>
+<g >
+<title>memcpy@@GLIBC_2.14@plt (1 CPU ns/call, 0.05%)</title><rect x="679.2" y="117" width="0.6" height="15.0" fill="rgb(231,144,29)" rx="2" ry="2" />
+<text  x="682.18" y="127.5" ></text>
+</g>
+<g >
+<title>llvm::array_pod_sort_comparator&lt;unsigned long&gt; (49 CPU ns/call, 2.56%)</title><rect x="734.6" y="101" width="30.2" height="15.0" fill="rgb(245,88,44)" rx="2" ry="2" />
+<text  x="737.64" y="111.5" >ll..</text>
+</g>
+<g >
+<title>__memmove_avx_unaligned_erms (21 CPU ns/call, 1.10%)</title><rect x="721.7" y="101" width="12.9" height="15.0" fill="rgb(231,151,28)" rx="2" ry="2" />
+<text  x="724.70" y="111.5" ></text>
+</g>
+<g >
+<title>llvm::array_pod_sort_comparator&lt;unsigned long&gt; (7 CPU ns/call, 0.37%)</title><rect x="981.7" y="37" width="4.3" height="15.0" fill="rgb(245,88,44)" rx="2" ry="2" />
+<text  x="984.73" y="47.5" ></text>
+</g>
+<g >
+<title>⚠ shallow / unattributed (319 CPU ns/call, 16.66%)</title><rect x="993.4" y="245" width="196.6" height="15.0" fill="rgb(247,92,46)" rx="2" ry="2" />
+<text  x="996.44" y="255.5" >⚠ shallow / unattributed</text>
+</g>
+<g >
+<title>__memmove_avx_unaligned_erms (25 CPU ns/call, 1.31%)</title><rect x="437.0" y="149" width="15.4" height="15.0" fill="rgb(231,151,28)" rx="2" ry="2" />
+<text  x="440.02" y="159.5" ></text>
+</g>
+<g >
+<title>llvm::array_pod_sort_comparator&lt;unsigned long&gt; (24 CPU ns/call, 1.25%)</title><rect x="896.7" y="69" width="14.8" height="15.0" fill="rgb(245,88,44)" rx="2" ry="2" />
+<text  x="899.69" y="79.5" ></text>
+</g>
+<g >
+<title>__memmove_avx_unaligned_erms (25 CPU ns/call, 1.31%)</title><rect x="801.2" y="85" width="15.4" height="15.0" fill="rgb(231,151,28)" rx="2" ry="2" />
+<text  x="804.19" y="95.5" ></text>
+</g>
+<g >
+<title>msort_with_tmp (1,144 CPU ns/call, 59.74%)</title><rect x="281.1" y="181" width="704.9" height="15.0" fill="rgb(234,123,32)" rx="2" ry="2" />
+<text  x="284.12" y="191.5" >msort_with_tmp</text>
+</g>
+<g >
+<title>memcpy@@GLIBC_2.14@plt (2 CPU ns/call, 0.10%)</title><rect x="764.8" y="101" width="1.3" height="15.0" fill="rgb(231,144,29)" rx="2" ry="2" />
+<text  x="767.83" y="111.5" ></text>
+</g>
+<g >
+<title>__memmove_avx_unaligned_erms (24 CPU ns/call, 1.25%)</title><rect x="626.8" y="117" width="14.8" height="15.0" fill="rgb(231,151,28)" rx="2" ry="2" />
+<text  x="629.80" y="127.5" ></text>
+</g>
+<g >
+<title>⚠ shallow / unattributed (2 CPU ns/call, 0.10%)</title><rect x="991.0" y="229" width="1.2" height="15.0" fill="rgb(247,92,46)" rx="2" ry="2" />
+<text  x="993.97" y="239.5" ></text>
+</g>
+<g >
+<title>msort_with_tmp (235 CPU ns/call, 12.27%)</title><rect x="841.2" y="85" width="144.8" height="15.0" fill="rgb(234,123,32)" rx="2" ry="2" />
+<text  x="844.24" y="95.5" >msort_with_tmp</text>
+</g>
+<g >
+<title>llvm::array_pod_sort_comparator&lt;unsigned long&gt; (37 CPU ns/call, 1.93%)</title><rect x="71.0" y="213" width="22.8" height="15.0" fill="rgb(245,88,44)" rx="2" ry="2" />
+<text  x="74.00" y="223.5" >l..</text>
+</g>
+<g >
+<title>__memmove_avx_unaligned_erms (12 CPU ns/call, 0.63%)</title><rect x="947.8" y="53" width="7.4" height="15.0" fill="rgb(231,151,28)" rx="2" ry="2" />
+<text  x="950.84" y="63.5" ></text>
+</g>
+<g >
+<title>malloc (3 CPU ns/call, 0.16%)</title><rect x="989.1" y="229" width="1.9" height="15.0" fill="rgb(238,112,36)" rx="2" ry="2" />
+<text  x="992.12" y="239.5" ></text>
+</g>
+<g >
+<title>llvm::array_pod_sort_comparator&lt;unsigned long&gt; (53 CPU ns/call, 2.77%)</title><rect x="152.3" y="197" width="32.7" height="15.0" fill="rgb(245,88,44)" rx="2" ry="2" />
+<text  x="155.34" y="207.5" >ll..</text>
+</g>
+<g >
+<title>memcpy@@GLIBC_2.14@plt (2 CPU ns/call, 0.10%)</title><rect x="840.0" y="85" width="1.2" height="15.0" fill="rgb(231,144,29)" rx="2" ry="2" />
+<text  x="843.01" y="95.5" ></text>
+</g>
+<g >
+<title>llvm::SmallVectorBase&lt;unsigned int&gt;::grow_pod (5 CPU ns/call, 0.26%)</title><rect x="989.1" y="245" width="3.1" height="15.0" fill="rgb(251,88,50)" rx="2" ry="2" />
+<text  x="992.12" y="255.5" ></text>
+</g>
+<g >
+<title>⚠ shallow / unattributed (5 CPU ns/call, 0.26%)</title><rect x="986.0" y="229" width="3.1" height="15.0" fill="rgb(247,92,46)" rx="2" ry="2" />
+<text  x="989.04" y="239.5" ></text>
+</g>
+<g >
+<title>__memmove_avx_unaligned_erms (25 CPU ns/call, 1.31%)</title><rect x="229.4" y="181" width="15.4" height="15.0" fill="rgb(231,151,28)" rx="2" ry="2" />
+<text  x="232.36" y="191.5" ></text>
+</g>
+<g >
+<title>llvm::array_pod_sort_comparator&lt;unsigned long&gt; (52 CPU ns/call, 2.72%)</title><rect x="551.0" y="133" width="32.1" height="15.0" fill="rgb(245,88,44)" rx="2" ry="2" />
+<text  x="554.01" y="143.5" >ll..</text>
+</g>
+<g >
+<title>llvm::array_pod_sort_comparator&lt;unsigned long&gt; (61 CPU ns/call, 3.19%)</title><rect x="641.6" y="117" width="37.6" height="15.0" fill="rgb(245,88,44)" rx="2" ry="2" />
+<text  x="644.59" y="127.5" >llv..</text>
+</g>
+<g >
+<title>vpux::AsyncDepsInfo::getDepsVec (1,915 CPU ns/call, 100.00%)</title><rect x="10.0" y="261" width="1180.0" height="15.0" fill="rgb(235,126,33)" rx="2" ry="2" />
+<text  x="13.00" y="271.5" >vpux::AsyncDepsInfo::getDepsVec</text>
+</g>
+<g >
+<title>memcpy@@GLIBC_2.14@plt (1 CPU ns/call, 0.05%)</title><rect x="488.8" y="149" width="0.6" height="15.0" fill="rgb(231,144,29)" rx="2" ry="2" />
+<text  x="491.78" y="159.5" ></text>
+</g>
+<g >
+<title>__memmove_avx_unaligned_erms (17 CPU ns/call, 0.89%)</title><rect x="337.8" y="165" width="10.5" height="15.0" fill="rgb(231,151,28)" rx="2" ry="2" />
+<text  x="340.81" y="175.5" ></text>
+</g>
+<g >
+<title>memcpy@@GLIBC_2.14@plt (1 CPU ns/call, 0.05%)</title><rect x="583.1" y="133" width="0.6" height="15.0" fill="rgb(231,144,29)" rx="2" ry="2" />
+<text  x="586.05" y="143.5" ></text>
+</g>
+<g >
+<title>llvm::array_pod_sort_comparator&lt;unsigned long&gt; (61 CPU ns/call, 3.19%)</title><rect x="348.3" y="165" width="37.6" height="15.0" fill="rgb(245,88,44)" rx="2" ry="2" />
+<text  x="351.29" y="175.5" >llv..</text>
+</g>
+<g >
+<title>msort_with_tmp (1,299 CPU ns/call, 67.83%)</title><rect x="185.6" y="197" width="800.4" height="15.0" fill="rgb(234,123,32)" rx="2" ry="2" />
+<text  x="188.61" y="207.5" >msort_with_tmp</text>
+</g>
+<g >
+<title>msort_with_tmp (973 CPU ns/call, 50.81%)</title><rect x="386.5" y="165" width="599.5" height="15.0" fill="rgb(234,123,32)" rx="2" ry="2" />
+<text  x="389.49" y="175.5" >msort_with_tmp</text>
+</g>
+<g >
+<title>__memmove_avx_unaligned_erms (7 CPU ns/call, 0.37%)</title><rect x="10.0" y="229" width="4.3" height="15.0" fill="rgb(231,151,28)" rx="2" ry="2" />
+<text  x="13.00" y="239.5" ></text>
+</g>
+<g >
+<title>all (1,915 CPU ns/call, 100%)</title><rect x="10.0" y="277" width="1180.0" height="15.0" fill="rgb(255,230,55)" rx="2" ry="2" />
+<text  x="13.00" y="287.5" ></text>
+</g>
+<g >
+<title>__GI___qsort_r (1,589 CPU ns/call, 82.98%)</title><rect x="10.0" y="245" width="979.1" height="15.0" fill="rgb(234,119,32)" rx="2" ry="2" />
+<text  x="13.00" y="255.5" >__GI___qsort_r</text>
+</g>
+<g >
+<title>⚠ shallow / unattributed (1 CPU ns/call, 0.05%)</title><rect x="992.2" y="229" width="0.6" height="15.0" fill="rgb(247,92,46)" rx="2" ry="2" />
+<text  x="995.20" y="239.5" ></text>
+</g>
+</g>
+</svg>

@@ -7586,49 +7586,50 @@ reads, vector writes, and sort moves are additional)</td></tr>
 <p>70% of calls carry more than 16 entries, so this is a real sorting workload rather than a
 few trivial ones.</p>
 <figure><img src="deps_hist.png" alt="dependency set size histogram"></figure>
-<h3>Step 3 &mdash; one complete compiler call, sampled end to end</h3>
-<p>This is <b>one</b> cold Qwen2.5-7B INT8 compile at W=2048, not an average of several
-profiles: <b>420.80 seconds wall time</b>. The graph is then re-rooted at every
-<code>getDepsVec</code> occurrence inside that call. So it shows the aggregate of the millions of
-small requests made by this one compiler invocation; it does <i>not</i> pretend that one
-microsecond-scale request can be isolated reliably with a 99 Hz sampler.</p>
+<h3>Step 3 &mdash; the amortised average <code>getDepsVec</code> call</h3>
+<p>This graph answers the per-call question. Every stack weight from the one cold Qwen2.5-7B INT8
+W=2048 profile is divided by <b>33,334,741 <code>getDepsVec</code> requests</b> counted in the matching
+instrumented stock run. It therefore shows the <b>amortised average call</b>, not the aggregate of all
+requests. A 99 Hz sampler cannot isolate one roughly 1.92&nbsp;&micro;s
+invocation; pooling the calls and normalising is the meaningful view. Because the request count came
+from a separate matching run, the absolute per-call values are cross-run estimates; the sampled
+stack proportions come from the controlled profile.</p>
 <div class="kpis">
-<div class="kpi"><div class="n">420.80s</div><div class="l">one complete call, wall time</div></div>
-<div class="kpi"><div class="n c-red">13.7%</div><div class="l"><code>getDepsVec</code> share of sampled compile CPU</div></div>
-<div class="kpi"><div class="n c-gold">≥11.4%</div><div class="l">directly visible sorting CPU; 13.7% subtree ceiling</div></div>
+<div class="kpi"><div class="n">1.92&micro;s</div><div class="l">CPU in the average request</div></div>
+<div class="kpi"><div class="n c-red">1.59&micro;s</div><div class="l">visible sorting CPU per average request</div></div>
+<div class="kpi"><div class="n c-gold">83.1%</div><div class="l">visible sorting share of the average call</div></div>
 <div class="kpi"><div class="n c-green">14.17%</div><div class="l">wall time recovered by memoising</div></div>
 </div>
 <table>
-<tr><th>scope</th><th>measured cost</th><th>denominator / meaning</th></tr>
-<tr><td>whole compiler call</td><td><b>420.80 s wall</b></td><td>one cold invocation</td></tr>
-<tr><td>all sampled compile work</td><td>465.7 s CPU</td><td>estimated from
-46,100 samples at 99 Hz, summed across all threads</td></tr>
-<tr><td>FeasibleAllocation pass</td><td><b>73.81 s wall</b></td><td>17.54% of this call's wall time</td></tr>
-<tr><td><code>getDepsVec</code>, inclusive</td><td><b>63.8 s CPU</b></td>
-<td>13.7% of the compiler call's sampled CPU</td></tr>
-<tr><td>sorting frames directly visible beneath <code>getDepsVec</code></td>
-<td><b>53.0 s CPU</b></td><td>11.4% lower bound of compiler-call CPU;
-83.1% of sampled <code>getDepsVec</code> CPU contained a visible sort frame</td></tr>
+<tr><th>average-call view</th><th>CPU cost</th><th>how it is derived</th></tr>
+<tr><td>average <code>getDepsVec</code> request</td><td><b>1.915 &micro;s</b></td>
+<td>63.848 aggregate CPU-s &divide; 33,334,741 requests</td></tr>
+<tr><td>visible sorting in the average request</td><td><b>1.591 &micro;s</b></td>
+<td>53.040 aggregate CPU-s &divide; 33,334,741; 83.1% of the average call</td></tr>
+<tr><td>shallow / unattributed in the average request</td><td>0.327 &micro;s</td>
+<td>17.1% of the call; may be genuine self work or profiler unwind loss</td></tr>
+<tr><td>average non-trivial sort request</td><td>1.949 &micro;s visible sorting</td>
+<td>53.040 aggregate CPU-s &divide; 27,212,539 requests with at least two elements</td></tr>
+<tr><td>whole-compilation context</td><td>420.80 s wall</td><td>465.7 sampled CPU-s
+from 46,100 samples; <code>getDepsVec</code> was 13.7% and visible sorting at least
+11.4% of sampled compile CPU; FeasibleAllocation was 73.81 s wall (17.54%)</td></tr>
 <tr><td>memoised A/B result</td><td><b>&minus;59.03 s wall
 (&minus;14.17%)</b></td><td>median 416.45 s stock →
 357.42 s cached, 3 / 3 cold repeats</td></tr>
-<tr><td>amortised per request</td><td>1.92 &micro;s CPU in <code>getDepsVec</code></td><td>33,334,741 calls from a separate instrumented stock run; an average, not one timed invocation</td></tr>
-<tr><td>amortised per non-trivial sort</td><td>1.95 &micro;s CPU</td><td>27,212,539 requests had at least two elements; cross-run estimate</td></tr>
 </table>
-<div class="flame flame-external"><object data="deps-sort-single-flame.svg" type="image/svg+xml"
-aria-label="CPU flame graph rooted at vpux AsyncDepsInfo getDepsVec">
-<a href="deps-sort-single-flame.svg">Open the focused sorting flame graph</a></object></div>
+<div class="flame flame-external"><object data="deps-sort-average-call-flame.svg" type="image/svg+xml"
+aria-label="Amortised average getDepsVec CPU flame graph">
+<a href="deps-sort-average-call-flame.svg">Open the average-call sorting flame graph</a></object></div>
 <p class="figcap">Click a frame to zoom; use <b>Search</b> inside the graph to highlight symbols.
-Frame width is sampled user CPU time from this one compiler call, in CPU milliseconds. The
-sorting number is a <b>union</b>: a sampled stack containing <code>qsort_r</code>,
+Frame width is <b>average CPU nanoseconds per request</b>: each aggregate stack period divided by
+33,334,741. The sorting number is a <b>union</b>: a sampled stack containing <code>qsort_r</code>,
 <code>msort_with_tmp</code>, or LLVM's POD-sort comparator counts once, so nested frames are not
 double-counted. Shallow stacks are marked as unattributed and account for 17.1% of this
 subtree; they can be genuine self work or profiler unwind loss, so no stronger claim is made.</p>
-<p class="figcap">That makes the attribution deliberately conservative: directly visible sorting
-is <b>at least 11.4%</b> of compile CPU; the inclusive <code>getDepsVec</code> total puts
-the ceiling at <b>13.7%</b>. The A/B result below is the causal wall-time answer.</p>
-<p class="note"><b>How to reconcile the two answers.</b> The flame graph attributes sampled CPU;
-memoisation's &minus;14.17% is causal wall-clock A/B. It avoids repeated
+<p class="note"><b>How the average scales back up.</b> 1.591&nbsp;&micro;s of visible
+sorting per request &times; 33,334,741 requests = 53.040 aggregate CPU-s. The graph's shape
+is unchanged by this linear normalisation; its absolute labels now answer the per-call question.
+Memoisation's &minus;14.17% remains the causal wall-clock A/B result. It avoids repeated
 <code>DenseSet</code>-to-vector materialisation, sorting, qsort temporary allocation, and indirect
 comparisons; the cached <code>SmallVector</code> is still returned by value. CPU seconds sum concurrent
 threads and therefore are not subtracted directly from wall seconds. The profile uses the retained
