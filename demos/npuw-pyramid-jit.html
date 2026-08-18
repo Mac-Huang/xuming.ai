@@ -29,12 +29,166 @@ td.n{font-variant-numeric:tabular-nums;text-align:right}
 code{background:#1c2230;border:1px solid var(--bd);border-radius:5px;padding:1px 5px;font-size:13px}
 a{color:var(--blue)} .back{color:var(--mut);font-size:13px;text-decoration:none}
 p{margin:12px 0}
+.tabs{display:flex;gap:6px;border-bottom:1px solid var(--bd);margin:22px 0 0}
+.tabs button{appearance:none;background:none;border:0;border-bottom:2px solid transparent;
+color:var(--mut);font:inherit;font-size:14.5px;padding:9px 14px;cursor:pointer;margin-bottom:-1px}
+.tabs button:hover{color:var(--tx)}
+.tabs button[aria-selected="true"]{color:var(--tx);border-bottom-color:var(--gold)}
+.pane[hidden]{display:none}
+.pane>h2:first-child{margin-top:30px}
+.src{color:var(--mut);font-size:12.5px}
+.q{border-left:2px solid var(--bd);padding:2px 0 2px 14px;margin:12px 0;color:#cbd5e1}
+.note{background:#12161d;border:1px solid var(--bd);border-radius:11px;padding:13px 18px;
+margin:18px 0;font-size:14.5px;color:#cbd5e1}
+.note b{color:#fff}
 </style>
 <div class="wrap">
 <a class="back" href="../research.html">&larr; research</a>
 <h1>NPUW Pyramid JIT</h1>
 <p class="tag">Growing an NPU KV cache without paying for it up front &middot;
 Qwen2.5-3B INT8 &middot; Intel NPU 5 &middot; OpenVINO 2026.3</p>
+
+<nav class="tabs" role="tablist">
+<button role="tab" id="t-motiv" aria-controls="motiv" aria-selected="true">Motivation</button>
+<button role="tab" id="t-measure" aria-controls="measure" aria-selected="false">Measurements</button>
+</nav>
+
+<section class="pane" id="motiv" role="tabpanel" aria-labelledby="t-motiv">
+
+<div class="thesis">
+An NPU fixes its context window when it compiles. Pick it large and you pay for
+capacity the session never uses &mdash; in compile time, in first-token latency, and in
+decode rate. Pick it small and the session dies at the ceiling. Real agent sessions
+make that choice impossible in advance: they start small, grow at a steady rate, and
+stop at an unpredictable point. <b>Copy-on-growth removes the choice</b> &mdash; start
+at the small window the session actually needs, and grow into a larger compiled
+artifact when the slope says you are about to cross.
+</div>
+
+<h2>1 &middot; Why the NPU, when the same chip has an iGPU</h2>
+<p>The honest answer is that this is a Pareto choice, not a dominance one. Measured on
+this machine, Qwen2.5-7B INT8 decode at a right-sized 1024 window:</p>
+<table>
+<thead><tr><th>Decode engine</th><th>Energy</th><th>Latency</th></tr></thead>
+<tbody>
+<tr><td>Xe3 iGPU</td><td class="n">170 J</td><td class="n">6.7 s</td></tr>
+<tr><td>NPU 5</td><td class="n">105 J</td><td class="n">12.2 s</td></tr>
+</tbody></table>
+<p>The NPU costs <b>38% less energy</b> and takes <b>1.8&times; longer</b>. Prefill
+placement between the two is neutral. So the NPU is the right target whenever energy
+or thermal headroom is the binding constraint rather than latency &mdash; sustained
+background work, battery, or a device already using the iGPU for something else.</p>
+
+<p>That last case is the non-energy argument, and it is the one shipping systems act on.
+The iGPU is also the display, compositor, video and game engine; the NPU is otherwise
+idle. Agent.xpu measures pure-iGPU prefill pinned at 100% utilization and reports a
+<b>32.5&ndash;37.1% reduction in iGPU utilization</b> by moving work to the NPU. Microsoft
+gates Windows Studio Effects on an NPU with no iGPU fallback, on the stated rationale of
+&ldquo;battery-friendly AI effects that reduce the burden on the device CPU and GPU.&rdquo;
+That rationale is stated, not quantified &mdash; no vendor page in the surveyed set gives
+watts, joules or frame rates.</p>
+
+<div class="note">
+<b>The reviewer's objection, in print &mdash; and why it is this work's opening.</b>
+Every systems paper that ships a working decode path puts decode on the iGPU or CPU,
+not the NPU. Agent.xpu states the reason in a footnote: <i>&ldquo;NPU decode is omitted
+since per-iteration kernel compilation is infeasible under growing sequence length and
+varying batch size.&rdquo;</i> HeteroLLM&rsquo;s scheduler &ldquo;always chooses the GPU
+in decoding layers,&rdquo; and separately notes that its NPU &ldquo;does not support
+W4A16 for decoding.&rdquo; On Snapdragon, <i>Is Your NPU Ready for LLMs?</i> measures NPU
+decode energy 2&ndash;4&times; <i>higher</i> than CPU or GPU. The named blocker is
+recompilation under a growing sequence &mdash; which is exactly what a progressive window
+with live state hand-off removes. The state of the art excludes NPU decode for a reason
+that is a toolchain limit, not a silicon one.
+</div>
+
+<h2>2 &middot; Why the window is fixed at compile time</h2>
+<p>This is the deployment model of every edge NPU stack, not an OpenVINO quirk.</p>
+<div class="q">Intel: &ldquo;Currently, only models with static shapes are supported on
+NPU.&rdquo; The LLM window is <code>MAX_PROMPT_LEN</code> + <code>MIN_RESPONSE_LEN</code>,
+fixed when the pipeline is constructed.</div>
+<div class="q">Qualcomm: <code>--context-length</code> is an option to the <i>export</i>
+command, and that export &ldquo;may take 2-3 hours.&rdquo; The runtime
+<code>genie_config.json</code> must be edited to match the compiled binary.</div>
+<div class="q">Apple: &ldquo;Use EnumeratedShapes for best performance&rdquo; &mdash; at most
+128 pre-declared shapes, and models with open-ended dynamic shapes fall off the Neural
+Engine at anything but their default shape.</div>
+
+<h2>3 &middot; Why no single window is the right one</h2>
+<p>Across workloads, the right answer differs by task class. In Microsoft&rsquo;s Azure
+production trace the conversation service has a median context of 1,020 tokens with 86%
+of requests under 2K, while the coding service sits at 1,469 with only 62.5% under 2K.
+Same service family, different correct window.</p>
+
+<p>Within a single on-device agent session it is worse, because the requirement is not
+drawn once &mdash; it grows. From our own OSWorld run on this machine (Holo3, 93 episodes,
+history eviction disabled so the true demand is visible):</p>
+<table>
+<thead><tr><th>Per-episode context</th><th>Tokens</th></tr></thead>
+<tbody>
+<tr><td>first call</td><td class="n">3,254</td></tr>
+<tr><td>episode peak, median</td><td class="n">18,623</td></tr>
+<tr><td>episode peak, p95</td><td class="n">101,082</td></tr>
+<tr><td>episode peak, max</td><td class="n">160,968</td></tr>
+</tbody></table>
+<p>Provision for the observed maximum and the median episode uses <b>11.6%</b> of it.
+Growth within one episode is 5.8&times; at the median and 49&times; at the worst.</p>
+
+<p><b>But the rate is predictable even though the endpoint is not.</b> Each step appends a
+median of 2,227 tokens &mdash; one screenshot plus one action &mdash; and not a single step
+in the run shrank the context. So the crossings are near-deterministic: 8K is first
+exceeded at step 4, 16K at step 7&ndash;8, 32K at step 14&ndash;15, while session length
+itself runs from 8 steps at the median to 100 at the tail. That gap is the whole
+opportunity: you cannot know where a session ends, but you always know when it is about
+to outgrow the artifact it is running on &mdash; several steps ahead of the fact.</p>
+
+<h2>4 &middot; What an oversized window costs</h2>
+<table>
+<thead><tr><th>Axis</th><th>Cost</th><th>Source</th></tr></thead>
+<tbody>
+<tr><td>Compile</td><td>17 s at 1K &rarr; 154 s at 16K &rarr; 460 s at 32K</td>
+<td class="src">this machine, Qwen2.5-1.5B INT8</td></tr>
+<tr><td>First token</td><td>a short prompt pays the same TTFT as a full-length one</td>
+<td class="src">Intel, documented</td></tr>
+<tr><td>Decode rate</td><td>20&ndash;24% slower as the compiled context grows 16 &rarr; 4096,
+at a fixed number of generated tokens</td><td class="src">Snapdragon, 1&ndash;1.5B</td></tr>
+<tr><td>KV memory</td><td>only 20.4% of pre-allocated KV holds real token state</td>
+<td class="src">PagedAttention, SOSP&rsquo;23</td></tr>
+</tbody></table>
+<p>The decode-rate row is the one that surprises: on a static-shape NPU, decode cost
+tracks the <i>compiled</i> window rather than the tokens actually generated, so an
+oversized artifact is slower per token for the entire session. Our own arms show the
+same sign &mdash; the pyramid arms decode at 0.752&ndash;0.754 tok/s in the first 1K band
+against 0.740 for the model compiled at the full 16,384 context.</p>
+
+<h2>5 &middot; Why existing mechanisms do not cover this</h2>
+<table>
+<thead><tr><th>Mechanism</th><th>Why it does not solve it on a static-shape NPU</th></tr></thead>
+<tbody>
+<tr><td>PagedAttention / vLLM</td><td>block tables need runtime-mutable indirection; a compiled blob has fixed shapes and offsets, and the ceiling is a compile-time constant</td></tr>
+<tr><td>vAttention</td><td>CUDA virtual-memory paging with a patched driver; no NPU equivalent, and it still reserves at the maximum context</td></tr>
+<tr><td>Core ML EnumeratedShapes</td><td>selects among fixed pre-declared buckets; never grows one, and carries no state across them</td></tr>
+<tr><td>Qualcomm AR-N multi-graph</td><td>buckets enumerated at export; re-picking the window costs a 2&ndash;3 hour export</td></tr>
+<tr><td>OpenVINO chunked prefill</td><td>feeds a long prompt in pieces within a still-bounded context; does not grow it</td></tr>
+<tr><td>Llumnix-style migration</td><td>moves requests between instances, not across differently-compiled artifacts on one device</td></tr>
+</tbody></table>
+<p>No published mechanism copies live KV state from one compiled static artifact into a
+differently-compiled larger one on the same device.</p>
+
+<div class="note">
+<b>What this page does not claim.</b> The measured wins here are compile time, time to
+first token, and decode rate &mdash; not memory. Peak RSS in the three-arm sweep was
+higher for copy-on-grow (21.5 GiB) than for the shared-allocation pyramid (19.7 GiB), so
+the memory argument remains design intent that this implementation has not yet realised.
+The energy and trace numbers above are single-testbed and single-run: 93 agent episodes
+from one model on one benchmark, and no published source reports same-SoC NPU-vs-iGPU
+joules per decoded token on x86, so the 170 J / 105 J pair is our measurement, not a
+confirmed general result.
+</div>
+
+</section>
+
+<section class="pane" id="measure" role="tabpanel" aria-labelledby="t-measure" hidden>
 
 <div class="thesis">
 An NPU cannot resize a KV cache, so growing context means compiling a second model
@@ -79,10 +233,10 @@ differ only in <code>OPENVINO_NPUW_JIT_MODE</code>:</p>
 <table>
 <thead><tr><th>Arm</th><th>Mode</th><th>When the 2048 variant is compiled</th></tr></thead>
 <tbody>
-<tr><td><b>I1 eager</b></td>
-<td><code>EAGER</code></td><td>up front, inside <code>compile_model</code>, before any token</td></tr>
-<tr><td><b>I2 one-ahead</b></td>
-<td><code>ONE_AHEAD</code></td><td>in the background during decode, deadline = when the 1024 cache fills</td></tr>
+<tr><td><b>I1 eager</b></td><td><code>EAGER</code></td>
+<td>up front, inside <code>compile_model</code>, before any token</td></tr>
+<tr><td><b>I2 one-ahead</b></td><td><code>ONE_AHEAD</code></td>
+<td>in the background during decode, deadline = when the 1024 cache fills</td></tr>
 </tbody></table>
 <p>I1 eager is the control: it is the same mechanism with compilation removed from
 the critical path, so the difference is attributable to the scheduling alone.
@@ -103,9 +257,9 @@ I2 the second compile sits inside decode, and decode starts 9.5 s
 earlier. Red mark is the capacity switch.</figcaption></figure>
 
 <figure><svg viewBox="0 0 940 218" width="100%" role="img" aria-label="Compile and decode timeline for both arms"><text x="0" y="25" fill="#e6edf3" font-size="12.5" font-weight="600">I1 eager — both capacities compiled up front</text><text x="118" y="49" fill="#9da7b3" font-size="11" text-anchor="end">compile</text><rect x="128" y="34" width="796" height="22" rx="3" fill="#11161d"/><g><title>compile_model: 62.92 s (blocks the first token)</title><rect x="128.34" y="34" width="313.05" height="22" rx="3" fill="#bd8500"/></g><text x="135.34" y="49" fill="#3a2a00" font-size="11" font-weight="600">compile_model 62.9 s</text><text x="118" y="78" fill="#9da7b3" font-size="11" text-anchor="end">decode</text><rect x="128" y="63" width="796" height="22" rx="3" fill="#11161d"/><g><title>cooldown (harness, 60 s)</title><rect x="441.39" y="63" width="298.50" height="22" rx="3" fill="#39424e"/></g><g><title>decode 1920 tokens: 2,589.9 s</title><rect x="753.03" y="63" width="170.97" height="22" rx="3" fill="#3b8ef5"/></g><text x="745.03" y="78" fill="#9da7b3" font-size="11" text-anchor="end">decode starts 125.6 s in &rarr;</text><text x="0" y="106" fill="#e6edf3" font-size="12.5" font-weight="600">I2 one-ahead — next capacity compiled during decode</text><text x="118" y="130" fill="#9da7b3" font-size="11" text-anchor="end">compile</text><rect x="128" y="115" width="796" height="22" rx="3" fill="#11161d"/><g><title>compile_model: 53.47 s (blocks the first token)</title><rect x="128.35" y="115" width="266.03" height="22" rx="3" fill="#bd8500"/></g><g><title>next variant compiled during decode: 14.68 s</title><rect x="705.26" y="115" width="73.04" height="22" rx="3" fill="#bd8500"/></g><text x="697.26" y="130" fill="#bd8500" font-size="11" text-anchor="end">2048 variant &mdash; 14.7 s, during decode &rarr;</text><text x="135.35" y="130" fill="#3a2a00" font-size="11" font-weight="600">compile_model 53.5 s</text><text x="118" y="159" fill="#9da7b3" font-size="11" text-anchor="end">decode</text><rect x="128" y="144" width="796" height="22" rx="3" fill="#11161d"/><g><title>cooldown (harness, 60 s)</title><rect x="394.38" y="144" width="298.50" height="22" rx="3" fill="#39424e"/></g><g><title>decode 1920 tokens: 2,596.9 s</title><rect x="705.26" y="144" width="218.74" height="22" rx="3" fill="#3b8ef5"/></g><text x="697.26" y="159" fill="#9da7b3" font-size="11" text-anchor="end">decode starts 116.0 s in &rarr;</text><line x1="128" y1="178" x2="924" y2="178" stroke="#30363d"/><line x1="128.0" y1="178" x2="128.0" y2="182" stroke="#30363d"/><text x="128.0" y="195" fill="#9da7b3" font-size="10.5" text-anchor="middle">0s</text><line x1="227.5" y1="178" x2="227.5" y2="182" stroke="#30363d"/><text x="227.5" y="195" fill="#9da7b3" font-size="10.5" text-anchor="middle">20s</text><line x1="327.0" y1="178" x2="327.0" y2="182" stroke="#30363d"/><text x="327.0" y="195" fill="#9da7b3" font-size="10.5" text-anchor="middle">40s</text><line x1="426.5" y1="178" x2="426.5" y2="182" stroke="#30363d"/><text x="426.5" y="195" fill="#9da7b3" font-size="10.5" text-anchor="middle">60s</text><line x1="526.0" y1="178" x2="526.0" y2="182" stroke="#30363d"/><text x="526.0" y="195" fill="#9da7b3" font-size="10.5" text-anchor="middle">80s</text><line x1="625.5" y1="178" x2="625.5" y2="182" stroke="#30363d"/><text x="625.5" y="195" fill="#9da7b3" font-size="10.5" text-anchor="middle">100s</text><line x1="725.0" y1="178" x2="725.0" y2="182" stroke="#30363d"/><text x="725.0" y="195" fill="#9da7b3" font-size="10.5" text-anchor="middle">120s</text><line x1="824.5" y1="178" x2="824.5" y2="182" stroke="#30363d"/><text x="824.5" y="195" fill="#9da7b3" font-size="10.5" text-anchor="middle">140s</text><line x1="924.0" y1="178" x2="924.0" y2="182" stroke="#30363d"/><text x="924.0" y="195" fill="#9da7b3" font-size="10.5" text-anchor="middle">160s</text></svg>
-<figcaption>The first 160 s. I2 compiles 53.5 s up front instead
-of 62.9 s, then builds the 2048 variant in 14.7 s
-while decode is already running. Gold is compiling, blue is decoding.</figcaption></figure>
+<figcaption>The first 160 s. I2 compiles 53.5 s up front
+instead of 62.9 s, then builds the 2048 variant in
+14.7 s while decode is already running.</figcaption></figure>
 
 <table>
 <thead><tr><th></th><th>I1 eager</th><th>I2 one-ahead</th></tr></thead>
@@ -150,4 +304,24 @@ cold &middot; <code>2026-08-17_13-20_wuklab-NUC16_qwen3b-int8-jit-preflight-1k2k
 <tr><th>Caveat</th><td>Single observation per arm, no confidence interval. The JIT run covers the
 1024&rarr;2048 transition only; 2048&rarr;4096 and above are not yet measured.</td></tr>
 </tbody></table>
+
+</section>
 </div>
+<script>
+(function(){
+  var tabs = [].slice.call(document.querySelectorAll('.tabs button'));
+  function show(id){
+    tabs.forEach(function(t){
+      var on = t.getAttribute('aria-controls') === id;
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+      document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+    });
+    if (history.replaceState) history.replaceState(null, '', '#' + id);
+  }
+  tabs.forEach(function(t){
+    t.addEventListener('click', function(){ show(t.getAttribute('aria-controls')); });
+  });
+  var h = (location.hash || '').replace('#','');
+  if (h === 'motiv' || h === 'measure') show(h);
+})();
+</script>
