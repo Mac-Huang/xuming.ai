@@ -52,6 +52,7 @@ Qwen2.5-3B INT8 &middot; Intel NPU 5 &middot; OpenVINO 2026.3</p>
 <button role="tab" id="t-motiv" aria-controls="motiv" aria-selected="true">Motivation</button>
 <button role="tab" id="t-measure" aria-controls="measure" aria-selected="false">Measurements</button>
 <button role="tab" id="t-xpu" aria-controls="xpu" aria-selected="false">NPU vs iGPU</button>
+<button role="tab" id="t-llmxpu" aria-controls="llmxpu" aria-selected="false">LLM.xpu replication</button>
 </nav>
 
 <section class="pane" id="motiv" role="tabpanel" aria-labelledby="t-motiv">
@@ -417,6 +418,77 @@ accounting and W8A16 convention are the paper's.
 </p>
 </section>
 
+
+<section class="pane" id="llmxpu" role="tabpanel" aria-labelledby="t-llmxpu" hidden>
+
+<div class="thesis">
+The previous tab measures what the two engines cost. This one runs
+<b>the published system that bets on the NPU</b> &mdash;
+<a href="https://github.com/xinming-wei/LLM.xpu">LLM.xpu</a>, the engine behind
+Agent.xpu &mdash; on a Core Ultra 7 356H, two SoC generations newer than the paper's
+Core Ultra 5 125H, and asks whether its headline results survive. Getting that far
+first required fixing three defects that made <b>every generated token wrong on every
+device</b>.
+</div>
+
+<div class="kpis"><div class="kpi"><div class="n">3</div><div class="l">defects that made every generated token wrong</div></div><div class="kpi"><div class="n">1.14&times;</div><div class="l">best throughput vs the iGPU-only baseline (paper: 1.2&ndash;4.9&times;)</div></div><div class="kpi"><div class="n">-61%</div><div class="l">best energy change vs iGPU-only (paper: &minus;26.8%)</div></div><div class="kpi"><div class="n">18</div><div class="l">benchmark arms measured with RAPL energy</div></div></div>
+
+<h2>1 &middot; As released, it generates garbage</h2>
+<p>Fluent-looking text with no relation to the prompt, on NPU, iGPU and hetero alike.
+Bisected by a ladder that ruled out one layer at a time, so no step rested on a guess:
+the repo's own torch model matches Hugging Face greedy decode <em>exactly</em>; its W8
+RTN quantisation gives coherent output at every group size; and the serialised
+<code>.model</code> file round-trips perfectly &mdash; all 1,794,773,700 bytes consumed,
+reproducing the in-memory quantised model. Everything was clean until the OpenVINO
+graphs.</p>
+<p>An attractive early hypothesis &mdash; that the exporter ignores Llama-3.2's
+<code>rope_scaling</code> (<code>rope_type: llama3, factor: 32</code>) &mdash; was
+<b>refuted</b> by the first rung: that scaling is a no-op at short context and the
+unmodified model already matched the reference. It is a real latent bug for long
+contexts, but it was not this one.</p>
+
+<h3>The three defects</h3>
+<ol>
+<li><b>Prefill buffer index mismatch.</b> The prefill buffer is chosen from the job's
+priority (reactive&nbsp;&rarr;&nbsp;1), but swap-in was called with the default index 0.
+The prompt was embedded into buffer&nbsp;0 while prefill ran out of buffer&nbsp;1 &mdash;
+zero-allocated and never written. Every layer saw an all-zero input, RMSNorm computed
+<code>rsqrt(0)</code>, and the logits came out NaN.</li>
+<li><b>Two graph inputs declared in the wrong order.</b> The post-attention graph
+declares <code>{weighted_V, prompt_embedding}</code> while all <em>seven</em> binding
+sites pass <code>{prompt_embedding, weighted_V}</code>, silently exchanging the
+residual with the attention output: no NaN, plausible magnitudes, wrong tokens.</li>
+<li><b>The KV cache had no layer dimension.</b> One
+<code>{ctx_len, kv_dim}</code> buffer that every layer read and wrote, so each layer
+saw the previous layer's keys. The first generated token (produced by prefill) was
+correct and every later one was not.</li>
+</ol>
+<p>With these fixed, Llama-3.2-1B W8A16 on the NPU reproduces the Hugging Face
+reference generation token for token, and the prefill logits match a torch reference of
+the same file (argmax 2127, max 24.04 vs 23.93) within FP16 tolerance.</p>
+
+<h2>2 &middot; The benchmark matrix, with energy</h2>
+<p>Llama-3.2-3B W8A16, the paper's own model, replaying agent workloads through the
+<code>exp-*</code> harness, every arm inside a RAPL window.</p>
+<table><thead><tr><th>arm</th><th>workload</th><th>req/min</th><th>jobs</th><th>tokens</th><th>tok/s</th><th>median job latency (s)</th><th>energy (J)</th><th>J/token</th><th>W</th></tr></thead><tbody><tr><td>iGPU only (mixed)</td><td>20</td><td>20</td><td class="n">94</td><td class="n">15575</td><td class="n">15.63</td><td class="n">562</td><td class="n">22528</td><td class="n">1.446</td><td class="n">20.1</td></tr><tr><td>Agent.xpu scheduler (mixed)</td><td>20</td><td>20</td><td class="n">94</td><td class="n">15575</td><td class="n">15.00</td><td class="n">573</td><td class="n">33358</td><td class="n">2.142</td><td class="n">36.3</td></tr><tr><td>iGPU only (mixed)</td><td>6</td><td>6</td><td class="n">24</td><td class="n">4140</td><td class="n">20.60</td><td class="n">124</td><td class="n">6146</td><td class="n">1.485</td><td class="n">18.7</td></tr><tr><td>Agent.xpu scheduler (mixed)</td><td>6</td><td>6</td><td class="n">24</td><td class="n">4140</td><td class="n">11.76</td><td class="n">205</td><td class="n">9504</td><td class="n">2.296</td><td class="n">29.1</td></tr><tr><td>blocking, iGPU</td><td>agent-plan</td><td>20</td><td class="n">48</td><td class="n">11859</td><td class="n">10.95</td><td class="n">565</td><td class="n">25330</td><td class="n">2.136</td><td class="n">20.7</td></tr><tr><td>blocking, NPU</td><td>agent-plan</td><td>20</td><td class="n">48</td><td class="n">11859</td><td class="n">10.17</td><td class="n">609</td><td class="n">26148</td><td class="n">2.205</td><td class="n">20.1</td></tr><tr><td>iGPU only</td><td>agent-plan</td><td>20</td><td class="n">48</td><td class="n">11859</td><td class="n">14.59</td><td class="n">477</td><td class="n">19732</td><td class="n">1.664</td><td class="n">20.8</td></tr><tr><td>Agent.xpu scheduler (NPU+iGPU)</td><td>agent-plan</td><td>20</td><td class="n">48</td><td class="n">11859</td><td class="n">16.65</td><td class="n">483</td><td class="n">31743</td><td class="n">2.677</td><td class="n">37.7</td></tr><tr><td>blocking, iGPU</td><td>agent-plan</td><td>6</td><td class="n">16</td><td class="n">4065</td><td class="n">14.17</td><td class="n">159</td><td class="n">8742</td><td class="n">2.151</td><td class="n">19.7</td></tr><tr><td>blocking, NPU</td><td>agent-plan</td><td>6</td><td class="n">16</td><td class="n">4065</td><td class="n">13.07</td><td class="n">173</td><td class="n">8924</td><td class="n">2.195</td><td class="n">18.9</td></tr><tr><td>iGPU only</td><td>agent-plan</td><td>6</td><td class="n">16</td><td class="n">4065</td><td class="n">21.17</td><td class="n">142</td><td class="n">6526</td><td class="n">1.605</td><td class="n">18.7</td></tr><tr><td>Agent.xpu scheduler (NPU+iGPU)</td><td>agent-plan</td><td>6</td><td class="n">16</td><td class="n">4065</td><td class="n">16.32</td><td class="n">164</td><td class="n">12229</td><td class="n">3.008</td><td class="n">29.9</td></tr><tr><td>blocking NPU (mixed)</td><td>npu</td><td>20</td><td class="n">94</td><td class="n">15575</td><td class="n">8.07</td><td class="n">777</td><td class="n">31338</td><td class="n">2.012</td><td class="n">19.5</td></tr><tr><td>blocking NPU (mixed)</td><td>npu</td><td>6</td><td class="n">24</td><td class="n">4140</td><td class="n">9.90</td><td class="n">187</td><td class="n">8598</td><td class="n">2.077</td><td class="n">19.0</td></tr><tr><td>blocking, iGPU</td><td>osworld-real</td><td>6</td><td class="n">16</td><td class="n">4050</td><td class="n">3.96</td><td class="n">612</td><td class="n">27776</td><td class="n">6.858</td><td class="n">23.5</td></tr><tr><td>blocking, NPU</td><td>osworld-real</td><td>6</td><td class="n">16</td><td class="n">4050</td><td class="n">3.91</td><td class="n">620</td><td class="n">26398</td><td class="n">6.518</td><td class="n">22.1</td></tr><tr><td>iGPU only</td><td>osworld-real</td><td>6</td><td class="n">16</td><td class="n">4050</td><td class="n">4.48</td><td class="n">657</td><td class="n">25094</td><td class="n">6.196</td><td class="n">23.6</td></tr><tr><td>Agent.xpu scheduler (NPU+iGPU)</td><td>osworld-real</td><td>6</td><td class="n">16</td><td class="n">4050</td><td class="n">2.83</td><td class="n">1235</td><td class="n">55451</td><td class="n">13.692</td><td class="n">37.4</td></tr></tbody></table>
+
+<h2>3 &middot; Do the paper's results survive?</h2>
+<table><thead><tr><th>claim from Agent.xpu</th><th>baseline</th><th>workload</th><th>req/min</th><th>measured here</th><th>verdict</th></tr></thead><tbody><tr><td>proactive throughput 1.2-4.9x vs baseline</td><td>gpu-proact</td><td>agent-plan</td><td>20</td><td class="n">1.14&times;</td><td class="n"><span style="color:#d6455d">does not reproduce</span></td></tr><tr><td>26.8% lower energy than the iGPU baseline</td><td>gpu-proact</td><td>agent-plan</td><td>20</td><td class="n">-60.9%</td><td class="n"><span style="color:#d6455d">does not reproduce</span></td></tr><tr><td>proactive throughput 1.2-4.9x vs baseline</td><td>block-proact-npu</td><td>agent-plan</td><td>20</td><td class="n">1.64&times;</td><td class="n"><span style="color:#3fb950">reproduces</span></td></tr><tr><td>26.8% lower energy than the iGPU baseline</td><td>block-proact-npu</td><td>agent-plan</td><td>20</td><td class="n">-21.4%</td><td class="n"><span style="color:#d6455d">does not reproduce</span></td></tr><tr><td>proactive throughput 1.2-4.9x vs baseline</td><td>block-proact-gpu</td><td>agent-plan</td><td>20</td><td class="n">1.52&times;</td><td class="n"><span style="color:#3fb950">reproduces</span></td></tr><tr><td>26.8% lower energy than the iGPU baseline</td><td>block-proact-gpu</td><td>agent-plan</td><td>20</td><td class="n">-25.3%</td><td class="n"><span style="color:#d6455d">does not reproduce</span></td></tr><tr><td>proactive throughput 1.2-4.9x vs baseline</td><td>gpu-proact</td><td>agent-plan</td><td>6</td><td class="n">0.77&times;</td><td class="n"><span style="color:#d6455d">does not reproduce</span></td></tr><tr><td>26.8% lower energy than the iGPU baseline</td><td>gpu-proact</td><td>agent-plan</td><td>6</td><td class="n">-87.4%</td><td class="n"><span style="color:#d6455d">does not reproduce</span></td></tr><tr><td>proactive throughput 1.2-4.9x vs baseline</td><td>block-proact-npu</td><td>agent-plan</td><td>6</td><td class="n">1.25&times;</td><td class="n"><span style="color:#3fb950">reproduces</span></td></tr><tr><td>26.8% lower energy than the iGPU baseline</td><td>block-proact-npu</td><td>agent-plan</td><td>6</td><td class="n">-37.0%</td><td class="n"><span style="color:#d6455d">does not reproduce</span></td></tr><tr><td>proactive throughput 1.2-4.9x vs baseline</td><td>block-proact-gpu</td><td>agent-plan</td><td>6</td><td class="n">1.15&times;</td><td class="n"><span style="color:#d6455d">does not reproduce</span></td></tr><tr><td>26.8% lower energy than the iGPU baseline</td><td>block-proact-gpu</td><td>agent-plan</td><td>6</td><td class="n">-39.9%</td><td class="n"><span style="color:#d6455d">does not reproduce</span></td></tr><tr><td>proactive throughput 1.2-4.9x vs baseline</td><td>gpu-proact</td><td>osworld-real</td><td>6</td><td class="n">0.63&times;</td><td class="n"><span style="color:#d6455d">does not reproduce</span></td></tr><tr><td>26.8% lower energy than the iGPU baseline</td><td>gpu-proact</td><td>osworld-real</td><td>6</td><td class="n">-121.0%</td><td class="n"><span style="color:#d6455d">does not reproduce</span></td></tr><tr><td>proactive throughput 1.2-4.9x vs baseline</td><td>block-proact-npu</td><td>osworld-real</td><td>6</td><td class="n">0.72&times;</td><td class="n"><span style="color:#d6455d">does not reproduce</span></td></tr><tr><td>26.8% lower energy than the iGPU baseline</td><td>block-proact-npu</td><td>osworld-real</td><td>6</td><td class="n">-110.1%</td><td class="n"><span style="color:#d6455d">does not reproduce</span></td></tr><tr><td>proactive throughput 1.2-4.9x vs baseline</td><td>block-proact-gpu</td><td>osworld-real</td><td>6</td><td class="n">0.72&times;</td><td class="n"><span style="color:#d6455d">does not reproduce</span></td></tr><tr><td>26.8% lower energy than the iGPU baseline</td><td>block-proact-gpu</td><td>osworld-real</td><td>6</td><td class="n">-99.6%</td><td class="n"><span style="color:#d6455d">does not reproduce</span></td></tr><tr><td>reactive latency reduced by &gt;=91%</td><td>gpu-mixed</td><td>&amp;mdash;</td><td>20</td><td class="n">&mdash;</td><td class="n"><span style="color:#d6455d">does not reproduce</span></td></tr><tr><td>reactive latency reduced by &gt;=91%</td><td>block-mixed-npu</td><td>&amp;mdash;</td><td>20</td><td class="n">+97.5%</td><td class="n"><span style="color:#3fb950">reproduces</span></td></tr><tr><td>reactive latency reduced by &gt;=91%</td><td>gpu-mixed</td><td>&amp;mdash;</td><td>6</td><td class="n">&mdash;</td><td class="n"><span style="color:#d6455d">does not reproduce</span></td></tr><tr><td>reactive latency reduced by &gt;=91%</td><td>block-mixed-npu</td><td>&amp;mdash;</td><td>6</td><td class="n">+91.1%</td><td class="n"><span style="color:#3fb950">reproduces</span></td></tr></tbody></table>
+
+<h2>Caveats</h2>
+<p class="src">
+Built against OpenVINO 2025.2, the version the repo targets; on 2026.0 the GPU plugin
+dies in <code>clFinish</code> with <code>CL_OUT_OF_RESOURCES</code>. Independently,
+<b>iGPU prefill is numerically wrong on this Xe3 iGPU</b> &mdash; the identical graphs
+are correct on the NPU and CPU plugins, in both shape modes and on both OpenVINO
+versions &mdash; so arms whose prefill runs on the iGPU execute the right amount of
+arithmetic (their timing and energy are comparable) but their generated text is wrong.
+The paper's own traces are not distributed; workloads are the synthetic profile it
+describes plus a real 1139-call on-device agent trace recorded on this machine, with
+prompts capped at the engine's 4096-token context.
+</p>
+</section>
+
 </div>
 <script>
 (function(){
@@ -433,6 +505,6 @@ accounting and W8A16 convention are the paper's.
     t.addEventListener('click', function(){ show(t.getAttribute('aria-controls')); });
   });
   var h = (location.hash || '').replace('#','');
-  if (h === 'motiv' || h === 'measure' || h === 'xpu') show(h);
+  if (['motiv','measure','xpu','llmxpu'].indexOf(h) >= 0) show(h);
 })();
 </script>
