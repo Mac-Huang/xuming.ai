@@ -41,6 +41,18 @@ color:var(--mut);font:inherit;font-size:14.5px;padding:9px 14px;cursor:pointer;m
 .note{background:#12161d;border:1px solid var(--bd);border-radius:11px;padding:13px 18px;
 margin:18px 0;font-size:14.5px;color:#cbd5e1}
 .note b{color:#fff}
+.live{background:#10151c;border:1px solid var(--bd);border-radius:12px;padding:16px;margin:12px 0 28px}
+.live-head{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:12px}
+.live-state{font-weight:700}.live-updated{color:var(--mut);font-size:12.5px;margin-left:auto}
+.pulse{width:9px;height:9px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 0 rgba(189,133,0,.5);animation:pulse 2s infinite}
+.pulse.complete{background:#3fb950;animation:none}.pulse.failed{background:var(--red);animation:none}
+@keyframes pulse{70%{box-shadow:0 0 0 8px rgba(189,133,0,0)}100%{box-shadow:0 0 0 0 rgba(189,133,0,0)}}
+.meter{height:7px;background:#242c37;border-radius:9px;overflow:hidden;margin:8px 0 16px}
+.meter span{display:block;height:100%;background:linear-gradient(90deg,var(--gold),#f0c14b);transition:width .4s}
+.live figure{padding:10px;margin-top:14px}.live figure svg{min-width:700px}
+.live-error{color:#ff7b8d}.live-pending{color:var(--mut)}
+.legend{display:flex;gap:15px;flex-wrap:wrap;color:var(--mut);font-size:12px;margin:2px 4px 8px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px}
 </style>
 <div class="wrap">
 <a class="back" href="../research.html">&larr; research</a>
@@ -200,6 +212,44 @@ during decode instead</b> &mdash; and the compile finishes with 20 minutes
 to spare.
 </div>
 
+<h2 id="live">Full 1K&rarr;8K campaign &middot; live</h2>
+<div class="live" id="jit-live" aria-live="polite">
+<div class="live-head"><span class="pulse" id="live-pulse"></span>
+<span class="live-state" id="live-state">Loading run status&hellip;</span>
+<span class="live-updated" id="live-updated"></span></div>
+<div class="meter" aria-hidden="true"><span id="live-meter" style="width:0"></span></div>
+<div class="kpis">
+<div class="kpi"><div class="n" id="live-progress">&mdash;</div><div class="l">campaign progress</div></div>
+<div class="kpi"><div class="n" id="live-current">&mdash;</div><div class="l">current arm and pair</div></div>
+<div class="kpi"><div class="n" id="live-context">&mdash;</div><div class="l">current context</div></div>
+<div class="kpi"><div class="n" id="live-pairs">0 / 5</div><div class="l">validated I1/I2 pairs</div></div>
+</div>
+<div class="legend"><span><i style="background:#6b4c05"></i>whole-model compile</span>
+<span><i style="background:#f0c14b"></i>per-window compile</span>
+<span><i style="background:#3b8ef5"></i>decode</span>
+<span><i style="background:#d6455d"></i>capacity switch</span></div>
+<figure><svg id="live-timeline" viewBox="0 0 940 210" width="100%" role="img"
+aria-label="Live compile and decode timeline for the latest I1 and I2 pair"></svg>
+<figcaption id="live-timeline-caption">The latest pair, updated from append-only native
+compile markers and token rows. I1 builds 1K, 2K, 4K and 8K before decode; I2 launches
+each successor one capacity ahead during decode.</figcaption></figure>
+
+<div class="kpis" id="live-outcomes">
+<div class="kpi"><div class="n" id="live-latency">&mdash;</div><div class="l">compile / first-token latency saved</div></div>
+<div class="kpi"><div class="n" id="live-e2e">&mdash;</div><div class="l">end-to-end time shortened</div></div>
+<div class="kpi"><div class="n" id="live-overhead">&mdash;</div><div class="l">decode overhead paid</div></div>
+</div>
+<figure><svg id="live-memory" viewBox="0 0 940 250" width="100%" role="img"
+aria-label="Average process memory for B0, B1, I1 and I2"></svg>
+<figcaption id="live-memory-caption">Time-weighted mean process RSS over the common
+128&rarr;8192 trajectory. B0/B1 are refreshed reference runs; I1/I2 are means across the
+completed counterbalanced pairs. Bars appear as arms finish.</figcaption></figure>
+<p class="src" id="live-scope">Five counterbalanced I1/I2 pairs, followed by refreshed
+B0 and B1 references; Qwen2.5-3B INT8, BEST_PERF, cold UMD cache, capacities
+1024&rarr;2048&rarr;4096&rarr;8192. Status refreshes automatically.</p>
+<p class="live-error" id="live-error" hidden></p>
+</div>
+
 <h2>The three arms</h2>
 <table>
 <thead><tr><th>Arm</th><th>What it does</th><th>Compile wall</th><th>Decode</th></tr></thead>
@@ -229,7 +279,7 @@ compile: <b>3,503 s against
 651 s</b>, all of it before the first
 token. That is the number I2 attacks.</p>
 
-<h2>I2 one-ahead JIT &mdash; compile during decode</h2>
+<h2>I2 one-ahead JIT &mdash; 1K&rarr;2K sanity check</h2>
 <p><b>I2 is I1 with the compiles rescheduled.</b> Both arms run copy-on-grow; they
 differ only in <code>OPENVINO_NPUW_JIT_MODE</code>:</p>
 <table>
@@ -491,6 +541,134 @@ prompts capped at the engine's 4096-token context.
 
 </div>
 <script>
+(function(){
+  var url = 'https://raw.githubusercontent.com/Mac-Huang/xuming.ai/live-npuw-jit-8k/demos/data/npuw-pyramid-jit-live.json';
+  var ns = 'http://www.w3.org/2000/svg';
+  var colors = {B0:'#d6455d',B1:'#3b8ef5',I1:'#bd8500',I2:'#f0c14b'};
+  function el(id){ return document.getElementById(id); }
+  function svg(tag, attrs, text){
+    var node = document.createElementNS(ns, tag);
+    Object.keys(attrs || {}).forEach(function(k){ node.setAttribute(k, attrs[k]); });
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+  function add(parent, tag, attrs, text){ var node=svg(tag,attrs,text); parent.appendChild(node); return node; }
+  function title(node, text){ node.appendChild(svg('title',{},text)); }
+  function num(value){ return typeof value === 'number' && isFinite(value) ? value : null; }
+  function seconds(value){
+    if (num(value) === null) return '\u2014';
+    var sign=value < 0 ? '-' : ''; var v=Math.abs(value);
+    if (v >= 3600) return sign+(v/3600).toFixed(2)+' h';
+    if (v >= 120) return sign+(v/60).toFixed(1)+' min';
+    return sign+v.toFixed(v < 10 ? 2 : 1)+' s';
+  }
+  function gib(value){ return num(value) === null ? '\u2014' : (value/1073741824).toFixed(2)+' GiB'; }
+  function text(parent,x,y,value,attrs){
+    attrs=attrs||{}; attrs.x=x; attrs.y=y; attrs.fill=attrs.fill||'#9da7b3';
+    attrs['font-size']=attrs['font-size']||'11'; return add(parent,'text',attrs,value);
+  }
+  function timeline(data){
+    var root=el('live-timeline'); while(root.firstChild) root.removeChild(root.firstChild);
+    var pair=data.latest_pair;
+    var arms=(data.arms||[]).filter(function(a){return a.pair===pair&&(a.label==='I1'||a.label==='I2');});
+    arms.sort(function(a,b){return a.label.localeCompare(b.label);});
+    if (!arms.length){
+      text(root,470,80,'Waiting for the first I1/I2 arm to start',{fill:'#9da7b3','text-anchor':'middle','font-size':'13'});
+      root.setAttribute('viewBox','0 0 940 120'); return;
+    }
+    var maxTime=0;
+    arms.forEach(function(a){
+      var t=a.timeline||{};
+      maxTime=Math.max(maxTime,num(t.decode_end_offset_s)||0,num(t.decode_start_offset_s)||0,num((a.metrics||{}).compile_model_wall_s)||0);
+      (t.compiles||[]).forEach(function(c){maxTime=Math.max(maxTime,num(c.ready_offset_s)||0,num(c.start_offset_s)||0);});
+    });
+    maxTime=Math.max(maxTime,60); var x0=132,x1=922;
+    function sx(v){return x0+(Math.max(0,v)/maxTime)*(x1-x0);}
+    arms.forEach(function(a,index){
+      var base=18+index*82,t=a.timeline||{};
+      text(root,0,base+4,a.label+' '+(a.label==='I1'?'eager':'one-ahead')+' \u00b7 pair '+(a.pair+1),{fill:'#e6edf3','font-size':'12.5','font-weight':'600'});
+      text(root,122,base+27,'compile',{'text-anchor':'end'}); text(root,122,base+56,'decode',{'text-anchor':'end'});
+      add(root,'rect',{x:x0,y:base+12,width:x1-x0,height:19,rx:3,fill:'#11161d'});
+      add(root,'rect',{x:x0,y:base+41,width:x1-x0,height:19,rx:3,fill:'#11161d'});
+      var whole=num((a.metrics||{}).compile_model_wall_s);
+      if (whole!==null){
+        var block=add(root,'rect',{x:x0,y:base+12,width:Math.max(2,sx(whole)-x0),height:19,rx:3,fill:'#6b4c05'});
+        title(block,'compile_model: '+seconds(whole));
+      }
+      (t.compiles||[]).forEach(function(c){
+        var start=num(c.start_offset_s),ready=num(c.ready_offset_s);
+        if(start===null)return; var stop=ready===null?Math.min(maxTime,start+2):ready;
+        var bar=add(root,'rect',{x:sx(start),y:base+15,width:Math.max(2,sx(stop)-sx(start)),height:13,rx:2,
+          fill:c.state==='ready'?'#f0c14b':'#8d6b19',stroke:'#2a1d00','stroke-width':1});
+        title(bar,(c.capacity/1024)+'K '+c.state+(num(c.duration_s)!==null?' \u00b7 '+seconds(c.duration_s):''));
+      });
+      var ds=num(t.decode_start_offset_s),de=num(t.decode_end_offset_s);
+      if(ds!==null){
+        var stop=de===null?maxTime:de;
+        var decode=add(root,'rect',{x:sx(ds),y:base+41,width:Math.max(2,sx(stop)-sx(ds)),height:19,rx:3,fill:'#3b8ef5'});
+        title(decode,(a.decoded_tokens||0).toLocaleString()+' / '+(a.expected_decoded_tokens||0).toLocaleString()+' tokens');
+      }
+      (t.boundaries||[]).forEach(function(b){
+        var stamp=num(b.infer_start_monotonic_ns),origin=num(t.origin_monotonic_ns);
+        if(stamp===null||origin===null)return; var x=sx((stamp-origin)/1e9);
+        add(root,'line',{x1:x,y1:base+39,x2:x,y2:base+63,stroke:'#d6455d','stroke-width':2});
+      });
+      text(root,x1,base+27,(a.phase||a.state),{fill:'#e6edf3','text-anchor':'end'});
+    });
+    var axis=18+arms.length*82;
+    add(root,'line',{x1:x0,y1:axis,x2:x1,y2:axis,stroke:'#30363d'});
+    for(var i=0;i<=5;i++){
+      var v=maxTime*i/5,x=sx(v); add(root,'line',{x1:x,y1:axis,x2:x,y2:axis+4,stroke:'#30363d'});
+      text(root,x,axis+18,seconds(v),{'text-anchor':'middle','font-size':'10'});
+    }
+    root.setAttribute('viewBox','0 0 940 '+(axis+28));
+  }
+  function memory(data){
+    var root=el('live-memory'); while(root.firstChild) root.removeChild(root.firstChild);
+    var rows=((data.memory_comparison||{}).process_rss_time_weighted_mean_bytes)||{};
+    var labels=['B0','B1','I1','I2'], values=labels.map(function(k){return num((rows[k]||{}).mean_bytes);});
+    var maximum=Math.max.apply(null,values.filter(function(v){return v!==null;}).concat([1]));
+    labels.forEach(function(label,index){
+      var y=28+index*48,value=values[index],runs=(rows[label]||{}).runs||0;
+      text(root,45,y+16,label,{fill:'#e6edf3','text-anchor':'end','font-size':'12.5','font-weight':'600'});
+      add(root,'rect',{x:58,y:y,width:730,height:22,rx:4,fill:'#11161d'});
+      if(value!==null){
+        var bar=add(root,'rect',{x:58,y:y,width:730*value/maximum,height:22,rx:4,fill:colors[label]});
+        title(bar,label+': '+gib(value)+' across '+runs+' run'+(runs===1?'':'s'));
+        text(root,800,y+16,gib(value)+' \u00b7 n='+runs,{fill:'#e6edf3','font-size':'11.5'});
+      }else text(root,70,y+16,'pending',{fill:'#68717d','font-size':'11.5'});
+    });
+  }
+  function render(data){
+    var state=data.state||'pending',pulse=el('live-pulse'); pulse.className='pulse '+(state==='complete'?'complete':state==='failed'?'failed':'');
+    var current=data.current_arm;
+    el('live-state').textContent=state==='complete'?'Campaign complete':state==='failed'?'Campaign stopped on a failed arm':'Campaign running';
+    el('live-updated').textContent='data '+new Date(data.generated_at).toLocaleString();
+    var decoded=(data.arms||[]).reduce(function(s,a){return s+(a.decoded_tokens||0);},0);
+    var expected=(data.arms||[]).reduce(function(s,a){return s+(a.expected_decoded_tokens||0);},0);
+    var progress=expected?decoded/expected:0;
+    el('live-meter').style.width=(100*progress).toFixed(2)+'%';
+    el('live-progress').textContent=(100*progress).toFixed(1)+'%';
+    el('live-current').textContent=current?current.label+' \u00b7 pair '+((current.pair||0)+1):state==='complete'?'done':'between arms';
+    el('live-context').textContent=current&&current.context_after?current.context_after.toLocaleString()+' / 8,192':'\u2014';
+    el('live-pairs').textContent=(data.completed_pair_reports||0)+' / 5';
+    var p=data.partial_results||{},compile=p.compile_model_wall_s||{},e2e=p.protocol_critical_path_s||{},decode=p.decode_infer_s||{};
+    el('live-latency').textContent=num(compile.i2_minus_i1_mean_s)===null?'\u2014':seconds(-compile.i2_minus_i1_mean_s);
+    el('live-e2e').textContent=num(e2e.i2_minus_i1_mean_s)===null?'\u2014':seconds(-e2e.i2_minus_i1_mean_s);
+    el('live-overhead').textContent=num(decode.i2_minus_i1_mean_s)===null?'\u2014':seconds(decode.i2_minus_i1_mean_s);
+    el('live-error').hidden=state!=='failed';
+    el('live-error').textContent=state==='failed'?'The immutable campaign stopped; the last valid artifacts remain available for diagnosis.':'';
+    timeline(data); memory(data);
+  }
+  function load(){
+    fetch(url+'?t='+Date.now(),{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error('status '+r.status);return r.json();})
+      .then(render).catch(function(){
+        el('live-state').textContent='Live data feed is starting';
+        el('live-updated').textContent='the measurement page below remains the completed 1K\u21922K sanity check';
+      });
+  }
+  load(); setInterval(load,60000);
+})();
 (function(){
   var tabs = [].slice.call(document.querySelectorAll('.tabs button'));
   function show(id){
