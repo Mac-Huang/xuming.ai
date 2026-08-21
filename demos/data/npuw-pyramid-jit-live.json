@@ -2,156 +2,39 @@
   "aggregate": null,
   "arms": [
     {
-      "band": null,
-      "context_after": null,
-      "decoded_tokens": 0,
+      "context_after": 8192,
+      "decoded_tokens": 8064,
       "expected_decoded_tokens": 8064,
-      "key": "direct",
       "label": "B0",
       "memory": {
         "npu_alloc": {
-          "latest_bytes": null,
-          "max_bytes": null,
-          "time_weighted_mean_bytes": null
+          "latest_bytes": 1540615472.0,
+          "max_bytes": 1540615472.0,
+          "time_weighted_mean_bytes": 1137460792.0952108
         },
         "process_rss": {
-          "latest_bytes": null,
-          "max_bytes": null,
-          "time_weighted_mean_bytes": null
+          "latest_bytes": 1772589056.0,
+          "max_bytes": 1772589056.0,
+          "time_weighted_mean_bytes": 1588053461.4686341
         },
-        "samples": 0
+        "samples": 131
       },
       "metrics": {
-        "compile_model_wall_s": null,
-        "decode_infer_s": null,
-        "decode_wall_s": null,
-        "protocol_critical_path_s": null,
-        "tokens_per_s": null
+        "compile_model_wall_s": 65.268861748,
+        "decode_infer_s": 155.825159643,
+        "decode_wall_s": 159.528727583,
+        "protocol_critical_path_s": 225.379556545,
+        "tokens_per_s": 51.750307963584696
       },
       "pair": null,
-      "phase": "setup",
-      "position": 0,
-      "progress_fraction": 0.0,
-      "proof": {
-        "boundary_logits_complete": null,
-        "deadline_misses": null,
-        "deadlines_met": null,
-        "ok": null,
-        "waited_capacities": null
+      "phase": "complete",
+      "progress_fraction": 1.0,
+      "quality": {
+        "all_deadlines_met": null,
+        "boundary_logits_complete": true,
+        "ok": true
       },
-      "state": "pending",
-      "timeline": {
-        "boundaries": [],
-        "compiles": [
-          {
-            "capacity": 1024,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          },
-          {
-            "capacity": 2048,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          },
-          {
-            "capacity": 4096,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          },
-          {
-            "capacity": 8192,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          }
-        ],
-        "decode_end_offset_s": null,
-        "decode_start_offset_s": null,
-        "origin_monotonic_ns": null
-      }
-    },
-    {
-      "band": null,
-      "context_after": null,
-      "decoded_tokens": 0,
-      "expected_decoded_tokens": 8064,
-      "key": "pyramid",
-      "label": "B1",
-      "memory": {
-        "npu_alloc": {
-          "latest_bytes": null,
-          "max_bytes": null,
-          "time_weighted_mean_bytes": null
-        },
-        "process_rss": {
-          "latest_bytes": null,
-          "max_bytes": null,
-          "time_weighted_mean_bytes": null
-        },
-        "samples": 0
-      },
-      "metrics": {
-        "compile_model_wall_s": null,
-        "decode_infer_s": null,
-        "decode_wall_s": null,
-        "protocol_critical_path_s": null,
-        "tokens_per_s": null
-      },
-      "pair": null,
-      "phase": "setup",
-      "position": 1,
-      "progress_fraction": 0.0,
-      "proof": {
-        "boundary_logits_complete": null,
-        "deadline_misses": null,
-        "deadlines_met": null,
-        "ok": null,
-        "waited_capacities": null
-      },
-      "state": "pending",
-      "timeline": {
-        "boundaries": [],
-        "compiles": [
-          {
-            "capacity": 1024,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          },
-          {
-            "capacity": 2048,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          },
-          {
-            "capacity": 4096,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          },
-          {
-            "capacity": 8192,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          }
-        ],
-        "decode_end_offset_s": null,
-        "decode_start_offset_s": null,
-        "origin_monotonic_ns": null
-      }
+      "state": "complete"
     },
     {
       "band": "4096-8192",
@@ -190,6 +73,11 @@
         "deadlines_met": true,
         "ok": true,
         "waited_capacities": []
+      },
+      "quality": {
+        "all_deadlines_met": null,
+        "boundary_logits_complete": true,
+        "ok": true
       },
       "state": "complete",
       "timeline": {
@@ -249,46 +137,70 @@
       }
     },
     {
-      "band": "0-1024",
-      "context_after": 607,
-      "decoded_tokens": 479,
+      "band": "4096-8192",
+      "context_after": 8192,
+      "decoded_tokens": 8064,
       "expected_decoded_tokens": 8064,
       "key": "one_ahead_jit",
       "label": "I2",
       "memory": {
         "npu_alloc": {
-          "latest_bytes": 1538242672.0,
-          "max_bytes": 1538242672.0,
-          "time_weighted_mean_bytes": 666507471.3121594
+          "latest_bytes": 1693770472.0,
+          "max_bytes": 1693770472.0,
+          "time_weighted_mean_bytes": 1174882636.1609864
         },
         "process_rss": {
-          "latest_bytes": 1973682176.0,
-          "max_bytes": 1973682176.0,
-          "time_weighted_mean_bytes": 1404602588.6849482
+          "latest_bytes": 2296958976.0,
+          "max_bytes": 2296958976.0,
+          "time_weighted_mean_bytes": 1841318340.1265788
         },
-        "samples": 7
+        "samples": 68
       },
       "metrics": {
         "compile_model_wall_s": 65.501335193,
-        "decode_infer_s": null,
-        "decode_wall_s": null,
-        "protocol_critical_path_s": null,
-        "tokens_per_s": null
+        "decode_infer_s": 142.540816634,
+        "decode_wall_s": 146.772048491,
+        "protocol_critical_path_s": 212.83618146,
+        "tokens_per_s": 56.5732692601714
       },
       "pair": 0,
-      "phase": "decode",
+      "phase": "complete",
       "position": 1,
-      "progress_fraction": 0.059399801587301584,
+      "progress_fraction": 1.0,
       "proof": {
-        "boundary_logits_complete": null,
-        "deadline_misses": null,
-        "deadlines_met": null,
-        "ok": null,
-        "waited_capacities": null
+        "boundary_logits_complete": true,
+        "deadline_misses": [],
+        "deadlines_met": true,
+        "ok": true,
+        "waited_capacities": []
       },
-      "state": "running",
+      "quality": {
+        "all_deadlines_met": true,
+        "boundary_logits_complete": true,
+        "ok": true
+      },
+      "state": "complete",
       "timeline": {
-        "boundaries": [],
+        "boundaries": [
+          {
+            "context_after": 1024,
+            "infer_end_monotonic_ns": 7763558369038749,
+            "infer_start_monotonic_ns": 7763558302147074,
+            "latency_ms": 66.891675
+          },
+          {
+            "context_after": 2048,
+            "infer_end_monotonic_ns": 7763575040457148,
+            "infer_start_monotonic_ns": 7763574968713120,
+            "latency_ms": 71.744028
+          },
+          {
+            "context_after": 4096,
+            "infer_end_monotonic_ns": 7763609574310886,
+            "infer_start_monotonic_ns": 7763609487189870,
+            "latency_ms": 87.121016
+          }
+        ],
         "compiles": [
           {
             "capacity": 1024,
@@ -306,635 +218,27 @@
           },
           {
             "capacity": 4096,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
+            "duration_s": 6.93596,
+            "ready_offset_s": 146.945667757,
+            "start_offset_s": 140.009707689,
+            "state": "ready"
           },
           {
             "capacity": 8192,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
+            "duration_s": 7.113776,
+            "ready_offset_s": 163.795709356,
+            "start_offset_s": 156.681932837,
+            "state": "ready"
           }
         ],
-        "decode_end_offset_s": 133.182761315,
+        "decode_end_offset_s": 272.295810629,
         "decode_start_offset_s": 125.567600328,
         "origin_monotonic_ns": 7763418329332172
       }
-    },
-    {
-      "band": null,
-      "context_after": null,
-      "decoded_tokens": 0,
-      "expected_decoded_tokens": 8064,
-      "key": "precompiled",
-      "label": "I1",
-      "memory": {
-        "npu_alloc": {
-          "latest_bytes": null,
-          "max_bytes": null,
-          "time_weighted_mean_bytes": null
-        },
-        "process_rss": {
-          "latest_bytes": null,
-          "max_bytes": null,
-          "time_weighted_mean_bytes": null
-        },
-        "samples": 0
-      },
-      "metrics": {
-        "compile_model_wall_s": null,
-        "decode_infer_s": null,
-        "decode_wall_s": null,
-        "protocol_critical_path_s": null,
-        "tokens_per_s": null
-      },
-      "pair": 1,
-      "phase": "setup",
-      "position": null,
-      "progress_fraction": 0.0,
-      "proof": {
-        "boundary_logits_complete": null,
-        "deadline_misses": null,
-        "deadlines_met": null,
-        "ok": null,
-        "waited_capacities": null
-      },
-      "state": "pending",
-      "timeline": {
-        "boundaries": [],
-        "compiles": [
-          {
-            "capacity": 1024,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          },
-          {
-            "capacity": 2048,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          },
-          {
-            "capacity": 4096,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          },
-          {
-            "capacity": 8192,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          }
-        ],
-        "decode_end_offset_s": null,
-        "decode_start_offset_s": null,
-        "origin_monotonic_ns": null
-      }
-    },
-    {
-      "band": null,
-      "context_after": null,
-      "decoded_tokens": 0,
-      "expected_decoded_tokens": 8064,
-      "key": "one_ahead_jit",
-      "label": "I2",
-      "memory": {
-        "npu_alloc": {
-          "latest_bytes": null,
-          "max_bytes": null,
-          "time_weighted_mean_bytes": null
-        },
-        "process_rss": {
-          "latest_bytes": null,
-          "max_bytes": null,
-          "time_weighted_mean_bytes": null
-        },
-        "samples": 0
-      },
-      "metrics": {
-        "compile_model_wall_s": null,
-        "decode_infer_s": null,
-        "decode_wall_s": null,
-        "protocol_critical_path_s": null,
-        "tokens_per_s": null
-      },
-      "pair": 1,
-      "phase": "setup",
-      "position": null,
-      "progress_fraction": 0.0,
-      "proof": {
-        "boundary_logits_complete": null,
-        "deadline_misses": null,
-        "deadlines_met": null,
-        "ok": null,
-        "waited_capacities": null
-      },
-      "state": "pending",
-      "timeline": {
-        "boundaries": [],
-        "compiles": [
-          {
-            "capacity": 1024,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          },
-          {
-            "capacity": 2048,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          },
-          {
-            "capacity": 4096,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          },
-          {
-            "capacity": 8192,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          }
-        ],
-        "decode_end_offset_s": null,
-        "decode_start_offset_s": null,
-        "origin_monotonic_ns": null
-      }
-    },
-    {
-      "band": null,
-      "context_after": null,
-      "decoded_tokens": 0,
-      "expected_decoded_tokens": 8064,
-      "key": "precompiled",
-      "label": "I1",
-      "memory": {
-        "npu_alloc": {
-          "latest_bytes": null,
-          "max_bytes": null,
-          "time_weighted_mean_bytes": null
-        },
-        "process_rss": {
-          "latest_bytes": null,
-          "max_bytes": null,
-          "time_weighted_mean_bytes": null
-        },
-        "samples": 0
-      },
-      "metrics": {
-        "compile_model_wall_s": null,
-        "decode_infer_s": null,
-        "decode_wall_s": null,
-        "protocol_critical_path_s": null,
-        "tokens_per_s": null
-      },
-      "pair": 2,
-      "phase": "setup",
-      "position": null,
-      "progress_fraction": 0.0,
-      "proof": {
-        "boundary_logits_complete": null,
-        "deadline_misses": null,
-        "deadlines_met": null,
-        "ok": null,
-        "waited_capacities": null
-      },
-      "state": "pending",
-      "timeline": {
-        "boundaries": [],
-        "compiles": [
-          {
-            "capacity": 1024,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          },
-          {
-            "capacity": 2048,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          },
-          {
-            "capacity": 4096,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          },
-          {
-            "capacity": 8192,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          }
-        ],
-        "decode_end_offset_s": null,
-        "decode_start_offset_s": null,
-        "origin_monotonic_ns": null
-      }
-    },
-    {
-      "band": null,
-      "context_after": null,
-      "decoded_tokens": 0,
-      "expected_decoded_tokens": 8064,
-      "key": "one_ahead_jit",
-      "label": "I2",
-      "memory": {
-        "npu_alloc": {
-          "latest_bytes": null,
-          "max_bytes": null,
-          "time_weighted_mean_bytes": null
-        },
-        "process_rss": {
-          "latest_bytes": null,
-          "max_bytes": null,
-          "time_weighted_mean_bytes": null
-        },
-        "samples": 0
-      },
-      "metrics": {
-        "compile_model_wall_s": null,
-        "decode_infer_s": null,
-        "decode_wall_s": null,
-        "protocol_critical_path_s": null,
-        "tokens_per_s": null
-      },
-      "pair": 2,
-      "phase": "setup",
-      "position": null,
-      "progress_fraction": 0.0,
-      "proof": {
-        "boundary_logits_complete": null,
-        "deadline_misses": null,
-        "deadlines_met": null,
-        "ok": null,
-        "waited_capacities": null
-      },
-      "state": "pending",
-      "timeline": {
-        "boundaries": [],
-        "compiles": [
-          {
-            "capacity": 1024,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          },
-          {
-            "capacity": 2048,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          },
-          {
-            "capacity": 4096,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          },
-          {
-            "capacity": 8192,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          }
-        ],
-        "decode_end_offset_s": null,
-        "decode_start_offset_s": null,
-        "origin_monotonic_ns": null
-      }
-    },
-    {
-      "band": null,
-      "context_after": null,
-      "decoded_tokens": 0,
-      "expected_decoded_tokens": 8064,
-      "key": "precompiled",
-      "label": "I1",
-      "memory": {
-        "npu_alloc": {
-          "latest_bytes": null,
-          "max_bytes": null,
-          "time_weighted_mean_bytes": null
-        },
-        "process_rss": {
-          "latest_bytes": null,
-          "max_bytes": null,
-          "time_weighted_mean_bytes": null
-        },
-        "samples": 0
-      },
-      "metrics": {
-        "compile_model_wall_s": null,
-        "decode_infer_s": null,
-        "decode_wall_s": null,
-        "protocol_critical_path_s": null,
-        "tokens_per_s": null
-      },
-      "pair": 3,
-      "phase": "setup",
-      "position": null,
-      "progress_fraction": 0.0,
-      "proof": {
-        "boundary_logits_complete": null,
-        "deadline_misses": null,
-        "deadlines_met": null,
-        "ok": null,
-        "waited_capacities": null
-      },
-      "state": "pending",
-      "timeline": {
-        "boundaries": [],
-        "compiles": [
-          {
-            "capacity": 1024,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          },
-          {
-            "capacity": 2048,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          },
-          {
-            "capacity": 4096,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          },
-          {
-            "capacity": 8192,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          }
-        ],
-        "decode_end_offset_s": null,
-        "decode_start_offset_s": null,
-        "origin_monotonic_ns": null
-      }
-    },
-    {
-      "band": null,
-      "context_after": null,
-      "decoded_tokens": 0,
-      "expected_decoded_tokens": 8064,
-      "key": "one_ahead_jit",
-      "label": "I2",
-      "memory": {
-        "npu_alloc": {
-          "latest_bytes": null,
-          "max_bytes": null,
-          "time_weighted_mean_bytes": null
-        },
-        "process_rss": {
-          "latest_bytes": null,
-          "max_bytes": null,
-          "time_weighted_mean_bytes": null
-        },
-        "samples": 0
-      },
-      "metrics": {
-        "compile_model_wall_s": null,
-        "decode_infer_s": null,
-        "decode_wall_s": null,
-        "protocol_critical_path_s": null,
-        "tokens_per_s": null
-      },
-      "pair": 3,
-      "phase": "setup",
-      "position": null,
-      "progress_fraction": 0.0,
-      "proof": {
-        "boundary_logits_complete": null,
-        "deadline_misses": null,
-        "deadlines_met": null,
-        "ok": null,
-        "waited_capacities": null
-      },
-      "state": "pending",
-      "timeline": {
-        "boundaries": [],
-        "compiles": [
-          {
-            "capacity": 1024,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          },
-          {
-            "capacity": 2048,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          },
-          {
-            "capacity": 4096,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          },
-          {
-            "capacity": 8192,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          }
-        ],
-        "decode_end_offset_s": null,
-        "decode_start_offset_s": null,
-        "origin_monotonic_ns": null
-      }
-    },
-    {
-      "band": null,
-      "context_after": null,
-      "decoded_tokens": 0,
-      "expected_decoded_tokens": 8064,
-      "key": "precompiled",
-      "label": "I1",
-      "memory": {
-        "npu_alloc": {
-          "latest_bytes": null,
-          "max_bytes": null,
-          "time_weighted_mean_bytes": null
-        },
-        "process_rss": {
-          "latest_bytes": null,
-          "max_bytes": null,
-          "time_weighted_mean_bytes": null
-        },
-        "samples": 0
-      },
-      "metrics": {
-        "compile_model_wall_s": null,
-        "decode_infer_s": null,
-        "decode_wall_s": null,
-        "protocol_critical_path_s": null,
-        "tokens_per_s": null
-      },
-      "pair": 4,
-      "phase": "setup",
-      "position": null,
-      "progress_fraction": 0.0,
-      "proof": {
-        "boundary_logits_complete": null,
-        "deadline_misses": null,
-        "deadlines_met": null,
-        "ok": null,
-        "waited_capacities": null
-      },
-      "state": "pending",
-      "timeline": {
-        "boundaries": [],
-        "compiles": [
-          {
-            "capacity": 1024,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          },
-          {
-            "capacity": 2048,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          },
-          {
-            "capacity": 4096,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          },
-          {
-            "capacity": 8192,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          }
-        ],
-        "decode_end_offset_s": null,
-        "decode_start_offset_s": null,
-        "origin_monotonic_ns": null
-      }
-    },
-    {
-      "band": null,
-      "context_after": null,
-      "decoded_tokens": 0,
-      "expected_decoded_tokens": 8064,
-      "key": "one_ahead_jit",
-      "label": "I2",
-      "memory": {
-        "npu_alloc": {
-          "latest_bytes": null,
-          "max_bytes": null,
-          "time_weighted_mean_bytes": null
-        },
-        "process_rss": {
-          "latest_bytes": null,
-          "max_bytes": null,
-          "time_weighted_mean_bytes": null
-        },
-        "samples": 0
-      },
-      "metrics": {
-        "compile_model_wall_s": null,
-        "decode_infer_s": null,
-        "decode_wall_s": null,
-        "protocol_critical_path_s": null,
-        "tokens_per_s": null
-      },
-      "pair": 4,
-      "phase": "setup",
-      "position": null,
-      "progress_fraction": 0.0,
-      "proof": {
-        "boundary_logits_complete": null,
-        "deadline_misses": null,
-        "deadlines_met": null,
-        "ok": null,
-        "waited_capacities": null
-      },
-      "state": "pending",
-      "timeline": {
-        "boundaries": [],
-        "compiles": [
-          {
-            "capacity": 1024,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          },
-          {
-            "capacity": 2048,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          },
-          {
-            "capacity": 4096,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          },
-          {
-            "capacity": 8192,
-            "duration_s": null,
-            "ready_offset_s": null,
-            "start_offset_s": null,
-            "state": "pending"
-          }
-        ],
-        "decode_end_offset_s": null,
-        "decode_start_offset_s": null,
-        "origin_monotonic_ns": null
-      }
     }
   ],
-  "arms_complete": 1,
-  "arms_planned": 12,
+  "arms_complete": 3,
+  "arms_planned": 4,
   "campaign_events": [
     {
       "event": "campaign_start",
@@ -971,97 +275,69 @@
     4096,
     8192
   ],
-  "completed_pair_reports": 0,
-  "current_arm": {
-    "band": "0-1024",
-    "context_after": 607,
-    "decoded_tokens": 479,
-    "expected_decoded_tokens": 8064,
-    "key": "one_ahead_jit",
-    "label": "I2",
-    "memory": {
-      "npu_alloc": {
-        "latest_bytes": 1538242672.0,
-        "max_bytes": 1538242672.0,
-        "time_weighted_mean_bytes": 666507471.3121594
-      },
-      "process_rss": {
-        "latest_bytes": 1973682176.0,
-        "max_bytes": 1973682176.0,
-        "time_weighted_mean_bytes": 1404602588.6849482
-      },
-      "samples": 7
+  "checkpoint_comparison": {
+    "compile_model_wall_s": {
+      "B0": 65.268861748,
+      "B1": null,
+      "I1": 84.069572736,
+      "I2": 65.501335193
     },
-    "metrics": {
-      "compile_model_wall_s": 65.501335193,
-      "decode_infer_s": null,
-      "decode_wall_s": null,
-      "protocol_critical_path_s": null,
-      "tokens_per_s": null
+    "decode_infer_s": {
+      "B0": 155.825159643,
+      "B1": null,
+      "I1": 143.221490682,
+      "I2": 142.540816634
     },
-    "pair": 0,
-    "phase": "decode",
-    "position": 1,
-    "progress_fraction": 0.059399801587301584,
-    "proof": {
-      "boundary_logits_complete": null,
-      "deadline_misses": null,
-      "deadlines_met": null,
-      "ok": null,
-      "waited_capacities": null
+    "decode_wall_s": {
+      "B0": 159.528727583,
+      "B1": null,
+      "I1": 147.357470573,
+      "I2": 146.772048491
     },
-    "state": "running",
-    "timeline": {
-      "boundaries": [],
-      "compiles": [
-        {
-          "capacity": 1024,
-          "duration_s": 64.964188,
-          "ready_offset_s": 64.964188804,
-          "start_offset_s": 0.0,
-          "state": "ready"
-        },
-        {
-          "capacity": 2048,
-          "duration_s": 6.780602,
-          "ready_offset_s": 132.348392899,
-          "start_offset_s": 125.567790441,
-          "state": "ready"
-        },
-        {
-          "capacity": 4096,
-          "duration_s": null,
-          "ready_offset_s": null,
-          "start_offset_s": null,
-          "state": "pending"
-        },
-        {
-          "capacity": 8192,
-          "duration_s": null,
-          "ready_offset_s": null,
-          "start_offset_s": null,
-          "state": "pending"
-        }
-      ],
-      "decode_end_offset_s": 133.182761315,
-      "decode_start_offset_s": 125.567600328,
-      "origin_monotonic_ns": 7763418329332172
+    "protocol_critical_path_s": {
+      "B0": 225.379556545,
+      "B1": null,
+      "I1": 231.993970971,
+      "I2": 212.83618146
     }
   },
+  "completed_pair_reports": 1,
+  "current_arm": null,
   "failure": null,
-  "generated_at": "2026-08-21T21:18:38.516240+00:00",
-  "latest_pair": 0,
-  "measurement_scope": {
-    "B0_B1": "one refreshed reference run each",
-    "I1_I2": "five counterbalanced paired runs",
-    "memory": "runner telemetry over each arm; RSS trapezoid, NPU allocation left-hold",
-    "trajectory": "128-token prompt through context 8192"
+  "generated_at": "2026-08-21T21:40:35.257714Z",
+  "i2_vs_i1": {
+    "compile_model_wall_s": {
+      "control_s": 84.069572736,
+      "difference_s": -18.568237542999995,
+      "percent_change": -22.086751411606457,
+      "treatment_s": 65.501335193
+    },
+    "decode_infer_s": {
+      "control_s": 143.221490682,
+      "difference_s": -0.680674047999986,
+      "percent_change": -0.47525971469694583,
+      "treatment_s": 142.540816634
+    },
+    "decode_wall_s": {
+      "control_s": 147.357470573,
+      "difference_s": -0.585422082000008,
+      "percent_change": -0.3972802191321501,
+      "treatment_s": 146.772048491
+    },
+    "protocol_critical_path_s": {
+      "control_s": 231.993970971,
+      "difference_s": -19.157789511000004,
+      "percent_change": -8.257882491866477,
+      "treatment_s": 212.83618146
+    }
   },
+  "latest_pair": 0,
+  "measurement_scope": "Qwen2.5-0.5B FP16, one full 1K-to-8K pair plus a fresh B0 reference; B1 pending",
   "memory_comparison": {
     "npu_alloc_time_weighted_mean_bytes": {
       "B0": {
-        "mean_bytes": null,
-        "runs": 0
+        "mean_bytes": 1137460792.0952108,
+        "runs": 1
       },
       "B1": {
         "mean_bytes": null,
@@ -1072,14 +348,14 @@
         "runs": 1
       },
       "I2": {
-        "mean_bytes": null,
-        "runs": 0
+        "mean_bytes": 1174882636.1609864,
+        "runs": 1
       }
     },
     "process_rss_time_weighted_mean_bytes": {
       "B0": {
-        "mean_bytes": null,
-        "runs": 0
+        "mean_bytes": 1588053461.4686341,
+        "runs": 1
       },
       "B1": {
         "mean_bytes": null,
@@ -1090,45 +366,57 @@
         "runs": 1
       },
       "I2": {
-        "mean_bytes": null,
-        "runs": 0
+        "mean_bytes": 1841318340.1265788,
+        "runs": 1
       }
     }
   },
-  "overall_progress_fraction": 0.08333333333333333,
-  "pairs_planned": 5,
+  "overall_progress_fraction": 0.75,
+  "pairs_planned": 1,
   "partial_results": {
     "compile_model_wall_s": {
-      "i1_mean_s": null,
-      "i2_mean_s": null,
-      "i2_minus_i1_mean_s": null,
-      "mean_percent_change": null,
-      "pairs": 0
+      "i1_mean_s": 84.069572736,
+      "i2_mean_s": 65.501335193,
+      "i2_minus_i1_mean_s": -18.568237542999995,
+      "mean_percent_change": -22.086751411606457,
+      "pairs": 1
     },
     "decode_infer_s": {
-      "i1_mean_s": null,
-      "i2_mean_s": null,
-      "i2_minus_i1_mean_s": null,
-      "mean_percent_change": null,
-      "pairs": 0
+      "i1_mean_s": 143.221490682,
+      "i2_mean_s": 142.540816634,
+      "i2_minus_i1_mean_s": -0.680674047999986,
+      "mean_percent_change": -0.4752597146969458,
+      "pairs": 1
     },
     "decode_wall_s": {
-      "i1_mean_s": null,
-      "i2_mean_s": null,
-      "i2_minus_i1_mean_s": null,
-      "mean_percent_change": null,
-      "pairs": 0
+      "i1_mean_s": 147.357470573,
+      "i2_mean_s": 146.772048491,
+      "i2_minus_i1_mean_s": -0.585422082000008,
+      "mean_percent_change": -0.3972802191321501,
+      "pairs": 1
     },
     "protocol_critical_path_s": {
-      "i1_mean_s": null,
-      "i2_mean_s": null,
-      "i2_minus_i1_mean_s": null,
-      "mean_percent_change": null,
-      "pairs": 0
+      "i1_mean_s": 231.993970971,
+      "i2_mean_s": 212.83618146,
+      "i2_minus_i1_mean_s": -19.157789511000004,
+      "mean_percent_change": -8.257882491866477,
+      "pairs": 1
     }
   },
+  "pause_reason": "One validated I1/I2 pair and fresh B0 completed; B1 and the remaining N=5 sweep are paused by request.",
   "prompt_length": 128,
+  "quality": {
+    "all_measured_arms_complete": true,
+    "b1_status": "paused_before_start",
+    "i1_i2_boundary_logits_exact": true,
+    "i2_all_deadlines_met": true
+  },
+  "reference_run_id": "2026-08-21_21-33_wuklab-NUC16_qwen05b-fp16-onepair-b0b1",
   "run_id": "2026-08-21_21-00_wuklab-NUC16_qwen05b-fp16-jit-full-1k8k-5pairs",
-  "schema_version": 1,
-  "state": "running"
+  "schema_version": 2,
+  "state": "paused",
+  "uncertainty": {
+    "pairs": 1,
+    "statement": "N=1 checkpoint: descriptive differences only; no sampling uncertainty or confidence interval is estimable."
+  }
 }
