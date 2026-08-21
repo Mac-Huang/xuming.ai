@@ -251,9 +251,9 @@ the configured cooldown is excluded. Hover a bar for the exact value.</figcaptio
 <span><i style="background:#3b8ef5"></i>decode</span>
 <span><i style="background:#d6455d"></i>capacity switch</span></div>
 <figure><svg id="live-timeline" viewBox="0 0 940 210" width="100%" role="img"
-aria-label="Live compile and decode timeline for the latest I1 and I2 pair"></svg>
-<figcaption id="live-timeline-caption">The latest pair, updated from append-only native
-compile markers and token rows. I1 builds 1K, 2K, 4K and 8K before decode; I2 launches
+aria-label="True-time compile and decode timeline for B0, I1 and I2"></svg>
+<figcaption id="live-timeline-caption">B0, I1 and I2 on one true-time axis. B0 compiles
+the fixed 8K graph before decode; I1 builds all four capacities up front; I2 launches
 each successor one capacity ahead during decode.</figcaption></figure>
 
 <div class="live-grid" id="live-outcomes">
@@ -603,23 +603,34 @@ prompts capped at the engine's 4096-token context.
   function timeline(data){
     var root=el('live-timeline'); while(root.firstChild) root.removeChild(root.firstChild);
     var pair=data.latest_pair;
-    var arms=(data.arms||[]).filter(function(a){return a.pair===pair&&(a.label==='I1'||a.label==='I2');});
-    arms.sort(function(a,b){return a.label.localeCompare(b.label);});
+    function chartTimeline(a){
+      if(a.timeline)return a.timeline;
+      if(a.label!=='B0')return {};
+      var m=a.metrics||{},compile=num(m.compile_model_wall_s),decode=num(m.decode_wall_s),critical=num(m.protocol_critical_path_s);
+      if(compile===null||decode===null||critical===null)return {};
+      var decodeStart=60+critical-decode;
+      return {origin_monotonic_ns:0,decode_start_offset_s:decodeStart,decode_end_offset_s:decodeStart+decode,
+        boundaries:[],compiles:[{capacity:8192,duration_s:compile,start_offset_s:0,ready_offset_s:compile,state:'ready'}]};
+    }
+    var arms=(data.arms||[]).filter(function(a){
+      return (a.pair===pair&&(a.label==='I1'||a.label==='I2'))||(a.label==='B0'&&a.state==='complete');
+    });
+    var order={B0:0,I1:1,I2:2};arms.sort(function(a,b){return order[a.label]-order[b.label];});
     if (!arms.length){
-      text(root,470,80,'Waiting for the first I1/I2 arm to start',{fill:'#9da7b3','text-anchor':'middle','font-size':'13'});
+      text(root,470,80,'Waiting for B0 or the first I1/I2 arm to start',{fill:'#9da7b3','text-anchor':'middle','font-size':'13'});
       root.setAttribute('viewBox','0 0 940 120'); return;
     }
     var maxTime=0;
     arms.forEach(function(a){
-      var t=a.timeline||{};
+      var t=chartTimeline(a);
       maxTime=Math.max(maxTime,num(t.decode_end_offset_s)||0,num(t.decode_start_offset_s)||0,num((a.metrics||{}).compile_model_wall_s)||0);
       (t.compiles||[]).forEach(function(c){maxTime=Math.max(maxTime,num(c.ready_offset_s)||0,num(c.start_offset_s)||0);});
     });
     maxTime=Math.max(maxTime,60); var x0=132,x1=922;
     function sx(v){return x0+(Math.max(0,v)/maxTime)*(x1-x0);}
     arms.forEach(function(a,index){
-      var base=18+index*82,t=a.timeline||{};
-      text(root,0,base+4,a.label+' '+(a.label==='I1'?'eager':'one-ahead')+' \u00b7 pair '+(a.pair+1),{fill:'#e6edf3','font-size':'12.5','font-weight':'600'});
+      var base=18+index*82,t=chartTimeline(a),name=a.label==='B0'?'B0 direct \u00b7 reference':a.label+' '+(a.label==='I1'?'eager':'one-ahead')+' \u00b7 pair '+(a.pair+1);
+      text(root,0,base+4,name,{fill:'#e6edf3','font-size':'12.5','font-weight':'600'});
       text(root,122,base+27,'compile',{'text-anchor':'end'}); text(root,122,base+56,'decode',{'text-anchor':'end'});
       add(root,'rect',{x:x0,y:base+12,width:x1-x0,height:19,rx:3,fill:'#11161d'});
       add(root,'rect',{x:x0,y:base+41,width:x1-x0,height:19,rx:3,fill:'#11161d'});
@@ -641,7 +652,7 @@ prompts capped at the engine's 4096-token context.
         var decode=add(root,'rect',{x:sx(ds),y:base+41,width:Math.max(2,sx(stop)-sx(ds)),height:19,rx:3,fill:'#3b8ef5'});
         title(decode,(a.decoded_tokens||0).toLocaleString()+' / '+(a.expected_decoded_tokens||0).toLocaleString()+' tokens');
       }
-      (t.boundaries||[]).forEach(function(b){
+      (a.label==='B0'?[]:(t.boundaries||[])).forEach(function(b){
         var stamp=num(b.infer_start_monotonic_ns),origin=num(t.origin_monotonic_ns);
         if(stamp===null||origin===null)return; var x=sx((stamp-origin)/1e9);
         add(root,'line',{x1:x,y1:base+39,x2:x,y2:base+63,stroke:'#d6455d','stroke-width':2});
@@ -764,7 +775,7 @@ prompts capped at the engine's 4096-token context.
     el('live-run-id').textContent=data.run_id||'unknown';
     el('live-ref-id').textContent=data.reference_run_id||'pending';
     el('live-uncertainty').textContent=((data.uncertainty||{}).statement)||'N=1 checkpoint; descriptive only.';
-    el('live-timeline-caption').textContent='Pair '+((data.latest_pair||0)+1)+' on a true time axis, updated from native compile markers, append-only token rows and boundary events. I1 builds all four capacities before decode; I2 launches each successor one capacity ahead.';
+    el('live-timeline-caption').textContent='B0 and pair '+((data.latest_pair||0)+1)+' on one true-time axis. B0 compiles the fixed 8K graph; I1 builds all four capacities before decode; I2 launches each successor one capacity ahead.';
     el('live-error').hidden=state!=='failed';
     el('live-error').textContent=state==='failed'?'The immutable campaign stopped; the last valid artifacts remain available for diagnosis.':'';
     stages(data);campaign(data);timeline(data);memory(data);
