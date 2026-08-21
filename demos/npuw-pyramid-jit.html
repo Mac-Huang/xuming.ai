@@ -45,7 +45,7 @@ margin:18px 0;font-size:14.5px;color:#cbd5e1}
 .live-head{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:12px}
 .live-state{font-weight:700}.live-updated{color:var(--mut);font-size:12.5px;margin-left:auto}
 .pulse{width:9px;height:9px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 0 rgba(189,133,0,.5);animation:pulse 2s infinite}
-.pulse.complete{background:#3fb950;animation:none}.pulse.failed{background:var(--red);animation:none}
+.pulse.complete{background:#3fb950;animation:none}.pulse.paused{background:#f0c14b;animation:none}.pulse.failed{background:var(--red);animation:none}
 @keyframes pulse{70%{box-shadow:0 0 0 8px rgba(189,133,0,0)}100%{box-shadow:0 0 0 0 rgba(189,133,0,0)}}
 .meter{height:7px;background:#242c37;border-radius:9px;overflow:hidden;margin:8px 0 16px}
 .meter span{display:block;height:100%;background:linear-gradient(90deg,var(--gold),#f0c14b);transition:width .4s}
@@ -215,35 +215,41 @@ confirmed general result.
 <section class="pane" id="measure" role="tabpanel" aria-labelledby="t-measure" hidden>
 
 <div class="thesis">
-This is the full run, not the earlier 1K&rarr;2K sanity check: Qwen2.5-0.5B FP16 grows
-through <b>1K&rarr;2K&rarr;4K&rarr;8K</b>. Five counterbalanced I1/I2 pairs measure
-how much one-ahead JIT removes from first-token and end-to-end latency, what decode
-overhead it adds, and how B0, B1, I1 and I2 compare in memory.
+This checkpoint replaces the earlier sanity-check view: Qwen2.5-0.5B FP16 grows through
+<b>1K&rarr;2K&rarr;4K&rarr;8K</b> in one complete I1/I2 pair, followed by a fresh B0 direct
+reference. It compares those three completed arms on compile/first-token latency,
+end-to-end critical path, decode cost and memory. B1 is paused before start and shown as
+pending; <b>N=1 differences are descriptive, not confidence intervals</b>.
 </div>
 
-<h2 id="live">Full N=5 1K&rarr;8K campaign &middot; live</h2>
+<h2 id="live">B0 + one-pair 1K&rarr;8K checkpoint &middot; paused</h2>
 <div class="live" id="jit-live" aria-live="polite">
 <div class="live-head"><span class="pulse" id="live-pulse"></span>
 <span class="live-state" id="live-state">Loading run status&hellip;</span>
 <span class="live-updated" id="live-updated"></span></div>
 <div class="meter" aria-hidden="true"><span id="live-meter" style="width:0"></span></div>
 <div class="live-grid">
-<div class="kpi"><div class="n" id="live-progress">&mdash;</div><div class="l">campaign progress</div></div>
-<div class="kpi"><div class="n" id="live-current">&mdash;</div><div class="l">current arm and pair</div></div>
+<div class="kpi"><div class="n" id="live-progress">&mdash;</div><div class="l">checkpoint progress</div></div>
+<div class="kpi"><div class="n" id="live-current">&mdash;</div><div class="l">execution state</div></div>
 <div class="kpi"><div class="n" id="live-context">&mdash;</div><div class="l">current context</div></div>
-<div class="kpi"><div class="n" id="live-arms">0 / 12</div><div class="l">full 8K arms complete</div></div>
-<div class="kpi"><div class="n" id="live-pairs">0 / 5</div><div class="l">validated I1/I2 pairs</div></div>
+<div class="kpi"><div class="n" id="live-arms">0 / 4</div><div class="l">full 8K arms complete</div></div>
+<div class="kpi"><div class="n" id="live-pairs">0 / 1</div><div class="l">validated I1/I2 pairs</div></div>
 </div>
 <div class="stage-grid" id="live-stages"></div>
+<div class="legend"><span><i style="background:#d6455d"></i>B0 direct</span>
+<span><i style="background:#3b8ef5"></i>B1 pyramid &middot; pending</span>
+<span><i style="background:#bd8500"></i>I1 eager</span>
+<span><i style="background:#f0c14b"></i>I2 one-ahead</span></div>
+<figure><svg id="live-campaign" viewBox="0 0 940 360" width="100%" role="img"
+aria-label="B0, B1, I1 and I2 latency comparison"></svg>
+<figcaption>Absolute wall-clock comparison for the completed 8,064-token trajectories;
+B1 remains an empty pending lane because it has not run.
+Protocol critical path includes model read, compile, request creation, prefill and decode;
+the configured cooldown is excluded. Hover a bar for the exact value.</figcaption></figure>
 <div class="legend"><span><i style="background:#6b4c05"></i>whole-model compile</span>
 <span><i style="background:#f0c14b"></i>per-window compile</span>
 <span><i style="background:#3b8ef5"></i>decode</span>
 <span><i style="background:#d6455d"></i>capacity switch</span></div>
-<figure><svg id="live-campaign" viewBox="0 0 940 360" width="100%" role="img"
-aria-label="Full campaign timeline from preflight through five paired runs and two references"></svg>
-<figcaption>Every planned arm in execution order. Each block fills as its 8,064-token
-trajectory advances; the 5-minute within-pair and 10-minute between-pair cooldowns are
-shown as protocol gaps. The chart below opens the latest pair on a true time axis.</figcaption></figure>
 <figure><svg id="live-timeline" viewBox="0 0 940 210" width="100%" role="img"
 aria-label="Live compile and decode timeline for the latest I1 and I2 pair"></svg>
 <figcaption id="live-timeline-caption">The latest pair, updated from append-only native
@@ -253,19 +259,22 @@ each successor one capacity ahead during decode.</figcaption></figure>
 <div class="live-grid" id="live-outcomes">
 <div class="kpi"><div class="n" id="live-latency">&mdash;</div><div class="l">compile / first-token latency saved</div></div>
 <div class="kpi"><div class="n" id="live-e2e">&mdash;</div><div class="l">protocol critical path shortened</div></div>
-<div class="kpi"><div class="n" id="live-overhead">&mdash;</div><div class="l">decode inference overhead paid</div></div>
-<div class="kpi"><div class="n" id="live-wall">&mdash;</div><div class="l">decode wall-time overhead paid</div></div>
+<div class="kpi"><div class="n" id="live-overhead">&mdash;</div><div class="l">decode inference change (I2&minus;I1)</div></div>
+<div class="kpi"><div class="n" id="live-wall">&mdash;</div><div class="l">decode wall-time change (I2&minus;I1)</div></div>
 </div>
 <figure><svg id="live-memory" viewBox="0 0 940 250" width="100%" role="img"
 aria-label="Average process RSS and NPU allocation for B0, B1, I1 and I2"></svg>
 <figcaption id="live-memory-caption">Time-weighted mean process RSS (solid) and NPU
-allocation (translucent) over the common 128&rarr;8192 trajectory. B0/B1 are refreshed
-references; I1/I2 are means across completed counterbalanced runs.</figcaption></figure>
+allocation (translucent) over the common 128&rarr;8192 trajectory. Each measured bar is one
+fresh run; B1 is pending. Process RSS uses trapezoidal time weighting and NPU allocation
+uses left-hold.</figcaption></figure>
 <table class="memory-table"><thead><tr><th>Arm</th><th>Mean RSS</th><th>Peak RSS</th><th>Mean NPU alloc</th><th>Peak NPU alloc</th><th>Runs</th></tr></thead>
 <tbody id="live-memory-table"><tr><td colspan="6" class="live-pending">Waiting for completed arms&hellip;</td></tr></tbody></table>
 <div class="run-meta"><b>Protocol</b><span>128-token prompt; 8,064 teacher-forced decode tokens; capacities 1K, 2K, 4K, 8K; BEST_PERF; cold UMD cache.</span>
-<b>Design</b><span>Five Williams-counterbalanced I1/I2 pairs, then refreshed B0 direct and B1 pyramid references.</span>
-<b>Run</b><code id="live-run-id">loading&hellip;</code></div>
+<b>Design</b><span>One Williams-order AB pair, then fresh B0 direct; B1 and the N=5 continuation are paused.</span>
+<b>Pair run</b><code id="live-run-id">loading&hellip;</code>
+<b>Reference run</b><code id="live-ref-id">loading&hellip;</code>
+<b>Uncertainty</b><span id="live-uncertainty">N=1 checkpoint; descriptive only.</span></div>
 <p class="live-error" id="live-error" hidden></p>
 </div>
 
@@ -564,7 +573,9 @@ prompts capped at the engine's 4096-token context.
 </div>
 <script>
 (function(){
-  var url = 'https://raw.githubusercontent.com/Mac-Huang/xuming.ai/live-data/demos/data/npuw-pyramid-jit-live.json';
+  var url = location.hostname==='127.0.0.1'||location.hostname==='localhost'
+    ? 'data/npuw-pyramid-jit-live.json'
+    : 'https://raw.githubusercontent.com/Mac-Huang/xuming.ai/live-data/demos/data/npuw-pyramid-jit-live.json';
   var ns = 'http://www.w3.org/2000/svg';
   var colors = {B0:'#d6455d',B1:'#3b8ef5',I1:'#bd8500',I2:'#f0c14b'};
   function el(id){ return document.getElementById(id); }
@@ -647,51 +658,50 @@ prompts capped at the engine's 4096-token context.
   }
   function campaign(data){
     var root=el('live-campaign'); while(root.firstChild) root.removeChild(root.firstChild);
-    var arms=data.arms||[],byKey={};
-    arms.forEach(function(a){byKey[a.label+':'+(a.pair===null?'ref':a.pair)]=a;});
-    function drawArm(a,x,y,width){
-      var label=a?a.label:'?',state=a?a.state:'pending',progress=a?(num(a.progress_fraction)||0):0;
-      var outline=state==='running'?'#f0c14b':state==='complete'?'#4d5968':'#30363d';
-      var base=add(root,'rect',{x:x,y:y,width:width,height:31,rx:6,fill:'#11161d',stroke:outline,'stroke-width':state==='running'?2:1});
-      title(base,(a&&a.decoded_tokens||0).toLocaleString()+' / '+(a&&a.expected_decoded_tokens||8064).toLocaleString()+' tokens');
-      if(progress>0)add(root,'rect',{x:x,y:y,width:Math.max(3,width*Math.min(1,progress)),height:31,rx:6,fill:colors[label]||'#68717d',opacity:state==='complete'?'.78':'.5'});
-      text(root,x+10,y+20,label+' \u00b7 '+state,{fill:'#e6edf3','font-size':'11.5','font-weight':'600'});
-      var metric=a&&num((a.metrics||{}).protocol_critical_path_s);
-      if(metric!==null)text(root,x+width-9,y+20,seconds(metric),{fill:'#e6edf3','text-anchor':'end','font-size':'10.5'});
+    var arms=data.arms||[],byLabel={};
+    arms.forEach(function(a){if(a.state==='complete')byLabel[a.label]=a;});
+    var rows=[
+      ['compile_model_wall_s','compile / first token'],
+      ['decode_wall_s','decode wall'],
+      ['protocol_critical_path_s','protocol critical path']
+    ],labels=['B0','B1','I1','I2'],maximum=0;
+    rows.forEach(function(row){labels.forEach(function(label){
+      maximum=Math.max(maximum,num((((byLabel[label]||{}).metrics||{})[row[0]])||0));
+    });});
+    maximum=Math.max(1,Math.ceil(maximum/25)*25); var x0=205,x1=905;
+    function sx(value){return x0+(value/maximum)*(x1-x0);}
+    rows.forEach(function(row,rowIndex){
+      var top=18+rowIndex*103;
+      text(root,0,top+9,row[1],{fill:'#e6edf3','font-size':'12.5','font-weight':'600'});
+      labels.forEach(function(label,index){
+        var y=top+18+index*18,value=num(((byLabel[label]||{}).metrics||{})[row[0]]);
+        text(root,191,y+10,label,{fill:colors[label],'text-anchor':'end','font-size':'11','font-weight':'600'});
+        add(root,'rect',{x:x0,y:y,width:x1-x0,height:12,rx:3,fill:'#11161d'});
+        if(value!==null){
+          var bar=add(root,'rect',{x:x0,y:y,width:Math.max(2,sx(value)-x0),height:12,rx:3,fill:colors[label]});
+          title(bar,label+' '+row[1]+': '+seconds(value));
+          text(root,Math.min(x1-4,sx(value)+7),y+10,seconds(value),{fill:'#e6edf3','font-size':'10'});
+        }else text(root,x0+8,y+10,'pending',{fill:'#68717d','font-size':'10'});
+      });
+    });
+    var axis=330; add(root,'line',{x1:x0,y1:axis,x2:x1,y2:axis,stroke:'#30363d'});
+    for(var i=0;i<=5;i++){
+      var value=maximum*i/5,x=sx(value);add(root,'line',{x1:x,y1:axis,x2:x,y2:axis+4,stroke:'#30363d'});
+      text(root,x,axis+18,seconds(value),{'text-anchor':'middle','font-size':'10'});
     }
-    var events=(data.campaign_events||[]).map(function(e){return e.event;}),preflight=events.indexOf('preflight_complete')>=0;
-    text(root,0,24,'mechanism gate',{fill:'#9da7b3','font-size':'11.5'});
-    add(root,'rect',{x:132,y:5,width:310,height:28,rx:6,fill:preflight?'#173a24':'#11161d',stroke:preflight?'#3fb950':'#30363d'});
-    text(root,145,24,preflight?'preflight \u00b7 exact logits \u00b7 deadlines met':'preflight pending',{fill:'#e6edf3','font-size':'11.5','font-weight':'600'});
-    text(root,472,24,'then five counterbalanced full trajectories',{fill:'#9da7b3','font-size':'11'});
-    for(var pair=0;pair<5;pair++){
-      var y=52+pair*49,order=pair%2===0?['I1','I2']:['I2','I1'];
-      text(root,72,y+20,'pair '+(pair+1),{fill:'#e6edf3','text-anchor':'end','font-size':'12','font-weight':'600'});
-      drawArm(byKey[order[0]+':'+pair],92,y,328);
-      text(root,470,y+19,'5 min',{fill:'#68717d','text-anchor':'middle','font-size':'10'});
-      add(root,'line',{x1:431,y1:y+15,x2:509,y2:y+15,stroke:'#30363d','stroke-dasharray':'4 4'});
-      drawArm(byKey[order[1]+':'+pair],520,y,328);
-      if(pair<4)text(root,911,y+20,'10 min \u2193',{fill:'#68717d','text-anchor':'end','font-size':'10'});
-    }
-    var refY=309;
-    text(root,72,refY+20,'refs',{fill:'#e6edf3','text-anchor':'end','font-size':'12','font-weight':'600'});
-    drawArm(byKey['B0:ref'],92,refY,328);
-    text(root,470,refY+19,'10 min',{fill:'#68717d','text-anchor':'middle','font-size':'10'});
-    add(root,'line',{x1:431,y1:refY+15,x2:509,y2:refY+15,stroke:'#30363d','stroke-dasharray':'4 4'});
-    drawArm(byKey['B1:ref'],520,refY,328);
-    text(root,92,365,'Williams order: AB / BA / AB / BA / AB \u00b7 cooldowns are excluded from arm critical-path metrics',{fill:'#9da7b3','font-size':'10.5'});
+    text(root,x0,365,'lower is better \u00b7 configured cooldown excluded',{fill:'#9da7b3','font-size':'10.5'});
     root.setAttribute('viewBox','0 0 940 380');
   }
   function stages(data){
     var host=el('live-stages'); while(host.firstChild) host.removeChild(host.firstChild);
-    var events=(data.campaign_events||[]).map(function(e){return e.event;});
-    function has(name){return events.indexOf(name)>=0;}
+    var byLabel={};(data.arms||[]).forEach(function(a){byLabel[a.label]=a;});
+    function state(label){return (byLabel[label]||{}).state||'pending';}
     var rows=[
-      ['Preflight',has('preflight_complete')?'complete':has('preflight_control_start')?'running':'pending','1K\u21922K gate'],
-      ['Paired sweep',has('jit_pairs_complete')?'complete':has('jit_pairs_start')?'running':'pending',(data.completed_pair_reports||0)+' / 5 pairs'],
-      ['B0 direct',has('b0_complete')?'complete':has('b0_start')?'running':'pending','reference'],
-      ['B1 pyramid',has('b1_complete')?'complete':has('b1_start')?'running':'pending','reference'],
-      ['Analysis',has('campaign_complete')?'complete':data.state==='failed'?'failed':'pending',data.state==='complete'?'N=5 final':'awaiting arms']
+      ['I1 eager',state('I1'),'pair 1'],
+      ['I2 one-ahead',state('I2'),'pair 1'],
+      ['B0 direct',state('B0'),'fresh reference'],
+      ['B1 pyramid',state('B1'),'fresh reference'],
+      ['Checkpoint',data.state==='paused'?'complete':data.state==='failed'?'failed':'pending',data.state==='paused'?'published · paused':'awaiting arms']
     ];
     rows.forEach(function(row){
       var node=document.createElement('div'),strong=document.createElement('b'),span=document.createElement('span');
@@ -731,9 +741,9 @@ prompts capped at the engine's 4096-token context.
     return (shown>0&&!invert?'+':'')+seconds(shown)+(percent===null?'':' \u00b7 '+Math.abs(percent).toFixed(1)+'%');
   }
   function render(data){
-    var state=data.state||'pending',pulse=el('live-pulse'); pulse.className='pulse '+(state==='complete'?'complete':state==='failed'?'failed':'');
+    var state=data.state||'pending',pulse=el('live-pulse'); pulse.className='pulse '+(state==='complete'?'complete':state==='paused'?'paused':state==='failed'?'failed':'');
     var current=data.current_arm||(data.arms||[]).filter(function(a){return a.state==='running';})[0]||null;
-    el('live-state').textContent=state==='complete'?'Campaign complete':state==='failed'?'Campaign stopped on a failed arm':'Campaign running';
+    el('live-state').textContent=state==='paused'?'B0 + pair 0 published \u00b7 B1 paused':state==='complete'?'Checkpoint complete':state==='failed'?'Run stopped on a failed arm':'Checkpoint running';
     el('live-updated').textContent='data '+new Date(data.generated_at).toLocaleString();
     var progress=num(data.overall_progress_fraction);
     if(progress===null){
@@ -742,16 +752,18 @@ prompts capped at the engine's 4096-token context.
     }
     el('live-meter').style.width=(100*progress).toFixed(2)+'%';
     el('live-progress').textContent=(100*progress).toFixed(1)+'%';
-    el('live-current').textContent=current?current.label+(current.pair===null?' \u00b7 reference':' \u00b7 pair '+(current.pair+1)):state==='complete'?'done':'cooldown';
+    el('live-current').textContent=current?current.label+(current.pair===null?' \u00b7 reference':' \u00b7 pair '+(current.pair+1)):state==='paused'?'paused at pair boundary':state==='complete'?'done':'cooldown';
     el('live-context').textContent=current&&current.context_after?current.context_after.toLocaleString()+' / 8,192':'\u2014';
     el('live-arms').textContent=(data.arms_complete||0)+' / '+(data.arms_planned||12);
-    el('live-pairs').textContent=(data.completed_pair_reports||0)+' / 5';
+    el('live-pairs').textContent=(data.completed_pair_reports||0)+' / '+(data.pairs_planned||1);
     var p=data.partial_results||{};
     el('live-latency').textContent=effect(p.compile_model_wall_s,true);
     el('live-e2e').textContent=effect(p.protocol_critical_path_s,true);
     el('live-overhead').textContent=effect(p.decode_infer_s,false);
     el('live-wall').textContent=effect(p.decode_wall_s,false);
     el('live-run-id').textContent=data.run_id||'unknown';
+    el('live-ref-id').textContent=data.reference_run_id||'pending';
+    el('live-uncertainty').textContent=((data.uncertainty||{}).statement)||'N=1 checkpoint; descriptive only.';
     el('live-timeline-caption').textContent='Pair '+((data.latest_pair||0)+1)+' on a true time axis, updated from native compile markers, append-only token rows and boundary events. I1 builds all four capacities before decode; I2 launches each successor one capacity ahead.';
     el('live-error').hidden=state!=='failed';
     el('live-error').textContent=state==='failed'?'The immutable campaign stopped; the last valid artifacts remain available for diagnosis.':'';
