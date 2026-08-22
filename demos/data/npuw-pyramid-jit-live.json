@@ -1,40 +1,3437 @@
 {
-  "aggregate": null,
+  "aggregate": {
+    "all_treatment_deadlines_met": true,
+    "boundary_quality": {
+      "all_pairs_pass": true,
+      "comparisons": 20,
+      "minimum_cosine": 1.0,
+      "top1_matches": 20
+    },
+    "claims_valid": true,
+    "deadline_outcomes": [
+      {
+        "all_deadlines_met": true,
+        "deadline_misses": [],
+        "pair": 0,
+        "transitions": [
+          {
+            "boundary_call_end_ns": 7763558369038749,
+            "boundary_call_start_ns": 7763558302147074,
+            "compile_duration_s": 6.780602458,
+            "compile_ready_ns": 7763550677725071,
+            "compile_start_ns": 7763543897122613,
+            "consume_in_boundary_call": true,
+            "native_deadline_miss": false,
+            "native_ready_before_deadline": true,
+            "new_capacity": 2048,
+            "old_capacity": 1024,
+            "readiness_slack_s": 7.624422003,
+            "ready_before_boundary_call": true,
+            "variant_consume_ns": 7763558328421512,
+            "variant_device_check": {
+              "capacity": 2048,
+              "clock_domain": "linux_clock_monotonic",
+              "compiled_device_class": "NPU",
+              "cpu_wa": 0,
+              "cpu_wa_matches": 1,
+              "deadline_stored_tokens": 1023,
+              "event": "variant_device_check",
+              "from_capacity": 1024,
+              "from_variant": 0,
+              "mode": "ONE_AHEAD",
+              "monotonic_ns": 7763558302329905,
+              "placement_ok": 1,
+              "stored_tokens": 1023,
+              "variant_index": 1,
+              "wall_time_ns": 1787347125294752540
+            },
+            "wait_us": 0.0
+          },
+          {
+            "boundary_call_end_ns": 7763575040457148,
+            "boundary_call_start_ns": 7763574968713120,
+            "compile_duration_s": 6.935960068,
+            "compile_ready_ns": 7763565274999929,
+            "compile_start_ns": 7763558339039861,
+            "consume_in_boundary_call": true,
+            "native_deadline_miss": false,
+            "native_ready_before_deadline": true,
+            "new_capacity": 4096,
+            "old_capacity": 2048,
+            "readiness_slack_s": 9.693713191,
+            "ready_before_boundary_call": true,
+            "variant_consume_ns": 7763575003261078,
+            "variant_device_check": {
+              "capacity": 4096,
+              "clock_domain": "linux_clock_monotonic",
+              "compiled_device_class": "NPU",
+              "cpu_wa": 0,
+              "cpu_wa_matches": 1,
+              "deadline_stored_tokens": 2047,
+              "event": "variant_device_check",
+              "from_capacity": 2048,
+              "from_variant": 1,
+              "mode": "ONE_AHEAD",
+              "monotonic_ns": 7763574968858758,
+              "placement_ok": 1,
+              "stored_tokens": 2047,
+              "variant_index": 2,
+              "wall_time_ns": 1787347141961281388
+            },
+            "wait_us": 0.0
+          },
+          {
+            "boundary_call_end_ns": 7763609574310886,
+            "boundary_call_start_ns": 7763609487189870,
+            "compile_duration_s": 7.113776519,
+            "compile_ready_ns": 7763582125041528,
+            "compile_start_ns": 7763575011265009,
+            "consume_in_boundary_call": true,
+            "native_deadline_miss": false,
+            "native_ready_before_deadline": true,
+            "new_capacity": 8192,
+            "old_capacity": 4096,
+            "readiness_slack_s": 27.362148342,
+            "ready_before_boundary_call": true,
+            "variant_consume_ns": 7763609540693361,
+            "variant_device_check": {
+              "capacity": 8192,
+              "clock_domain": "linux_clock_monotonic",
+              "compiled_device_class": "NPU",
+              "cpu_wa": 0,
+              "cpu_wa_matches": 1,
+              "deadline_stored_tokens": 4095,
+              "event": "variant_device_check",
+              "from_capacity": 4096,
+              "from_variant": 2,
+              "mode": "ONE_AHEAD",
+              "monotonic_ns": 7763609487364623,
+              "placement_ok": 1,
+              "stored_tokens": 4095,
+              "variant_index": 3,
+              "wall_time_ns": 1787347176479787251
+            },
+            "wait_us": 0.0
+          }
+        ],
+        "waited_capacities": []
+      },
+      {
+        "all_deadlines_met": true,
+        "deadline_misses": [],
+        "pair": 1,
+        "transitions": [
+          {
+            "boundary_call_end_ns": 7769388185084007,
+            "boundary_call_start_ns": 7769388124086638,
+            "compile_duration_s": 6.805100512,
+            "compile_ready_ns": 7769380618649151,
+            "compile_start_ns": 7769373813548639,
+            "consume_in_boundary_call": true,
+            "native_deadline_miss": false,
+            "native_ready_before_deadline": true,
+            "new_capacity": 2048,
+            "old_capacity": 1024,
+            "readiness_slack_s": 7.505437487,
+            "ready_before_boundary_call": true,
+            "variant_consume_ns": 7769388145738666,
+            "variant_device_check": {
+              "capacity": 2048,
+              "clock_domain": "linux_clock_monotonic",
+              "compiled_device_class": "NPU",
+              "cpu_wa": 0,
+              "cpu_wa_matches": 1,
+              "deadline_stored_tokens": 1023,
+              "event": "variant_device_check",
+              "from_capacity": 1024,
+              "from_variant": 0,
+              "mode": "ONE_AHEAD",
+              "monotonic_ns": 7769388124247749,
+              "placement_ok": 1,
+              "stored_tokens": 1023,
+              "variant_index": 1,
+              "wall_time_ns": 1787352955116670377
+            },
+            "wait_us": 0.0
+          },
+          {
+            "boundary_call_end_ns": 7769404897186935,
+            "boundary_call_start_ns": 7769404829235732,
+            "compile_duration_s": 7.011376585,
+            "compile_ready_ns": 7769395164538651,
+            "compile_start_ns": 7769388153162066,
+            "consume_in_boundary_call": true,
+            "native_deadline_miss": false,
+            "native_ready_before_deadline": true,
+            "new_capacity": 4096,
+            "old_capacity": 2048,
+            "readiness_slack_s": 9.664697081,
+            "ready_before_boundary_call": true,
+            "variant_consume_ns": 7769404860921746,
+            "variant_device_check": {
+              "capacity": 4096,
+              "clock_domain": "linux_clock_monotonic",
+              "compiled_device_class": "NPU",
+              "cpu_wa": 0,
+              "cpu_wa_matches": 1,
+              "deadline_stored_tokens": 2047,
+              "event": "variant_device_check",
+              "from_capacity": 2048,
+              "from_variant": 1,
+              "mode": "ONE_AHEAD",
+              "monotonic_ns": 7769404829369406,
+              "placement_ok": 1,
+              "stored_tokens": 2047,
+              "variant_index": 2,
+              "wall_time_ns": 1787352971821792023
+            },
+            "wait_us": 0.0
+          },
+          {
+            "boundary_call_end_ns": 7769439095275169,
+            "boundary_call_start_ns": 7769439010197246,
+            "compile_duration_s": 7.014014054,
+            "compile_ready_ns": 7769411880096132,
+            "compile_start_ns": 7769404866082078,
+            "consume_in_boundary_call": true,
+            "native_deadline_miss": false,
+            "native_ready_before_deadline": true,
+            "new_capacity": 8192,
+            "old_capacity": 4096,
+            "readiness_slack_s": 27.130101114,
+            "ready_before_boundary_call": true,
+            "variant_consume_ns": 7769439063766458,
+            "variant_device_check": {
+              "capacity": 8192,
+              "clock_domain": "linux_clock_monotonic",
+              "compiled_device_class": "NPU",
+              "cpu_wa": 0,
+              "cpu_wa_matches": 1,
+              "deadline_stored_tokens": 4095,
+              "event": "variant_device_check",
+              "from_capacity": 4096,
+              "from_variant": 2,
+              "mode": "ONE_AHEAD",
+              "monotonic_ns": 7769439010343904,
+              "placement_ok": 1,
+              "stored_tokens": 4095,
+              "variant_index": 3,
+              "wall_time_ns": 1787353006002766537
+            },
+            "wait_us": 0.0
+          }
+        ],
+        "waited_capacities": []
+      },
+      {
+        "all_deadlines_met": true,
+        "deadline_misses": [],
+        "pair": 2,
+        "transitions": [
+          {
+            "boundary_call_end_ns": 7770855248234721,
+            "boundary_call_start_ns": 7770855190209813,
+            "compile_duration_s": 6.751958435,
+            "compile_ready_ns": 7770847697445140,
+            "compile_start_ns": 7770840945486705,
+            "consume_in_boundary_call": true,
+            "native_deadline_miss": false,
+            "native_ready_before_deadline": true,
+            "new_capacity": 2048,
+            "old_capacity": 1024,
+            "readiness_slack_s": 7.492764673,
+            "ready_before_boundary_call": true,
+            "variant_consume_ns": 7770855211727787,
+            "variant_device_check": {
+              "capacity": 2048,
+              "clock_domain": "linux_clock_monotonic",
+              "compiled_device_class": "NPU",
+              "cpu_wa": 0,
+              "cpu_wa_matches": 1,
+              "deadline_stored_tokens": 1023,
+              "event": "variant_device_check",
+              "from_capacity": 1024,
+              "from_variant": 0,
+              "mode": "ONE_AHEAD",
+              "monotonic_ns": 7770855190346643,
+              "placement_ok": 1,
+              "stored_tokens": 1023,
+              "variant_index": 1,
+              "wall_time_ns": 1787354422182769291
+            },
+            "wait_us": 0.0
+          },
+          {
+            "boundary_call_end_ns": 7770872120679842,
+            "boundary_call_start_ns": 7770872049724053,
+            "compile_duration_s": 6.805981231,
+            "compile_ready_ns": 7770862025282245,
+            "compile_start_ns": 7770855219301014,
+            "consume_in_boundary_call": true,
+            "native_deadline_miss": false,
+            "native_ready_before_deadline": true,
+            "new_capacity": 4096,
+            "old_capacity": 2048,
+            "readiness_slack_s": 10.024441808,
+            "ready_before_boundary_call": true,
+            "variant_consume_ns": 7770872083487689,
+            "variant_device_check": {
+              "capacity": 4096,
+              "clock_domain": "linux_clock_monotonic",
+              "compiled_device_class": "NPU",
+              "cpu_wa": 0,
+              "cpu_wa_matches": 1,
+              "deadline_stored_tokens": 2047,
+              "event": "variant_device_check",
+              "from_capacity": 2048,
+              "from_variant": 1,
+              "mode": "ONE_AHEAD",
+              "monotonic_ns": 7770872049887580,
+              "placement_ok": 1,
+              "stored_tokens": 2047,
+              "variant_index": 2,
+              "wall_time_ns": 1787354439042310209
+            },
+            "wait_us": 0.0
+          },
+          {
+            "boundary_call_end_ns": 7770906292795129,
+            "boundary_call_start_ns": 7770906206714011,
+            "compile_duration_s": 6.946282344,
+            "compile_ready_ns": 7770879037800094,
+            "compile_start_ns": 7770872091517750,
+            "consume_in_boundary_call": true,
+            "native_deadline_miss": false,
+            "native_ready_before_deadline": true,
+            "new_capacity": 8192,
+            "old_capacity": 4096,
+            "readiness_slack_s": 27.168913917,
+            "ready_before_boundary_call": true,
+            "variant_consume_ns": 7770906260093318,
+            "variant_device_check": {
+              "capacity": 8192,
+              "clock_domain": "linux_clock_monotonic",
+              "compiled_device_class": "NPU",
+              "cpu_wa": 0,
+              "cpu_wa_matches": 1,
+              "deadline_stored_tokens": 4095,
+              "event": "variant_device_check",
+              "from_capacity": 4096,
+              "from_variant": 2,
+              "mode": "ONE_AHEAD",
+              "monotonic_ns": 7770906206864122,
+              "placement_ok": 1,
+              "stored_tokens": 4095,
+              "variant_index": 3,
+              "wall_time_ns": 1787354473199286757
+            },
+            "wait_us": 0.0
+          }
+        ],
+        "waited_capacities": []
+      },
+      {
+        "all_deadlines_met": true,
+        "deadline_misses": [],
+        "pair": 3,
+        "transitions": [
+          {
+            "boundary_call_end_ns": 7772915488825791,
+            "boundary_call_start_ns": 7772915437030606,
+            "compile_duration_s": 6.776207656,
+            "compile_ready_ns": 7772907756901412,
+            "compile_start_ns": 7772900980693756,
+            "consume_in_boundary_call": true,
+            "native_deadline_miss": false,
+            "native_ready_before_deadline": true,
+            "new_capacity": 2048,
+            "old_capacity": 1024,
+            "readiness_slack_s": 7.680129194,
+            "ready_before_boundary_call": true,
+            "variant_consume_ns": 7772915457368301,
+            "variant_device_check": {
+              "capacity": 2048,
+              "clock_domain": "linux_clock_monotonic",
+              "compiled_device_class": "NPU",
+              "cpu_wa": 0,
+              "cpu_wa_matches": 1,
+              "deadline_stored_tokens": 1023,
+              "event": "variant_device_check",
+              "from_capacity": 1024,
+              "from_variant": 0,
+              "mode": "ONE_AHEAD",
+              "monotonic_ns": 7772915437151270,
+              "placement_ok": 1,
+              "stored_tokens": 1023,
+              "variant_index": 1,
+              "wall_time_ns": 1787356482429573888
+            },
+            "wait_us": 0.0
+          },
+          {
+            "boundary_call_end_ns": 7772932440670060,
+            "boundary_call_start_ns": 7772932368267546,
+            "compile_duration_s": 6.813044537,
+            "compile_ready_ns": 7772922275145450,
+            "compile_start_ns": 7772915462100913,
+            "consume_in_boundary_call": true,
+            "native_deadline_miss": false,
+            "native_ready_before_deadline": true,
+            "new_capacity": 4096,
+            "old_capacity": 2048,
+            "readiness_slack_s": 10.093122096,
+            "ready_before_boundary_call": true,
+            "variant_consume_ns": 7772932401791229,
+            "variant_device_check": {
+              "capacity": 4096,
+              "clock_domain": "linux_clock_monotonic",
+              "compiled_device_class": "NPU",
+              "cpu_wa": 0,
+              "cpu_wa_matches": 1,
+              "deadline_stored_tokens": 2047,
+              "event": "variant_device_check",
+              "from_capacity": 2048,
+              "from_variant": 1,
+              "mode": "ONE_AHEAD",
+              "monotonic_ns": 7772932368435760,
+              "placement_ok": 1,
+              "stored_tokens": 2047,
+              "variant_index": 2,
+              "wall_time_ns": 1787356499360858390
+            },
+            "wait_us": 0.0
+          },
+          {
+            "boundary_call_end_ns": 7772966983685195,
+            "boundary_call_start_ns": 7772966897862692,
+            "compile_duration_s": 7.042110922,
+            "compile_ready_ns": 7772939451674690,
+            "compile_start_ns": 7772932409563768,
+            "consume_in_boundary_call": true,
+            "native_deadline_miss": false,
+            "native_ready_before_deadline": true,
+            "new_capacity": 8192,
+            "old_capacity": 4096,
+            "readiness_slack_s": 27.446188002,
+            "ready_before_boundary_call": true,
+            "variant_consume_ns": 7772966950956039,
+            "variant_device_check": {
+              "capacity": 8192,
+              "clock_domain": "linux_clock_monotonic",
+              "compiled_device_class": "NPU",
+              "cpu_wa": 0,
+              "cpu_wa_matches": 1,
+              "deadline_stored_tokens": 4095,
+              "event": "variant_device_check",
+              "from_capacity": 4096,
+              "from_variant": 2,
+              "mode": "ONE_AHEAD",
+              "monotonic_ns": 7772966897999220,
+              "placement_ok": 1,
+              "stored_tokens": 4095,
+              "variant_index": 3,
+              "wall_time_ns": 1787356533890421874
+            },
+            "wait_us": 0.0
+          }
+        ],
+        "waited_capacities": []
+      },
+      {
+        "all_deadlines_met": true,
+        "deadline_misses": [],
+        "pair": 4,
+        "transitions": [
+          {
+            "boundary_call_end_ns": 7774382060912707,
+            "boundary_call_start_ns": 7774382004339958,
+            "compile_duration_s": 6.704558312,
+            "compile_ready_ns": 7774374480336701,
+            "compile_start_ns": 7774367775778389,
+            "consume_in_boundary_call": true,
+            "native_deadline_miss": false,
+            "native_ready_before_deadline": true,
+            "new_capacity": 2048,
+            "old_capacity": 1024,
+            "readiness_slack_s": 7.524003257,
+            "ready_before_boundary_call": true,
+            "variant_consume_ns": 7774382025716870,
+            "variant_device_check": {
+              "capacity": 2048,
+              "clock_domain": "linux_clock_monotonic",
+              "compiled_device_class": "NPU",
+              "cpu_wa": 0,
+              "cpu_wa_matches": 1,
+              "deadline_stored_tokens": 1023,
+              "event": "variant_device_check",
+              "from_capacity": 1024,
+              "from_variant": 0,
+              "mode": "ONE_AHEAD",
+              "monotonic_ns": 7774382004477194,
+              "placement_ok": 1,
+              "stored_tokens": 1023,
+              "variant_index": 1,
+              "wall_time_ns": 1787357948996899829
+            },
+            "wait_us": 0.0
+          },
+          {
+            "boundary_call_end_ns": 7774398857792654,
+            "boundary_call_start_ns": 7774398787385059,
+            "compile_duration_s": 6.76885075,
+            "compile_ready_ns": 7774388802524284,
+            "compile_start_ns": 7774382033673534,
+            "consume_in_boundary_call": true,
+            "native_deadline_miss": false,
+            "native_ready_before_deadline": true,
+            "new_capacity": 4096,
+            "old_capacity": 2048,
+            "readiness_slack_s": 9.984860775,
+            "ready_before_boundary_call": true,
+            "variant_consume_ns": 7774398820657865,
+            "variant_device_check": {
+              "capacity": 4096,
+              "clock_domain": "linux_clock_monotonic",
+              "compiled_device_class": "NPU",
+              "cpu_wa": 0,
+              "cpu_wa_matches": 1,
+              "deadline_stored_tokens": 2047,
+              "event": "variant_device_check",
+              "from_capacity": 2048,
+              "from_variant": 1,
+              "mode": "ONE_AHEAD",
+              "monotonic_ns": 7774398787515708,
+              "placement_ok": 1,
+              "stored_tokens": 2047,
+              "variant_index": 2,
+              "wall_time_ns": 1787357965779938350
+            },
+            "wait_us": 0.0
+          },
+          {
+            "boundary_call_end_ns": 7774433482373224,
+            "boundary_call_start_ns": 7774433395445897,
+            "compile_duration_s": 6.995096971,
+            "compile_ready_ns": 7774405823475301,
+            "compile_start_ns": 7774398828378330,
+            "consume_in_boundary_call": true,
+            "native_deadline_miss": false,
+            "native_ready_before_deadline": true,
+            "new_capacity": 8192,
+            "old_capacity": 4096,
+            "readiness_slack_s": 27.571970596,
+            "ready_before_boundary_call": true,
+            "variant_consume_ns": 7774433448693403,
+            "variant_device_check": {
+              "capacity": 8192,
+              "clock_domain": "linux_clock_monotonic",
+              "compiled_device_class": "NPU",
+              "cpu_wa": 0,
+              "cpu_wa_matches": 1,
+              "deadline_stored_tokens": 4095,
+              "event": "variant_device_check",
+              "from_capacity": 4096,
+              "from_variant": 2,
+              "mode": "ONE_AHEAD",
+              "monotonic_ns": 7774433395586034,
+              "placement_ok": 1,
+              "stored_tokens": 4095,
+              "variant_index": 3,
+              "wall_time_ns": 1787358000388008663
+            },
+            "wait_us": 0.0
+          }
+        ],
+        "waited_capacities": []
+      }
+    ],
+    "errors": [],
+    "observed_orders": [
+      [
+        "precompiled",
+        "one_ahead_jit"
+      ],
+      [
+        "one_ahead_jit",
+        "precompiled"
+      ],
+      [
+        "one_ahead_jit",
+        "precompiled"
+      ],
+      [
+        "precompiled",
+        "one_ahead_jit"
+      ],
+      [
+        "precompiled",
+        "one_ahead_jit"
+      ]
+    ],
+    "order_sensitivity": {
+      "AB": {
+        "mean_treatment_minus_control_s": -19.47565567833333,
+        "pairs": 3
+      },
+      "BA": {
+        "mean_treatment_minus_control_s": -19.429441559999987,
+        "pairs": 2
+      }
+    },
+    "pair_reports": [
+      "/data/runs/2026-08-21_21-00_wuklab-NUC16_qwen05b-fp16-jit-full-1k8k-5pairs/jit_pairs/analysis/p00/comparison.json",
+      "/data/runs/2026-08-21_21-00_wuklab-NUC16_qwen05b-fp16-jit-full-1k8k-5pairs/jit_pairs/analysis/p01/comparison.json",
+      "/data/runs/2026-08-21_21-00_wuklab-NUC16_qwen05b-fp16-jit-full-1k8k-5pairs/jit_pairs/analysis/p02/comparison.json",
+      "/data/runs/2026-08-21_21-00_wuklab-NUC16_qwen05b-fp16-jit-full-1k8k-5pairs/jit_pairs/analysis/p03/comparison.json",
+      "/data/runs/2026-08-21_21-00_wuklab-NUC16_qwen05b-fp16-jit-full-1k8k-5pairs/jit_pairs/analysis/p04/comparison.json"
+    ],
+    "paired_compile_by_capacity": {
+      "1024": {
+        "control": [
+          6.61466,
+          6.6185,
+          6.503189,
+          6.630153,
+          6.539537
+        ],
+        "exact_two_sided_sign_flip_p": 0.5,
+        "geometric_mean_control_over_treatment_speedup": 0.9969164116582635,
+        "geometric_mean_favorable_speedup": 0.9969164116582635,
+        "geometric_mean_treatment_over_control": 1.0030931262698417,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 0.020385400000000154,
+        "mean_percent_change": 0.3125973016070608,
+        "median_difference": 0.015746000000000038,
+        "median_percent_change": 0.23804700468353684,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          -0.053500505744738705,
+          0.094271305744739
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          0.23804700468353684,
+          0.9191961924907495,
+          1.4949434808061084,
+          -0.7132867069583412,
+          -0.37591346298674966
+        ],
+        "sample_sd_of_differences": 0.05950555758330466,
+        "treatment": [
+          6.630406,
+          6.679337,
+          6.600408,
+          6.582861,
+          6.514954
+        ],
+        "treatment_minus_control": [
+          0.015746000000000038,
+          0.06083700000000025,
+          0.09721899999999994,
+          -0.04729199999999967,
+          -0.0245829999999998
+        ]
+      },
+      "2048": {
+        "control": [
+          6.672935,
+          6.717834,
+          6.641378,
+          6.758008,
+          6.664255
+        ],
+        "exact_two_sided_sign_flip_p": 0.0625,
+        "geometric_mean_control_over_treatment_speedup": 0.98954026593545,
+        "geometric_mean_favorable_speedup": 0.98954026593545,
+        "geometric_mean_treatment_over_control": 1.0105702965555041,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 0.07067900000000016,
+        "mean_percent_change": 1.0585582789764032,
+        "median_difference": 0.08496300000000012,
+        "median_percent_change": 1.2647380093047866,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          0.019383227090895856,
+          0.12197477290910447
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          1.5789903543193502,
+          1.2647380093047866,
+          1.6325828766259138,
+          0.2439180302834824,
+          0.5725621243484831
+        ],
+        "sample_sd_of_differences": 0.04131212222217598,
+        "treatment": [
+          6.7783,
+          6.802797,
+          6.749804,
+          6.774492,
+          6.702412
+        ],
+        "treatment_minus_control": [
+          0.10536499999999993,
+          0.08496300000000012,
+          0.10842600000000058,
+          0.016484000000000165,
+          0.038156999999999996
+        ]
+      },
+      "4096": {
+        "control": [
+          6.541928,
+          6.595711,
+          6.530646,
+          6.624791,
+          6.545835
+        ],
+        "exact_two_sided_sign_flip_p": 0.0625,
+        "geometric_mean_control_over_treatment_speedup": 0.9568527584741136,
+        "geometric_mean_favorable_speedup": 0.9568527584741136,
+        "geometric_mean_treatment_over_control": 1.045092874680837,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 0.296663,
+        "mean_percent_change": 4.518445318641944,
+        "median_difference": 0.2728349999999997,
+        "median_percent_change": 4.177764343680544,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          0.17054089519715465,
+          0.42278510480284537
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          5.981936823517465,
+          6.263994890012625,
+          4.177764343680544,
+          2.797975060647199,
+          3.370555475351884
+        ],
+        "sample_sd_of_differences": 0.10157507164900259,
+        "treatment": [
+          6.933262,
+          7.008866,
+          6.803481,
+          6.810151,
+          6.766466
+        ],
+        "treatment_minus_control": [
+          0.3913339999999996,
+          0.4131550000000006,
+          0.2728349999999997,
+          0.1853600000000002,
+          0.22063100000000002
+        ]
+      },
+      "8192": {
+        "control": [
+          6.614971,
+          6.56659,
+          6.589067,
+          6.629587,
+          6.586202
+        ],
+        "exact_two_sided_sign_flip_p": 0.0625,
+        "geometric_mean_control_over_treatment_speedup": 0.9398980624936215,
+        "geometric_mean_favorable_speedup": 0.9398980624936215,
+        "geometric_mean_treatment_over_control": 1.0639451658692896,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 0.4220418,
+        "mean_percent_change": 6.396842730802635,
+        "median_difference": 0.40999300000000005,
+        "median_percent_change": 6.184291721339505,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          0.3572176506100426,
+          0.4868659493899574
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          7.488891485692079,
+          6.7681551612024,
+          5.372323577829758,
+          6.184291721339505,
+          6.170551707949429
+        ],
+        "sample_sd_of_differences": 0.05220748281329047,
+        "treatment": [
+          7.110359,
+          7.011027,
+          6.943053,
+          7.03958,
+          6.992607
+        ],
+        "treatment_minus_control": [
+          0.49538800000000016,
+          0.44443700000000064,
+          0.3539859999999999,
+          0.40999300000000005,
+          0.40640499999999946
+        ]
+      }
+    },
+    "paired_endpoints": {
+      "compile_model_wall_s": {
+        "control": [
+          84.069572736,
+          84.331265631,
+          83.708544242,
+          85.220518564,
+          84.096977893
+        ],
+        "exact_two_sided_sign_flip_p": 0.0625,
+        "geometric_mean_control_over_treatment_speedup": 1.2901745970368312,
+        "geometric_mean_favorable_speedup": 1.2901745970368312,
+        "geometric_mean_treatment_over_control": 0.7750888928496339,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": -18.9567182048,
+        "mean_percent_change": -22.487516285221286,
+        "median_difference": -18.568237542999995,
+        "median_percent_change": -22.086751411606457,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          -19.963654738214576,
+          -17.949781671385427
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          -22.086751411606457,
+          -21.932894090469812,
+          -21.710838710155766,
+          -23.67355863934215,
+          -23.033538574532244
+        ],
+        "sample_sd_of_differences": 0.8109573709340462,
+        "treatment": [
+          65.501335193,
+          65.834978455,
+          65.534717215,
+          65.045789129,
+          64.72646805
+        ],
+        "treatment_minus_control": [
+          -18.568237542999995,
+          -18.496287175999996,
+          -18.173827027,
+          -20.174729435000003,
+          -19.370509843000008
+        ]
+      },
+      "decode_infer_s": {
+        "control": [
+          143.221490682,
+          143.735924396,
+          143.152000032,
+          143.259762506,
+          143.207379556
+        ],
+        "exact_two_sided_sign_flip_p": 0.25,
+        "geometric_mean_control_over_treatment_speedup": 1.00265957923962,
+        "geometric_mean_favorable_speedup": 1.00265957923962,
+        "geometric_mean_treatment_over_control": 0.9973474753598455,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": -0.3797905079999907,
+        "mean_percent_change": -0.26469001649047996,
+        "median_difference": -0.5051298889999885,
+        "median_percent_change": -0.35286261378609624,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          -1.0471918166930716,
+          0.2876108006930901
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          -0.4752597146969458,
+          -0.7301554315040866,
+          -0.35286261378609624,
+          0.10784526324588041,
+          0.12698241428884843
+        ],
+        "sample_sd_of_differences": 0.5375055852033986,
+        "treatment": [
+          142.540816634,
+          142.686428737,
+          142.646870143,
+          143.414261374,
+          143.389227744
+        ],
+        "treatment_minus_control": [
+          -0.680674047999986,
+          -1.0494956590000015,
+          -0.5051298889999885,
+          0.15449886800001877,
+          0.18184818800000357
+        ]
+      },
+      "decode_wall_s": {
+        "control": [
+          147.357470573,
+          147.697927908,
+          147.449665453,
+          147.753727422,
+          147.363224232
+        ],
+        "exact_two_sided_sign_flip_p": 0.1875,
+        "geometric_mean_control_over_treatment_speedup": 1.0030127302708374,
+        "geometric_mean_favorable_speedup": 1.0030127302708374,
+        "geometric_mean_treatment_over_control": 0.9969963190098057,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": -0.44230946639999613,
+        "mean_percent_change": -0.2997044120459554,
+        "median_difference": -0.585422082000008,
+        "median_percent_change": -0.3972802191321501,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          -1.1877208723650616,
+          0.3031019395650695
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          -0.3972802191321501,
+          -0.8087331433275207,
+          -0.48937388008520805,
+          -0.04350439486133292,
+          0.2403695771764349
+        ],
+        "sample_sd_of_differences": 0.600332646582799,
+        "treatment": [
+          146.772048491,
+          146.503445813,
+          146.728085304,
+          147.689448057,
+          147.717440591
+        ],
+        "treatment_minus_control": [
+          -0.585422082000008,
+          -1.1944820949999837,
+          -0.7215801490000047,
+          -0.06427936500000442,
+          0.35421635900002
+        ]
+      },
+      "protocol_critical_path_s": {
+        "control": [
+          231.993970971,
+          232.85763407599998,
+          231.730203078,
+          233.54898441,
+          232.031900832
+        ],
+        "exact_two_sided_sign_flip_p": 0.0625,
+        "geometric_mean_control_over_treatment_speedup": 1.0913545650227277,
+        "geometric_mean_favorable_speedup": 1.0913545650227277,
+        "geometric_mean_treatment_over_control": 0.9162924974608732,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": -19.457170030999993,
+        "mean_percent_change": -8.370512476646716,
+        "median_difference": -19.157789511000004,
+        "median_percent_change": -8.257882491866477,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          -20.208198667730215,
+          -18.70614139426977
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          -8.257882491866477,
+          -8.570925045766835,
+          -8.156394630024993,
+          -8.669330914090274,
+          -8.198029301485002
+        ],
+        "sample_sd_of_differences": 0.6048566007170219,
+        "treatment": [
+          212.83618146,
+          212.899580796,
+          212.829373238,
+          213.301850105,
+          213.009857613
+        ],
+        "treatment_minus_control": [
+          -19.157789511000004,
+          -19.958053279999973,
+          -18.90082984,
+          -20.247134305000003,
+          -19.022043218999983
+        ]
+      },
+      "tokens_per_s_infer": {
+        "control": [
+          56.304399302090765,
+          56.10288474427073,
+          56.33173129399089,
+          56.289357590288226,
+          56.30994732954137
+        ],
+        "exact_two_sided_sign_flip_p": 0.25,
+        "geometric_mean_control_over_treatment_speedup": 0.9973474753598454,
+        "geometric_mean_favorable_speedup": 1.0026595792396202,
+        "geometric_mean_treatment_over_control": 1.0026595792396202,
+        "higher_is_better": true,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 0.14978913154013754,
+        "mean_percent_change": 0.26652336395678744,
+        "median_difference": 0.19947750095874284,
+        "median_percent_change": 0.35411214315016415,
+        "objective": "higher",
+        "paired_t_95pct_ci_for_mean_difference": [
+          -0.11284297488386272,
+          0.41242123796413777
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          0.477529218699349,
+          0.7355259139146542,
+          0.35411214315016415,
+          -0.10772908253321722,
+          -0.1268213734470129
+        ],
+        "sample_sd_of_differences": 0.2115162529918741,
+        "treatment": [
+          56.5732692601714,
+          56.515536000018514,
+          56.531208794949634,
+          56.22871758179237,
+          56.23853428095076
+        ],
+        "treatment_minus_control": [
+          0.26886995808063574,
+          0.4126512557477824,
+          0.19947750095874284,
+          -0.06064000849585938,
+          -0.07141304859061393
+        ]
+      },
+      "tokens_per_s_wall": {
+        "control": [
+          54.7240663716818,
+          54.59792235557298,
+          54.68984941556496,
+          54.57730333237806,
+          54.72192972179078
+        ],
+        "exact_two_sided_sign_flip_p": 0.1875,
+        "geometric_mean_control_over_treatment_speedup": 0.9969963190098057,
+        "geometric_mean_favorable_speedup": 1.0030127302708374,
+        "geometric_mean_treatment_over_control": 1.0030127302708374,
+        "higher_is_better": true,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 0.16498301308041477,
+        "mean_percent_change": 0.30194049210917745,
+        "median_difference": 0.21827505441392958,
+        "median_percent_change": 0.3988648302036285,
+        "objective": "higher",
+        "paired_t_95pct_ci_for_mean_difference": [
+          -0.11254069872957986,
+          0.44250672489040943
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          0.3988648302036285,
+          0.8153269627013763,
+          0.49178052552447027,
+          0.04352332942242093,
+          -0.23979318730600882
+        ],
+        "sample_sd_of_differences": 0.22350951845803152,
+        "treatment": [
+          54.94234142609573,
+          55.04307393761273,
+          54.958803444429364,
+          54.60105719189728,
+          54.59071026235554
+        ],
+        "treatment_minus_control": [
+          0.21827505441392958,
+          0.4451515820397489,
+          0.2689540288644068,
+          0.023753859519224818,
+          -0.13121945943523627
+        ]
+      }
+    },
+    "paired_memory_and_cpu": {
+      "logical_active_kv_max_bytes": {
+        "control": [
+          100651008.0,
+          100651008.0,
+          100651008.0,
+          100651008.0,
+          100651008.0
+        ],
+        "exact_two_sided_sign_flip_p": 1.0,
+        "geometric_mean_control_over_treatment_speedup": 1.0,
+        "geometric_mean_favorable_speedup": 1.0,
+        "geometric_mean_treatment_over_control": 1.0,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 0.0,
+        "mean_percent_change": 0.0,
+        "median_difference": 0.0,
+        "median_percent_change": 0.0,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          0.0,
+          0.0
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "sample_sd_of_differences": 0.0,
+        "treatment": [
+          100651008.0,
+          100651008.0,
+          100651008.0,
+          100651008.0,
+          100651008.0
+        ],
+        "treatment_minus_control": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "logical_active_kv_time_weighted_mean_bytes": {
+        "control": [
+          71915170.08447982,
+          71523692.18363163,
+          71850601.73874289,
+          71673258.88229117,
+          71530203.40146793
+        ],
+        "exact_two_sided_sign_flip_p": 0.6875,
+        "geometric_mean_control_over_treatment_speedup": 1.0007308179439096,
+        "geometric_mean_favorable_speedup": 1.0007308179439096,
+        "geometric_mean_treatment_over_control": 0.9992697157609165,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": -52502.859743666646,
+        "mean_percent_change": -0.07258867368643622,
+        "median_difference": -101314.08752292395,
+        "median_percent_change": -0.14135549171736678,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          -347770.84247729345,
+          242765.12298996013
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          -0.4928660029198772,
+          0.19291907455625681,
+          -0.24595039745986894,
+          -0.14135549171736678,
+          0.324309449108675
+        ],
+        "sample_sd_of_differences": 237800.23770383483,
+        "treatment": [
+          71560724.66019142,
+          71661675.02868076,
+          71673884.89818914,
+          71571944.79476824,
+          71762182.61006555
+        ],
+        "treatment_minus_control": [
+          -354445.42428840697,
+          137982.84504912794,
+          -176716.84055374563,
+          -101314.08752292395,
+          231979.20859761536
+        ]
+      },
+      "process_average_cpu_cores": {
+        "control": [
+          0.3687191901524845,
+          0.3705116771699127,
+          0.3679077029298738,
+          0.3724422942142223,
+          0.3681685125765197
+        ],
+        "exact_two_sided_sign_flip_p": 0.0625,
+        "geometric_mean_control_over_treatment_speedup": 0.9238121798868041,
+        "geometric_mean_favorable_speedup": 0.9238121798868041,
+        "geometric_mean_treatment_over_control": 1.082471114553319,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 0.030475454043219396,
+        "mean_percent_change": 8.248166358964168,
+        "median_difference": 0.03053198429442122,
+        "median_percent_change": 8.292937405415811,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          0.02815206575185062,
+          0.03279884233458817
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          8.99685116284021,
+          7.646942844486023,
+          8.4685145898892,
+          7.835585792189598,
+          8.292937405415811
+        ],
+        "sample_sd_of_differences": 0.0018711892933689206,
+        "treatment": [
+          0.4018923068993333,
+          0.39884449335524247,
+          0.39906402042981637,
+          0.4016253297037769,
+          0.39870049687094095
+        ],
+        "treatment_minus_control": [
+          0.03317311674684881,
+          0.02833281618532979,
+          0.031156317499942576,
+          0.029183035489554587,
+          0.03053198429442122
+        ]
+      },
+      "runner_npu_alloc_max_bytes": {
+        "control": [
+          1643012840.0,
+          1643012840.0,
+          1643012840.0,
+          1643012840.0,
+          1643012840.0
+        ],
+        "exact_two_sided_sign_flip_p": 0.0625,
+        "geometric_mean_control_over_treatment_speedup": 0.9700327565989119,
+        "geometric_mean_favorable_speedup": 0.9700327565989119,
+        "geometric_mean_treatment_over_control": 1.030893022114179,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 50757632.0,
+        "mean_percent_change": 3.0893022114178974,
+        "median_difference": 50757632.0,
+        "median_percent_change": 3.0893022114178974,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          50757632.0,
+          50757632.0
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          3.0893022114178974,
+          3.0893022114178974,
+          3.0893022114178974,
+          3.0893022114178974,
+          3.0893022114178974
+        ],
+        "sample_sd_of_differences": 0.0,
+        "treatment": [
+          1693770472.0,
+          1693770472.0,
+          1693770472.0,
+          1693770472.0,
+          1693770472.0
+        ],
+        "treatment_minus_control": [
+          50757632.0,
+          50757632.0,
+          50757632.0,
+          50757632.0,
+          50757632.0
+        ]
+      },
+      "runner_npu_alloc_time_weighted_mean_bytes": {
+        "control": [
+          1087559074.865844,
+          1087345082.0252256,
+          1089056427.7306561,
+          1083877824.5111778,
+          1087292973.6158886
+        ],
+        "exact_two_sided_sign_flip_p": 0.0625,
+        "geometric_mean_control_over_treatment_speedup": 0.924166510234933,
+        "geometric_mean_favorable_speedup": 0.924166510234933,
+        "geometric_mean_treatment_over_control": 1.082056089379163,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 89198542.30221395,
+        "mean_percent_change": 8.20618552317838,
+        "median_difference": 87323561.29514241,
+        "median_percent_change": 8.029316596518145,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          84024690.1319798,
+          94372394.47244811
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          8.029316596518145,
+          7.880461421247679,
+          7.867393481125279,
+          8.72265970824795,
+          8.531096408752846
+        ],
+        "sample_sd_of_differences": 4166869.9211323867,
+        "treatment": [
+          1174882636.1609864,
+          1173032891.7300575,
+          1174736782.1317136,
+          1178420798.7964487,
+          1180050985.4406557
+        ],
+        "treatment_minus_control": [
+          87323561.29514241,
+          85687809.70483184,
+          85680354.40105748,
+          94542974.28527093,
+          92758011.82476711
+        ]
+      },
+      "runner_rss_max_bytes": {
+        "control": [
+          2203516928.0,
+          2166091776.0,
+          2173329408.0,
+          2175143936.0,
+          2116251648.0
+        ],
+        "exact_two_sided_sign_flip_p": 0.0625,
+        "geometric_mean_control_over_treatment_speedup": 0.946733181397626,
+        "geometric_mean_favorable_speedup": 0.946733181397626,
+        "geometric_mean_treatment_over_control": 1.0562638129190087,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 121732300.8,
+        "mean_percent_change": 5.63580019858932,
+        "median_difference": 110669824.0,
+        "median_percent_change": 5.092179013113506,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          81803452.7544043,
+          161661148.8455957
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          4.240586800701901,
+          5.059650436528872,
+          5.092179013113506,
+          5.423686683325769,
+          8.36289805927655
+        ],
+        "sample_sd_of_differences": 32157531.841333643,
+        "treatment": [
+          2296958976.0,
+          2275688448.0,
+          2283999232.0,
+          2293116928.0,
+          2293231616.0
+        ],
+        "treatment_minus_control": [
+          93442048.0,
+          109596672.0,
+          110669824.0,
+          117972992.0,
+          176979968.0
+        ]
+      },
+      "runner_rss_time_weighted_mean_bytes": {
+        "control": [
+          1909567818.144264,
+          1877492560.2305627,
+          1884727299.8957303,
+          1882871556.6949093,
+          1834834792.070105
+        ],
+        "exact_two_sided_sign_flip_p": 0.125,
+        "geometric_mean_control_over_treatment_speedup": 1.0207884428301044,
+        "geometric_mean_favorable_speedup": 1.0207884428301044,
+        "geometric_mean_treatment_over_control": 0.9796349155634355,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": -38384449.28061509,
+        "mean_percent_change": -2.025876052213111,
+        "median_difference": -47786623.00099349,
+        "median_percent_change": -2.545236344112337,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          -76410088.55315036,
+          -358810.00807982683
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          -3.5740798189619603,
+          -2.545236344112337,
+          -2.7178675403366928,
+          -1.981985802589945,
+          0.6897892449353804
+        ],
+        "sample_sd_of_differences": 30624742.900102295,
+        "treatment": [
+          1841318340.1265776,
+          1829705937.2295692,
+          1833502908.388,
+          1845553309.760212,
+          1847491285.128137
+        ],
+        "treatment_minus_control": [
+          -68249478.01768637,
+          -47786623.00099349,
+          -51224391.507730246,
+          -37318246.93469739,
+          12656493.058032036
+        ]
+      },
+      "system_rss_fixed_interval_mean_bytes": {
+        "control": [
+          2089622869.3333333,
+          2061398835.2,
+          2069494033.0666666,
+          2069376068.2666667,
+          2013813145.6
+        ],
+        "exact_two_sided_sign_flip_p": 0.0625,
+        "geometric_mean_control_over_treatment_speedup": 1.0567845643303784,
+        "geometric_mean_favorable_speedup": 1.0567845643303784,
+        "geometric_mean_treatment_over_control": 0.9462666599730671,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": -110868540.46476188,
+        "mean_percent_change": -5.364186790168714,
+        "median_difference": -119187836.34285712,
+        "median_percent_change": -5.7818911269198106,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          -150027787.63786408,
+          -71709293.29165968
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          -6.591426147361176,
+          -5.7818911269198106,
+          -6.102862972719575,
+          -5.530280842695008,
+          -2.8144728611479986
+        ],
+        "sample_sd_of_differences": 31537717.702591993,
+        "treatment": [
+          1951886921.142857,
+          1942210998.857143,
+          1943195648.0,
+          1954933760.0,
+          1957134921.142857
+        ],
+        "treatment_minus_control": [
+          -137735948.19047618,
+          -119187836.34285712,
+          -126298385.0666666,
+          -114442308.26666665,
+          -56678224.45714283
+        ]
+      },
+      "system_rss_max_bytes": {
+        "control": [
+          2202165248.0,
+          2164391936.0,
+          2171232256.0,
+          2173009920.0,
+          2114629632.0
+        ],
+        "exact_two_sided_sign_flip_p": 0.0625,
+        "geometric_mean_control_over_treatment_speedup": 0.946616129059707,
+        "geometric_mean_favorable_speedup": 0.946616129059707,
+        "geometric_mean_treatment_over_control": 1.0563944235699008,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 121914163.2,
+        "mean_percent_change": 5.648961190863399,
+        "median_difference": 111083520.0,
+        "median_percent_change": 5.11615096418317,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          81792743.08727267,
+          162035583.31272733
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          4.215475840621385,
+          5.076114273602616,
+          5.11615096418317,
+          5.4570986956193925,
+          8.379966180290431
+        ],
+        "sample_sd_of_differences": 32312623.7782076,
+        "treatment": [
+          2294996992.0,
+          2274258944.0,
+          2282315776.0,
+          2291593216.0,
+          2291834880.0
+        ],
+        "treatment_minus_control": [
+          92831744.0,
+          109867008.0,
+          111083520.0,
+          118583296.0,
+          177205248.0
+        ]
+      }
+    },
+    "paired_per_band": {
+      "0-1024": {
+        "infer_s": {
+          "control": [
+            13.895383894,
+            14.186192547,
+            13.92561879,
+            14.278610629,
+            14.101704326
+          ],
+          "exact_two_sided_sign_flip_p": 0.625,
+          "geometric_mean_control_over_treatment_speedup": 1.0027402236370315,
+          "geometric_mean_favorable_speedup": 1.0027402236370315,
+          "geometric_mean_treatment_over_control": 0.9972672646689165,
+          "higher_is_better": false,
+          "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+          "mean_difference": -0.03901465699999953,
+          "mean_percent_change": -0.26817784194456207,
+          "median_difference": -0.12299945399999856,
+          "median_percent_change": -0.8614245264884908,
+          "objective": "lower",
+          "paired_t_95pct_ci_for_mean_difference": [
+            -0.23583156765740804,
+            0.15780225365740896
+          ],
+          "pairs": 5,
+          "percent_changes": [
+            1.4714891618668355,
+            -1.108012537396719,
+            0.2777151132973117,
+            -0.8614245264884908,
+            -1.120656421001748
+          ],
+          "sample_sd_of_differences": 0.15851061027733965,
+          "treatment": [
+            14.099852962,
+            14.029007755,
+            13.964292338,
+            14.155611175,
+            13.943672671
+          ],
+          "treatment_minus_control": [
+            0.20446906799999987,
+            -0.1571847919999989,
+            0.038673548000000224,
+            -0.12299945399999856,
+            -0.15803165500000027
+          ]
+        },
+        "tokens_per_s": {
+          "control": [
+            64.4818456859541,
+            63.16000554986687,
+            64.3418445895861,
+            62.75120341052057,
+            63.53841913618917
+          ],
+          "exact_two_sided_sign_flip_p": 0.625,
+          "geometric_mean_control_over_treatment_speedup": 0.9972672646689165,
+          "geometric_mean_favorable_speedup": 1.0027402236370315,
+          "geometric_mean_treatment_over_control": 1.0027402236370315,
+          "higher_is_better": true,
+          "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+          "mean_difference": 0.17195089723608845,
+          "mean_percent_change": 0.27911953012557505,
+          "median_difference": 0.5452511842772481,
+          "median_percent_change": 0.8689095262607088,
+          "objective": "higher",
+          "paired_t_95pct_ci_for_mean_difference": [
+            -0.7223384513514485,
+            1.0662402458236253
+          ],
+          "pairs": 5,
+          "percent_changes": [
+            -1.4501503565395844,
+            1.1204270091302675,
+            -0.27694599242069484,
+            0.8689095262607088,
+            1.1333574641971782
+          ],
+          "sample_sd_of_differences": 0.7202346075631746,
+          "treatment": [
+            63.54676197083593,
+            63.86766731101575,
+            64.16365242954569,
+            63.296454594797815,
+            64.25853655210206
+          ],
+          "treatment_minus_control": [
+            -0.9350837151181679,
+            0.7076617611488842,
+            -0.17819216004041039,
+            0.5452511842772481,
+            0.7201174159128882
+          ]
+        }
+      },
+      "1024-2048": {
+        "infer_s": {
+          "control": [
+            16.086443406,
+            16.429506961,
+            16.007269808,
+            16.376137428,
+            16.213047445
+          ],
+          "exact_two_sided_sign_flip_p": 0.3125,
+          "geometric_mean_control_over_treatment_speedup": 0.9937617718675725,
+          "geometric_mean_favorable_speedup": 0.9937617718675725,
+          "geometric_mean_treatment_over_control": 1.0062773879102875,
+          "higher_is_better": false,
+          "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+          "mean_difference": 0.10121877719999972,
+          "mean_percent_change": 0.6331477117383826,
+          "median_difference": 0.0959855239999996,
+          "median_percent_change": 0.5920264177700961,
+          "objective": "lower",
+          "paired_t_95pct_ci_for_mean_difference": [
+            -0.13241008268537216,
+            0.3348476370853716
+          ],
+          "pairs": 5,
+          "percent_changes": [
+            0.8233465512370418,
+            -0.9848967128722173,
+            2.2922734944882324,
+            0.4429888080687598,
+            0.5920264177700961
+          ],
+          "sample_sd_of_differences": 0.18815788254745378,
+          "treatment": [
+            16.218890583,
+            16.267693287,
+            16.374200211,
+            16.448681884,
+            16.309032969
+          ],
+          "treatment_minus_control": [
+            0.13244717699999953,
+            -0.16181367400000113,
+            0.36693040300000135,
+            0.07254445599999926,
+            0.0959855239999996
+          ]
+        },
+        "tokens_per_s": {
+          "control": [
+            63.65608445295394,
+            62.32688554992846,
+            63.97093397452653,
+            62.530007732419236,
+            63.159008414287655
+          ],
+          "exact_two_sided_sign_flip_p": 0.3125,
+          "geometric_mean_control_over_treatment_speedup": 1.0062773879102875,
+          "geometric_mean_favorable_speedup": 0.9937617718675725,
+          "geometric_mean_treatment_over_control": 0.9937617718675725,
+          "higher_is_better": true,
+          "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+          "mean_difference": -0.396178746597009,
+          "mean_percent_change": -0.6184824937713841,
+          "median_difference": -0.37171735010218043,
+          "median_percent_change": -0.5885420930992507,
+          "objective": "higher",
+          "paired_t_95pct_ci_for_mean_difference": [
+            -1.3041694776403094,
+            0.5118119844462914
+          ],
+          "pairs": 5,
+          "percent_changes": [
+            -0.8166229146328073,
+            0.9946934156258677,
+            -2.2409058046908417,
+            -0.4410350720598884,
+            -0.5885420930992507
+          ],
+          "sample_sd_of_differences": 0.7312693021300796,
+          "treatment": [
+            63.13625428075311,
+            62.94684697665827,
+            62.53740560177642,
+            62.25422846775751,
+            62.787291064185474
+          ],
+          "treatment_minus_control": [
+            -0.5198301722008338,
+            0.6199614267298088,
+            -1.4335283727501107,
+            -0.275779264661729,
+            -0.37171735010218043
+          ]
+        }
+      },
+      "2048-4096": {
+        "infer_s": {
+          "control": [
+            33.429199937,
+            33.647303438,
+            33.574458698,
+            33.092519245,
+            33.759629239
+          ],
+          "exact_two_sided_sign_flip_p": 0.4375,
+          "geometric_mean_control_over_treatment_speedup": 1.0040665147538372,
+          "geometric_mean_favorable_speedup": 1.0040665147538372,
+          "geometric_mean_treatment_over_control": 0.9959499548146626,
+          "higher_is_better": false,
+          "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+          "mean_difference": -0.13620262399999916,
+          "mean_percent_change": -0.40145838128551115,
+          "median_difference": -0.20123455099999887,
+          "median_percent_change": -0.5960804532993138,
+          "objective": "lower",
+          "paired_t_95pct_ci_for_mean_difference": [
+            -0.5264366431887142,
+            0.2540313951887158
+          ],
+          "pairs": 5,
+          "percent_changes": [
+            -0.33680928413539546,
+            -1.1261650155657383,
+            -1.1186861607462693,
+            1.1704490073191611,
+            -0.5960804532993138
+          ],
+          "sample_sd_of_differences": 0.31428311889445826,
+          "treatment": [
+            33.316607288,
+            33.268379278,
+            33.198865875,
+            33.479850308,
+            33.558394688
+          ],
+          "treatment_minus_control": [
+            -0.11259264899999977,
+            -0.37892416000000395,
+            -0.3755928229999981,
+            0.38733106300000486,
+            -0.20123455099999887
+          ]
+        },
+        "tokens_per_s": {
+          "control": [
+            61.26380541142533,
+            60.866690365655444,
+            60.99874962755535,
+            61.887098556554754,
+            60.664173338553645
+          ],
+          "exact_two_sided_sign_flip_p": 0.4375,
+          "geometric_mean_control_over_treatment_speedup": 0.9959499548146626,
+          "geometric_mean_favorable_speedup": 1.0040665147538372,
+          "geometric_mean_treatment_over_control": 1.0040665147538372,
+          "higher_is_better": true,
+          "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+          "mean_difference": 0.24764195524710858,
+          "mean_percent_change": 0.41020573750973954,
+          "median_difference": 0.36377567511998166,
+          "median_percent_change": 0.5996548788192138,
+          "objective": "higher",
+          "paired_t_95pct_ci_for_mean_difference": [
+            -0.47050027755844953,
+            0.9657841880526667
+          ],
+          "pairs": 5,
+          "percent_changes": [
+            0.33794752276759077,
+            1.138991944373381,
+            1.131342330831962,
+            -1.1569079892434495,
+            0.5996548788192138
+          ],
+          "sample_sd_of_differences": 0.5783708483570564,
+          "treatment": [
+            61.4708449241664,
+            61.55995706572695,
+            61.688854303370086,
+            61.171121769043005,
+            61.02794901367363
+          ],
+          "treatment_minus_control": [
+            0.20703951274106913,
+            0.6932667000715043,
+            0.6901046758147373,
+            -0.7159767875117495,
+            0.36377567511998166
+          ]
+        }
+      },
+      "4096-8192": {
+        "infer_s": {
+          "control": [
+            79.810463445,
+            79.47292145,
+            79.644652736,
+            79.512495204,
+            79.132998546
+          ],
+          "exact_two_sided_sign_flip_p": 0.25,
+          "geometric_mean_control_over_treatment_speedup": 1.0038607411035048,
+          "geometric_mean_favorable_speedup": 1.0038607411035048,
+          "geometric_mean_treatment_over_control": 0.996154106894089,
+          "higher_is_better": false,
+          "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+          "mean_difference": -0.30579200420000063,
+          "mean_percent_change": -0.38301744773000185,
+          "median_difference": -0.3515730330000082,
+          "median_percent_change": -0.44238090985644546,
+          "objective": "lower",
+          "paired_t_95pct_ci_for_mean_difference": [
+            -0.9244029055594282,
+            0.3128188971594269
+          ],
+          "pairs": 5,
+          "percent_changes": [
+            -1.1339335783003621,
+            -0.44238090985644546,
+            -0.6719107920199556,
+            -0.2293692287383195,
+            0.5625072702650735
+          ],
+          "sample_sd_of_differences": 0.49821121148162384,
+          "treatment": [
+            78.905465801,
+            79.121348417,
+            79.109511719,
+            79.330118007,
+            79.578127416
+          ],
+          "treatment_minus_control": [
+            -0.9049976439999909,
+            -0.3515730330000082,
+            -0.5351410170000008,
+            -0.1823771970000081,
+            0.4451288700000049
+          ]
+        },
+        "tokens_per_s": {
+          "control": [
+            51.32159147055558,
+            51.539567506360996,
+            51.42843692943338,
+            51.51391601396939,
+            51.76096034853268
+          ],
+          "exact_two_sided_sign_flip_p": 0.25,
+          "geometric_mean_control_over_treatment_speedup": 0.9961541068940889,
+          "geometric_mean_favorable_speedup": 1.0038607411035048,
+          "geometric_mean_treatment_over_control": 1.0038607411035048,
+          "higher_is_better": true,
+          "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+          "mean_difference": 0.19888612700558211,
+          "mean_percent_change": 0.3876554817608784,
+          "median_difference": 0.22901432331791227,
+          "median_percent_change": 0.4443466144523766,
+          "objective": "higher",
+          "paired_t_95pct_ci_for_mean_difference": [
+            -0.20347458014975395,
+            0.6012468341609182
+          ],
+          "pairs": 5,
+          "percent_changes": [
+            1.1469391059453435,
+            0.4443466144523766,
+            0.6764559727038164,
+            0.22989654066051848,
+            -0.5593608249576631
+          ],
+          "sample_sd_of_differences": 0.3240496003609715,
+          "treatment": [
+            51.910218872924894,
+            51.76858182967891,
+            51.77632766271075,
+            51.63234472484427,
+            51.471429813721116
+          ],
+          "treatment_minus_control": [
+            0.5886274023693119,
+            0.22901432331791227,
+            0.3478907332773673,
+            0.1184287108748805,
+            -0.2895305348115613
+          ]
+        }
+      }
+    },
+    "paired_thermal_maxima": {
+      "hwmon/hwmon1/acpitz/temp1": {
+        "control": [
+          40.0,
+          40.0,
+          40.0,
+          40.0,
+          40.0
+        ],
+        "exact_two_sided_sign_flip_p": 1.0,
+        "geometric_mean_control_over_treatment_speedup": 1.0,
+        "geometric_mean_favorable_speedup": 1.0,
+        "geometric_mean_treatment_over_control": 1.0,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 0.0,
+        "mean_percent_change": 0.0,
+        "median_difference": 0.0,
+        "median_percent_change": 0.0,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          0.0,
+          0.0
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "sample_sd_of_differences": 0.0,
+        "treatment": [
+          40.0,
+          40.0,
+          40.0,
+          40.0,
+          40.0
+        ],
+        "treatment_minus_control": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "hwmon/hwmon1/acpitz/temp2": {
+        "control": [
+          27.8,
+          27.8,
+          27.8,
+          27.8,
+          27.8
+        ],
+        "exact_two_sided_sign_flip_p": 1.0,
+        "geometric_mean_control_over_treatment_speedup": 1.0,
+        "geometric_mean_favorable_speedup": 1.0,
+        "geometric_mean_treatment_over_control": 1.0,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 0.0,
+        "mean_percent_change": 0.0,
+        "median_difference": 0.0,
+        "median_percent_change": 0.0,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          0.0,
+          0.0
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "sample_sd_of_differences": 0.0,
+        "treatment": [
+          27.8,
+          27.8,
+          27.8,
+          27.8,
+          27.8
+        ],
+        "treatment_minus_control": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "hwmon/hwmon2/nvme/Composite": {
+        "control": [
+          39.85,
+          42.85,
+          42.85,
+          42.85,
+          39.85
+        ],
+        "exact_two_sided_sign_flip_p": 0.625,
+        "geometric_mean_control_over_treatment_speedup": 0.9864483656414745,
+        "geometric_mean_favorable_speedup": 0.9864483656414745,
+        "geometric_mean_treatment_over_control": 1.0137378040559812,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 0.6,
+        "mean_percent_change": 1.4353709725355732,
+        "median_difference": 1.0,
+        "median_percent_change": 2.509410288582183,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          -1.477701188644315,
+          2.677701188644315
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          2.509410288582183,
+          4.667444574095683,
+          4.667444574095683,
+          -4.667444574095683,
+          0.0
+        ],
+        "sample_sd_of_differences": 1.6733200530681511,
+        "treatment": [
+          40.85,
+          44.85,
+          44.85,
+          40.85,
+          39.85
+        ],
+        "treatment_minus_control": [
+          1.0,
+          2.0,
+          2.0,
+          -2.0,
+          0.0
+        ]
+      },
+      "hwmon/hwmon2/nvme/Sensor 2": {
+        "control": [
+          57.85,
+          57.85,
+          57.85,
+          57.85,
+          57.85
+        ],
+        "exact_two_sided_sign_flip_p": 1.0,
+        "geometric_mean_control_over_treatment_speedup": 1.0,
+        "geometric_mean_favorable_speedup": 1.0,
+        "geometric_mean_treatment_over_control": 1.0,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 0.0,
+        "mean_percent_change": 0.0,
+        "median_difference": 0.0,
+        "median_percent_change": 0.0,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          0.0,
+          0.0
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "sample_sd_of_differences": 0.0,
+        "treatment": [
+          57.85,
+          57.85,
+          57.85,
+          57.85,
+          57.85
+        ],
+        "treatment_minus_control": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "hwmon/hwmon6/coretemp/Core 0": {
+        "control": [
+          66.0,
+          60.0,
+          60.0,
+          61.0,
+          58.0
+        ],
+        "exact_two_sided_sign_flip_p": 0.1875,
+        "geometric_mean_control_over_treatment_speedup": 0.7728214341878408,
+        "geometric_mean_favorable_speedup": 0.7728214341878408,
+        "geometric_mean_treatment_over_control": 1.2939599702626021,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 19.6,
+        "mean_percent_change": 33.16127927094575,
+        "median_difference": 29.0,
+        "median_percent_change": 47.540983606557376,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          -5.7342048569510276,
+          44.93420485695103
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          -9.090909090909092,
+          3.3333333333333335,
+          53.333333333333336,
+          47.540983606557376,
+          70.6896551724138
+        ],
+        "sample_sd_of_differences": 20.403431084011334,
+        "treatment": [
+          60.0,
+          62.0,
+          92.0,
+          90.0,
+          99.0
+        ],
+        "treatment_minus_control": [
+          -6.0,
+          2.0,
+          32.0,
+          29.0,
+          41.0
+        ]
+      },
+      "hwmon/hwmon6/coretemp/Core 12": {
+        "control": [
+          64.0,
+          61.0,
+          59.0,
+          82.0,
+          57.0
+        ],
+        "exact_two_sided_sign_flip_p": 0.8125,
+        "geometric_mean_control_over_treatment_speedup": 0.9525092512030016,
+        "geometric_mean_favorable_speedup": 0.9525092512030016,
+        "geometric_mean_treatment_over_control": 1.049858569601312,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 4.0,
+        "mean_percent_change": 9.102722500057366,
+        "median_difference": -2.0,
+        "median_percent_change": -3.389830508474576,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          -23.485403219280773,
+          31.485403219280773
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          -9.375,
+          52.459016393442624,
+          -3.389830508474576,
+          -29.26829268292683,
+          35.08771929824562
+        ],
+        "sample_sd_of_differences": 22.135943621178654,
+        "treatment": [
+          58.0,
+          93.0,
+          57.0,
+          58.0,
+          77.0
+        ],
+        "treatment_minus_control": [
+          -6.0,
+          32.0,
+          -2.0,
+          -24.0,
+          20.0
+        ]
+      },
+      "hwmon/hwmon6/coretemp/Core 16": {
+        "control": [
+          65.0,
+          64.0,
+          63.0,
+          74.0,
+          71.0
+        ],
+        "exact_two_sided_sign_flip_p": 0.25,
+        "geometric_mean_control_over_treatment_speedup": 1.043042479093756,
+        "geometric_mean_favorable_speedup": 1.043042479093756,
+        "geometric_mean_treatment_over_control": 0.9587337237394652,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": -2.8,
+        "mean_percent_change": -3.9630585546078505,
+        "median_difference": -2.0,
+        "median_percent_change": -2.7027027027027026,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          -8.169389087616345,
+          2.5693890876163463
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          -4.615384615384615,
+          0.0,
+          1.5873015873015872,
+          -2.7027027027027026,
+          -14.084507042253522
+        ],
+        "sample_sd_of_differences": 4.324349662087931,
+        "treatment": [
+          62.0,
+          64.0,
+          64.0,
+          72.0,
+          61.0
+        ],
+        "treatment_minus_control": [
+          -3.0,
+          0.0,
+          1.0,
+          -2.0,
+          -10.0
+        ]
+      },
+      "hwmon/hwmon6/coretemp/Core 17": {
+        "control": [
+          65.0,
+          64.0,
+          63.0,
+          74.0,
+          71.0
+        ],
+        "exact_two_sided_sign_flip_p": 0.25,
+        "geometric_mean_control_over_treatment_speedup": 1.043042479093756,
+        "geometric_mean_favorable_speedup": 1.043042479093756,
+        "geometric_mean_treatment_over_control": 0.9587337237394652,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": -2.8,
+        "mean_percent_change": -3.9630585546078505,
+        "median_difference": -2.0,
+        "median_percent_change": -2.7027027027027026,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          -8.169389087616345,
+          2.5693890876163463
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          -4.615384615384615,
+          0.0,
+          1.5873015873015872,
+          -2.7027027027027026,
+          -14.084507042253522
+        ],
+        "sample_sd_of_differences": 4.324349662087931,
+        "treatment": [
+          62.0,
+          64.0,
+          64.0,
+          72.0,
+          61.0
+        ],
+        "treatment_minus_control": [
+          -3.0,
+          0.0,
+          1.0,
+          -2.0,
+          -10.0
+        ]
+      },
+      "hwmon/hwmon6/coretemp/Core 18": {
+        "control": [
+          65.0,
+          64.0,
+          63.0,
+          74.0,
+          71.0
+        ],
+        "exact_two_sided_sign_flip_p": 0.25,
+        "geometric_mean_control_over_treatment_speedup": 1.043042479093756,
+        "geometric_mean_favorable_speedup": 1.043042479093756,
+        "geometric_mean_treatment_over_control": 0.9587337237394652,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": -2.8,
+        "mean_percent_change": -3.9630585546078505,
+        "median_difference": -2.0,
+        "median_percent_change": -2.7027027027027026,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          -8.169389087616345,
+          2.5693890876163463
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          -4.615384615384615,
+          0.0,
+          1.5873015873015872,
+          -2.7027027027027026,
+          -14.084507042253522
+        ],
+        "sample_sd_of_differences": 4.324349662087931,
+        "treatment": [
+          62.0,
+          64.0,
+          64.0,
+          72.0,
+          61.0
+        ],
+        "treatment_minus_control": [
+          -3.0,
+          0.0,
+          1.0,
+          -2.0,
+          -10.0
+        ]
+      },
+      "hwmon/hwmon6/coretemp/Core 19": {
+        "control": [
+          65.0,
+          64.0,
+          64.0,
+          74.0,
+          71.0
+        ],
+        "exact_two_sided_sign_flip_p": 0.25,
+        "geometric_mean_control_over_treatment_speedup": 1.046332899303502,
+        "geometric_mean_favorable_speedup": 1.046332899303502,
+        "geometric_mean_treatment_over_control": 0.9557187780921886,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": -3.0,
+        "mean_percent_change": -4.280518872068168,
+        "median_difference": -2.0,
+        "median_percent_change": -2.7027027027027026,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          -8.119511622145708,
+          2.1195116221457093
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          -4.615384615384615,
+          0.0,
+          0.0,
+          -2.7027027027027026,
+          -14.084507042253522
+        ],
+        "sample_sd_of_differences": 4.123105625617661,
+        "treatment": [
+          62.0,
+          64.0,
+          64.0,
+          72.0,
+          61.0
+        ],
+        "treatment_minus_control": [
+          -3.0,
+          0.0,
+          0.0,
+          -2.0,
+          -10.0
+        ]
+      },
+      "hwmon/hwmon6/coretemp/Core 20": {
+        "control": [
+          62.0,
+          61.0,
+          55.0,
+          61.0,
+          61.0
+        ],
+        "exact_two_sided_sign_flip_p": 0.5,
+        "geometric_mean_control_over_treatment_speedup": 0.9773796758970468,
+        "geometric_mean_favorable_speedup": 0.9773796758970468,
+        "geometric_mean_treatment_over_control": 1.0231438453865864,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 1.4,
+        "mean_percent_change": 2.464593048411134,
+        "median_difference": 3.0,
+        "median_percent_change": 4.918032786885246,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          -3.1282447580874533,
+          5.9282447580874535
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          -8.064516129032258,
+          4.918032786885246,
+          7.2727272727272725,
+          3.278688524590164,
+          4.918032786885246
+        ],
+        "sample_sd_of_differences": 3.646916505762094,
+        "treatment": [
+          57.0,
+          64.0,
+          59.0,
+          63.0,
+          64.0
+        ],
+        "treatment_minus_control": [
+          -5.0,
+          3.0,
+          4.0,
+          2.0,
+          3.0
+        ]
+      },
+      "hwmon/hwmon6/coretemp/Core 21": {
+        "control": [
+          62.0,
+          61.0,
+          55.0,
+          61.0,
+          61.0
+        ],
+        "exact_two_sided_sign_flip_p": 0.5,
+        "geometric_mean_control_over_treatment_speedup": 0.9773796758970468,
+        "geometric_mean_favorable_speedup": 0.9773796758970468,
+        "geometric_mean_treatment_over_control": 1.0231438453865864,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 1.4,
+        "mean_percent_change": 2.464593048411134,
+        "median_difference": 3.0,
+        "median_percent_change": 4.918032786885246,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          -3.1282447580874533,
+          5.9282447580874535
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          -8.064516129032258,
+          4.918032786885246,
+          7.2727272727272725,
+          3.278688524590164,
+          4.918032786885246
+        ],
+        "sample_sd_of_differences": 3.646916505762094,
+        "treatment": [
+          57.0,
+          64.0,
+          59.0,
+          63.0,
+          64.0
+        ],
+        "treatment_minus_control": [
+          -5.0,
+          3.0,
+          4.0,
+          2.0,
+          3.0
+        ]
+      },
+      "hwmon/hwmon6/coretemp/Core 22": {
+        "control": [
+          62.0,
+          61.0,
+          55.0,
+          61.0,
+          61.0
+        ],
+        "exact_two_sided_sign_flip_p": 0.5,
+        "geometric_mean_control_over_treatment_speedup": 0.9773796758970468,
+        "geometric_mean_favorable_speedup": 0.9773796758970468,
+        "geometric_mean_treatment_over_control": 1.0231438453865864,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 1.4,
+        "mean_percent_change": 2.464593048411134,
+        "median_difference": 3.0,
+        "median_percent_change": 4.918032786885246,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          -3.1282447580874533,
+          5.9282447580874535
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          -8.064516129032258,
+          4.918032786885246,
+          7.2727272727272725,
+          3.278688524590164,
+          4.918032786885246
+        ],
+        "sample_sd_of_differences": 3.646916505762094,
+        "treatment": [
+          57.0,
+          64.0,
+          59.0,
+          63.0,
+          64.0
+        ],
+        "treatment_minus_control": [
+          -5.0,
+          3.0,
+          4.0,
+          2.0,
+          3.0
+        ]
+      },
+      "hwmon/hwmon6/coretemp/Core 23": {
+        "control": [
+          62.0,
+          61.0,
+          55.0,
+          61.0,
+          61.0
+        ],
+        "exact_two_sided_sign_flip_p": 0.5,
+        "geometric_mean_control_over_treatment_speedup": 0.9773796758970468,
+        "geometric_mean_favorable_speedup": 0.9773796758970468,
+        "geometric_mean_treatment_over_control": 1.0231438453865864,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 1.4,
+        "mean_percent_change": 2.464593048411134,
+        "median_difference": 3.0,
+        "median_percent_change": 4.918032786885246,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          -3.1282447580874533,
+          5.9282447580874535
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          -8.064516129032258,
+          4.918032786885246,
+          7.2727272727272725,
+          3.278688524590164,
+          4.918032786885246
+        ],
+        "sample_sd_of_differences": 3.646916505762094,
+        "treatment": [
+          57.0,
+          64.0,
+          59.0,
+          63.0,
+          64.0
+        ],
+        "treatment_minus_control": [
+          -5.0,
+          3.0,
+          4.0,
+          2.0,
+          3.0
+        ]
+      },
+      "hwmon/hwmon6/coretemp/Core 32": {
+        "control": [
+          60.0,
+          56.0,
+          57.0,
+          55.0,
+          53.0
+        ],
+        "exact_two_sided_sign_flip_p": 0.75,
+        "geometric_mean_control_over_treatment_speedup": 0.9757357401538619,
+        "geometric_mean_favorable_speedup": 0.9757357401538619,
+        "geometric_mean_treatment_over_control": 1.0248676550910312,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 1.4,
+        "mean_percent_change": 2.685306748861863,
+        "median_difference": -1.0,
+        "median_percent_change": -1.6666666666666667,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          -3.4567951701051274,
+          6.256795170105127
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          -1.6666666666666667,
+          3.5714285714285716,
+          -1.7543859649122806,
+          -1.8181818181818181,
+          15.09433962264151
+        ],
+        "sample_sd_of_differences": 3.9115214431215892,
+        "treatment": [
+          59.0,
+          58.0,
+          56.0,
+          54.0,
+          61.0
+        ],
+        "treatment_minus_control": [
+          -1.0,
+          2.0,
+          -1.0,
+          -1.0,
+          8.0
+        ]
+      },
+      "hwmon/hwmon6/coretemp/Core 33": {
+        "control": [
+          60.0,
+          56.0,
+          57.0,
+          55.0,
+          53.0
+        ],
+        "exact_two_sided_sign_flip_p": 0.75,
+        "geometric_mean_control_over_treatment_speedup": 0.9757357401538619,
+        "geometric_mean_favorable_speedup": 0.9757357401538619,
+        "geometric_mean_treatment_over_control": 1.0248676550910312,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 1.4,
+        "mean_percent_change": 2.685306748861863,
+        "median_difference": -1.0,
+        "median_percent_change": -1.6666666666666667,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          -3.4567951701051274,
+          6.256795170105127
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          -1.6666666666666667,
+          3.5714285714285716,
+          -1.7543859649122806,
+          -1.8181818181818181,
+          15.09433962264151
+        ],
+        "sample_sd_of_differences": 3.9115214431215892,
+        "treatment": [
+          59.0,
+          58.0,
+          56.0,
+          54.0,
+          61.0
+        ],
+        "treatment_minus_control": [
+          -1.0,
+          2.0,
+          -1.0,
+          -1.0,
+          8.0
+        ]
+      },
+      "hwmon/hwmon6/coretemp/Core 34": {
+        "control": [
+          60.0,
+          56.0,
+          57.0,
+          55.0,
+          53.0
+        ],
+        "exact_two_sided_sign_flip_p": 0.75,
+        "geometric_mean_control_over_treatment_speedup": 0.9757357401538619,
+        "geometric_mean_favorable_speedup": 0.9757357401538619,
+        "geometric_mean_treatment_over_control": 1.0248676550910312,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 1.4,
+        "mean_percent_change": 2.685306748861863,
+        "median_difference": -1.0,
+        "median_percent_change": -1.6666666666666667,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          -3.4567951701051274,
+          6.256795170105127
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          -1.6666666666666667,
+          3.5714285714285716,
+          -1.7543859649122806,
+          -1.8181818181818181,
+          15.09433962264151
+        ],
+        "sample_sd_of_differences": 3.9115214431215892,
+        "treatment": [
+          59.0,
+          58.0,
+          56.0,
+          54.0,
+          61.0
+        ],
+        "treatment_minus_control": [
+          -1.0,
+          2.0,
+          -1.0,
+          -1.0,
+          8.0
+        ]
+      },
+      "hwmon/hwmon6/coretemp/Core 35": {
+        "control": [
+          60.0,
+          56.0,
+          57.0,
+          55.0,
+          53.0
+        ],
+        "exact_two_sided_sign_flip_p": 0.75,
+        "geometric_mean_control_over_treatment_speedup": 0.9757357401538619,
+        "geometric_mean_favorable_speedup": 0.9757357401538619,
+        "geometric_mean_treatment_over_control": 1.0248676550910312,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 1.4,
+        "mean_percent_change": 2.685306748861863,
+        "median_difference": -1.0,
+        "median_percent_change": -1.6666666666666667,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          -3.4567951701051274,
+          6.256795170105127
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          -1.6666666666666667,
+          3.5714285714285716,
+          -1.7543859649122806,
+          -1.8181818181818181,
+          15.09433962264151
+        ],
+        "sample_sd_of_differences": 3.9115214431215892,
+        "treatment": [
+          59.0,
+          58.0,
+          56.0,
+          54.0,
+          61.0
+        ],
+        "treatment_minus_control": [
+          -1.0,
+          2.0,
+          -1.0,
+          -1.0,
+          8.0
+        ]
+      },
+      "hwmon/hwmon6/coretemp/Core 4": {
+        "control": [
+          62.0,
+          56.0,
+          56.0,
+          85.0,
+          75.0
+        ],
+        "exact_two_sided_sign_flip_p": 1.0,
+        "geometric_mean_control_over_treatment_speedup": 0.9462273981298371,
+        "geometric_mean_favorable_speedup": 0.9462273981298371,
+        "geometric_mean_treatment_over_control": 1.0568284135255872,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 3.8,
+        "mean_percent_change": 7.776904310111141,
+        "median_difference": 0.0,
+        "median_percent_change": 0.0,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          -14.750309831629117,
+          22.35030983162912
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          -6.451612903225806,
+          53.57142857142857,
+          0.0,
+          -8.235294117647058,
+          0.0
+        ],
+        "sample_sd_of_differences": 14.939879517586478,
+        "treatment": [
+          58.0,
+          86.0,
+          56.0,
+          78.0,
+          75.0
+        ],
+        "treatment_minus_control": [
+          -4.0,
+          30.0,
+          0.0,
+          -7.0,
+          0.0
+        ]
+      },
+      "hwmon/hwmon6/coretemp/Core 8": {
+        "control": [
+          99.0,
+          98.0,
+          99.0,
+          98.0,
+          98.0
+        ],
+        "exact_two_sided_sign_flip_p": 0.5,
+        "geometric_mean_control_over_treatment_speedup": 0.9959472859157004,
+        "geometric_mean_favorable_speedup": 0.9959472859157004,
+        "geometric_mean_treatment_over_control": 1.0040692054103781,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 0.4,
+        "mean_percent_change": 0.40816326530612246,
+        "median_difference": 0.0,
+        "median_percent_change": 0.0,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          -0.280087354890164,
+          1.0800873548901642
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          0.0,
+          1.0204081632653061,
+          0.0,
+          0.0,
+          1.0204081632653061
+        ],
+        "sample_sd_of_differences": 0.5477225575051661,
+        "treatment": [
+          99.0,
+          99.0,
+          99.0,
+          98.0,
+          99.0
+        ],
+        "treatment_minus_control": [
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "hwmon/hwmon6/coretemp/Package id 0": {
+        "control": [
+          99.0,
+          98.0,
+          99.0,
+          98.0,
+          98.0
+        ],
+        "exact_two_sided_sign_flip_p": 0.5,
+        "geometric_mean_control_over_treatment_speedup": 0.9959472859157004,
+        "geometric_mean_favorable_speedup": 0.9959472859157004,
+        "geometric_mean_treatment_over_control": 1.0040692054103781,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 0.4,
+        "mean_percent_change": 0.40816326530612246,
+        "median_difference": 0.0,
+        "median_percent_change": 0.0,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          -0.280087354890164,
+          1.0800873548901642
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          0.0,
+          1.0204081632653061,
+          0.0,
+          0.0,
+          1.0204081632653061
+        ],
+        "sample_sd_of_differences": 0.5477225575051661,
+        "treatment": [
+          99.0,
+          99.0,
+          99.0,
+          98.0,
+          99.0
+        ],
+        "treatment_minus_control": [
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      },
+      "hwmon/hwmon7/iwlwifi_1/temp1": {
+        "control": [
+          56.0,
+          57.0,
+          57.0,
+          57.0,
+          55.0
+        ],
+        "exact_two_sided_sign_flip_p": 0.375,
+        "geometric_mean_control_over_treatment_speedup": 0.979454401815342,
+        "geometric_mean_favorable_speedup": 0.979454401815342,
+        "geometric_mean_treatment_over_control": 1.0209765744546946,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 1.2,
+        "mean_percent_change": 2.1430849851902485,
+        "median_difference": 1.0,
+        "median_percent_change": 1.8181818181818181,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          -1.1883882976054163,
+          3.588388297605416
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          7.142857142857143,
+          3.508771929824561,
+          0.0,
+          -1.7543859649122806,
+          1.8181818181818181
+        ],
+        "sample_sd_of_differences": 1.9235384061671346,
+        "treatment": [
+          60.0,
+          59.0,
+          57.0,
+          56.0,
+          56.0
+        ],
+        "treatment_minus_control": [
+          4.0,
+          2.0,
+          0.0,
+          -1.0,
+          1.0
+        ]
+      },
+      "thermal/thermal_zone0/acpitz": {
+        "control": [
+          40.0,
+          40.0,
+          40.0,
+          40.0,
+          40.0
+        ],
+        "exact_two_sided_sign_flip_p": 1.0,
+        "geometric_mean_control_over_treatment_speedup": 1.0,
+        "geometric_mean_favorable_speedup": 1.0,
+        "geometric_mean_treatment_over_control": 1.0,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 0.0,
+        "mean_percent_change": 0.0,
+        "median_difference": 0.0,
+        "median_percent_change": 0.0,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          0.0,
+          0.0
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "sample_sd_of_differences": 0.0,
+        "treatment": [
+          40.0,
+          40.0,
+          40.0,
+          40.0,
+          40.0
+        ],
+        "treatment_minus_control": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "thermal/thermal_zone1/acpitz": {
+        "control": [
+          27.8,
+          27.8,
+          27.8,
+          27.8,
+          27.8
+        ],
+        "exact_two_sided_sign_flip_p": 1.0,
+        "geometric_mean_control_over_treatment_speedup": 1.0,
+        "geometric_mean_favorable_speedup": 1.0,
+        "geometric_mean_treatment_over_control": 1.0,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 0.0,
+        "mean_percent_change": 0.0,
+        "median_difference": 0.0,
+        "median_percent_change": 0.0,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          0.0,
+          0.0
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "sample_sd_of_differences": 0.0,
+        "treatment": [
+          27.8,
+          27.8,
+          27.8,
+          27.8,
+          27.8
+        ],
+        "treatment_minus_control": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "thermal/thermal_zone2/INT3400 Thermal": {
+        "control": [
+          20.0,
+          20.0,
+          20.0,
+          20.0,
+          20.0
+        ],
+        "exact_two_sided_sign_flip_p": 1.0,
+        "geometric_mean_control_over_treatment_speedup": 1.0,
+        "geometric_mean_favorable_speedup": 1.0,
+        "geometric_mean_treatment_over_control": 1.0,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 0.0,
+        "mean_percent_change": 0.0,
+        "median_difference": 0.0,
+        "median_percent_change": 0.0,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          0.0,
+          0.0
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "sample_sd_of_differences": 0.0,
+        "treatment": [
+          20.0,
+          20.0,
+          20.0,
+          20.0,
+          20.0
+        ],
+        "treatment_minus_control": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "thermal/thermal_zone3/TCPU": {
+        "control": [
+          98.05,
+          97.05,
+          97.05,
+          97.05,
+          97.05
+        ],
+        "exact_two_sided_sign_flip_p": 0.25,
+        "geometric_mean_control_over_treatment_speedup": 0.9938681312980404,
+        "geometric_mean_favorable_speedup": 0.9938681312980404,
+        "geometric_mean_treatment_over_control": 1.0061697004953274,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 0.6,
+        "mean_percent_change": 0.6182380216383309,
+        "median_difference": 1.0,
+        "median_percent_change": 1.0303967027305514,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          -0.08008735489016405,
+          1.280087354890164
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          0.0,
+          1.0303967027305514,
+          1.0303967027305514,
+          0.0,
+          1.0303967027305514
+        ],
+        "sample_sd_of_differences": 0.5477225575051661,
+        "treatment": [
+          98.05,
+          98.05,
+          98.05,
+          97.05,
+          98.05
+        ],
+        "treatment_minus_control": [
+          0.0,
+          1.0,
+          1.0,
+          0.0,
+          1.0
+        ]
+      },
+      "thermal/thermal_zone4/TCPU_PCI": {
+        "control": [
+          98.0,
+          97.0,
+          97.0,
+          97.0,
+          97.0
+        ],
+        "exact_two_sided_sign_flip_p": 0.25,
+        "geometric_mean_control_over_treatment_speedup": 0.9938649963607276,
+        "geometric_mean_favorable_speedup": 0.9938649963607276,
+        "geometric_mean_treatment_over_control": 1.0061728742452316,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 0.6,
+        "mean_percent_change": 0.6185567010309277,
+        "median_difference": 1.0,
+        "median_percent_change": 1.0309278350515463,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          -0.08008735489016405,
+          1.280087354890164
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          0.0,
+          1.0309278350515463,
+          1.0309278350515463,
+          0.0,
+          1.0309278350515463
+        ],
+        "sample_sd_of_differences": 0.5477225575051661,
+        "treatment": [
+          98.0,
+          98.0,
+          98.0,
+          97.0,
+          98.0
+        ],
+        "treatment_minus_control": [
+          0.0,
+          1.0,
+          1.0,
+          0.0,
+          1.0
+        ]
+      },
+      "thermal/thermal_zone5/x86_pkg_temp": {
+        "control": [
+          99.0,
+          98.0,
+          98.0,
+          98.0,
+          98.0
+        ],
+        "exact_two_sided_sign_flip_p": 0.25,
+        "geometric_mean_control_over_treatment_speedup": 0.9939270922244149,
+        "geometric_mean_favorable_speedup": 0.9939270922244149,
+        "geometric_mean_treatment_over_control": 1.0061100133230034,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 0.6,
+        "mean_percent_change": 0.6122448979591837,
+        "median_difference": 1.0,
+        "median_percent_change": 1.0204081632653061,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          -0.08008735489016405,
+          1.280087354890164
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          0.0,
+          1.0204081632653061,
+          1.0204081632653061,
+          0.0,
+          1.0204081632653061
+        ],
+        "sample_sd_of_differences": 0.5477225575051661,
+        "treatment": [
+          99.0,
+          99.0,
+          99.0,
+          98.0,
+          99.0
+        ],
+        "treatment_minus_control": [
+          0.0,
+          1.0,
+          1.0,
+          0.0,
+          1.0
+        ]
+      },
+      "thermal/thermal_zone6/iwlwifi_1": {
+        "control": [
+          56.0,
+          57.0,
+          57.0,
+          57.0,
+          55.0
+        ],
+        "exact_two_sided_sign_flip_p": 0.375,
+        "geometric_mean_control_over_treatment_speedup": 0.979454401815342,
+        "geometric_mean_favorable_speedup": 0.979454401815342,
+        "geometric_mean_treatment_over_control": 1.0209765744546946,
+        "higher_is_better": false,
+        "inference_note": "With five pairs the minimum attainable exact two-sided sign-flip p-value is 0.0625; emphasize effect size, interval, and replication rather than a 0.05 threshold.",
+        "mean_difference": 1.2,
+        "mean_percent_change": 2.1430849851902485,
+        "median_difference": 1.0,
+        "median_percent_change": 1.8181818181818181,
+        "objective": "lower",
+        "paired_t_95pct_ci_for_mean_difference": [
+          -1.1883882976054163,
+          3.588388297605416
+        ],
+        "pairs": 5,
+        "percent_changes": [
+          7.142857142857143,
+          3.508771929824561,
+          0.0,
+          -1.7543859649122806,
+          1.8181818181818181
+        ],
+        "sample_sd_of_differences": 1.9235384061671346,
+        "treatment": [
+          60.0,
+          59.0,
+          57.0,
+          56.0,
+          56.0
+        ],
+        "treatment_minus_control": [
+          4.0,
+          2.0,
+          0.0,
+          -1.0,
+          1.0
+        ]
+      }
+    },
+    "pairs": 5,
+    "primary_endpoint": "protocol_critical_path_s",
+    "schema_version": 1,
+    "small_n_limit": "N=5 estimates paired effect magnitude; minimum exact two-sided sign-flip p is 0.0625.",
+    "status": "complete",
+    "sweep_root": "/data/runs/2026-08-21_21-00_wuklab-NUC16_qwen05b-fp16-jit-full-1k8k-5pairs/jit_pairs"
+  },
   "arms": [
     {
+      "band": "4096-8192",
       "context_after": 8192,
       "decoded_tokens": 8064,
       "expected_decoded_tokens": 8064,
+      "key": "direct",
       "label": "B0",
       "memory": {
         "npu_alloc": {
           "latest_bytes": 1540615472.0,
           "max_bytes": 1540615472.0,
-          "time_weighted_mean_bytes": 1137460792.0952108
+          "time_weighted_mean_bytes": 1137634844.9661405
         },
         "process_rss": {
-          "latest_bytes": 1772589056.0,
-          "max_bytes": 1772589056.0,
-          "time_weighted_mean_bytes": 1588053461.4686341
+          "latest_bytes": 1739489280.0,
+          "max_bytes": 1739489280.0,
+          "time_weighted_mean_bytes": 1558882824.2995179
         },
         "samples": 131
       },
       "metrics": {
-        "compile_model_wall_s": 65.268861748,
-        "decode_infer_s": 155.825159643,
-        "decode_wall_s": 159.528727583,
-        "protocol_critical_path_s": 225.379556545,
-        "tokens_per_s": 51.750307963584696
+        "compile_model_wall_s": 65.122588684,
+        "decode_infer_s": 155.474822801,
+        "decode_wall_s": 159.242971728,
+        "protocol_critical_path_s": 224.94137566499998,
+        "tokens_per_s": 51.86691873784296
       },
       "pair": null,
       "phase": "complete",
+      "position": 0,
       "progress_fraction": 1.0,
-      "quality": {
-        "all_deadlines_met": null,
+      "proof": {
         "boundary_logits_complete": true,
-        "ok": true
+        "deadline_misses": [],
+        "deadlines_met": true,
+        "ok": true,
+        "waited_capacities": []
       },
-      "state": "complete"
+      "state": "complete",
+      "timeline": {
+        "boundaries": [
+          {
+            "context_after": 1024,
+            "infer_end_monotonic_ns": 7775260457008074,
+            "infer_start_monotonic_ns": 7775260437634206,
+            "latency_ms": 19.373868
+          },
+          {
+            "context_after": 2048,
+            "infer_end_monotonic_ns": 7775280727041040,
+            "infer_start_monotonic_ns": 7775280707600158,
+            "latency_ms": 19.440882
+          },
+          {
+            "context_after": 4096,
+            "infer_end_monotonic_ns": 7775321162556803,
+            "infer_start_monotonic_ns": 7775321143435966,
+            "latency_ms": 19.120837
+          }
+        ],
+        "compiles": [
+          {
+            "capacity": 1024,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          },
+          {
+            "capacity": 2048,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          },
+          {
+            "capacity": 4096,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          },
+          {
+            "capacity": 8192,
+            "duration_s": 64.886313,
+            "ready_offset_s": 64.886313134,
+            "start_offset_s": 0.0,
+            "state": "ready"
+          }
+        ],
+        "decode_end_offset_s": 284.691730182,
+        "decode_start_offset_s": 125.497605925,
+        "origin_monotonic_ns": 7775117161343277
+      }
+    },
+    {
+      "band": "4096-8192",
+      "context_after": 8192,
+      "decoded_tokens": 8064,
+      "expected_decoded_tokens": 8064,
+      "key": "pyramid",
+      "label": "B1",
+      "memory": {
+        "npu_alloc": {
+          "latest_bytes": 1555617448.0,
+          "max_bytes": 1555617448.0,
+          "time_weighted_mean_bytes": 1060519485.8069065
+        },
+        "process_rss": {
+          "latest_bytes": 2210148352.0,
+          "max_bytes": 2210148352.0,
+          "time_weighted_mean_bytes": 1916558931.4975204
+        },
+        "samples": 131
+      },
+      "metrics": {
+        "compile_model_wall_s": 84.358093351,
+        "decode_infer_s": 144.601785912,
+        "decode_wall_s": 149.467930885,
+        "protocol_critical_path_s": 234.41458535399997,
+        "tokens_per_s": 55.76694609364985
+      },
+      "pair": null,
+      "phase": "complete",
+      "position": 1,
+      "progress_fraction": 1.0,
+      "proof": {
+        "boundary_logits_complete": true,
+        "deadline_misses": [],
+        "deadlines_met": true,
+        "ok": true,
+        "waited_capacities": []
+      },
+      "state": "complete",
+      "timeline": {
+        "boundaries": [
+          {
+            "context_after": 1024,
+            "infer_end_monotonic_ns": 7776162322249056,
+            "infer_start_monotonic_ns": 7776162292212847,
+            "latency_ms": 30.036209
+          },
+          {
+            "context_after": 2048,
+            "infer_end_monotonic_ns": 7776179900046381,
+            "infer_start_monotonic_ns": 7776179873946282,
+            "latency_ms": 26.100099
+          },
+          {
+            "context_after": 4096,
+            "infer_end_monotonic_ns": 7776214746693945,
+            "infer_start_monotonic_ns": 7776214711990143,
+            "latency_ms": 34.703802
+          }
+        ],
+        "compiles": [
+          {
+            "capacity": 1024,
+            "duration_s": 83.802075,
+            "ready_offset_s": 83.802075876,
+            "start_offset_s": 0.0,
+            "state": "ready"
+          },
+          {
+            "capacity": 2048,
+            "duration_s": 77.240195,
+            "ready_offset_s": 83.802089423,
+            "start_offset_s": 6.561894398,
+            "state": "ready"
+          },
+          {
+            "capacity": 4096,
+            "duration_s": 70.554623,
+            "ready_offset_s": 83.802097934,
+            "start_offset_s": 13.24747472,
+            "state": "ready"
+          },
+          {
+            "capacity": 8192,
+            "duration_s": 64.050744,
+            "ready_offset_s": 83.802107604,
+            "start_offset_s": 19.751363382,
+            "state": "ready"
+          }
+        ],
+        "decode_end_offset_s": 293.878005087,
+        "decode_start_offset_s": 144.455571083,
+        "origin_monotonic_ns": 7776003019752829
+      }
     },
     {
       "band": "4096-8192",
@@ -73,11 +3470,6 @@
         "deadlines_met": true,
         "ok": true,
         "waited_capacities": []
-      },
-      "quality": {
-        "all_deadlines_met": null,
-        "boundary_logits_complete": true,
-        "ok": true
       },
       "state": "complete",
       "timeline": {
@@ -174,11 +3566,6 @@
         "ok": true,
         "waited_capacities": []
       },
-      "quality": {
-        "all_deadlines_met": true,
-        "boundary_logits_complete": true,
-        "ok": true
-      },
       "state": "complete",
       "timeline": {
         "boundaries": [
@@ -235,31 +3622,772 @@
         "decode_start_offset_s": 125.567600328,
         "origin_monotonic_ns": 7763418329332172
       }
+    },
+    {
+      "band": "4096-8192",
+      "context_after": 8192,
+      "decoded_tokens": 8064,
+      "expected_decoded_tokens": 8064,
+      "key": "precompiled",
+      "label": "I1",
+      "memory": {
+        "npu_alloc": {
+          "latest_bytes": 1643012840.0,
+          "max_bytes": 1643012840.0,
+          "time_weighted_mean_bytes": 1087345082.0252256
+        },
+        "process_rss": {
+          "latest_bytes": 2166091776.0,
+          "max_bytes": 2166091776.0,
+          "time_weighted_mean_bytes": 1877492560.230563
+        },
+        "samples": 68
+      },
+      "metrics": {
+        "compile_model_wall_s": 84.331265631,
+        "decode_infer_s": 143.735924396,
+        "decode_wall_s": 147.697927908,
+        "protocol_critical_path_s": 232.85763407599998,
+        "tokens_per_s": 56.10288474427073
+      },
+      "pair": 1,
+      "phase": "complete",
+      "position": 1,
+      "progress_fraction": 1.0,
+      "proof": {
+        "boundary_logits_complete": true,
+        "deadline_misses": [],
+        "deadlines_met": true,
+        "ok": true,
+        "waited_capacities": []
+      },
+      "state": "complete",
+      "timeline": {
+        "boundaries": [
+          {
+            "context_after": 1024,
+            "infer_end_monotonic_ns": 7769980799996225,
+            "infer_start_monotonic_ns": 7769980738978464,
+            "latency_ms": 61.017761
+          },
+          {
+            "context_after": 2048,
+            "infer_end_monotonic_ns": 7769997699218915,
+            "infer_start_monotonic_ns": 7769997632716747,
+            "latency_ms": 66.502168
+          },
+          {
+            "context_after": 4096,
+            "infer_end_monotonic_ns": 7770032367253645,
+            "infer_start_monotonic_ns": 7770032283459853,
+            "latency_ms": 83.793792
+          }
+        ],
+        "compiles": [
+          {
+            "capacity": 1024,
+            "duration_s": 83.797482,
+            "ready_offset_s": 83.797482764,
+            "start_offset_s": 0.0,
+            "state": "ready"
+          },
+          {
+            "capacity": 2048,
+            "duration_s": 77.178993,
+            "ready_offset_s": 83.797495367,
+            "start_offset_s": 6.61850199,
+            "state": "ready"
+          },
+          {
+            "capacity": 4096,
+            "duration_s": 70.461166,
+            "ready_offset_s": 83.797504724,
+            "start_offset_s": 13.336337743,
+            "state": "ready"
+          },
+          {
+            "capacity": 8192,
+            "duration_s": 63.86546,
+            "ready_offset_s": 83.797511236,
+            "start_offset_s": 19.932051158,
+            "state": "ready"
+          }
+        ],
+        "decode_end_offset_s": 292.339587917,
+        "decode_start_offset_s": 144.679903839,
+        "origin_monotonic_ns": 7769821554363754
+      }
+    },
+    {
+      "band": "4096-8192",
+      "context_after": 8192,
+      "decoded_tokens": 8064,
+      "expected_decoded_tokens": 8064,
+      "key": "one_ahead_jit",
+      "label": "I2",
+      "memory": {
+        "npu_alloc": {
+          "latest_bytes": 1693770472.0,
+          "max_bytes": 1693770472.0,
+          "time_weighted_mean_bytes": 1173032891.7300577
+        },
+        "process_rss": {
+          "latest_bytes": 2275688448.0,
+          "max_bytes": 2275688448.0,
+          "time_weighted_mean_bytes": 1829705937.2295692
+        },
+        "samples": 68
+      },
+      "metrics": {
+        "compile_model_wall_s": 65.834978455,
+        "decode_infer_s": 142.686428737,
+        "decode_wall_s": 146.503445813,
+        "protocol_critical_path_s": 212.899580796,
+        "tokens_per_s": 56.515536000018514
+      },
+      "pair": 1,
+      "phase": "complete",
+      "position": 0,
+      "progress_fraction": 1.0,
+      "proof": {
+        "boundary_logits_complete": true,
+        "deadline_misses": [],
+        "deadlines_met": true,
+        "ok": true,
+        "waited_capacities": []
+      },
+      "state": "complete",
+      "timeline": {
+        "boundaries": [
+          {
+            "context_after": 1024,
+            "infer_end_monotonic_ns": 7769388185084007,
+            "infer_start_monotonic_ns": 7769388124086638,
+            "latency_ms": 60.997369
+          },
+          {
+            "context_after": 2048,
+            "infer_end_monotonic_ns": 7769404897186935,
+            "infer_start_monotonic_ns": 7769404829235732,
+            "latency_ms": 67.951203
+          },
+          {
+            "context_after": 4096,
+            "infer_end_monotonic_ns": 7769439095275169,
+            "infer_start_monotonic_ns": 7769439010197246,
+            "latency_ms": 85.077923
+          }
+        ],
+        "compiles": [
+          {
+            "capacity": 1024,
+            "duration_s": 65.294471,
+            "ready_offset_s": 65.294471674,
+            "start_offset_s": 0.0,
+            "state": "ready"
+          },
+          {
+            "capacity": 2048,
+            "duration_s": 6.8051,
+            "ready_offset_s": 132.692743721,
+            "start_offset_s": 125.887643209,
+            "state": "ready"
+          },
+          {
+            "capacity": 4096,
+            "duration_s": 7.011376,
+            "ready_offset_s": 147.238633221,
+            "start_offset_s": 140.227256636,
+            "state": "ready"
+          },
+          {
+            "capacity": 8192,
+            "duration_s": 7.014014,
+            "ready_offset_s": 163.954190702,
+            "start_offset_s": 156.940176648,
+            "state": "ready"
+          }
+        ],
+        "decode_end_offset_s": 272.349669797,
+        "decode_start_offset_s": 125.887439319,
+        "origin_monotonic_ns": 7769247925905430
+      }
+    },
+    {
+      "band": "4096-8192",
+      "context_after": 8192,
+      "decoded_tokens": 8064,
+      "expected_decoded_tokens": 8064,
+      "key": "precompiled",
+      "label": "I1",
+      "memory": {
+        "npu_alloc": {
+          "latest_bytes": 1643012840.0,
+          "max_bytes": 1643012840.0,
+          "time_weighted_mean_bytes": 1089056427.7306566
+        },
+        "process_rss": {
+          "latest_bytes": 2173329408.0,
+          "max_bytes": 2173329408.0,
+          "time_weighted_mean_bytes": 1884727299.8957305
+        },
+        "samples": 68
+      },
+      "metrics": {
+        "compile_model_wall_s": 83.708544242,
+        "decode_infer_s": 143.152000032,
+        "decode_wall_s": 147.449665453,
+        "protocol_critical_path_s": 231.730203078,
+        "tokens_per_s": 56.33173129399089
+      },
+      "pair": 2,
+      "phase": "complete",
+      "position": 1,
+      "progress_fraction": 1.0,
+      "proof": {
+        "boundary_logits_complete": true,
+        "deadline_misses": [],
+        "deadlines_met": true,
+        "ok": true,
+        "waited_capacities": []
+      },
+      "state": "complete",
+      "timeline": {
+        "boundaries": [
+          {
+            "context_after": 1024,
+            "infer_end_monotonic_ns": 7771446992908236,
+            "infer_start_monotonic_ns": 7771446944576227,
+            "latency_ms": 48.332009
+          },
+          {
+            "context_after": 2048,
+            "infer_end_monotonic_ns": 7771463476228705,
+            "infer_start_monotonic_ns": 7771463405974215,
+            "latency_ms": 70.25449
+          },
+          {
+            "context_after": 4096,
+            "infer_end_monotonic_ns": 7771498106608495,
+            "infer_start_monotonic_ns": 7771498011512335,
+            "latency_ms": 95.09616
+          }
+        ],
+        "compiles": [
+          {
+            "capacity": 1024,
+            "duration_s": 83.145903,
+            "ready_offset_s": 83.145903722,
+            "start_offset_s": 0.0,
+            "state": "ready"
+          },
+          {
+            "capacity": 2048,
+            "duration_s": 76.642736,
+            "ready_offset_s": 83.14592758,
+            "start_offset_s": 6.503190809,
+            "state": "ready"
+          },
+          {
+            "capacity": 4096,
+            "duration_s": 70.001368,
+            "ready_offset_s": 83.145939575,
+            "start_offset_s": 13.144571161,
+            "state": "ready"
+          },
+          {
+            "capacity": 8192,
+            "duration_s": 63.470734,
+            "ready_offset_s": 83.145954144,
+            "start_offset_s": 19.675219188,
+            "state": "ready"
+          }
+        ],
+        "decode_end_offset_s": 291.208510186,
+        "decode_start_offset_s": 143.804145913,
+        "origin_monotonic_ns": 7771288878215960
+      }
+    },
+    {
+      "band": "4096-8192",
+      "context_after": 8192,
+      "decoded_tokens": 8064,
+      "expected_decoded_tokens": 8064,
+      "key": "one_ahead_jit",
+      "label": "I2",
+      "memory": {
+        "npu_alloc": {
+          "latest_bytes": 1693770472.0,
+          "max_bytes": 1693770472.0,
+          "time_weighted_mean_bytes": 1174736782.1317136
+        },
+        "process_rss": {
+          "latest_bytes": 2283999232.0,
+          "max_bytes": 2283999232.0,
+          "time_weighted_mean_bytes": 1833502908.3880005
+        },
+        "samples": 68
+      },
+      "metrics": {
+        "compile_model_wall_s": 65.534717215,
+        "decode_infer_s": 142.646870143,
+        "decode_wall_s": 146.728085304,
+        "protocol_critical_path_s": 212.829373238,
+        "tokens_per_s": 56.531208794949634
+      },
+      "pair": 2,
+      "phase": "complete",
+      "position": 0,
+      "progress_fraction": 1.0,
+      "proof": {
+        "boundary_logits_complete": true,
+        "deadline_misses": [],
+        "deadlines_met": true,
+        "ok": true,
+        "waited_capacities": []
+      },
+      "state": "complete",
+      "timeline": {
+        "boundaries": [
+          {
+            "context_after": 1024,
+            "infer_end_monotonic_ns": 7770855248234721,
+            "infer_start_monotonic_ns": 7770855190209813,
+            "latency_ms": 58.024908
+          },
+          {
+            "context_after": 2048,
+            "infer_end_monotonic_ns": 7770872120679842,
+            "infer_start_monotonic_ns": 7770872049724053,
+            "latency_ms": 70.955789
+          },
+          {
+            "context_after": 4096,
+            "infer_end_monotonic_ns": 7770906292795129,
+            "infer_start_monotonic_ns": 7770906206714011,
+            "latency_ms": 86.081118
+          }
+        ],
+        "compiles": [
+          {
+            "capacity": 1024,
+            "duration_s": 65.003948,
+            "ready_offset_s": 65.003948063,
+            "start_offset_s": 0.0,
+            "state": "ready"
+          },
+          {
+            "capacity": 2048,
+            "duration_s": 6.751958,
+            "ready_offset_s": 132.355152545,
+            "start_offset_s": 125.60319411,
+            "state": "ready"
+          },
+          {
+            "capacity": 4096,
+            "duration_s": 6.805981,
+            "ready_offset_s": 146.68298965,
+            "start_offset_s": 139.877008419,
+            "state": "ready"
+          },
+          {
+            "capacity": 8192,
+            "duration_s": 6.946282,
+            "ready_offset_s": 163.695507499,
+            "start_offset_s": 156.749225155,
+            "state": "ready"
+          }
+        ],
+        "decode_end_offset_s": 272.288762549,
+        "decode_start_offset_s": 125.603030396,
+        "origin_monotonic_ns": 7770715342292595
+      }
+    },
+    {
+      "band": "4096-8192",
+      "context_after": 8192,
+      "decoded_tokens": 8064,
+      "expected_decoded_tokens": 8064,
+      "key": "precompiled",
+      "label": "I1",
+      "memory": {
+        "npu_alloc": {
+          "latest_bytes": 1643012840.0,
+          "max_bytes": 1643012840.0,
+          "time_weighted_mean_bytes": 1083877824.5111783
+        },
+        "process_rss": {
+          "latest_bytes": 2175143936.0,
+          "max_bytes": 2175143936.0,
+          "time_weighted_mean_bytes": 1882871556.69491
+        },
+        "samples": 68
+      },
+      "metrics": {
+        "compile_model_wall_s": 85.220518564,
+        "decode_infer_s": 143.259762506,
+        "decode_wall_s": 147.753727422,
+        "protocol_critical_path_s": 233.54898441,
+        "tokens_per_s": 56.289357590288226
+      },
+      "pair": 3,
+      "phase": "complete",
+      "position": 0,
+      "progress_fraction": 1.0,
+      "proof": {
+        "boundary_logits_complete": true,
+        "deadline_misses": [],
+        "deadlines_met": true,
+        "ok": true,
+        "waited_capacities": []
+      },
+      "state": "complete",
+      "timeline": {
+        "boundaries": [
+          {
+            "context_after": 1024,
+            "infer_end_monotonic_ns": 7772341588250317,
+            "infer_start_monotonic_ns": 7772341532709532,
+            "latency_ms": 55.540785
+          },
+          {
+            "context_after": 2048,
+            "infer_end_monotonic_ns": 7772358480588039,
+            "infer_start_monotonic_ns": 7772358418712541,
+            "latency_ms": 61.875498
+          },
+          {
+            "context_after": 4096,
+            "infer_end_monotonic_ns": 7772392524178503,
+            "infer_start_monotonic_ns": 7772392437096076,
+            "latency_ms": 87.082427
+          }
+        ],
+        "compiles": [
+          {
+            "capacity": 1024,
+            "duration_s": 84.646907,
+            "ready_offset_s": 84.646907086,
+            "start_offset_s": 0.0,
+            "state": "ready"
+          },
+          {
+            "capacity": 2048,
+            "duration_s": 78.016774,
+            "ready_offset_s": 84.646929875,
+            "start_offset_s": 6.630155353,
+            "state": "ready"
+          },
+          {
+            "capacity": 4096,
+            "duration_s": 71.258774,
+            "ready_offset_s": 84.646940579,
+            "start_offset_s": 13.388165688,
+            "state": "ready"
+          },
+          {
+            "capacity": 8192,
+            "duration_s": 64.633991,
+            "ready_offset_s": 84.646950342,
+            "start_offset_s": 20.012958923,
+            "state": "ready"
+          }
+        ],
+        "decode_end_offset_s": 293.007855794,
+        "decode_start_offset_s": 145.299774135,
+        "origin_monotonic_ns": 7772181594356643
+      }
+    },
+    {
+      "band": "4096-8192",
+      "context_after": 8192,
+      "decoded_tokens": 8064,
+      "expected_decoded_tokens": 8064,
+      "key": "one_ahead_jit",
+      "label": "I2",
+      "memory": {
+        "npu_alloc": {
+          "latest_bytes": 1693770472.0,
+          "max_bytes": 1693770472.0,
+          "time_weighted_mean_bytes": 1178420798.7964487
+        },
+        "process_rss": {
+          "latest_bytes": 2293116928.0,
+          "max_bytes": 2293116928.0,
+          "time_weighted_mean_bytes": 1845553309.7602115
+        },
+        "samples": 68
+      },
+      "metrics": {
+        "compile_model_wall_s": 65.045789129,
+        "decode_infer_s": 143.414261374,
+        "decode_wall_s": 147.689448057,
+        "protocol_critical_path_s": 213.301850105,
+        "tokens_per_s": 56.22871758179237
+      },
+      "pair": 3,
+      "phase": "complete",
+      "position": 1,
+      "progress_fraction": 1.0,
+      "proof": {
+        "boundary_logits_complete": true,
+        "deadline_misses": [],
+        "deadlines_met": true,
+        "ok": true,
+        "waited_capacities": []
+      },
+      "state": "complete",
+      "timeline": {
+        "boundaries": [
+          {
+            "context_after": 1024,
+            "infer_end_monotonic_ns": 7772915488825791,
+            "infer_start_monotonic_ns": 7772915437030606,
+            "latency_ms": 51.795185
+          },
+          {
+            "context_after": 2048,
+            "infer_end_monotonic_ns": 7772932440670060,
+            "infer_start_monotonic_ns": 7772932368267546,
+            "latency_ms": 72.402514
+          },
+          {
+            "context_after": 4096,
+            "infer_end_monotonic_ns": 7772966983685195,
+            "infer_start_monotonic_ns": 7772966897862692,
+            "latency_ms": 85.822503
+          }
+        ],
+        "compiles": [
+          {
+            "capacity": 1024,
+            "duration_s": 64.506586,
+            "ready_offset_s": 64.506586727,
+            "start_offset_s": 0.0,
+            "state": "ready"
+          },
+          {
+            "capacity": 2048,
+            "duration_s": 6.776207,
+            "ready_offset_s": 131.886416676,
+            "start_offset_s": 125.11020902,
+            "state": "ready"
+          },
+          {
+            "capacity": 4096,
+            "duration_s": 6.813044,
+            "ready_offset_s": 146.404660714,
+            "start_offset_s": 139.591616177,
+            "state": "ready"
+          },
+          {
+            "capacity": 8192,
+            "duration_s": 7.04211,
+            "ready_offset_s": 163.581189954,
+            "start_offset_s": 156.539079032,
+            "state": "ready"
+          }
+        ],
+        "decode_end_offset_s": 272.752836288,
+        "decode_start_offset_s": 125.109857508,
+        "origin_monotonic_ns": 7772775870484736
+      }
+    },
+    {
+      "band": "4096-8192",
+      "context_after": 8192,
+      "decoded_tokens": 8064,
+      "expected_decoded_tokens": 8064,
+      "key": "precompiled",
+      "label": "I1",
+      "memory": {
+        "npu_alloc": {
+          "latest_bytes": 1643012840.0,
+          "max_bytes": 1643012840.0,
+          "time_weighted_mean_bytes": 1087292973.6158884
+        },
+        "process_rss": {
+          "latest_bytes": 2116251648.0,
+          "max_bytes": 2116251648.0,
+          "time_weighted_mean_bytes": 1834834792.0701056
+        },
+        "samples": 68
+      },
+      "metrics": {
+        "compile_model_wall_s": 84.096977893,
+        "decode_infer_s": 143.207379556,
+        "decode_wall_s": 147.363224232,
+        "protocol_critical_path_s": 232.031900832,
+        "tokens_per_s": 56.30994732954137
+      },
+      "pair": 4,
+      "phase": "complete",
+      "position": 0,
+      "progress_fraction": 1.0,
+      "proof": {
+        "boundary_logits_complete": true,
+        "deadline_misses": [],
+        "deadlines_met": true,
+        "ok": true,
+        "waited_capacities": []
+      },
+      "state": "complete",
+      "timeline": {
+        "boundaries": [
+          {
+            "context_after": 1024,
+            "infer_end_monotonic_ns": 7773808861996258,
+            "infer_start_monotonic_ns": 7773808815399368,
+            "latency_ms": 46.59689
+          },
+          {
+            "context_after": 2048,
+            "infer_end_monotonic_ns": 7773825572195687,
+            "infer_start_monotonic_ns": 7773825512502096,
+            "latency_ms": 59.693591
+          },
+          {
+            "context_after": 4096,
+            "infer_end_monotonic_ns": 7773860431732712,
+            "infer_start_monotonic_ns": 7773860337175542,
+            "latency_ms": 94.55717
+          }
+        ],
+        "compiles": [
+          {
+            "capacity": 1024,
+            "duration_s": 83.546544,
+            "ready_offset_s": 83.546544601,
+            "start_offset_s": 0.0,
+            "state": "ready"
+          },
+          {
+            "capacity": 2048,
+            "duration_s": 77.00702,
+            "ready_offset_s": 83.546559489,
+            "start_offset_s": 6.539539385,
+            "state": "ready"
+          },
+          {
+            "capacity": 4096,
+            "duration_s": 70.342771,
+            "ready_offset_s": 83.546567004,
+            "start_offset_s": 13.203795898,
+            "state": "ready"
+          },
+          {
+            "capacity": 8192,
+            "duration_s": 63.796945,
+            "ready_offset_s": 83.546578238,
+            "start_offset_s": 19.749632566,
+            "state": "ready"
+          }
+        ],
+        "decode_end_offset_s": 291.504325247,
+        "decode_start_offset_s": 144.185320409,
+        "origin_monotonic_ns": 7773650183856139
+      }
+    },
+    {
+      "band": "4096-8192",
+      "context_after": 8192,
+      "decoded_tokens": 8064,
+      "expected_decoded_tokens": 8064,
+      "key": "one_ahead_jit",
+      "label": "I2",
+      "memory": {
+        "npu_alloc": {
+          "latest_bytes": 1693770472.0,
+          "max_bytes": 1693770472.0,
+          "time_weighted_mean_bytes": 1180050985.4406555
+        },
+        "process_rss": {
+          "latest_bytes": 2293231616.0,
+          "max_bytes": 2293231616.0,
+          "time_weighted_mean_bytes": 1847491285.1281364
+        },
+        "samples": 68
+      },
+      "metrics": {
+        "compile_model_wall_s": 64.72646805,
+        "decode_infer_s": 143.389227744,
+        "decode_wall_s": 147.717440591,
+        "protocol_critical_path_s": 213.009857613,
+        "tokens_per_s": 56.23853428095076
+      },
+      "pair": 4,
+      "phase": "complete",
+      "position": 1,
+      "progress_fraction": 1.0,
+      "proof": {
+        "boundary_logits_complete": true,
+        "deadline_misses": [],
+        "deadlines_met": true,
+        "ok": true,
+        "waited_capacities": []
+      },
+      "state": "complete",
+      "timeline": {
+        "boundaries": [
+          {
+            "context_after": 1024,
+            "infer_end_monotonic_ns": 7774382060912707,
+            "infer_start_monotonic_ns": 7774382004339958,
+            "latency_ms": 56.572749
+          },
+          {
+            "context_after": 2048,
+            "infer_end_monotonic_ns": 7774398857792654,
+            "infer_start_monotonic_ns": 7774398787385059,
+            "latency_ms": 70.407595
+          },
+          {
+            "context_after": 4096,
+            "infer_end_monotonic_ns": 7774433482373224,
+            "infer_start_monotonic_ns": 7774433395445897,
+            "latency_ms": 86.927327
+          }
+        ],
+        "compiles": [
+          {
+            "capacity": 1024,
+            "duration_s": 64.202456,
+            "ready_offset_s": 64.202456847,
+            "start_offset_s": 0.0,
+            "state": "ready"
+          },
+          {
+            "capacity": 2048,
+            "duration_s": 6.704558,
+            "ready_offset_s": 131.509407922,
+            "start_offset_s": 124.80484961,
+            "state": "ready"
+          },
+          {
+            "capacity": 4096,
+            "duration_s": 6.76885,
+            "ready_offset_s": 145.831595505,
+            "start_offset_s": 139.062744755,
+            "state": "ready"
+          },
+          {
+            "capacity": 8192,
+            "duration_s": 6.995096,
+            "ready_offset_s": 162.852546522,
+            "start_offset_s": 155.857449551,
+            "state": "ready"
+          }
+        ],
+        "decode_end_offset_s": 272.474897044,
+        "decode_start_offset_s": 124.804638784,
+        "origin_monotonic_ns": 7774242970928779
+      }
     }
   ],
-  "arms_complete": 3,
-  "arms_planned": 4,
+  "arms_complete": 12,
+  "arms_planned": 12,
+  "campaign_complete_at": "2026-08-22T00:51:04.325774665Z",
   "campaign_events": [
-    {
-      "event": "campaign_start",
-      "wall_time_ns": 1787346124689631040
-    },
-    {
-      "event": "preflight_control_start",
-      "wall_time_ns": 1787346124696210900
-    },
-    {
-      "event": "preflight_control_complete",
-      "wall_time_ns": 1787346230206481314
-    },
-    {
-      "event": "preflight_treatment_start",
-      "wall_time_ns": 1787346290212313335
-    },
-    {
-      "event": "preflight_treatment_complete",
-      "wall_time_ns": 1787346391300888252
-    },
     {
       "event": "preflight_complete",
       "wall_time_ns": 1787346391761009770
@@ -267,6 +4395,30 @@
     {
       "event": "jit_pairs_start",
       "wall_time_ns": 1787346391764402002
+    },
+    {
+      "event": "jit_pairs_complete",
+      "wall_time_ns": 1787358083684446243
+    },
+    {
+      "event": "b0_start",
+      "wall_time_ns": 1787358683688941354
+    },
+    {
+      "event": "b0_complete",
+      "wall_time_ns": 1787358969234707932
+    },
+    {
+      "event": "b1_start",
+      "wall_time_ns": 1787359569239573014
+    },
+    {
+      "event": "b1_complete",
+      "wall_time_ns": 1787359864321710774
+    },
+    {
+      "event": "campaign_complete",
+      "wall_time_ns": 1787359864325774665
     }
   ],
   "capacities": [
@@ -275,148 +4427,179 @@
     4096,
     8192
   ],
-  "checkpoint_comparison": {
-    "compile_model_wall_s": {
-      "B0": 65.268861748,
-      "B1": null,
-      "I1": 84.069572736,
-      "I2": 65.501335193
-    },
-    "decode_infer_s": {
-      "B0": 155.825159643,
-      "B1": null,
-      "I1": 143.221490682,
-      "I2": 142.540816634
-    },
-    "decode_wall_s": {
-      "B0": 159.528727583,
-      "B1": null,
-      "I1": 147.357470573,
-      "I2": 146.772048491
-    },
-    "protocol_critical_path_s": {
-      "B0": 225.379556545,
-      "B1": null,
-      "I1": 231.993970971,
-      "I2": 212.83618146
-    }
-  },
-  "completed_pair_reports": 1,
+  "completed_pair_reports": 5,
   "current_arm": null,
   "failure": null,
-  "generated_at": "2026-08-21T21:40:35.257714Z",
-  "i2_vs_i1": {
-    "compile_model_wall_s": {
-      "control_s": 84.069572736,
-      "difference_s": -18.568237542999995,
-      "percent_change": -22.086751411606457,
-      "treatment_s": 65.501335193
+  "final_effects": {
+    "b1_minus_b0": {
+      "compile_s": 19.235504667,
+      "decode_infer_s": -10.87303688899999,
+      "decode_wall_s": -9.775040843,
+      "prefill_s": 0.007575420999999971,
+      "protocol_critical_path_s": 9.473209688999987,
+      "read_model_s": 0.001977965000000005,
+      "request_create_s": 0.003192478999999998
     },
-    "decode_infer_s": {
-      "control_s": 143.221490682,
-      "difference_s": -0.680674047999986,
-      "percent_change": -0.47525971469694583,
-      "treatment_s": 142.540816634
+    "background_successor_compile_s": {
+      "capacities": [
+        2048,
+        4096,
+        8192
+      ],
+      "deadline_wait_s": 0.0,
+      "mean": 20.6453314
     },
-    "decode_wall_s": {
-      "control_s": 147.357470573,
-      "difference_s": -0.585422082000008,
-      "percent_change": -0.3972802191321501,
-      "treatment_s": 146.772048491
+    "compile_saved_s": {
+      "ci95": [
+        17.949781671385427,
+        19.963654738214576
+      ],
+      "mean": 18.9567182048,
+      "percent": 22.487516285221286,
+      "signflip_p": 0.0625
     },
-    "protocol_critical_path_s": {
-      "control_s": 231.993970971,
-      "difference_s": -19.157789511000004,
-      "percent_change": -8.257882491866477,
-      "treatment_s": 212.83618146
+    "decode_infer_i2_minus_i1_s": {
+      "ci95": [
+        -1.0471918166930716,
+        0.2876108006930901
+      ],
+      "mean": -0.3797905079999907,
+      "percent": -0.26469001649047996,
+      "signflip_p": 0.25
+    },
+    "decode_wall_i2_minus_i1_s": {
+      "ci95": [
+        -1.1877208723650616,
+        0.3031019395650695
+      ],
+      "mean": -0.44230946639999613,
+      "percent": -0.2997044120459554,
+      "signflip_p": 0.1875
+    },
+    "first_token_ready_saved_s": {
+      "ci95": [
+        18.043832646125868,
+        19.98467241787412
+      ],
+      "mean": 19.014252531999993,
+      "percent": 22.38312755747306,
+      "signflip_p": 0.0625
+    },
+    "launcher_e2e_saved_s": {
+      "ci95": [
+        18.71938589567684,
+        20.167110051523185
+      ],
+      "mean": 19.443247973600013,
+      "percent": 6.632460508417545,
+      "signflip_p": 0.0625
+    },
+    "protocol_critical_path_saved_s": {
+      "ci95": [
+        18.70614139426977,
+        20.208198667730215
+      ],
+      "mean": 19.457170030999993,
+      "percent": 8.370512476646716,
+      "signflip_p": 0.0625
     }
   },
-  "latest_pair": 0,
-  "measurement_scope": "Qwen2.5-0.5B FP16, one full 1K-to-8K pair plus a fresh B0 reference; B1 pending",
+  "generated_at": "2026-08-22T00:57:43.941838+00:00",
+  "latest_pair": 4,
+  "measurement_scope": {
+    "B0_B1": "one refreshed reference run each",
+    "I1_I2": "five counterbalanced paired runs",
+    "memory": "runner telemetry over each arm; RSS trapezoid, NPU allocation left-hold",
+    "trajectory": "128-token prompt through context 8192"
+  },
   "memory_comparison": {
     "npu_alloc_time_weighted_mean_bytes": {
       "B0": {
-        "mean_bytes": 1137460792.0952108,
+        "mean_bytes": 1137634844.9661405,
         "runs": 1
       },
       "B1": {
-        "mean_bytes": null,
-        "runs": 0
+        "mean_bytes": 1060519485.8069065,
+        "runs": 1
       },
       "I1": {
-        "mean_bytes": 1087559074.865844,
-        "runs": 1
+        "mean_bytes": 1087026276.5497587,
+        "runs": 5
       },
       "I2": {
-        "mean_bytes": 1174882636.1609864,
-        "runs": 1
+        "mean_bytes": 1176224818.8519723,
+        "runs": 5
       }
     },
     "process_rss_time_weighted_mean_bytes": {
       "B0": {
-        "mean_bytes": 1588053461.4686341,
+        "mean_bytes": 1558882824.2995179,
         "runs": 1
       },
       "B1": {
-        "mean_bytes": null,
-        "runs": 0
+        "mean_bytes": 1916558931.4975204,
+        "runs": 1
       },
       "I1": {
-        "mean_bytes": 1909567818.1442642,
-        "runs": 1
+        "mean_bytes": 1877898805.4071147,
+        "runs": 5
       },
       "I2": {
-        "mean_bytes": 1841318340.1265788,
-        "runs": 1
+        "mean_bytes": 1839514356.1264992,
+        "runs": 5
       }
     }
   },
-  "overall_progress_fraction": 0.75,
-  "pairs_planned": 1,
+  "overall_progress_fraction": 1.0,
+  "pairs_planned": 5,
   "partial_results": {
     "compile_model_wall_s": {
-      "i1_mean_s": 84.069572736,
-      "i2_mean_s": 65.501335193,
-      "i2_minus_i1_mean_s": -18.568237542999995,
-      "mean_percent_change": -22.086751411606457,
-      "pairs": 1
+      "i1_mean_s": 84.2853758132,
+      "i2_mean_s": 65.3286576084,
+      "i2_minus_i1_mean_s": -18.9567182048,
+      "mean_percent_change": -22.487516285221286,
+      "pairs": 5
     },
     "decode_infer_s": {
-      "i1_mean_s": 143.221490682,
-      "i2_mean_s": 142.540816634,
-      "i2_minus_i1_mean_s": -0.680674047999986,
-      "mean_percent_change": -0.4752597146969458,
-      "pairs": 1
+      "i1_mean_s": 143.3153114344,
+      "i2_mean_s": 142.93552092640002,
+      "i2_minus_i1_mean_s": -0.3797905079999907,
+      "mean_percent_change": -0.26469001649047996,
+      "pairs": 5
     },
     "decode_wall_s": {
-      "i1_mean_s": 147.357470573,
-      "i2_mean_s": 146.772048491,
-      "i2_minus_i1_mean_s": -0.585422082000008,
-      "mean_percent_change": -0.3972802191321501,
-      "pairs": 1
+      "i1_mean_s": 147.5244031176,
+      "i2_mean_s": 147.0820936512,
+      "i2_minus_i1_mean_s": -0.44230946639999613,
+      "mean_percent_change": -0.2997044120459554,
+      "pairs": 5
     },
     "protocol_critical_path_s": {
-      "i1_mean_s": 231.993970971,
-      "i2_mean_s": 212.83618146,
-      "i2_minus_i1_mean_s": -19.157789511000004,
-      "mean_percent_change": -8.257882491866477,
-      "pairs": 1
+      "i1_mean_s": 232.4325386734,
+      "i2_mean_s": 212.9753686424,
+      "i2_minus_i1_mean_s": -19.457170030999993,
+      "mean_percent_change": -8.370512476646716,
+      "pairs": 5
     }
   },
-  "pause_reason": "One validated I1/I2 pair and fresh B0 completed; B1 and the remaining N=5 sweep are paused by request.",
   "prompt_length": 128,
   "quality": {
+    "all_five_pairs_valid": true,
     "all_measured_arms_complete": true,
-    "b1_status": "paused_before_start",
+    "b0_ok": true,
+    "b1_ok": true,
+    "boundary_comparisons": 20,
     "i1_i2_boundary_logits_exact": true,
-    "i2_all_deadlines_met": true
+    "i2_all_deadlines_met": true,
+    "minimum_cosine": 1.0,
+    "postrun_model_hash_ok": true
   },
-  "reference_run_id": "2026-08-21_21-33_wuklab-NUC16_qwen05b-fp16-onepair-b0b1",
+  "reference_run_id": "2026-08-21_21-00_wuklab-NUC16_qwen05b-fp16-jit-full-1k8k-5pairs/references",
   "run_id": "2026-08-21_21-00_wuklab-NUC16_qwen05b-fp16-jit-full-1k8k-5pairs",
   "schema_version": 2,
-  "state": "paused",
+  "state": "complete",
   "uncertainty": {
-    "pairs": 1,
-    "statement": "N=1 checkpoint: descriptive differences only; no sampling uncertainty or confidence interval is estimable."
+    "pairs": 5,
+    "statement": "N=5 paired, counterbalanced runs. Values show paired means with paired-t 95% CIs; the minimum attainable exact two-sided sign-flip p-value is 0.0625."
   }
 }
