@@ -29,7 +29,7 @@ td.n{font-variant-numeric:tabular-nums;text-align:right}
 code{background:#1c2230;border:1px solid var(--bd);border-radius:5px;padding:1px 5px;font-size:13px}
 a{color:var(--blue)} .back{color:var(--mut);font-size:13px;text-decoration:none}
 p{margin:12px 0}
-.tabs{display:flex;gap:6px;border-bottom:1px solid var(--bd);margin:22px 0 0}
+.tabs{display:flex;gap:6px;border-bottom:1px solid var(--bd);margin:22px 0 0;flex-wrap:wrap}
 .tabs button{appearance:none;background:none;border:0;border-bottom:2px solid transparent;
 color:var(--mut);font:inherit;font-size:14.5px;padding:9px 14px;cursor:pointer;margin-bottom:-1px}
 .tabs button:hover{color:var(--tx)}
@@ -63,7 +63,13 @@ margin:18px 0;font-size:14.5px;color:#cbd5e1}
 .memory-table td,.memory-table th{font-variant-numeric:tabular-nums;white-space:nowrap}
 .run-meta{display:grid;grid-template-columns:max-content 1fr;gap:5px 14px;color:var(--mut);font-size:12.5px;margin:14px 2px 2px}
 .run-meta b{color:#cbd5e1;font-weight:600}.run-meta code{overflow-wrap:anywhere}
+.sweep-shots{display:grid;grid-template-columns:repeat(auto-fit,minmax(390px,1fr));gap:14px;margin:14px 0}
+.sweep-shots figure{margin:0}.sweep-shots img{display:block;width:100%;height:auto;border-radius:6px;background:#fff}
+.pass{color:#3fb950}.fail{color:#ff7b8d}.warn{color:#f0c14b}
+.downloads{display:flex;gap:8px 18px;flex-wrap:wrap;margin:12px 0 20px}
+.downloads a{font-size:13.5px}
 @media(max-width:680px){.stage-grid{grid-template-columns:1fr 1fr}#live-outcomes{grid-template-columns:1fr 1fr}.live-updated{margin-left:0;width:100%}.run-meta{grid-template-columns:1fr}}
+@media(max-width:520px){.sweep-shots{grid-template-columns:1fr}.tabs button{padding:8px 9px;font-size:13.5px}}
 </style>
 <div class="wrap">
 <a class="back" href="../research.html">&larr; research</a>
@@ -76,6 +82,7 @@ live Qwen2.5-0.5B FP16 measurement &middot; Intel NPU 5 &middot; OpenVINO 2026.3
 <button role="tab" id="t-measure" aria-controls="measure" aria-selected="false">Measurements</button>
 <button role="tab" id="t-xpu" aria-controls="xpu" aria-selected="false">NPU vs iGPU</button>
 <button role="tab" id="t-llmxpu" aria-controls="llmxpu" aria-selected="false">LLM.xpu replication</button>
+<button role="tab" id="t-combined" aria-controls="combined" aria-selected="false">NPU + iGPU sweep</button>
 </nav>
 
 <section class="pane" id="motiv" role="tabpanel" aria-labelledby="t-motiv">
@@ -574,6 +581,93 @@ prompts capped at the engine's 4096-token context.
 </p>
 </section>
 
+<section class="pane" id="combined" role="tabpanel" aria-labelledby="t-combined" hidden>
+
+<div class="thesis">
+This is the NUC16 prefill/decode placement sweep across <b>six INT8 models</b>,
+<b>1K&ndash;8K</b> context buckets, and the stock, iGPU/iGPU, NPU/NPU,
+NPU&rarr;iGPU and iGPU&rarr;NPU paths. A sixth attempt partitions subgraphs inside
+one stateful request across <b>NPU + iGPU</b>. That combined request activates both
+engines, but its decode tokens are wrong on both Qwen2.5 and Llama 3.2. It therefore
+appears below as a failed capability gate, not as a usable performance line.
+</div>
+
+<div class="kpis">
+<div class="kpi"><div class="n">354</div><div class="l">measured trials in the five-path sweep</div></div>
+<div class="kpi"><div class="n">6 &times; 4</div><div class="l">models &times; context windows (1K&ndash;8K)</div></div>
+<div class="kpi"><div class="n fail">0 / 2</div><div class="l">model families passing true NPU+iGPU decode</div></div>
+<div class="kpi"><div class="n">96 GB</div><div class="l">shared DDR5 on the NUC16 testbed</div></div>
+</div>
+
+<h2>Combined-path qualification</h2>
+<p>The experiment uses OpenVINO NPUW with <code>NPUW_DEVICES=NPU,GPU</code> and
+tests automatic assignment plus <code>0:GPU,last:NPU</code>,
+<code>last:GPU</code>, <code>0:NPU,last:GPU</code> and <code>0:GPU</code> maps.
+Changing the submodel boundary did not repair decode. Phase isolation then located
+the fault: combined prefill followed by NPU-only decode is token-correct, but a
+10&nbsp;ms GPU-frequency sampler records <b>0 MHz for every sample</b>, so that arm
+silently executes on NPU only. Enabling combined execution for decode activates the
+iGPU and corrupts the state/logit path.</p>
+
+<table>
+<thead><tr><th>model / route</th><th>prefill &rarr; first decode &rarr; final top-1</th><th>TTFT</th><th>end to end</th><th>PSys energy</th><th>qualification</th></tr></thead>
+<tbody>
+<tr><td>Qwen2.5 0.5B &middot; stock AUTO&rarr;GPU.0</td><td><code>290 &rarr; 78 &rarr; 42</code></td><td class="n">0.20 s</td><td class="n">0.36 s</td><td class="n">11.5 J</td><td class="pass">PASS</td></tr>
+<tr><td>Qwen2.5 0.5B &middot; NPU+iGPU both phases</td><td><code>291 &rarr; 89372 &rarr; 89372</code></td><td class="n">0.32 s</td><td class="n">2.40 s</td><td class="n">54.1 J</td><td class="fail">FAIL &middot; wrong decode</td></tr>
+<tr><td>Qwen2.5 0.5B &middot; combined prefill only</td><td><code>291 &rarr; 78 &rarr; 42</code></td><td class="n">0.30 s</td><td class="n">2.29 s</td><td class="n">39.0 J</td><td class="warn">correct, but GPU inactive</td></tr>
+<tr><td>Qwen2.5 0.5B &middot; combined decode only</td><td><code>291 &rarr; 6 &rarr; 89372</code></td><td class="n">0.30 s</td><td class="n">2.93 s</td><td class="n">69.3 J</td><td class="fail">FAIL &middot; wrong decode</td></tr>
+<tr><td>Llama 3.2 1B &middot; stock AUTO&rarr;GPU.0</td><td><code>5809 &rarr; 546 &rarr; 42</code></td><td class="n">0.23 s</td><td class="n">0.56 s</td><td class="n">19.2 J</td><td class="pass">PASS</td></tr>
+<tr><td>Llama 3.2 1B &middot; NPU+iGPU both phases</td><td><code>5809 &rarr; 90 &rarr; 802</code></td><td class="n">0.67 s</td><td class="n">7.64 s</td><td class="n">172.1 J</td><td class="fail">FAIL &middot; wrong decode</td></tr>
+</tbody></table>
+
+<div class="note">
+<b>Why the combined line stops at 1K.</b> The smallest Qwen cell failed in three
+repetitions, all four pin maps failed, decode-only isolation failed, and the result
+reproduced on Llama. Sweeping an already incorrect path through larger windows would
+produce attractive-looking but unusable timing data. The fix boundary is inside the
+heterogeneous state/KV handoff used by NPUW decode: keep a single-device state owner
+today, or add an explicit state-transfer contract and token-equivalence gate before
+benchmarking a future runtime fix.
+</div>
+
+<h2>Qualified placement matrix and 8K overview</h2>
+<div class="sweep-shots">
+<figure><img src="nuc16-stage-sweep-figs/qualification_matrix.png" alt="Qualification matrix for six models, four contexts and five placements"><figcaption>Green cells passed the placement-specific correctness and capacity gate. iGPU&rarr;NPU long-context cells are rejected; Qwen2.5-7B NPU&rarr;iGPU is capacity-limited at 4K and 8K.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/qualified_8k_overview.png" alt="Qualified 8K latency throughput and energy overview"><figcaption>Eight-thousand-token overview of qualified placements only. Missing bars are failed qualification, not zero cost.</figcaption></figure>
+</div>
+
+<h2>Throughput and latency across 1K&ndash;8K</h2>
+<div class="sweep-shots">
+<figure><img src="nuc16-stage-sweep-figs/qualified_prefill_throughput.png" alt="Prefill throughput by model placement and context"><figcaption>Prefill throughput (tokens/s); higher is better.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/qualified_ttft.png" alt="Time to first token by model placement and context"><figcaption>Time to first token; lower is better.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/qualified_decode_throughput.png" alt="Decode throughput by model placement and context"><figcaption>Steady decode throughput (tokens/s); higher is better.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/qualified_decode_latency.png" alt="Decode latency by model placement and context"><figcaption>Steady per-token decode latency; lower is better.</figcaption></figure>
+</div>
+
+<h2>End-to-end time and energy</h2>
+<div class="sweep-shots">
+<figure><img src="nuc16-stage-sweep-figs/qualified_end_to_end.png" alt="End-to-end inference time by model placement and context"><figcaption>End-to-end prefill plus 16-token decode time.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/qualified_total_energy.png" alt="Total platform energy by model placement and context"><figcaption>Idle-subtracted platform energy; lower is better.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/distributed_energy.png" alt="Phase-distributed energy by prefill and decode device"><figcaption>Phase-distributed energy for every executed placement. Rejected iGPU&rarr;NPU bars are diagnostic evidence, not usable results.</figcaption></figure>
+</div>
+
+<h2>Data and reproducibility</h2>
+<div class="downloads">
+<a href="data/nuc16-stage-sweep-summary.csv">cell medians + quartiles (CSV)</a>
+<a href="data/nuc16-stage-sweep-trials.csv">all 354 trials (CSV)</a>
+<a href="data/nuc16-stage-sweep-correctness.json">correctness audit (JSON)</a>
+<a href="data/nuc16-stage-sweep-failures.json">capacity failures (JSON)</a>
+<a href="data/nuc16-stage-sweep-combined-probes.json">all combined probes (JSON)</a>
+<a href="data/nuc16-stage-sweep-config.json">experiment matrix (JSON)</a>
+</div>
+<p class="src">Core Ultra 7 356H, 96&nbsp;GB DDR5-5600, Ubuntu 24.04,
+OpenVINO 2026.3.0, INT8 OpenVINO IRs, 16 generated tokens, three repetitions per
+original matrix cell. Context qualification uses a 16-token guard band. PSys is a
+whole-platform RAPL counter; phase energy is attributed to the scheduled device, not
+read from separate NPU and iGPU power rails.</p>
+
+</section>
+
 </div>
 <script>
 (function(){
@@ -830,6 +924,6 @@ prompts capped at the engine's 4096-token context.
     t.addEventListener('click', function(){ show(t.getAttribute('aria-controls')); });
   });
   var h = (location.hash || '').replace('#','');
-  if (['motiv','measure','xpu','llmxpu'].indexOf(h) >= 0) show(h);
+  if (['motiv','measure','xpu','llmxpu','combined'].indexOf(h) >= 0) show(h);
 })();
 </script>

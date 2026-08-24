@@ -1,0 +1,227 @@
+{
+  "available_devices": [
+    "CPU",
+    "GPU",
+    "NPU"
+  ],
+  "compile_s": 1.8647537743672729,
+  "compile_target": "AUTO:NPU,GPU",
+  "context_length": 1024,
+  "devices": {
+    "GPU": {
+      "DEVICE_ARCHITECTURE": "GPU: vendor=0x8086 arch=v30.1.0",
+      "DEVICE_TYPE": "Type.INTEGRATED",
+      "FULL_DEVICE_NAME": "Intel(R) Graphics (iGPU)"
+    },
+    "NPU": {
+      "DEVICE_ARCHITECTURE": "5010",
+      "DEVICE_TYPE": "Type.INTEGRATED",
+      "FULL_DEVICE_NAME": "Intel(R) AI Boost"
+    }
+  },
+  "energy_domains": [
+    "package-0",
+    "core",
+    "uncore",
+    "dram",
+    "psys"
+  ],
+  "execution_devices": [
+    "GPU.0"
+  ],
+  "host": {
+    "hostname": "wuklab-NUC16",
+    "pid": 392157,
+    "python": "3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]"
+  },
+  "idle_watts": {
+    "core": 2.8367329430725388,
+    "dram": 0.5133898449898359,
+    "package-0": 4.80282415464685,
+    "psys": 10.220586956599094,
+    "uncore": 0.0020507758127892243
+  },
+  "model": {
+    "family": "Llama 3.2",
+    "ir": "/data/models/llama32_1b_ov_int8/openvino_model.xml",
+    "key": "llama32_1b_int8",
+    "size_b": 1.0
+  },
+  "ok": true,
+  "openvino_version": "2026.3.0-22451-8a17657b995-releases/2026/3",
+  "output_tokens": 16,
+  "placement": {
+    "decode_device": null,
+    "key": "openvino_auto",
+    "label": "OpenVINO AUTO",
+    "mode": "stock",
+    "prefill_device": null
+  },
+  "prompt_length": 1008,
+  "prompt_sha256": "2669029615323cd09063f0eb8d822f5daea575e1396736877003e47194c143f8",
+  "properties": {
+    "PERFORMANCE_HINT": "LATENCY"
+  },
+  "read_model_s": 0.0309373764321208,
+  "schema_version": 1,
+  "trials": [
+    {
+      "energy": {
+        "gross_j": {
+          "core": 6.659222,
+          "dram": 1.29797,
+          "package-0": 15.479941,
+          "psys": 24.890378,
+          "uncore": 5.87053
+        },
+        "net_j": {
+          "core": 5.07140696535192,
+          "dram": 1.0106084009812433,
+          "package-0": 12.791638451061676,
+          "psys": 19.169571015949288,
+          "uncore": 5.8693821116602845
+        }
+      },
+      "first_decode": {
+        "gpu_active_fraction": 0.75,
+        "gpu_freq_mhz_after": 2450,
+        "gpu_freq_mhz_before": 0,
+        "gpu_freq_mhz_max": 2450,
+        "gpu_sample_count": 4,
+        "gross_j": {
+          "core": 1.437374,
+          "dram": 0.076965,
+          "package-0": 1.836177,
+          "psys": 2.583795,
+          "uncore": 0.217651
+        },
+        "logits": {
+          "l2": 397.7220455115551,
+          "sha256": "c380d4f1299174bfb58991f3b8ce03a45aeded75641c2e6855775ea47c82d6f9",
+          "sum": 38098.69335578011,
+          "top1": 546
+        },
+        "net_j": {
+          "core": 1.3230705636490514,
+          "dram": 0.05627844802360607,
+          "package-0": 1.6426518017940452,
+          "psys": 2.1719662399061437,
+          "uncore": 0.2175683659532669
+        },
+        "npu_busy_delta_us": 0,
+        "npu_utilization": 0.0,
+        "seconds": 0.040294042,
+        "watts": {
+          "core": 35.672122444305785,
+          "dram": 1.910083877909295,
+          "package-0": 45.56944175518554,
+          "psys": 64.12349994572398,
+          "uncore": 5.401567804987149
+        }
+      },
+      "metrics": {
+        "all_tokens_per_s_e2e": 1829.4413834858894,
+        "decode_tokens_per_s": 46.02693022186048,
+        "end_to_end_ms": 559.733703,
+        "handoff_estimate_ms": 21.379152,
+        "handoff_plus_first_decode_ms": 40.294042000000005,
+        "output_tokens_per_s_e2e": 28.585021616967023,
+        "prefill_tokens_per_s": 4310.685120578522,
+        "steady_tpot_ms": 18.91489,
+        "steady_tpot_p95_ms": 26.62268355,
+        "ttft_ms": 233.83753900000002
+      },
+      "prefill": {
+        "gpu_active_fraction": 0.7083333333333334,
+        "gpu_freq_mhz_after": 0,
+        "gpu_freq_mhz_before": 0,
+        "gpu_freq_mhz_max": 2450,
+        "gpu_sample_count": 24,
+        "gross_j": {
+          "core": 1.383785,
+          "dram": 0.409972,
+          "package-0": 5.592881,
+          "psys": 9.547278,
+          "uncore": 3.185478
+        },
+        "logits": {
+          "l2": 663.5839176439835,
+          "sha256": "3f8378d8874fa2674c648553ff9659040293962fe5828b8a8c065337e85b207b",
+          "sum": -203040.02743144767,
+          "top1": 5809
+        },
+        "net_j": {
+          "core": 0.7204503497916904,
+          "dram": 0.2899221820999853,
+          "package-0": 4.469800419427625,
+          "psys": 7.157321098933368,
+          "uncore": 3.1849984516308965
+        },
+        "npu_busy_delta_us": 0,
+        "npu_utilization": 0.0,
+        "seconds": 0.233837539,
+        "watts": {
+          "core": 5.917719652360864,
+          "dram": 1.753234325648629,
+          "package-0": 23.917806456216596,
+          "psys": 40.82867977839948,
+          "uncore": 13.622611722748244
+        }
+      },
+      "repeat": 0,
+      "steady_decode": {
+        "final_logits": {
+          "l2": 517.256025861742,
+          "sha256": "bf0460e5b79199ff4fa1829529ed983009d2e8ed3688b9cb319ce6c2608ecb0d",
+          "sum": 92247.75986598787,
+          "top1": 42
+        },
+        "gpu_active_fraction": 0.9655172413793104,
+        "gpu_freq_mhz_after": 2450,
+        "gpu_freq_mhz_before": 0,
+        "gpu_freq_mhz_max": 2450,
+        "gpu_sample_count": 29,
+        "gross_j": {
+          "core": 3.838063,
+          "dram": 0.811033,
+          "package-0": 8.050883,
+          "psys": 12.759305,
+          "uncore": 2.467401
+        },
+        "net_j": {
+          "core": 3.0278860519111777,
+          "dram": 0.6644077708576518,
+          "package-0": 6.679186229840004,
+          "psys": 9.840283677109776,
+          "uncore": 2.466815294076121
+        },
+        "npu_busy_delta_us": 0,
+        "npu_utilization": 0.0,
+        "seconds": 0.285602122,
+        "token_latencies_s": [
+          0.02783502,
+          0.025969887,
+          0.024670938,
+          0.018850652,
+          0.018984123,
+          0.018545884,
+          0.018622931,
+          0.018685986,
+          0.019110069,
+          0.018760762,
+          0.018822273,
+          0.019003432,
+          0.018979128,
+          0.018728808
+        ],
+        "watts": {
+          "core": 13.438496090725824,
+          "dram": 2.8397303014436286,
+          "package-0": 28.189156801853176,
+          "psys": 44.67510574028578,
+          "uncore": 8.639295053977225
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+[
+  {
+    "path": "/data/scratch/stage-sweep-final-merged-v1/raw/cells/qwen25_7b_int8__ctx8192__npu_gpu.json",
+    "error": "RuntimeError: unsupported capacity: intact 7B GPU decode stage inside NPUW exhausted 96 GB shared memory at 4K (kernel OOM); 8K skipped"
+  }
+]

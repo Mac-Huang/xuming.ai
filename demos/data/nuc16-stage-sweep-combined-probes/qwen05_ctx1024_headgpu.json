@@ -1,0 +1,232 @@
+{
+  "available_devices": [
+    "CPU",
+    "GPU",
+    "NPU"
+  ],
+  "compile_s": 1.0448487773537636,
+  "compile_target": "NPU",
+  "context_length": 1024,
+  "devices": {
+    "GPU": {
+      "DEVICE_ARCHITECTURE": "GPU: vendor=0x8086 arch=v30.1.0",
+      "DEVICE_TYPE": "Type.INTEGRATED",
+      "FULL_DEVICE_NAME": "Intel(R) Graphics (iGPU)"
+    },
+    "NPU": {
+      "DEVICE_ARCHITECTURE": "5010",
+      "DEVICE_TYPE": "Type.INTEGRATED",
+      "FULL_DEVICE_NAME": "Intel(R) AI Boost"
+    }
+  },
+  "energy_domains": [
+    "package-0",
+    "core",
+    "uncore",
+    "dram",
+    "psys"
+  ],
+  "execution_devices": [
+    "NPU"
+  ],
+  "host": {
+    "hostname": "wuklab-NUC16",
+    "pid": 390901,
+    "python": "3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]"
+  },
+  "idle_watts": {
+    "core": 2.8367329430725388,
+    "dram": 0.5133898449898359,
+    "package-0": 4.80282415464685,
+    "psys": 10.220586956599094,
+    "uncore": 0.0020507758127892243
+  },
+  "model": {
+    "family": "Qwen2.5",
+    "ir": "/data/models/qwen25_0_5b_ov_int8/openvino_model.xml",
+    "key": "qwen25_0_5b_int8",
+    "size_b": 0.5
+  },
+  "ok": true,
+  "openvino_version": "2026.3.0-22451-8a17657b995-releases/2026/3",
+  "output_tokens": 16,
+  "placement": {
+    "decode_device": "NPU+GPU",
+    "key": "npu_gpu_combined",
+    "label": "NPU + iGPU (subgraph combination)",
+    "mode": "combined",
+    "prefill_device": "NPU+GPU"
+  },
+  "prompt_length": 1008,
+  "prompt_sha256": "2669029615323cd09063f0eb8d822f5daea575e1396736877003e47194c143f8",
+  "properties": {
+    "++NPUW_LLM_GENERATE_CONFIG": {
+      "NPUW_DEVICES": "NPU,GPU",
+      "NPUW_SUBMODEL_DEVICE": "0:GPU"
+    },
+    "++NPUW_LLM_PREFILL_CONFIG": {
+      "NPUW_DEVICES": "NPU,GPU",
+      "NPUW_SUBMODEL_DEVICE": "0:GPU"
+    },
+    "NPUW_LLM": "YES",
+    "NPUW_LLM_GENERATE_HINT": "FAST_COMPILE",
+    "NPUW_LLM_MAX_GENERATION_TOKEN_LEN": 1,
+    "NPUW_LLM_MAX_PROMPT_LEN": 1024,
+    "NPUW_LLM_MIN_RESPONSE_LEN": 1024,
+    "NPU_USE_NPUW": "YES",
+    "PERFORMANCE_HINT": "LATENCY"
+  },
+  "read_model_s": 0.041926829144358635,
+  "schema_version": 1,
+  "trials": [
+    {
+      "energy": {
+        "gross_j": {
+          "core": 19.820688999999998,
+          "dram": 3.3684,
+          "package-0": 44.004526,
+          "psys": 78.373823,
+          "uncore": 13.445094
+        },
+        "net_j": {
+          "core": 13.102796841179323,
+          "dram": 2.1526008101263874,
+          "package-0": 32.63057738510159,
+          "psys": 54.16964081148787,
+          "uncore": 13.440237395226584
+        }
+      },
+      "first_decode": {
+        "gpu_freq_mhz_after": 2450,
+        "gpu_freq_mhz_before": 0,
+        "gross_j": {
+          "core": 4.110768,
+          "dram": 0.332336,
+          "package-0": 6.009262,
+          "psys": 9.811803,
+          "uncore": 0.940061
+        },
+        "logits": {
+          "l2": 989.5880137603889,
+          "sha256": "e083788d24c55a01787389d62cf8d1c2bb5e0752b9cc0ded94cd45846fdd9638",
+          "sum": 140921.76903825998,
+          "top1": 93611
+        },
+        "net_j": {
+          "core": 3.190721607864427,
+          "dram": 0.16582667955253724,
+          "package-0": 4.451547148365683,
+          "psys": 6.496928338326063,
+          "uncore": 0.9393958655211823
+        },
+        "npu_busy_delta_us": 3650,
+        "npu_utilization": 0.011253862121214694,
+        "seconds": 0.324333101,
+        "watts": {
+          "core": 12.67452500939767,
+          "dram": 1.0246749375112347,
+          "package-0": 18.528056437878043,
+          "psys": 30.25224058151252,
+          "uncore": 2.8984429806934817
+        }
+      },
+      "metrics": {
+        "all_tokens_per_s_e2e": 432.3996969633135,
+        "decode_tokens_per_s": 7.329265142302583,
+        "end_to_end_ms": 2368.179273,
+        "handoff_estimate_ms": 202.824575,
+        "handoff_plus_first_decode_ms": 324.333101,
+        "output_tokens_per_s_e2e": 6.756245265051773,
+        "prefill_tokens_per_s": 3134.4319133677845,
+        "steady_tpot_ms": 121.508526,
+        "steady_tpot_p95_ms": 128.9865716,
+        "ttft_ms": 321.589375
+      },
+      "prefill": {
+        "gpu_freq_mhz_after": 0,
+        "gpu_freq_mhz_before": 0,
+        "gross_j": {
+          "core": 1.047971,
+          "dram": 0.411742,
+          "package-0": 3.678152,
+          "psys": 7.415875,
+          "uncore": 0.05603
+        },
+        "logits": {
+          "l2": 806.2564018475588,
+          "sha256": "39d746ade1d1f463e182e6b4785ecdcc7ae5b5ca8c140f5e466da53adff41a45",
+          "sum": 198783.04673451185,
+          "top1": 291
+        },
+        "net_j": {
+          "core": 0.13570782579539165,
+          "dram": 0.2466412806183718,
+          "package-0": 2.133614781872216,
+          "psys": 4.1290428284941445,
+          "uncore": 0.0553704922881
+        },
+        "npu_busy_delta_us": 280208,
+        "npu_utilization": 0.8713223190287304,
+        "seconds": 0.321589375,
+        "watts": {
+          "core": 3.258723955043602,
+          "dram": 1.2803345881685302,
+          "package-0": 11.437417669660261,
+          "psys": 23.060074668200713,
+          "uncore": 0.17422839296229858
+        }
+      },
+      "repeat": 0,
+      "steady_decode": {
+        "final_logits": {
+          "l2": 1432.1871206124802,
+          "sha256": "1c40a76eb8096bdb3f03e69ef4cdf6b6f06d38022eb83972919078f094fa72dd",
+          "sum": 442402.6663386822,
+          "top1": 89372
+        },
+        "gpu_freq_mhz_after": 2450,
+        "gpu_freq_mhz_before": 2450,
+        "gross_j": {
+          "core": 14.66195,
+          "dram": 2.624322,
+          "package-0": 34.317112,
+          "psys": 61.146145,
+          "uncore": 12.449003
+        },
+        "net_j": {
+          "core": 9.776367407519505,
+          "dram": 1.7401328499554785,
+          "package-0": 26.045415454863686,
+          "psys": 43.54366964466766,
+          "uncore": 12.4454710374173
+        },
+        "npu_busy_delta_us": 44005,
+        "npu_utilization": 0.025550777373416284,
+        "seconds": 1.722256797,
+        "token_latencies_s": [
+          0.141495013,
+          0.122182229,
+          0.122251257,
+          0.121449456,
+          0.121134732,
+          0.121907872,
+          0.121348944,
+          0.121515657,
+          0.121980929,
+          0.121575215,
+          0.121501395,
+          0.121303333,
+          0.121161849,
+          0.121381007
+        ],
+        "watts": {
+          "core": 8.513219413933891,
+          "dram": 1.5237692802672096,
+          "package-0": 19.925665011034937,
+          "psys": 35.50350046898377,
+          "uncore": 7.228308241654162
+        }
+      }
+    }
+  ]
+}

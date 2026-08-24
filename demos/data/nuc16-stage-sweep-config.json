@@ -1,0 +1,21 @@
+{
+  "benchmark_env": "openvino-2026.3.0-py312",
+  "analysis_env": "openvino-3.12",
+  "models": [
+    {"key": "qwen25_0_5b_int8", "family": "Qwen2.5", "size_b": 0.5, "directory": "qwen25_0_5b_ov_int8"},
+    {"key": "qwen25_1_5b_int8", "family": "Qwen2.5", "size_b": 1.5, "directory": "qwen25_1_5b_ov_int8"},
+    {"key": "qwen25_3b_int8", "family": "Qwen2.5", "size_b": 3.0, "directory": "qwen25_3b_ov_int8"},
+    {"key": "qwen25_7b_int8", "family": "Qwen2.5", "size_b": 7.0, "directory": "qwen25_7b_ov_int8"},
+    {"key": "llama32_1b_int8", "family": "Llama 3.2", "size_b": 1.0, "directory": "llama32_1b_ov_int8"},
+    {"key": "llama32_3b_int8", "family": "Llama 3.2", "size_b": 3.0, "directory": "llama32_3b_ov_int8"}
+  ],
+  "contexts": [1024, 2048, 4096, 8192],
+  "placements": ["openvino_auto", "gpu_gpu", "npu_npu", "npu_gpu", "gpu_npu", "npu_gpu_combined"],
+  "context_guard_tokens": 16,
+  "output_tokens": 16,
+  "repeats": 3,
+  "teacher_token": 42,
+  "warmup_prompt_tokens": 64,
+  "cooldown_seconds": 2.0,
+  "idle_baseline_seconds": 10.0
+}
