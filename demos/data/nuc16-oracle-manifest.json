@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "device": "Intel NUC16",
+  "precisions": [
+    "INT8",
+    "FP16"
+  ],
+  "contexts": [
+    1024,
+    2048,
+    4096,
+    8192
+  ],
+  "models": [
+    "qwen25_0_5b",
+    "qwen25_1_5b",
+    "qwen25_3b",
+    "qwen25_7b",
+    "llama32_1b",
+    "llama32_3b"
+  ],
+  "routes": [
+    {
+      "key": "gpu_full",
+      "label": "Whole iGPU",
+      "mode": "measured"
+    },
+    {
+      "key": "npu_full",
+      "label": "Whole NPU",
+      "mode": "measured"
+    },
+    {
+      "key": "npu_gpu_oracle",
+      "label": "NPU prefill + iGPU decode \u00b7 oracle",
+      "mode": "overhead_free_oracle"
+    },
+    {
+      "key": "gpu_npu_oracle",
+      "label": "iGPU prefill + NPU decode \u00b7 oracle",
+      "mode": "overhead_free_oracle"
+    }
+  ],
+  "formula": {
+    "split_end_to_end_ms": "measured prefill_ms on prefill device + measured decode_ms on decode device",
+    "split_energy_net_psys_j": "measured prefill PSys energy on prefill device + measured decode PSys energy on decode device",
+    "internal_overhead_ms": 0.0,
+    "ignored": [
+      "device handoff",
+      "synchronization",
+      "KV-cache/state conversion",
+      "transfer energy",
+      "recompilation"
+    ]
+  },
+  "sources": {
+    "int8_trials": "trials.csv",
+    "fp16_gpu_trials": "fp16_trials.csv",
+    "fp16_npu_run": "fp16_npu"
+  }
+}

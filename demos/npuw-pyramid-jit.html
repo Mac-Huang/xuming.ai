@@ -584,21 +584,73 @@ prompts capped at the engine's 4096-token context.
 <section class="pane" id="combined" role="tabpanel" aria-labelledby="t-combined" hidden>
 
 <div class="thesis">
-This is the NUC16 prefill/decode placement sweep across <b>six models, two
-precisions, and 1K&ndash;8K context buckets</b>. The INT8 matrix covers stock,
-iGPU/iGPU, NPU/NPU, NPU&rarr;iGPU and iGPU&rarr;NPU. The FP16 expansion adds
-stock, iGPU&rarr;iGPU and iGPU&rarr;NPU across every model/window pair. A final
-attempt partitions subgraphs inside one stateful request across <b>NPU + iGPU</b>.
-Every plotted route is correctness-gated; rejected measurements remain visible only
-as diagnostics.
+This is the NUC16 prefill/decode study across <b>six models, INT8 + FP16, and
+1K&ndash;8K context buckets</b>. The first result is a four-case, zero-overhead
+phase oracle built from independent whole-iGPU and whole-NPU measurements. It asks
+which device should own each phase when boundary cost is ignored. The second result,
+retained below, tests whether those split routes can execute inside one stateful
+OpenVINO request today.
 </div>
 
 <div class="kpis">
-<div class="kpi"><div class="n">588</div><div class="l">measured INT8 + FP16 trials</div></div>
-<div class="kpi"><div class="n">6 &times; 4 &times; 2</div><div class="l">models &times; windows &times; precisions</div></div>
-<div class="kpi"><div class="n pass">24 / 24</div><div class="l">FP16 iGPU&rarr;iGPU cells valid</div></div>
-<div class="kpi"><div class="n fail">0 / 6</div><div class="l">FP16 NPU+iGPU model gates passed</div></div>
+<div class="kpi"><div class="n">288</div><div class="l">whole-device measured trials</div></div>
+<div class="kpi"><div class="n">288</div><div class="l">overhead-free composed trial rows</div></div>
+<div class="kpi"><div class="n">192</div><div class="l">4 routes &times; 2 precisions &times; 6 models &times; 4 windows</div></div>
+<div class="kpi"><div class="n pass">0 ms</div><div class="l">assumed device-boundary overhead</div></div>
 <div class="kpi"><div class="n">96 GB</div><div class="l">shared DDR5 on the NUC16 testbed</div></div>
+</div>
+
+<h2>Four-case overhead-free phase oracle</h2>
+<p><b>Yes&mdash;the independently measured phases can be combined as a performance
+oracle.</b> Whole iGPU and whole NPU are real stateful runs. The two split cases add
+prefill time and energy from one whole-device run to decode time and energy from the
+other. No KV cache is transferred, so transfer, synchronization, state conversion,
+recompilation and all other internal boundary costs are exactly zero.</p>
+
+<div class="note">
+<b>Composition rule.</b>
+<code>E2E(N&rarr;G) = prefill(NPU) + decode(iGPU)</code> and
+<code>E2E(G&rarr;N) = prefill(iGPU) + decode(NPU)</code>. Energy uses the same
+phase-wise addition. These dashed routes are analytical upper bounds and optimal
+route selectors; they are not a fifth runtime and do not themselves produce a token
+stream.
+</div>
+
+<table>
+<thead><tr><th>case</th><th>prefill source</th><th>decode source</th><th>result type</th><th>boundary cost</th></tr></thead>
+<tbody>
+<tr><td>Whole iGPU</td><td>measured iGPU phase</td><td>measured iGPU phase</td><td class="pass">real end-to-end run</td><td class="n">none</td></tr>
+<tr><td>Whole NPU</td><td>measured NPU phase</td><td>measured NPU phase</td><td class="pass">real end-to-end run</td><td class="n">none</td></tr>
+<tr><td>NPU prefill + iGPU decode</td><td>whole-NPU prefill</td><td>whole-iGPU decode</td><td class="warn">overhead-free oracle</td><td class="n">0 ms / 0 J</td></tr>
+<tr><td>iGPU prefill + NPU decode</td><td>whole-iGPU prefill</td><td>whole-NPU decode</td><td class="warn">overhead-free oracle</td><td class="n">0 ms / 0 J</td></tr>
+</tbody></table>
+
+<p>Across the 24 model/window cells in each precision, the fastest INT8 choice is
+whole iGPU in <b>17</b> cells, whole NPU in <b>4</b>, and the iGPU-prefill +
+NPU-decode oracle in <b>3</b>. For FP16, whole iGPU wins <b>19</b>, whole NPU
+wins <b>1</b>, NPU-prefill + iGPU-decode wins <b>3</b>, and the reverse oracle
+wins <b>1</b>. Energy selects whole NPU in <b>21 of 24 FP16 cells</b>, showing a
+clear latency-versus-energy tradeoff even before boundary costs are restored.</p>
+
+<div class="sweep-shots">
+<figure><img src="nuc16-stage-sweep-figs/oracle_optimal_routes.png" alt="Optimal four-case route by precision model and context window"><figcaption>Fastest end-to-end and lowest-energy oracle choice for every model, precision and window.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_end_to_end_ms.png" alt="Four-case end-to-end inference time for INT8 and FP16"><figcaption>Measured whole-device paths are solid; overhead-free composed paths are dashed.</figcaption></figure>
+</div>
+
+<h2>Four-case throughput and latency &middot; INT8 + FP16</h2>
+<div class="sweep-shots">
+<figure><img src="nuc16-stage-sweep-figs/oracle_ttft_ms.png" alt="Four-case time to first token for INT8 and FP16"><figcaption>Time to first token follows the selected prefill device.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_handoff_plus_first_decode_ms.png" alt="Four-case first decode call latency for INT8 and FP16"><figcaption>First decode-call latency follows the selected decode device; boundary overhead is zero.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_prefill_tokens_per_s.png" alt="Four-case prefill throughput for INT8 and FP16"><figcaption>Prefill throughput across all six models and four windows.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_decode_tokens_per_s.png" alt="Four-case decode throughput for INT8 and FP16"><figcaption>Decode throughput across all six models and four windows.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_steady_tpot_ms.png" alt="Four-case steady decode latency for INT8 and FP16"><figcaption>Steady per-token decode latency; lower is better.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_output_tokens_per_s_e2e.png" alt="Four-case end-to-end output throughput for INT8 and FP16"><figcaption>End-to-end output-token throughput after composing the selected phases.</figcaption></figure>
+</div>
+
+<h2>Four-case total and distributed energy</h2>
+<div class="sweep-shots">
+<figure><img src="nuc16-stage-sweep-figs/oracle_energy_net_psys_j.png" alt="Four-case idle-subtracted platform energy for INT8 and FP16"><figcaption>Total idle-subtracted PSys energy across 1K&ndash;8K.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_phase_energy_8k.png" alt="Four-case energy split between prefill and decode at 8K"><figcaption>Eight-thousand-token energy split into independently measured prefill and decode components.</figcaption></figure>
 </div>
 
 <h2>Combined-path qualification</h2>
@@ -698,6 +750,14 @@ ending on token 0 instead of 42.</p>
 
 <h2>Data and reproducibility</h2>
 <div class="downloads">
+<a href="data/nuc16-oracle-summary.csv">four-case cell medians + quartiles (CSV)</a>
+<a href="data/nuc16-oracle-trials.csv">all 576 measured + composed rows (CSV)</a>
+<a href="data/nuc16-oracle-best.csv">optimal route by model / precision / window (CSV)</a>
+<a href="data/nuc16-oracle-summary.json">four-case summary (JSON)</a>
+<a href="data/nuc16-oracle-manifest.json">composition rules and sources (JSON)</a>
+<a href="data/nuc16-oracle-failures.json">source failures and unavailable cells (JSON)</a>
+<a href="data/nuc16-oracle-fp16-npu-raw-cells.json">new FP16 whole-NPU raw cells (JSON)</a>
+<a href="data/nuc16-oracle-report.md">four-case result report</a>
 <a href="data/nuc16-stage-sweep-summary.csv">cell medians + quartiles (CSV)</a>
 <a href="data/nuc16-stage-sweep-trials.csv">all 354 trials (CSV)</a>
 <a href="data/nuc16-stage-sweep-correctness.json">correctness audit (JSON)</a>
@@ -713,7 +773,8 @@ ending on token 0 instead of 42.</p>
 </div>
 <p class="src">Core Ultra 7 356H, 96&nbsp;GB DDR5-5600, Ubuntu 24.04,
 OpenVINO 2026.3.0, INT8 and FP16 OpenVINO IRs, 16 generated tokens, three repetitions per
-original matrix cell. Context qualification uses a 16-token guard band. PSys is a
+whole-device cell. The four-case oracle contains 288 measured source trials plus 288
+phase-composed rows. Context qualification uses a 16-token guard band. PSys is a
 whole-platform RAPL counter; phase energy is attributed to the scheduled device, not
 read from separate NPU and iGPU power rails.</p>
 
