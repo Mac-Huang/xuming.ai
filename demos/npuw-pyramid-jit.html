@@ -68,7 +68,23 @@ margin:18px 0;font-size:14.5px;color:#cbd5e1}
 .pass{color:#3fb950}.fail{color:#ff7b8d}.warn{color:#f0c14b}
 .downloads{display:flex;gap:8px 18px;flex-wrap:wrap;margin:12px 0 20px}
 .downloads a{font-size:13.5px}
-@media(max-width:680px){.stage-grid{grid-template-columns:1fr 1fr}#live-outcomes{grid-template-columns:1fr 1fr}.live-updated{margin-left:0;width:100%}.run-meta{grid-template-columns:1fr}}
+.result-map{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:18px 0 30px}
+.result-step{border:1px solid var(--bd);border-radius:9px;background:#11161d;padding:10px 12px;min-width:0}
+.result-step b{display:block;color:var(--tx);font-size:12.5px;margin-bottom:2px}
+.result-step span{display:block;color:var(--mut);font-size:11.5px;line-height:1.35}
+.oracle-summary{font-size:15.5px;margin:18px 2px 26px}
+.result-group{border:1px solid var(--bd);border-radius:11px;background:#10151c;margin:14px 0;overflow:hidden}
+.result-group>summary{display:flex;align-items:center;gap:14px;cursor:pointer;list-style:none;padding:14px 16px;color:var(--tx);font-weight:650}
+.result-group>summary::-webkit-details-marker{display:none}
+.result-group>summary small{margin-left:auto;color:var(--mut);font-weight:400;font-size:11.5px}
+.result-group>summary:after{content:'+';color:var(--gold);font-size:20px;font-weight:400;line-height:1}
+.result-group[open]>summary{border-bottom:1px solid var(--bd)}
+.result-group[open]>summary:after{content:'−'}
+.group-body{padding:2px 18px 20px}
+.group-body>h3{font-size:14px;letter-spacing:.04em;text-transform:uppercase;color:var(--mut);margin:28px 0 12px}
+.group-body>h3:first-child{margin-top:18px}
+.section-lead{color:#cbd5e1;margin:8px 0 18px}
+@media(max-width:680px){.result-map{grid-template-columns:1fr 1fr}.stage-grid{grid-template-columns:1fr 1fr}#live-outcomes{grid-template-columns:1fr 1fr}.live-updated{margin-left:0;width:100%}.run-meta{grid-template-columns:1fr}}
 @media(max-width:520px){.sweep-shots{grid-template-columns:1fr}.tabs button{padding:8px 9px;font-size:13.5px}}
 </style>
 <div class="wrap">
@@ -600,7 +616,38 @@ OpenVINO request today.
 <div class="kpi"><div class="n">96 GB</div><div class="l">shared DDR5 on the NUC16 testbed</div></div>
 </div>
 
-<h2>Four-case overhead-free phase oracle</h2>
+
+<div class="result-map" aria-label="Reading order">
+<div class="result-step"><b>1 · At a glance</b><span>Four metrics at 8K</span></div>
+<div class="result-step"><b>2 · Full sweeps</b><span>Expandable 1K–8K matrices</span></div>
+<div class="result-step"><b>3 · Runtime status</b><span>Correctness and state handoff</span></div>
+<div class="result-step"><b>4 · Reproduce</b><span>Data, trials and configs</span></div>
+</div>
+
+<div class="oracle-summary"><p>Across the 24 model/window cells in each precision, the fastest INT8 choice is
+whole iGPU in <b>17</b> cells, whole NPU in <b>4</b>, and the iGPU-prefill +
+NPU-decode oracle in <b>3</b>. For FP16, whole iGPU wins <b>19</b>, whole NPU
+wins <b>1</b>, NPU-prefill + iGPU-decode wins <b>3</b>, and the reverse oracle
+wins <b>1</b>. Energy selects whole NPU in <b>21 of 24 FP16 cells</b>, showing a
+clear latency-versus-energy tradeoff even before boundary costs are restored.</p></div>
+
+<h2 id="oracle-8k-digest">8K cross-model latency and throughput digest</h2>
+<p>These grouped bars compare all six models directly at the largest tested window.
+Whole-device routes are solid; overhead-free split oracles are hatched. Identical
+phase bars are expected: TTFT follows the prefill device, while decode throughput and
+steady TPOT follow the decode device.</p>
+<div class="sweep-shots">
+<figure><img src="nuc16-stage-sweep-figs/oracle_ttft_8k_grouped.png" alt="Eight-thousand-token prefill time to first token by model route and precision"><figcaption>Prefill TTFT at 8K; lower is better.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_decode_throughput_8k_grouped.png" alt="Eight-thousand-token decode throughput by model route and precision"><figcaption>Decode output throughput at 8K; higher is better.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_end_to_end_8k_grouped.png" alt="Eight-thousand-token end-to-end inference time by model route and precision"><figcaption>End-to-end inference time after phase composition; lower is better.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_steady_tpot_8k_grouped.png" alt="Eight-thousand-token steady decode latency by model route and precision"><figcaption>Steady per-token decode latency at 8K; lower is better.</figcaption></figure>
+</div>
+
+
+
+<details class="result-group" id="oracle-method">
+<summary><span>Oracle definition and route composition</span><small>method · measured vs composed</small></summary>
+<div class="group-body">
 <p><b>Yes&mdash;the independently measured phases can be combined as a performance
 oracle.</b> Whole iGPU and whole NPU are real stateful runs. The two split cases add
 prefill time and energy from one whole-device run to decode time and energy from the
@@ -624,32 +671,16 @@ stream.
 <tr><td>NPU prefill + iGPU decode</td><td>whole-NPU prefill</td><td>whole-iGPU decode</td><td class="warn">overhead-free oracle</td><td class="n">0 ms / 0 J</td></tr>
 <tr><td>iGPU prefill + NPU decode</td><td>whole-iGPU prefill</td><td>whole-NPU decode</td><td class="warn">overhead-free oracle</td><td class="n">0 ms / 0 J</td></tr>
 </tbody></table>
+</div>
+</details>
 
-<p>Across the 24 model/window cells in each precision, the fastest INT8 choice is
-whole iGPU in <b>17</b> cells, whole NPU in <b>4</b>, and the iGPU-prefill +
-NPU-decode oracle in <b>3</b>. For FP16, whole iGPU wins <b>19</b>, whole NPU
-wins <b>1</b>, NPU-prefill + iGPU-decode wins <b>3</b>, and the reverse oracle
-wins <b>1</b>. Energy selects whole NPU in <b>21 of 24 FP16 cells</b>, showing a
-clear latency-versus-energy tradeoff even before boundary costs are restored.</p>
-
+<details class="result-group" id="oracle-full-sweep">
+<summary><span>Full four-case 1K–8K sweep</span><small>route choice · latency · throughput · energy</small></summary>
+<div class="group-body">
 <div class="sweep-shots">
 <figure><img src="nuc16-stage-sweep-figs/oracle_optimal_routes.png" alt="Optimal four-case route by precision model and context window"><figcaption>Fastest end-to-end and lowest-energy oracle choice for every model, precision and window.</figcaption></figure>
 <figure><img src="nuc16-stage-sweep-figs/oracle_end_to_end_ms.png" alt="Four-case end-to-end inference time for INT8 and FP16"><figcaption>Measured whole-device paths are solid; overhead-free composed paths are dashed.</figcaption></figure>
 </div>
-
-<h2 id="oracle-8k-digest">8K cross-model latency and throughput digest</h2>
-<p>These grouped bars compare all six models directly at the largest tested window.
-Whole-device routes are solid; overhead-free split oracles are hatched. Identical
-phase bars are expected: TTFT follows the prefill device, while decode throughput and
-steady TPOT follow the decode device.</p>
-<div class="sweep-shots">
-<figure><img src="nuc16-stage-sweep-figs/oracle_ttft_8k_grouped.png" alt="Eight-thousand-token prefill time to first token by model route and precision"><figcaption>Prefill TTFT at 8K; lower is better.</figcaption></figure>
-<figure><img src="nuc16-stage-sweep-figs/oracle_decode_throughput_8k_grouped.png" alt="Eight-thousand-token decode throughput by model route and precision"><figcaption>Decode output throughput at 8K; higher is better.</figcaption></figure>
-<figure><img src="nuc16-stage-sweep-figs/oracle_end_to_end_8k_grouped.png" alt="Eight-thousand-token end-to-end inference time by model route and precision"><figcaption>End-to-end inference time after phase composition; lower is better.</figcaption></figure>
-<figure><img src="nuc16-stage-sweep-figs/oracle_steady_tpot_8k_grouped.png" alt="Eight-thousand-token steady decode latency by model route and precision"><figcaption>Steady per-token decode latency at 8K; lower is better.</figcaption></figure>
-</div>
-
-<h2>Four-case throughput and latency &middot; INT8 + FP16</h2>
 <div class="sweep-shots">
 <figure><img src="nuc16-stage-sweep-figs/oracle_ttft_ms.png" alt="Four-case time to first token for INT8 and FP16"><figcaption>Time to first token follows the selected prefill device.</figcaption></figure>
 <figure><img src="nuc16-stage-sweep-figs/oracle_handoff_plus_first_decode_ms.png" alt="Four-case first decode call latency for INT8 and FP16"><figcaption>First decode-call latency follows the selected decode device; boundary overhead is zero.</figcaption></figure>
@@ -659,13 +690,15 @@ steady TPOT follow the decode device.</p>
 <figure><img src="nuc16-stage-sweep-figs/oracle_output_tokens_per_s_e2e.png" alt="Four-case end-to-end output throughput for INT8 and FP16"><figcaption>End-to-end output-token throughput after composing the selected phases.</figcaption></figure>
 </div>
 
-<h2>Four-case total and distributed energy</h2>
+<h3>Four-case total and distributed energy</h3>
 <div class="sweep-shots">
 <figure><img src="nuc16-stage-sweep-figs/oracle_energy_net_psys_j.png" alt="Four-case idle-subtracted platform energy for INT8 and FP16"><figcaption>Total idle-subtracted PSys energy across 1K&ndash;8K.</figcaption></figure>
 <figure><img src="nuc16-stage-sweep-figs/oracle_phase_energy_8k.png" alt="Four-case energy split between prefill and decode at 8K"><figcaption>Eight-thousand-token energy split into independently measured prefill and decode components.</figcaption></figure>
 </div>
+</div>
+</details>
 
-<h2>Combined-path qualification</h2>
+<h2 id="runtime-qualification">Runtime qualification</h2>
 <p>The experiment uses OpenVINO NPUW with <code>NPUW_DEVICES=NPU,GPU</code> and
 tests automatic assignment plus <code>0:GPU,last:NPU</code>,
 <code>last:GPU</code>, <code>0:NPU,last:GPU</code> and <code>0:GPU</code> maps.
@@ -696,7 +729,15 @@ today, or add an explicit state-transfer contract and token-equivalence gate bef
 benchmarking a future runtime fix.
 </div>
 
-<h2>FP16 expansion &middot; GPU&rarr;GPU and GPU&rarr;NPU</h2>
+
+
+<h2 id="validation-appendix">Placement validation appendix</h2>
+<p class="section-lead">The compact qualification result stays above. Open a precision below for every diagnostic matrix and rejected-path measurement.</p>
+
+<details class="result-group">
+<summary><span>FP16 placement diagnostics</span><small>GPU→GPU · GPU→NPU · NPU+iGPU</small></summary>
+<div class="group-body">
+<h3>FP16 expansion &middot; GPU&rarr;GPU and GPU&rarr;NPU</h3>
 <p>FP16 repeats the six-model, four-window sweep with the same 16-token guard band.
 Stock AUTO again resolves to <code>GPU.0</code>. Explicit iGPU&rarr;iGPU matches the
 baseline at prefill, first decode and final decode in <b>all 24 cells</b> and all three
@@ -725,27 +766,32 @@ ending on token 0 instead of 42.</p>
 <figure><img src="nuc16-stage-sweep-figs/fp16_ttft_ms.png" alt="FP16 time to first token across models windows and GPU placements"><figcaption>FP16 time to first token. Orange triangles are the valid 1K iGPU&rarr;NPU points; orange crosses are measured but token-invalid diagnostics.</figcaption></figure>
 </div>
 
-<h2>FP16 throughput and decode latency</h2>
+<h3>FP16 throughput and decode latency</h3>
 <div class="sweep-shots">
 <figure><img src="nuc16-stage-sweep-figs/fp16_prefill_tokens_per_s.png" alt="FP16 prefill throughput by model window and placement"><figcaption>FP16 prefill throughput; higher is better.</figcaption></figure>
 <figure><img src="nuc16-stage-sweep-figs/fp16_decode_tokens_per_s.png" alt="FP16 decode throughput by model window and placement"><figcaption>FP16 steady decode throughput; higher is better.</figcaption></figure>
 <figure><img src="nuc16-stage-sweep-figs/fp16_steady_tpot_ms.png" alt="FP16 decode latency by model window and placement"><figcaption>FP16 steady per-token latency; lower is better.</figcaption></figure>
 </div>
 
-<h2>FP16 end-to-end time and energy</h2>
+<h3>FP16 end-to-end time and energy</h3>
 <div class="sweep-shots">
 <figure><img src="nuc16-stage-sweep-figs/fp16_end_to_end_ms.png" alt="FP16 end-to-end inference time by model window and placement"><figcaption>FP16 prefill plus 16-token decode time.</figcaption></figure>
 <figure><img src="nuc16-stage-sweep-figs/fp16_energy_net_psys_j.png" alt="FP16 whole-platform inference energy by model window and placement"><figcaption>FP16 idle-subtracted platform energy.</figcaption></figure>
 <figure><img src="nuc16-stage-sweep-figs/fp16_phase_energy.png" alt="FP16 energy split between prefill and decode phases"><figcaption>FP16 phase-distributed energy. Solid lines are prefill; dashed lines are decode. Crosses mark rejected token-invalid points.</figcaption></figure>
 </div>
+</div>
+</details>
 
-<h2>INT8 qualified placement matrix and 8K overview</h2>
+<details class="result-group">
+<summary><span>INT8 placement diagnostics</span><small>qualified routes · failures · energy</small></summary>
+<div class="group-body">
+<h3>INT8 qualified placement matrix and 8K overview</h3>
 <div class="sweep-shots">
 <figure><img src="nuc16-stage-sweep-figs/qualification_matrix.png" alt="Qualification matrix for six models, four contexts and five placements"><figcaption>Green cells passed the placement-specific correctness and capacity gate. iGPU&rarr;NPU long-context cells are rejected; Qwen2.5-7B NPU&rarr;iGPU is capacity-limited at 4K and 8K.</figcaption></figure>
 <figure><img src="nuc16-stage-sweep-figs/qualified_8k_overview.png" alt="Qualified 8K latency throughput and energy overview"><figcaption>Eight-thousand-token overview of qualified placements only. Missing bars are failed qualification, not zero cost.</figcaption></figure>
 </div>
 
-<h2>INT8 throughput and latency across 1K&ndash;8K</h2>
+<h3>INT8 throughput and latency across 1K&ndash;8K</h3>
 <div class="sweep-shots">
 <figure><img src="nuc16-stage-sweep-figs/qualified_prefill_throughput.png" alt="Prefill throughput by model placement and context"><figcaption>Prefill throughput (tokens/s); higher is better.</figcaption></figure>
 <figure><img src="nuc16-stage-sweep-figs/qualified_ttft.png" alt="Time to first token by model placement and context"><figcaption>Time to first token; lower is better.</figcaption></figure>
@@ -753,14 +799,18 @@ ending on token 0 instead of 42.</p>
 <figure><img src="nuc16-stage-sweep-figs/qualified_decode_latency.png" alt="Decode latency by model placement and context"><figcaption>Steady per-token decode latency; lower is better.</figcaption></figure>
 </div>
 
-<h2>INT8 end-to-end time and energy</h2>
+<h3>INT8 end-to-end time and energy</h3>
 <div class="sweep-shots">
 <figure><img src="nuc16-stage-sweep-figs/qualified_end_to_end.png" alt="End-to-end inference time by model placement and context"><figcaption>End-to-end prefill plus 16-token decode time.</figcaption></figure>
 <figure><img src="nuc16-stage-sweep-figs/qualified_total_energy.png" alt="Total platform energy by model placement and context"><figcaption>Idle-subtracted platform energy; lower is better.</figcaption></figure>
 <figure><img src="nuc16-stage-sweep-figs/distributed_energy.png" alt="Phase-distributed energy by prefill and decode device"><figcaption>Phase-distributed energy for every executed placement. Rejected iGPU&rarr;NPU bars are diagnostic evidence, not usable results.</figcaption></figure>
 </div>
+</div>
+</details>
 
-<h2>Data and reproducibility</h2>
+<details class="result-group" id="oracle-data">
+<summary><span>Data and reproducibility</span><small>CSV · JSON · raw cells · reports</small></summary>
+<div class="group-body">
 <div class="downloads">
 <a href="data/nuc16-oracle-summary.csv">four-case cell medians + quartiles (CSV)</a>
 <a href="data/nuc16-oracle-trials.csv">all 576 measured + composed rows (CSV)</a>
@@ -789,6 +839,8 @@ whole-device cell. The four-case oracle contains 288 measured source trials plus
 phase-composed rows. Context qualification uses a 16-token guard band. PSys is a
 whole-platform RAPL counter; phase energy is attributed to the scheduled device, not
 read from separate NPU and iGPU power rails.</p>
+</div>
+</details>
 
 </section>
 
