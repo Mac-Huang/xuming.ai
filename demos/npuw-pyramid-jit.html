@@ -637,6 +637,18 @@ clear latency-versus-energy tradeoff even before boundary costs are restored.</p
 <figure><img src="nuc16-stage-sweep-figs/oracle_end_to_end_ms.png" alt="Four-case end-to-end inference time for INT8 and FP16"><figcaption>Measured whole-device paths are solid; overhead-free composed paths are dashed.</figcaption></figure>
 </div>
 
+<h2 id="oracle-8k-digest">8K cross-model latency and throughput digest</h2>
+<p>These grouped bars compare all six models directly at the largest tested window.
+Whole-device routes are solid; overhead-free split oracles are hatched. Identical
+phase bars are expected: TTFT follows the prefill device, while decode throughput and
+steady TPOT follow the decode device.</p>
+<div class="sweep-shots">
+<figure><img src="nuc16-stage-sweep-figs/oracle_ttft_8k_grouped.png" alt="Eight-thousand-token prefill time to first token by model route and precision"><figcaption>Prefill TTFT at 8K; lower is better.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_decode_throughput_8k_grouped.png" alt="Eight-thousand-token decode throughput by model route and precision"><figcaption>Decode output throughput at 8K; higher is better.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_end_to_end_8k_grouped.png" alt="Eight-thousand-token end-to-end inference time by model route and precision"><figcaption>End-to-end inference time after phase composition; lower is better.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_steady_tpot_8k_grouped.png" alt="Eight-thousand-token steady decode latency by model route and precision"><figcaption>Steady per-token decode latency at 8K; lower is better.</figcaption></figure>
+</div>
+
 <h2>Four-case throughput and latency &middot; INT8 + FP16</h2>
 <div class="sweep-shots">
 <figure><img src="nuc16-stage-sweep-figs/oracle_ttft_ms.png" alt="Four-case time to first token for INT8 and FP16"><figcaption>Time to first token follows the selected prefill device.</figcaption></figure>
