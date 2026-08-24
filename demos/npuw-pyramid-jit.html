@@ -584,18 +584,20 @@ prompts capped at the engine's 4096-token context.
 <section class="pane" id="combined" role="tabpanel" aria-labelledby="t-combined" hidden>
 
 <div class="thesis">
-This is the NUC16 prefill/decode placement sweep across <b>six INT8 models</b>,
-<b>1K&ndash;8K</b> context buckets, and the stock, iGPU/iGPU, NPU/NPU,
-NPU&rarr;iGPU and iGPU&rarr;NPU paths. A sixth attempt partitions subgraphs inside
-one stateful request across <b>NPU + iGPU</b>. That combined request activates both
-engines, but its decode tokens are wrong on both Qwen2.5 and Llama 3.2. It therefore
-appears below as a failed capability gate, not as a usable performance line.
+This is the NUC16 prefill/decode placement sweep across <b>six models, two
+precisions, and 1K&ndash;8K context buckets</b>. The INT8 matrix covers stock,
+iGPU/iGPU, NPU/NPU, NPU&rarr;iGPU and iGPU&rarr;NPU. The FP16 expansion adds
+stock, iGPU&rarr;iGPU and iGPU&rarr;NPU across every model/window pair. A final
+attempt partitions subgraphs inside one stateful request across <b>NPU + iGPU</b>.
+Every plotted route is correctness-gated; rejected measurements remain visible only
+as diagnostics.
 </div>
 
 <div class="kpis">
-<div class="kpi"><div class="n">354</div><div class="l">measured trials in the five-path sweep</div></div>
-<div class="kpi"><div class="n">6 &times; 4</div><div class="l">models &times; context windows (1K&ndash;8K)</div></div>
-<div class="kpi"><div class="n fail">0 / 2</div><div class="l">model families passing true NPU+iGPU decode</div></div>
+<div class="kpi"><div class="n">588</div><div class="l">measured INT8 + FP16 trials</div></div>
+<div class="kpi"><div class="n">6 &times; 4 &times; 2</div><div class="l">models &times; windows &times; precisions</div></div>
+<div class="kpi"><div class="n pass">24 / 24</div><div class="l">FP16 iGPU&rarr;iGPU cells valid</div></div>
+<div class="kpi"><div class="n fail">0 / 6</div><div class="l">FP16 NPU+iGPU model gates passed</div></div>
 <div class="kpi"><div class="n">96 GB</div><div class="l">shared DDR5 on the NUC16 testbed</div></div>
 </div>
 
@@ -630,13 +632,56 @@ today, or add an explicit state-transfer contract and token-equivalence gate bef
 benchmarking a future runtime fix.
 </div>
 
-<h2>Qualified placement matrix and 8K overview</h2>
+<h2>FP16 expansion &middot; GPU&rarr;GPU and GPU&rarr;NPU</h2>
+<p>FP16 repeats the six-model, four-window sweep with the same 16-token guard band.
+Stock AUTO again resolves to <code>GPU.0</code>. Explicit iGPU&rarr;iGPU matches the
+baseline at prefill, first decode and final decode in <b>all 24 cells</b> and all three
+repeats. iGPU&rarr;NPU matches at 1K for all six models, but every 2K&ndash;8K group
+diverges: <b>18 of 18 long-context groups fail</b>. The failure is stateful and
+repeat-dependent, not a small FP16 rounding difference.</p>
+
+<table>
+<thead><tr><th>FP16 route</th><th>measured cells</th><th>valid cells</th><th>qualification boundary</th></tr></thead>
+<tbody>
+<tr><td>OpenVINO AUTO &rarr; actual iGPU</td><td class="n">24</td><td class="n pass">24</td><td>valid 1K&ndash;8K</td></tr>
+<tr><td>iGPU &rarr; iGPU</td><td class="n">24</td><td class="n pass">24</td><td>valid 1K&ndash;8K</td></tr>
+<tr><td>iGPU &rarr; NPU</td><td class="n">24</td><td class="n warn">6</td><td>valid at 1K; wrong tokens at 2K&ndash;8K</td></tr>
+<tr><td>NPU + iGPU subgraphs</td><td class="n">6</td><td class="n fail">0</td><td>wrong decode at the 1K capability gate</td></tr>
+</tbody></table>
+
+<p>At the largest requested point, Qwen2.5-7B FP16 at 8K, iGPU&rarr;iGPU is
+effectively identical to the stock path: <b>13.53 s TTFT, 196.93 ms/token,
+16.53 s end to end and 616.6 J</b>. The measured iGPU&rarr;NPU diagnostic costs
+63.90 s TTFT, 67.45 s end to end and 1,959.6 J&mdash;and is token-invalid. The
+7B NPU+iGPU 1K gate is worse: 475.1 s compile, 118.05 s inference and 3,060.4 J,
+ending on token 0 instead of 42.</p>
+
+<div class="sweep-shots">
+<figure><img src="nuc16-stage-sweep-figs/fp16_qualification_matrix.png" alt="FP16 correctness matrix for stock GPU to GPU GPU to NPU and NPU plus GPU"><figcaption>FP16 correctness across six models and four windows. Green means all three signatures match in all repeats; red means the measured path is rejected.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/fp16_ttft_ms.png" alt="FP16 time to first token across models windows and GPU placements"><figcaption>FP16 time to first token. Orange triangles are the valid 1K iGPU&rarr;NPU points; orange crosses are measured but token-invalid diagnostics.</figcaption></figure>
+</div>
+
+<h2>FP16 throughput and decode latency</h2>
+<div class="sweep-shots">
+<figure><img src="nuc16-stage-sweep-figs/fp16_prefill_tokens_per_s.png" alt="FP16 prefill throughput by model window and placement"><figcaption>FP16 prefill throughput; higher is better.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/fp16_decode_tokens_per_s.png" alt="FP16 decode throughput by model window and placement"><figcaption>FP16 steady decode throughput; higher is better.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/fp16_steady_tpot_ms.png" alt="FP16 decode latency by model window and placement"><figcaption>FP16 steady per-token latency; lower is better.</figcaption></figure>
+</div>
+
+<h2>FP16 end-to-end time and energy</h2>
+<div class="sweep-shots">
+<figure><img src="nuc16-stage-sweep-figs/fp16_end_to_end_ms.png" alt="FP16 end-to-end inference time by model window and placement"><figcaption>FP16 prefill plus 16-token decode time.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/fp16_energy_net_psys_j.png" alt="FP16 whole-platform inference energy by model window and placement"><figcaption>FP16 idle-subtracted platform energy.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/fp16_phase_energy.png" alt="FP16 energy split between prefill and decode phases"><figcaption>FP16 phase-distributed energy. Solid lines are prefill; dashed lines are decode. Crosses mark rejected token-invalid points.</figcaption></figure>
+</div>
+
+<h2>INT8 qualified placement matrix and 8K overview</h2>
 <div class="sweep-shots">
 <figure><img src="nuc16-stage-sweep-figs/qualification_matrix.png" alt="Qualification matrix for six models, four contexts and five placements"><figcaption>Green cells passed the placement-specific correctness and capacity gate. iGPU&rarr;NPU long-context cells are rejected; Qwen2.5-7B NPU&rarr;iGPU is capacity-limited at 4K and 8K.</figcaption></figure>
 <figure><img src="nuc16-stage-sweep-figs/qualified_8k_overview.png" alt="Qualified 8K latency throughput and energy overview"><figcaption>Eight-thousand-token overview of qualified placements only. Missing bars are failed qualification, not zero cost.</figcaption></figure>
 </div>
 
-<h2>Throughput and latency across 1K&ndash;8K</h2>
+<h2>INT8 throughput and latency across 1K&ndash;8K</h2>
 <div class="sweep-shots">
 <figure><img src="nuc16-stage-sweep-figs/qualified_prefill_throughput.png" alt="Prefill throughput by model placement and context"><figcaption>Prefill throughput (tokens/s); higher is better.</figcaption></figure>
 <figure><img src="nuc16-stage-sweep-figs/qualified_ttft.png" alt="Time to first token by model placement and context"><figcaption>Time to first token; lower is better.</figcaption></figure>
@@ -644,7 +689,7 @@ benchmarking a future runtime fix.
 <figure><img src="nuc16-stage-sweep-figs/qualified_decode_latency.png" alt="Decode latency by model placement and context"><figcaption>Steady per-token decode latency; lower is better.</figcaption></figure>
 </div>
 
-<h2>End-to-end time and energy</h2>
+<h2>INT8 end-to-end time and energy</h2>
 <div class="sweep-shots">
 <figure><img src="nuc16-stage-sweep-figs/qualified_end_to_end.png" alt="End-to-end inference time by model placement and context"><figcaption>End-to-end prefill plus 16-token decode time.</figcaption></figure>
 <figure><img src="nuc16-stage-sweep-figs/qualified_total_energy.png" alt="Total platform energy by model placement and context"><figcaption>Idle-subtracted platform energy; lower is better.</figcaption></figure>
@@ -659,9 +704,15 @@ benchmarking a future runtime fix.
 <a href="data/nuc16-stage-sweep-failures.json">capacity failures (JSON)</a>
 <a href="data/nuc16-stage-sweep-combined-probes.json">all combined probes (JSON)</a>
 <a href="data/nuc16-stage-sweep-config.json">experiment matrix (JSON)</a>
+<a href="data/nuc16-stage-sweep-fp16-summary.csv">FP16 cell medians + quartiles (CSV)</a>
+<a href="data/nuc16-stage-sweep-fp16-trials.csv">all 234 FP16 trials (CSV)</a>
+<a href="data/nuc16-stage-sweep-fp16-correctness.json">FP16 correctness audit (JSON)</a>
+<a href="data/nuc16-stage-sweep-fp16-raw-cells.json">all FP16 raw cells (JSON)</a>
+<a href="data/nuc16-stage-sweep-fp16-config.json">FP16 experiment matrix (JSON)</a>
+<a href="data/nuc16-stage-sweep-fp16-report.md">FP16 result report</a>
 </div>
 <p class="src">Core Ultra 7 356H, 96&nbsp;GB DDR5-5600, Ubuntu 24.04,
-OpenVINO 2026.3.0, INT8 OpenVINO IRs, 16 generated tokens, three repetitions per
+OpenVINO 2026.3.0, INT8 and FP16 OpenVINO IRs, 16 generated tokens, three repetitions per
 original matrix cell. Context qualification uses a 16-token guard band. PSys is a
 whole-platform RAPL counter; phase energy is attributed to the scheduled device, not
 read from separate NPU and iGPU power rails.</p>

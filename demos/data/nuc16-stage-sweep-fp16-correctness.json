@@ -1,0 +1,3202 @@
+{
+  "cells": [
+    {
+      "model": "llama32_1b_fp16",
+      "context_length": 1024,
+      "placement": "gpu_gpu",
+      "qualified": true,
+      "reason": "top1_match_all_repeats",
+      "baseline_signatures": [
+        [
+          5809,
+          546,
+          42
+        ],
+        [
+          5809,
+          546,
+          42
+        ],
+        [
+          5809,
+          546,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          5809,
+          546,
+          42
+        ],
+        [
+          5809,
+          546,
+          42
+        ],
+        [
+          5809,
+          546,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "llama32_1b_fp16",
+      "context_length": 1024,
+      "placement": "gpu_npu",
+      "qualified": true,
+      "reason": "top1_match_all_repeats",
+      "baseline_signatures": [
+        [
+          5809,
+          546,
+          42
+        ],
+        [
+          5809,
+          546,
+          42
+        ],
+        [
+          5809,
+          546,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          5809,
+          546,
+          42
+        ],
+        [
+          5809,
+          546,
+          42
+        ],
+        [
+          5809,
+          546,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "llama32_1b_fp16",
+      "context_length": 1024,
+      "placement": "npu_gpu_combined",
+      "qualified": false,
+      "reason": "top1_mismatch",
+      "baseline_signatures": [
+        [
+          5809,
+          546,
+          42
+        ],
+        [
+          5809,
+          546,
+          42
+        ],
+        [
+          5809,
+          546,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          5809,
+          90,
+          802
+        ],
+        [
+          5809,
+          802,
+          8940
+        ],
+        [
+          5809,
+          8940,
+          3765
+        ]
+      ]
+    },
+    {
+      "model": "llama32_1b_fp16",
+      "context_length": 1024,
+      "placement": "openvino_auto",
+      "qualified": true,
+      "reason": "baseline",
+      "baseline_signatures": [
+        [
+          5809,
+          546,
+          42
+        ],
+        [
+          5809,
+          546,
+          42
+        ],
+        [
+          5809,
+          546,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          5809,
+          546,
+          42
+        ],
+        [
+          5809,
+          546,
+          42
+        ],
+        [
+          5809,
+          546,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "llama32_1b_fp16",
+      "context_length": 2048,
+      "placement": "gpu_gpu",
+      "qualified": true,
+      "reason": "top1_match_all_repeats",
+      "baseline_signatures": [
+        [
+          8,
+          3862,
+          42
+        ],
+        [
+          8,
+          3862,
+          42
+        ],
+        [
+          8,
+          3862,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          8,
+          3862,
+          42
+        ],
+        [
+          8,
+          3862,
+          42
+        ],
+        [
+          8,
+          3862,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "llama32_1b_fp16",
+      "context_length": 2048,
+      "placement": "gpu_npu",
+      "qualified": false,
+      "reason": "top1_mismatch",
+      "baseline_signatures": [
+        [
+          8,
+          3862,
+          42
+        ],
+        [
+          8,
+          3862,
+          42
+        ],
+        [
+          8,
+          3862,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          90,
+          370,
+          42
+        ],
+        [
+          90,
+          83,
+          75
+        ],
+        [
+          90,
+          62,
+          62
+        ]
+      ]
+    },
+    {
+      "model": "llama32_1b_fp16",
+      "context_length": 2048,
+      "placement": "openvino_auto",
+      "qualified": true,
+      "reason": "baseline",
+      "baseline_signatures": [
+        [
+          8,
+          3862,
+          42
+        ],
+        [
+          8,
+          3862,
+          42
+        ],
+        [
+          8,
+          3862,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          8,
+          3862,
+          42
+        ],
+        [
+          8,
+          3862,
+          42
+        ],
+        [
+          8,
+          3862,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "llama32_1b_fp16",
+      "context_length": 4096,
+      "placement": "gpu_gpu",
+      "qualified": true,
+      "reason": "top1_match_all_repeats",
+      "baseline_signatures": [
+        [
+          72,
+          3862,
+          42
+        ],
+        [
+          72,
+          3862,
+          42
+        ],
+        [
+          72,
+          3862,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          72,
+          3862,
+          42
+        ],
+        [
+          72,
+          3862,
+          42
+        ],
+        [
+          72,
+          3862,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "llama32_1b_fp16",
+      "context_length": 4096,
+      "placement": "gpu_npu",
+      "qualified": false,
+      "reason": "top1_mismatch",
+      "baseline_signatures": [
+        [
+          72,
+          3862,
+          42
+        ],
+        [
+          72,
+          3862,
+          42
+        ],
+        [
+          72,
+          3862,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          90,
+          285,
+          83
+        ],
+        [
+          36802,
+          16,
+          16
+        ],
+        [
+          36802,
+          7952,
+          7952
+        ]
+      ]
+    },
+    {
+      "model": "llama32_1b_fp16",
+      "context_length": 4096,
+      "placement": "openvino_auto",
+      "qualified": true,
+      "reason": "baseline",
+      "baseline_signatures": [
+        [
+          72,
+          3862,
+          42
+        ],
+        [
+          72,
+          3862,
+          42
+        ],
+        [
+          72,
+          3862,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          72,
+          3862,
+          42
+        ],
+        [
+          72,
+          3862,
+          42
+        ],
+        [
+          72,
+          3862,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "llama32_1b_fp16",
+      "context_length": 8192,
+      "placement": "gpu_gpu",
+      "qualified": true,
+      "reason": "top1_match_all_repeats",
+      "baseline_signatures": [
+        [
+          198,
+          546,
+          42
+        ],
+        [
+          198,
+          546,
+          42
+        ],
+        [
+          198,
+          546,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          198,
+          546,
+          42
+        ],
+        [
+          198,
+          546,
+          42
+        ],
+        [
+          198,
+          546,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "llama32_1b_fp16",
+      "context_length": 8192,
+      "placement": "gpu_npu",
+      "qualified": false,
+      "reason": "top1_mismatch",
+      "baseline_signatures": [
+        [
+          198,
+          546,
+          42
+        ],
+        [
+          198,
+          546,
+          42
+        ],
+        [
+          198,
+          546,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          36802,
+          1506,
+          1506
+        ],
+        [
+          70047,
+          7952,
+          7952
+        ],
+        [
+          128009,
+          7952,
+          7952
+        ]
+      ]
+    },
+    {
+      "model": "llama32_1b_fp16",
+      "context_length": 8192,
+      "placement": "openvino_auto",
+      "qualified": true,
+      "reason": "baseline",
+      "baseline_signatures": [
+        [
+          198,
+          546,
+          42
+        ],
+        [
+          198,
+          546,
+          42
+        ],
+        [
+          198,
+          546,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          198,
+          546,
+          42
+        ],
+        [
+          198,
+          546,
+          42
+        ],
+        [
+          198,
+          546,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "llama32_3b_fp16",
+      "context_length": 1024,
+      "placement": "gpu_gpu",
+      "qualified": true,
+      "reason": "top1_match_all_repeats",
+      "baseline_signatures": [
+        [
+          198,
+          546,
+          42
+        ],
+        [
+          198,
+          546,
+          42
+        ],
+        [
+          198,
+          546,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          198,
+          546,
+          42
+        ],
+        [
+          198,
+          546,
+          42
+        ],
+        [
+          198,
+          546,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "llama32_3b_fp16",
+      "context_length": 1024,
+      "placement": "gpu_npu",
+      "qualified": true,
+      "reason": "top1_match_all_repeats",
+      "baseline_signatures": [
+        [
+          198,
+          546,
+          42
+        ],
+        [
+          198,
+          546,
+          42
+        ],
+        [
+          198,
+          546,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          198,
+          546,
+          42
+        ],
+        [
+          198,
+          546,
+          42
+        ],
+        [
+          198,
+          546,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "llama32_3b_fp16",
+      "context_length": 1024,
+      "placement": "npu_gpu_combined",
+      "qualified": false,
+      "reason": "top1_mismatch",
+      "baseline_signatures": [
+        [
+          198,
+          546,
+          42
+        ],
+        [
+          198,
+          546,
+          42
+        ],
+        [
+          198,
+          546,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          198,
+          287,
+          90
+        ],
+        [
+          198,
+          90,
+          90
+        ],
+        [
+          198,
+          90,
+          90
+        ]
+      ]
+    },
+    {
+      "model": "llama32_3b_fp16",
+      "context_length": 1024,
+      "placement": "openvino_auto",
+      "qualified": true,
+      "reason": "baseline",
+      "baseline_signatures": [
+        [
+          198,
+          546,
+          42
+        ],
+        [
+          198,
+          546,
+          42
+        ],
+        [
+          198,
+          546,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          198,
+          546,
+          42
+        ],
+        [
+          198,
+          546,
+          42
+        ],
+        [
+          198,
+          546,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "llama32_3b_fp16",
+      "context_length": 2048,
+      "placement": "gpu_gpu",
+      "qualified": true,
+      "reason": "top1_match_all_repeats",
+      "baseline_signatures": [
+        [
+          319,
+          319,
+          42
+        ],
+        [
+          319,
+          319,
+          42
+        ],
+        [
+          319,
+          319,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          319,
+          319,
+          42
+        ],
+        [
+          319,
+          319,
+          42
+        ],
+        [
+          319,
+          319,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "llama32_3b_fp16",
+      "context_length": 2048,
+      "placement": "gpu_npu",
+      "qualified": false,
+      "reason": "top1_mismatch",
+      "baseline_signatures": [
+        [
+          319,
+          319,
+          42
+        ],
+        [
+          319,
+          319,
+          42
+        ],
+        [
+          319,
+          319,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          90,
+          8,
+          735
+        ],
+        [
+          264,
+          482,
+          382
+        ],
+        [
+          264,
+          66,
+          4194
+        ]
+      ]
+    },
+    {
+      "model": "llama32_3b_fp16",
+      "context_length": 2048,
+      "placement": "openvino_auto",
+      "qualified": true,
+      "reason": "baseline",
+      "baseline_signatures": [
+        [
+          319,
+          319,
+          42
+        ],
+        [
+          319,
+          319,
+          42
+        ],
+        [
+          319,
+          319,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          319,
+          319,
+          42
+        ],
+        [
+          319,
+          319,
+          42
+        ],
+        [
+          319,
+          319,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "llama32_3b_fp16",
+      "context_length": 4096,
+      "placement": "gpu_gpu",
+      "qualified": true,
+      "reason": "top1_match_all_repeats",
+      "baseline_signatures": [
+        [
+          72,
+          437,
+          42
+        ],
+        [
+          72,
+          437,
+          42
+        ],
+        [
+          72,
+          437,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          72,
+          437,
+          42
+        ],
+        [
+          72,
+          437,
+          42
+        ],
+        [
+          72,
+          437,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "llama32_3b_fp16",
+      "context_length": 4096,
+      "placement": "gpu_npu",
+      "qualified": false,
+      "reason": "top1_mismatch",
+      "baseline_signatures": [
+        [
+          72,
+          437,
+          42
+        ],
+        [
+          72,
+          437,
+          42
+        ],
+        [
+          72,
+          437,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          264,
+          4194,
+          4194
+        ],
+        [
+          14924,
+          4194,
+          4194
+        ],
+        [
+          7998,
+          4194,
+          4194
+        ]
+      ]
+    },
+    {
+      "model": "llama32_3b_fp16",
+      "context_length": 4096,
+      "placement": "openvino_auto",
+      "qualified": true,
+      "reason": "baseline",
+      "baseline_signatures": [
+        [
+          72,
+          437,
+          42
+        ],
+        [
+          72,
+          437,
+          42
+        ],
+        [
+          72,
+          437,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          72,
+          437,
+          42
+        ],
+        [
+          72,
+          437,
+          42
+        ],
+        [
+          72,
+          437,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "llama32_3b_fp16",
+      "context_length": 8192,
+      "placement": "gpu_gpu",
+      "qualified": true,
+      "reason": "top1_match_all_repeats",
+      "baseline_signatures": [
+        [
+          27,
+          546,
+          42
+        ],
+        [
+          27,
+          546,
+          42
+        ],
+        [
+          27,
+          546,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          27,
+          546,
+          42
+        ],
+        [
+          27,
+          546,
+          42
+        ],
+        [
+          27,
+          546,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "llama32_3b_fp16",
+      "context_length": 8192,
+      "placement": "gpu_npu",
+      "qualified": false,
+      "reason": "top1_mismatch",
+      "baseline_signatures": [
+        [
+          27,
+          546,
+          42
+        ],
+        [
+          27,
+          546,
+          42
+        ],
+        [
+          27,
+          546,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          7998,
+          4194,
+          4194
+        ],
+        [
+          7998,
+          4194,
+          4194
+        ],
+        [
+          7998,
+          67692,
+          67692
+        ]
+      ]
+    },
+    {
+      "model": "llama32_3b_fp16",
+      "context_length": 8192,
+      "placement": "openvino_auto",
+      "qualified": true,
+      "reason": "baseline",
+      "baseline_signatures": [
+        [
+          27,
+          546,
+          42
+        ],
+        [
+          27,
+          546,
+          42
+        ],
+        [
+          27,
+          546,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          27,
+          546,
+          42
+        ],
+        [
+          27,
+          546,
+          42
+        ],
+        [
+          27,
+          546,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_0_5b_fp16",
+      "context_length": 1024,
+      "placement": "gpu_gpu",
+      "qualified": true,
+      "reason": "top1_match_all_repeats",
+      "baseline_signatures": [
+        [
+          291,
+          78,
+          42
+        ],
+        [
+          291,
+          78,
+          42
+        ],
+        [
+          291,
+          78,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          291,
+          78,
+          42
+        ],
+        [
+          291,
+          78,
+          42
+        ],
+        [
+          291,
+          78,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_0_5b_fp16",
+      "context_length": 1024,
+      "placement": "gpu_npu",
+      "qualified": true,
+      "reason": "top1_match_all_repeats",
+      "baseline_signatures": [
+        [
+          291,
+          78,
+          42
+        ],
+        [
+          291,
+          78,
+          42
+        ],
+        [
+          291,
+          78,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          291,
+          78,
+          42
+        ],
+        [
+          291,
+          78,
+          42
+        ],
+        [
+          291,
+          78,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_0_5b_fp16",
+      "context_length": 1024,
+      "placement": "npu_gpu_combined",
+      "qualified": false,
+      "reason": "top1_mismatch",
+      "baseline_signatures": [
+        [
+          291,
+          78,
+          42
+        ],
+        [
+          291,
+          78,
+          42
+        ],
+        [
+          291,
+          78,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          291,
+          96630,
+          81826
+        ],
+        [
+          291,
+          81826,
+          89372
+        ],
+        [
+          291,
+          89372,
+          89372
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_0_5b_fp16",
+      "context_length": 1024,
+      "placement": "openvino_auto",
+      "qualified": true,
+      "reason": "baseline",
+      "baseline_signatures": [
+        [
+          291,
+          78,
+          42
+        ],
+        [
+          291,
+          78,
+          42
+        ],
+        [
+          291,
+          78,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          291,
+          78,
+          42
+        ],
+        [
+          291,
+          78,
+          42
+        ],
+        [
+          291,
+          78,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_0_5b_fp16",
+      "context_length": 2048,
+      "placement": "gpu_gpu",
+      "qualified": true,
+      "reason": "top1_match_all_repeats",
+      "baseline_signatures": [
+        [
+          220,
+          522,
+          42
+        ],
+        [
+          220,
+          522,
+          42
+        ],
+        [
+          220,
+          522,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          220,
+          522,
+          42
+        ],
+        [
+          220,
+          522,
+          42
+        ],
+        [
+          220,
+          522,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_0_5b_fp16",
+      "context_length": 2048,
+      "placement": "gpu_npu",
+      "qualified": false,
+      "reason": "top1_mismatch",
+      "baseline_signatures": [
+        [
+          220,
+          522,
+          42
+        ],
+        [
+          220,
+          522,
+          42
+        ],
+        [
+          220,
+          522,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          89372,
+          8,
+          42
+        ],
+        [
+          89372,
+          8,
+          42
+        ],
+        [
+          89372,
+          151643,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_0_5b_fp16",
+      "context_length": 2048,
+      "placement": "openvino_auto",
+      "qualified": true,
+      "reason": "baseline",
+      "baseline_signatures": [
+        [
+          220,
+          522,
+          42
+        ],
+        [
+          220,
+          522,
+          42
+        ],
+        [
+          220,
+          522,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          220,
+          522,
+          42
+        ],
+        [
+          220,
+          522,
+          42
+        ],
+        [
+          220,
+          522,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_0_5b_fp16",
+      "context_length": 4096,
+      "placement": "gpu_gpu",
+      "qualified": true,
+      "reason": "top1_match_all_repeats",
+      "baseline_signatures": [
+        [
+          62,
+          78,
+          42
+        ],
+        [
+          62,
+          78,
+          42
+        ],
+        [
+          62,
+          78,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          62,
+          78,
+          42
+        ],
+        [
+          62,
+          78,
+          42
+        ],
+        [
+          62,
+          78,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_0_5b_fp16",
+      "context_length": 4096,
+      "placement": "gpu_npu",
+      "qualified": false,
+      "reason": "top1_mismatch",
+      "baseline_signatures": [
+        [
+          62,
+          78,
+          42
+        ],
+        [
+          62,
+          78,
+          42
+        ],
+        [
+          62,
+          78,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          89372,
+          151643,
+          42
+        ],
+        [
+          89372,
+          151643,
+          42
+        ],
+        [
+          89372,
+          51186,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_0_5b_fp16",
+      "context_length": 4096,
+      "placement": "openvino_auto",
+      "qualified": true,
+      "reason": "baseline",
+      "baseline_signatures": [
+        [
+          62,
+          78,
+          42
+        ],
+        [
+          62,
+          78,
+          42
+        ],
+        [
+          62,
+          78,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          62,
+          78,
+          42
+        ],
+        [
+          62,
+          78,
+          42
+        ],
+        [
+          62,
+          78,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_0_5b_fp16",
+      "context_length": 8192,
+      "placement": "gpu_gpu",
+      "qualified": true,
+      "reason": "top1_match_all_repeats",
+      "baseline_signatures": [
+        [
+          8,
+          78,
+          42
+        ],
+        [
+          8,
+          78,
+          42
+        ],
+        [
+          8,
+          78,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          8,
+          78,
+          42
+        ],
+        [
+          8,
+          78,
+          42
+        ],
+        [
+          8,
+          78,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_0_5b_fp16",
+      "context_length": 8192,
+      "placement": "gpu_npu",
+      "qualified": false,
+      "reason": "top1_mismatch",
+      "baseline_signatures": [
+        [
+          8,
+          78,
+          42
+        ],
+        [
+          8,
+          78,
+          42
+        ],
+        [
+          8,
+          78,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          89372,
+          151643,
+          42
+        ],
+        [
+          89372,
+          151643,
+          42
+        ],
+        [
+          89372,
+          151643,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_0_5b_fp16",
+      "context_length": 8192,
+      "placement": "openvino_auto",
+      "qualified": true,
+      "reason": "baseline",
+      "baseline_signatures": [
+        [
+          8,
+          78,
+          42
+        ],
+        [
+          8,
+          78,
+          42
+        ],
+        [
+          8,
+          78,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          8,
+          78,
+          42
+        ],
+        [
+          8,
+          78,
+          42
+        ],
+        [
+          8,
+          78,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_1_5b_fp16",
+      "context_length": 1024,
+      "placement": "gpu_gpu",
+      "qualified": true,
+      "reason": "top1_match_all_repeats",
+      "baseline_signatures": [
+        [
+          291,
+          78,
+          42
+        ],
+        [
+          291,
+          78,
+          42
+        ],
+        [
+          291,
+          78,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          291,
+          78,
+          42
+        ],
+        [
+          291,
+          78,
+          42
+        ],
+        [
+          291,
+          78,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_1_5b_fp16",
+      "context_length": 1024,
+      "placement": "gpu_npu",
+      "qualified": true,
+      "reason": "top1_match_all_repeats",
+      "baseline_signatures": [
+        [
+          291,
+          78,
+          42
+        ],
+        [
+          291,
+          78,
+          42
+        ],
+        [
+          291,
+          78,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          291,
+          78,
+          42
+        ],
+        [
+          291,
+          78,
+          42
+        ],
+        [
+          291,
+          78,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_1_5b_fp16",
+      "context_length": 1024,
+      "placement": "npu_gpu_combined",
+      "qualified": false,
+      "reason": "top1_mismatch",
+      "baseline_signatures": [
+        [
+          291,
+          78,
+          42
+        ],
+        [
+          291,
+          78,
+          42
+        ],
+        [
+          291,
+          78,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          291,
+          69754,
+          283
+        ],
+        [
+          291,
+          283,
+          283
+        ],
+        [
+          291,
+          283,
+          283
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_1_5b_fp16",
+      "context_length": 1024,
+      "placement": "openvino_auto",
+      "qualified": true,
+      "reason": "baseline",
+      "baseline_signatures": [
+        [
+          291,
+          78,
+          42
+        ],
+        [
+          291,
+          78,
+          42
+        ],
+        [
+          291,
+          78,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          291,
+          78,
+          42
+        ],
+        [
+          291,
+          78,
+          42
+        ],
+        [
+          291,
+          78,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_1_5b_fp16",
+      "context_length": 2048,
+      "placement": "gpu_gpu",
+      "qualified": true,
+      "reason": "top1_match_all_repeats",
+      "baseline_signatures": [
+        [
+          220,
+          220,
+          42
+        ],
+        [
+          220,
+          220,
+          42
+        ],
+        [
+          220,
+          220,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          220,
+          220,
+          42
+        ],
+        [
+          220,
+          220,
+          42
+        ],
+        [
+          220,
+          220,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_1_5b_fp16",
+      "context_length": 2048,
+      "placement": "gpu_npu",
+      "qualified": false,
+      "reason": "top1_mismatch",
+      "baseline_signatures": [
+        [
+          220,
+          220,
+          42
+        ],
+        [
+          220,
+          220,
+          42
+        ],
+        [
+          220,
+          220,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          283,
+          13,
+          271
+        ],
+        [
+          283,
+          819,
+          42
+        ],
+        [
+          283,
+          13,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_1_5b_fp16",
+      "context_length": 2048,
+      "placement": "openvino_auto",
+      "qualified": true,
+      "reason": "baseline",
+      "baseline_signatures": [
+        [
+          220,
+          220,
+          42
+        ],
+        [
+          220,
+          220,
+          42
+        ],
+        [
+          220,
+          220,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          220,
+          220,
+          42
+        ],
+        [
+          220,
+          220,
+          42
+        ],
+        [
+          220,
+          220,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_1_5b_fp16",
+      "context_length": 4096,
+      "placement": "gpu_gpu",
+      "qualified": true,
+      "reason": "top1_match_all_repeats",
+      "baseline_signatures": [
+        [
+          220,
+          78,
+          42
+        ],
+        [
+          220,
+          78,
+          42
+        ],
+        [
+          220,
+          78,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          220,
+          78,
+          42
+        ],
+        [
+          220,
+          78,
+          42
+        ],
+        [
+          220,
+          78,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_1_5b_fp16",
+      "context_length": 4096,
+      "placement": "gpu_npu",
+      "qualified": false,
+      "reason": "top1_mismatch",
+      "baseline_signatures": [
+        [
+          220,
+          78,
+          42
+        ],
+        [
+          220,
+          78,
+          42
+        ],
+        [
+          220,
+          78,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          283,
+          13,
+          198
+        ],
+        [
+          283,
+          13,
+          42
+        ],
+        [
+          283,
+          279,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_1_5b_fp16",
+      "context_length": 4096,
+      "placement": "openvino_auto",
+      "qualified": true,
+      "reason": "baseline",
+      "baseline_signatures": [
+        [
+          220,
+          78,
+          42
+        ],
+        [
+          220,
+          78,
+          42
+        ],
+        [
+          220,
+          78,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          220,
+          78,
+          42
+        ],
+        [
+          220,
+          78,
+          42
+        ],
+        [
+          220,
+          78,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_1_5b_fp16",
+      "context_length": 8192,
+      "placement": "gpu_gpu",
+      "qualified": true,
+      "reason": "top1_match_all_repeats",
+      "baseline_signatures": [
+        [
+          220,
+          261,
+          42
+        ],
+        [
+          220,
+          261,
+          42
+        ],
+        [
+          220,
+          261,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          220,
+          261,
+          42
+        ],
+        [
+          220,
+          261,
+          42
+        ],
+        [
+          220,
+          261,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_1_5b_fp16",
+      "context_length": 8192,
+      "placement": "gpu_npu",
+      "qualified": false,
+      "reason": "top1_mismatch",
+      "baseline_signatures": [
+        [
+          220,
+          261,
+          42
+        ],
+        [
+          220,
+          261,
+          42
+        ],
+        [
+          220,
+          261,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          283,
+          45195,
+          42
+        ],
+        [
+          283,
+          311,
+          311
+        ],
+        [
+          283,
+          1753,
+          437
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_1_5b_fp16",
+      "context_length": 8192,
+      "placement": "openvino_auto",
+      "qualified": true,
+      "reason": "baseline",
+      "baseline_signatures": [
+        [
+          220,
+          261,
+          42
+        ],
+        [
+          220,
+          261,
+          42
+        ],
+        [
+          220,
+          261,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          220,
+          261,
+          42
+        ],
+        [
+          220,
+          261,
+          42
+        ],
+        [
+          220,
+          261,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_3b_fp16",
+      "context_length": 1024,
+      "placement": "gpu_gpu",
+      "qualified": true,
+      "reason": "top1_match_all_repeats",
+      "baseline_signatures": [
+        [
+          290,
+          78,
+          42
+        ],
+        [
+          290,
+          78,
+          42
+        ],
+        [
+          290,
+          78,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          290,
+          78,
+          42
+        ],
+        [
+          290,
+          78,
+          42
+        ],
+        [
+          290,
+          78,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_3b_fp16",
+      "context_length": 1024,
+      "placement": "gpu_npu",
+      "qualified": true,
+      "reason": "top1_match_all_repeats",
+      "baseline_signatures": [
+        [
+          290,
+          78,
+          42
+        ],
+        [
+          290,
+          78,
+          42
+        ],
+        [
+          290,
+          78,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          290,
+          78,
+          42
+        ],
+        [
+          290,
+          78,
+          42
+        ],
+        [
+          290,
+          78,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_3b_fp16",
+      "context_length": 1024,
+      "placement": "npu_gpu_combined",
+      "qualified": false,
+      "reason": "top1_mismatch",
+      "baseline_signatures": [
+        [
+          290,
+          78,
+          42
+        ],
+        [
+          290,
+          78,
+          42
+        ],
+        [
+          290,
+          78,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          290,
+          141473,
+          220
+        ],
+        [
+          290,
+          220,
+          220
+        ],
+        [
+          290,
+          220,
+          0
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_3b_fp16",
+      "context_length": 1024,
+      "placement": "openvino_auto",
+      "qualified": true,
+      "reason": "baseline",
+      "baseline_signatures": [
+        [
+          290,
+          78,
+          42
+        ],
+        [
+          290,
+          78,
+          42
+        ],
+        [
+          290,
+          78,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          290,
+          78,
+          42
+        ],
+        [
+          290,
+          78,
+          42
+        ],
+        [
+          290,
+          78,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_3b_fp16",
+      "context_length": 2048,
+      "placement": "gpu_gpu",
+      "qualified": true,
+      "reason": "top1_match_all_repeats",
+      "baseline_signatures": [
+        [
+          220,
+          220,
+          42
+        ],
+        [
+          220,
+          220,
+          42
+        ],
+        [
+          220,
+          220,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          220,
+          220,
+          42
+        ],
+        [
+          220,
+          220,
+          42
+        ],
+        [
+          220,
+          220,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_3b_fp16",
+      "context_length": 2048,
+      "placement": "gpu_npu",
+      "qualified": false,
+      "reason": "top1_mismatch",
+      "baseline_signatures": [
+        [
+          220,
+          220,
+          42
+        ],
+        [
+          220,
+          220,
+          42
+        ],
+        [
+          220,
+          220,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          220,
+          4710,
+          42
+        ],
+        [
+          220,
+          1718,
+          42
+        ],
+        [
+          220,
+          1718,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_3b_fp16",
+      "context_length": 2048,
+      "placement": "openvino_auto",
+      "qualified": true,
+      "reason": "baseline",
+      "baseline_signatures": [
+        [
+          220,
+          220,
+          42
+        ],
+        [
+          220,
+          220,
+          42
+        ],
+        [
+          220,
+          220,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          220,
+          220,
+          42
+        ],
+        [
+          220,
+          220,
+          42
+        ],
+        [
+          220,
+          220,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_3b_fp16",
+      "context_length": 4096,
+      "placement": "gpu_gpu",
+      "qualified": true,
+      "reason": "top1_match_all_repeats",
+      "baseline_signatures": [
+        [
+          36,
+          1718,
+          42
+        ],
+        [
+          36,
+          1718,
+          42
+        ],
+        [
+          36,
+          1718,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          36,
+          1718,
+          42
+        ],
+        [
+          36,
+          1718,
+          42
+        ],
+        [
+          36,
+          1718,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_3b_fp16",
+      "context_length": 4096,
+      "placement": "gpu_npu",
+      "qualified": false,
+      "reason": "top1_mismatch",
+      "baseline_signatures": [
+        [
+          36,
+          1718,
+          42
+        ],
+        [
+          36,
+          1718,
+          42
+        ],
+        [
+          36,
+          1718,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          220,
+          4710,
+          42
+        ],
+        [
+          220,
+          1718,
+          42
+        ],
+        [
+          220,
+          1718,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_3b_fp16",
+      "context_length": 4096,
+      "placement": "openvino_auto",
+      "qualified": true,
+      "reason": "baseline",
+      "baseline_signatures": [
+        [
+          36,
+          1718,
+          42
+        ],
+        [
+          36,
+          1718,
+          42
+        ],
+        [
+          36,
+          1718,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          36,
+          1718,
+          42
+        ],
+        [
+          36,
+          1718,
+          42
+        ],
+        [
+          36,
+          1718,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_3b_fp16",
+      "context_length": 8192,
+      "placement": "gpu_gpu",
+      "qualified": true,
+      "reason": "top1_match_all_repeats",
+      "baseline_signatures": [
+        [
+          198,
+          78,
+          42
+        ],
+        [
+          198,
+          78,
+          42
+        ],
+        [
+          198,
+          78,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          198,
+          78,
+          42
+        ],
+        [
+          198,
+          78,
+          42
+        ],
+        [
+          198,
+          78,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_3b_fp16",
+      "context_length": 8192,
+      "placement": "gpu_npu",
+      "qualified": false,
+      "reason": "top1_mismatch",
+      "baseline_signatures": [
+        [
+          198,
+          78,
+          42
+        ],
+        [
+          198,
+          78,
+          42
+        ],
+        [
+          198,
+          78,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          220,
+          1825,
+          220
+        ],
+        [
+          220,
+          1825,
+          220
+        ],
+        [
+          0,
+          1825,
+          220
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_3b_fp16",
+      "context_length": 8192,
+      "placement": "openvino_auto",
+      "qualified": true,
+      "reason": "baseline",
+      "baseline_signatures": [
+        [
+          198,
+          78,
+          42
+        ],
+        [
+          198,
+          78,
+          42
+        ],
+        [
+          198,
+          78,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          198,
+          78,
+          42
+        ],
+        [
+          198,
+          78,
+          42
+        ],
+        [
+          198,
+          78,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_7b_fp16",
+      "context_length": 1024,
+      "placement": "gpu_gpu",
+      "qualified": true,
+      "reason": "top1_match_all_repeats",
+      "baseline_signatures": [
+        [
+          290,
+          78,
+          42
+        ],
+        [
+          290,
+          78,
+          42
+        ],
+        [
+          290,
+          78,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          290,
+          78,
+          42
+        ],
+        [
+          290,
+          78,
+          42
+        ],
+        [
+          290,
+          78,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_7b_fp16",
+      "context_length": 1024,
+      "placement": "gpu_npu",
+      "qualified": true,
+      "reason": "top1_match_all_repeats",
+      "baseline_signatures": [
+        [
+          290,
+          78,
+          42
+        ],
+        [
+          290,
+          78,
+          42
+        ],
+        [
+          290,
+          78,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          290,
+          78,
+          42
+        ],
+        [
+          290,
+          78,
+          42
+        ],
+        [
+          290,
+          78,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_7b_fp16",
+      "context_length": 1024,
+      "placement": "npu_gpu_combined",
+      "qualified": false,
+      "reason": "top1_mismatch",
+      "baseline_signatures": [
+        [
+          290,
+          78,
+          42
+        ],
+        [
+          290,
+          78,
+          42
+        ],
+        [
+          290,
+          78,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          290,
+          15,
+          0
+        ],
+        [
+          290,
+          0,
+          0
+        ],
+        [
+          290,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_7b_fp16",
+      "context_length": 1024,
+      "placement": "openvino_auto",
+      "qualified": true,
+      "reason": "baseline",
+      "baseline_signatures": [
+        [
+          290,
+          78,
+          42
+        ],
+        [
+          290,
+          78,
+          42
+        ],
+        [
+          290,
+          78,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          290,
+          78,
+          42
+        ],
+        [
+          290,
+          78,
+          42
+        ],
+        [
+          290,
+          78,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_7b_fp16",
+      "context_length": 2048,
+      "placement": "gpu_gpu",
+      "qualified": true,
+      "reason": "top1_match_all_repeats",
+      "baseline_signatures": [
+        [
+          220,
+          220,
+          42
+        ],
+        [
+          220,
+          220,
+          42
+        ],
+        [
+          220,
+          220,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          220,
+          220,
+          42
+        ],
+        [
+          220,
+          220,
+          42
+        ],
+        [
+          220,
+          220,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_7b_fp16",
+      "context_length": 2048,
+      "placement": "gpu_npu",
+      "qualified": false,
+      "reason": "top1_mismatch",
+      "baseline_signatures": [
+        [
+          220,
+          220,
+          42
+        ],
+        [
+          220,
+          220,
+          42
+        ],
+        [
+          220,
+          220,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          61262,
+          82,
+          42
+        ],
+        [
+          81842,
+          82,
+          42
+        ],
+        [
+          0,
+          82,
+          271
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_7b_fp16",
+      "context_length": 2048,
+      "placement": "openvino_auto",
+      "qualified": true,
+      "reason": "baseline",
+      "baseline_signatures": [
+        [
+          220,
+          220,
+          42
+        ],
+        [
+          220,
+          220,
+          42
+        ],
+        [
+          220,
+          220,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          220,
+          220,
+          42
+        ],
+        [
+          220,
+          220,
+          42
+        ],
+        [
+          220,
+          220,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_7b_fp16",
+      "context_length": 4096,
+      "placement": "gpu_gpu",
+      "qualified": true,
+      "reason": "top1_match_all_repeats",
+      "baseline_signatures": [
+        [
+          49,
+          78,
+          42
+        ],
+        [
+          49,
+          78,
+          42
+        ],
+        [
+          49,
+          78,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          49,
+          78,
+          42
+        ],
+        [
+          49,
+          78,
+          42
+        ],
+        [
+          49,
+          78,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_7b_fp16",
+      "context_length": 4096,
+      "placement": "gpu_npu",
+      "qualified": false,
+      "reason": "top1_mismatch",
+      "baseline_signatures": [
+        [
+          49,
+          78,
+          42
+        ],
+        [
+          49,
+          78,
+          42
+        ],
+        [
+          49,
+          78,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          0,
+          82,
+          42
+        ],
+        [
+          0,
+          82,
+          42
+        ],
+        [
+          0,
+          82,
+          198
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_7b_fp16",
+      "context_length": 4096,
+      "placement": "openvino_auto",
+      "qualified": true,
+      "reason": "baseline",
+      "baseline_signatures": [
+        [
+          49,
+          78,
+          42
+        ],
+        [
+          49,
+          78,
+          42
+        ],
+        [
+          49,
+          78,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          49,
+          78,
+          42
+        ],
+        [
+          49,
+          78,
+          42
+        ],
+        [
+          49,
+          78,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_7b_fp16",
+      "context_length": 8192,
+      "placement": "gpu_gpu",
+      "qualified": true,
+      "reason": "top1_match_all_repeats",
+      "baseline_signatures": [
+        [
+          8,
+          78,
+          42
+        ],
+        [
+          8,
+          78,
+          42
+        ],
+        [
+          8,
+          78,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          8,
+          78,
+          42
+        ],
+        [
+          8,
+          78,
+          42
+        ],
+        [
+          8,
+          78,
+          42
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_7b_fp16",
+      "context_length": 8192,
+      "placement": "gpu_npu",
+      "qualified": false,
+      "reason": "top1_mismatch",
+      "baseline_signatures": [
+        [
+          8,
+          78,
+          42
+        ],
+        [
+          8,
+          78,
+          42
+        ],
+        [
+          8,
+          78,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          0,
+          644,
+          15
+        ],
+        [
+          0,
+          644,
+          15
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "model": "qwen25_7b_fp16",
+      "context_length": 8192,
+      "placement": "openvino_auto",
+      "qualified": true,
+      "reason": "baseline",
+      "baseline_signatures": [
+        [
+          8,
+          78,
+          42
+        ],
+        [
+          8,
+          78,
+          42
+        ],
+        [
+          8,
+          78,
+          42
+        ]
+      ],
+      "observed_signatures": [
+        [
+          8,
+          78,
+          42
+        ],
+        [
+          8,
+          78,
+          42
+        ],
+        [
+          8,
+          78,
+          42
+        ]
+      ]
+    }
+  ]
+}
