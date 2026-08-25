@@ -717,16 +717,28 @@ For the refreshed Qwen2.5-3B INT8 8K NPU cell, compilation was 111.14&nbsp;s,
 while the plotted post-compile TTFT is 18.627&nbsp;s and post-compile end-to-end
 time is 38.941&nbsp;s.</div>
 
+<h2 id="oracle-window-sweep">1K–8K window sweep · matched FP16/INT8 scale</h2>
+<p>Every model is now shown as an INT8/FP16 pair with the <b>same y-axis limits</b>
+inside that pair, so the precision difference is directly visible. Each line covers
+the measured 1K, 2K, 4K and 8K context buckets; solid routes are whole-device
+measurements and dashed routes are the zero-boundary-overhead phase oracles.</p>
+<div class="sweep-shots">
+<figure><img src="nuc16-stage-sweep-figs/oracle_ttft_ms.png?v=20260825b" alt="Post-compile TTFT across 1K 2K 4K and 8K with matched INT8 and FP16 axes"><figcaption>Post-compile TTFT sweep; lower is better. Each model row shares one FP16/INT8 scale.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_decode_tokens_per_s.png?v=20260825b" alt="Decode throughput across 1K 2K 4K and 8K with matched INT8 and FP16 axes"><figcaption>Decode throughput sweep; higher is better. Each model row shares one FP16/INT8 scale.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_end_to_end_ms.png?v=20260825b" alt="End-to-end time across 1K 2K 4K and 8K with matched INT8 and FP16 axes"><figcaption>Post-compile end-to-end inference sweep; lower is better. Each model row shares one FP16/INT8 scale.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_energy_net_psys_j.png?v=20260825b" alt="Inference energy across 1K 2K 4K and 8K with matched INT8 and FP16 axes"><figcaption>Idle-subtracted PSys inference-energy sweep; lower is better. Each model row shares one FP16/INT8 scale.</figcaption></figure>
+</div>
+
 <h2 id="oracle-8k-digest">8K cross-model latency, throughput and energy digest</h2>
 <p>These grouped bars compare all six models directly at the largest tested window.
 Whole-device routes are solid; overhead-free split oracles are hatched. Post-compile
 TTFT follows the prefill device, decode throughput follows the decode device, and total
 energy adds the independently measured phase components.</p>
 <div class="sweep-shots">
-<figure><img src="nuc16-stage-sweep-figs/oracle_ttft_8k_grouped.png?v=20260825" alt="Eight-thousand-token post-compile prefill time to first token by model route and precision"><figcaption>Post-compile prefill TTFT at 8K; load, compile and warmup excluded.</figcaption></figure>
-<figure><img src="nuc16-stage-sweep-figs/oracle_decode_throughput_8k_grouped.png?v=20260825" alt="Eight-thousand-token decode throughput by model route and precision"><figcaption>Decode output throughput at 8K; higher is better.</figcaption></figure>
-<figure><img src="nuc16-stage-sweep-figs/oracle_end_to_end_8k_grouped.png?v=20260825" alt="Eight-thousand-token end-to-end inference time by model route and precision"><figcaption>End-to-end inference time after phase composition; lower is better.</figcaption></figure>
-<figure><img src="nuc16-stage-sweep-figs/oracle_energy_8k_grouped.png?v=20260825" alt="Eight-thousand-token idle-subtracted whole-system inference energy by model route and precision"><figcaption>Idle-subtracted PSys inference energy at 8K; compile and warmup energy excluded.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_ttft_8k_grouped.png?v=20260825b" alt="Eight-thousand-token post-compile prefill time to first token by model route and precision"><figcaption>Post-compile prefill TTFT at 8K; load, compile and warmup excluded.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_decode_throughput_8k_grouped.png?v=20260825b" alt="Eight-thousand-token decode throughput by model route and precision"><figcaption>Decode output throughput at 8K; higher is better.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_end_to_end_8k_grouped.png?v=20260825b" alt="Eight-thousand-token end-to-end inference time by model route and precision"><figcaption>End-to-end inference time after phase composition; lower is better.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_energy_8k_grouped.png?v=20260825b" alt="Eight-thousand-token idle-subtracted whole-system inference energy by model route and precision"><figcaption>Idle-subtracted PSys inference energy at 8K; compile and warmup energy excluded.</figcaption></figure>
 </div>
 
 
@@ -767,25 +779,15 @@ treated as a token-equivalent optimal output.</div>
 </details>
 
 <details class="result-group" id="oracle-full-sweep">
-<summary><span>Full four-case 1K–8K sweep</span><small>route choice · latency · throughput · energy</small></summary>
+<summary><span>Additional four-case diagnostics</span><small>route choice · first decode · TPOT · phase energy</small></summary>
 <div class="group-body">
 <div class="sweep-shots">
-<figure><img src="nuc16-stage-sweep-figs/oracle_optimal_routes.png?v=20260825" alt="Optimal four-case route by precision model and context window"><figcaption>Fastest end-to-end and lowest-energy oracle choice for every model, precision and window.</figcaption></figure>
-<figure><img src="nuc16-stage-sweep-figs/oracle_end_to_end_ms.png?v=20260825" alt="Four-case end-to-end inference time for INT8 and FP16"><figcaption>Measured whole-device paths are solid; overhead-free composed paths are dashed.</figcaption></figure>
-</div>
-<div class="sweep-shots">
-<figure><img src="nuc16-stage-sweep-figs/oracle_ttft_ms.png?v=20260825" alt="Four-case post-compile time to first token for INT8 and FP16"><figcaption>Post-compile TTFT follows the selected prefill device; compilation and warmup are excluded.</figcaption></figure>
-<figure><img src="nuc16-stage-sweep-figs/oracle_handoff_plus_first_decode_ms.png?v=20260825" alt="Four-case first decode call latency for INT8 and FP16"><figcaption>First decode-call latency follows the selected decode device; boundary overhead is zero.</figcaption></figure>
-<figure><img src="nuc16-stage-sweep-figs/oracle_prefill_tokens_per_s.png?v=20260825" alt="Four-case prefill throughput for INT8 and FP16"><figcaption>Prefill throughput across all six models and four windows.</figcaption></figure>
-<figure><img src="nuc16-stage-sweep-figs/oracle_decode_tokens_per_s.png?v=20260825" alt="Four-case decode throughput for INT8 and FP16"><figcaption>Decode throughput across all six models and four windows.</figcaption></figure>
-<figure><img src="nuc16-stage-sweep-figs/oracle_steady_tpot_ms.png?v=20260825" alt="Four-case steady decode latency for INT8 and FP16"><figcaption>Steady per-token decode latency; lower is better.</figcaption></figure>
-<figure><img src="nuc16-stage-sweep-figs/oracle_output_tokens_per_s_e2e.png?v=20260825" alt="Four-case end-to-end output throughput for INT8 and FP16"><figcaption>End-to-end output-token throughput after composing the selected phases.</figcaption></figure>
-</div>
-
-<h3>Four-case total and distributed energy</h3>
-<div class="sweep-shots">
-<figure><img src="nuc16-stage-sweep-figs/oracle_energy_net_psys_j.png?v=20260825" alt="Four-case idle-subtracted platform energy for INT8 and FP16"><figcaption>Total idle-subtracted PSys energy across 1K&ndash;8K.</figcaption></figure>
-<figure><img src="nuc16-stage-sweep-figs/oracle_phase_energy_8k.png?v=20260825" alt="Four-case energy split between prefill and decode at 8K"><figcaption>Eight-thousand-token energy split into independently measured prefill and decode components.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_optimal_routes.png?v=20260825b" alt="Optimal four-case route by precision model and context window"><figcaption>Fastest end-to-end and lowest-energy oracle choice for every model, precision and window.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_handoff_plus_first_decode_ms.png?v=20260825b" alt="Four-case first decode call latency for INT8 and FP16"><figcaption>First decode-call latency; each model row uses a matched FP16/INT8 scale.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_prefill_tokens_per_s.png?v=20260825b" alt="Four-case prefill throughput for INT8 and FP16"><figcaption>Prefill throughput across all six models and four windows.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_steady_tpot_ms.png?v=20260825b" alt="Four-case steady decode latency for INT8 and FP16"><figcaption>Steady per-token decode latency; lower is better.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_output_tokens_per_s_e2e.png?v=20260825b" alt="Four-case end-to-end output throughput for INT8 and FP16"><figcaption>End-to-end output-token throughput after composing the selected phases.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_phase_energy_8k.png?v=20260825b" alt="Four-case energy split between prefill and decode at 8K"><figcaption>Eight-thousand-token energy split into independently measured prefill and decode components.</figcaption></figure>
 </div>
 </div>
 </details>
