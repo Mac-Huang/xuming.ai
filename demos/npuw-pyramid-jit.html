@@ -96,7 +96,7 @@ live Qwen2.5-0.5B FP16 measurement &middot; Intel NPU 5 &middot; OpenVINO 2026.3
 <nav class="tabs" role="tablist">
 <button role="tab" id="t-motiv" aria-controls="motiv" aria-selected="true">Motivation</button>
 <button role="tab" id="t-measure" aria-controls="measure" aria-selected="false">Measurements</button>
-<button role="tab" id="t-xpu" aria-controls="xpu" aria-selected="false">NPU vs iGPU</button>
+<button role="tab" id="t-xpu" aria-controls="xpu" aria-selected="false">Fine-grained affinity</button>
 <button role="tab" id="t-llmxpu" aria-controls="llmxpu" aria-selected="false">LLM.xpu replication</button>
 <button role="tab" id="t-combined" aria-controls="combined" aria-selected="false">NPU + iGPU sweep</button>
 </nav>
@@ -427,7 +427,70 @@ against what this silicon does. The first thing it found was that the standard w
 of building such a measurement <b>does not work on this NPU at all</b>.
 </div>
 
-<div class="kpis"><div class="kpi"><div class="n">&mdash;&times;</div><div class="l">how much an isolated single-operator kernel understates this NPU</div></div><div class="kpi"><div class="n">1.14&times;</div><div class="l">whole-model PREFILL energy, NPU &divide; iGPU</div></div><div class="kpi"><div class="n">5.28&times;</div><div class="l">whole-model DECODE energy, NPU &divide; iGPU</div></div><div class="kpi"><div class="n">13.5 : 12.3</div><div class="l">INT8 compute roof measured on real graphs, iGPU : NPU (TFLOP/s)</div></div></div>
+<h2>Affinity answer and targeted validation</h2>
+<p>Yes, sub-stage affinity exists, but it is a property of a <b>real graph in a
+specific stage, precision and compile path</b>&mdash;not a permanent label attached to
+an operator name. The fresh Qwen2.5-3B validation below runs a full decoder block and
+two ablated versions at sequence 512, then prices attention and FFN by differencing
+those realistic graphs. GPU and NPU, FP16 and INT8, prefill and decode are all swept;
+the NPU's plain and NPUW paths are both tried, and the fastest valid one is retained.</p>
+
+<div class="thesis">
+Fresh result: <b>decode has strong NPU affinity below the stage boundary</b>, while
+prefill remains iGPU-latency affine. For the full INT8 block the NPU is
+0.82&times; the iGPU latency and 0.41&times; its energy; FP16 decode is energy-cheaper
+but latency-neutral. FP16 prefill attention is the opposite extreme at
+32.43&times; latency and 21.94&times; energy on NPU.
+</div>
+<table>
+<thead><tr><th>in-situ unit</th><th>stage</th><th>precision</th><th>NPU path</th><th>latency NPU&divide;iGPU</th><th>energy NPU&divide;iGPU</th><th>affinity</th></tr></thead>
+<tbody>
+<tr><td>whole block</td><td>prefill</td><td>FP16</td><td>plain</td><td class="n">2.11&times;</td><td class="n">1.22&times;</td><td>iGPU</td></tr>
+<tr><td>whole block</td><td>prefill</td><td>INT8</td><td>plain</td><td class="n">1.40&times;</td><td class="n">0.86&times;</td><td>Pareto</td></tr>
+<tr><td>whole block</td><td>decode</td><td>FP16</td><td>plain</td><td class="n">1.05&times;</td><td class="n">0.48&times;</td><td>Pareto</td></tr>
+<tr><td>whole block</td><td>decode</td><td>INT8</td><td>plain</td><td class="n">0.82&times;</td><td class="n">0.41&times;</td><td>NPU</td></tr>
+<tr><td>attention marginal</td><td>prefill</td><td>FP16</td><td>NPUW</td><td class="n">32.43&times;</td><td class="n">21.94&times;</td><td>iGPU</td></tr>
+<tr><td>attention marginal</td><td>prefill</td><td>INT8</td><td>NPUW</td><td class="n">2.95&times;</td><td class="n">0.88&times;</td><td>Pareto</td></tr>
+<tr><td>attention marginal</td><td>decode</td><td>FP16</td><td>plain</td><td class="n">0.81&times;</td><td class="n">0.28&times;</td><td>NPU</td></tr>
+<tr><td>attention marginal</td><td>decode</td><td>INT8</td><td>plain</td><td class="n">0.50&times;</td><td class="n">0.16&times;</td><td>NPU</td></tr>
+<tr><td>FFN marginal</td><td>prefill</td><td>FP16</td><td>plain</td><td class="n">2.59&times;</td><td class="n">1.37&times;</td><td>iGPU</td></tr>
+<tr><td>FFN marginal</td><td>prefill</td><td>INT8</td><td>plain</td><td class="n">1.78&times;</td><td class="n">1.04&times;</td><td>iGPU</td></tr>
+<tr><td>FFN marginal</td><td>decode</td><td>FP16</td><td>plain</td><td class="n">1.07&times;</td><td class="n">0.51&times;</td><td>Pareto</td></tr>
+<tr><td>FFN marginal</td><td>decode</td><td>INT8</td><td>plain</td><td class="n">1.00&times;</td><td class="n">0.53&times;</td><td>NPU energy / latency neutral</td></tr>
+</tbody></table>
+<p class="src">Ratios are NPU &divide; iGPU; below 1 favors NPU. Qwen2.5-3B,
+sequence 512, three reps-slope windows per graph, idle-subtracted PSys, OpenVINO 2026.0.
+The plain-NPU <code>no_attention</code> prefill ablation fell onto the known isolated
+Parameter&rarr;MatMul slow path (0.888&nbsp;s FP16, 0.453&nbsp;s INT8), which would make
+the marginal negative. It is rejected; NPUW supplies the valid prefill-attention
+difference. That path sensitivity is part of the affinity result, not noise.</p>
+
+<table>
+<thead><tr><th>determinant</th><th>why it moves latency, throughput and energy</th><th>experiment control</th></tr></thead>
+<tbody>
+<tr><td>stage shape / arithmetic intensity</td><td>prefill exposes large matrix work; one-token decode becomes memory-, dispatch- and state-dominated</td><td>measure prefill and decode separately at the same sequence</td></tr>
+<tr><td>graph context and fusion</td><td>the NPU can change by 7&ndash;121&times; between an isolated kernel and the same work inside a decoder block</td><td>use full/no-FFN/no-attention graph differencing</td></tr>
+<tr><td>precision and realized kernels</td><td>INT8 storage does not guarantee that every device executes an efficient INT8 kernel</td><td>sweep FP16 and INT8; verify the compiled graph</td></tr>
+<tr><td>static shape and KV/state ownership</td><td>NPU compilation fixes shapes, while decode carries mutable cache state across token steps</td><td>hold sequence/capacity fixed and qualify token signatures</td></tr>
+<tr><td>partition and transfer boundaries</td><td>subgraphs that look locally fast can lose to synchronization, copies and layout conversion</td><td>compare in-situ block, whole model and the zero-boundary oracle</td></tr>
+<tr><td>runtime / driver path</td><td>compile path, queueing and wrapper behavior can dominate silicon time</td><td>record target, execution device, compile path and device counters</td></tr>
+</tbody></table>
+<div class="note"><b>Placement design.</b> Use <code>query_model</code> to find supported
+operations, assign affinity to block-sized subgraphs, and profile those subgraphs in
+situ. Keep residual/norm/attention dependencies together and keep one KV-cache owner
+unless state is made explicit. A future cross-device implementation should expose KV
+as input/output tensors, back them with the
+<a href="https://docs.openvino.ai/2026/openvino-workflow/running-inference/inference-devices-and-modes/npu-device/remote-tensor-api-npu-plugin.html">NPU Remote Tensor / DMA-BUF API</a>,
+add explicit fences and layout/version checks, then require token-equivalence before
+accepting any timing result.</div>
+<p class="src">Method basis:
+<a href="https://docs.openvino.ai/2024/openvino-workflow/running-inference/inference-devices-and-modes/hetero-execution.html">OpenVINO HETERO affinity and query_model</a>;
+<a href="https://docs.openvino.ai/2026/openvino-workflow-generative/inference-with-genai/inference-with-genai-on-npu.html">NPU static-shape LLM execution</a>;
+<a href="https://docs.openvino.ai/2026/openvino-workflow/running-inference/optimize-inference/precision-control.html">precision control</a>;
+<a href="https://docs.openvino.ai/2026/about-openvino/performance-benchmarks/getting-performance-numbers.html">performance-counter interpretation</a>;
+and <a href="https://arxiv.org/abs/2506.24045">Agent.xpu</a>.</p>
+
+<div class="kpis"><div class="kpi"><div class="n">7&ndash;121&times;</div><div class="l">how much an isolated single-operator kernel understates this NPU</div></div><div class="kpi"><div class="n">1.14&times;</div><div class="l">whole-model PREFILL energy, NPU &divide; iGPU</div></div><div class="kpi"><div class="n">5.28&times;</div><div class="l">whole-model DECODE energy, NPU &divide; iGPU</div></div><div class="kpi"><div class="n">13.5 : 12.3</div><div class="l">INT8 compute roof measured on real graphs, iGPU : NPU (TFLOP/s)</div></div></div>
 
 <h2>0 &middot; The energy split is validated, not assumed</h2>
 <p>Panther Lake gives the NPU no RAPL domain of its own, so NPU energy has to be
@@ -446,7 +509,7 @@ and time it. Done that way, this NPU's FP16 compute roof comes out at
 <b>0.074 TFLOP/s</b> &mdash; dead
 constant across seven GEMM shapes, which looks convincingly like a real ceiling. It is
 not. The same MatMuls, inside a decoder block on the same device and the same compile
-path, run at <b>&mdash; TFLOP/s</b>.</p>
+path, run at <b>up to 9.00 TFLOP/s</b>.</p>
 <p>The block is the number that is right: its output matches a CPU run of the identical
 graph to a correlation of 0.999999 (max absolute difference 0.0059, which is FP16
 rounding), so the arithmetic demonstrably happened. An ablation ladder locates the
@@ -600,12 +663,12 @@ prompts capped at the engine's 4096-token context.
 <section class="pane" id="combined" role="tabpanel" aria-labelledby="t-combined" hidden>
 
 <div class="thesis">
-This is the NUC16 prefill/decode study across <b>six models, INT8 + FP16, and
-1K&ndash;8K context buckets</b>. The first result is a four-case, zero-overhead
-phase oracle built from independent whole-iGPU and whole-NPU measurements. It asks
-which device should own each phase when boundary cost is ignored. The second result,
-retained below, tests whether those split routes can execute inside one stateful
-OpenVINO request today.
+This is the refreshed NUC16 prefill/decode study across <b>six models, INT8 + FP16,
+and 1K&ndash;8K context buckets</b>. The four-case, zero-overhead phase oracle is now
+built from consistently labeled direct whole-iGPU and whole-NPU sources. A mislabeled
+NPUW-on-GPU wrapper caused the old Qwen2.5-3B INT8 reversal; the corrected direct-iGPU
+sweep removes it. Split routes remain performance/energy oracles: they intentionally
+ignore state-transfer and synchronization overhead.
 </div>
 
 <div class="kpis">
@@ -618,29 +681,52 @@ OpenVINO request today.
 
 
 <div class="result-map" aria-label="Reading order">
-<div class="result-step"><b>1 · At a glance</b><span>Four metrics at 8K</span></div>
-<div class="result-step"><b>2 · Full sweeps</b><span>Expandable 1K–8K matrices</span></div>
+<div class="result-step"><b>1 · Audit</b><span>3B path fix and timing semantics</span></div>
+<div class="result-step"><b>2 · Latest results</b><span>TTFT, decode, E2E and energy</span></div>
 <div class="result-step"><b>3 · Runtime status</b><span>Correctness and state handoff</span></div>
-<div class="result-step"><b>4 · Reproduce</b><span>Data, trials and configs</span></div>
+<div class="result-step"><b>4 · Affinity</b><span>Below-stage causes and validation</span></div>
 </div>
 
-<div class="oracle-summary"><p>Across the 24 model/window cells in each precision, the fastest INT8 choice is
-whole iGPU in <b>17</b> cells, whole NPU in <b>4</b>, and the iGPU-prefill +
-NPU-decode oracle in <b>3</b>. For FP16, whole iGPU wins <b>19</b>, whole NPU
-wins <b>1</b>, NPU-prefill + iGPU-decode wins <b>3</b>, and the reverse oracle
-wins <b>1</b>. Energy selects whole NPU in <b>21 of 24 FP16 cells</b>, showing a
-clear latency-versus-energy tradeoff even before boundary costs are restored.</p></div>
+<div class="oracle-summary"><p>After correcting the INT8 iGPU source path,
+whole iGPU is the fastest zero-boundary choice in <b>24 of 24 INT8 cells</b>.
+For INT8 energy, whole iGPU wins <b>21</b> cells and the NPU-prefill +
+iGPU-decode oracle wins <b>3</b>. FP16 is unchanged: whole iGPU wins 19 latency
+cells, whole NPU 1, NPU&rarr;iGPU 3 and iGPU&rarr;NPU 1; whole NPU remains the
+lowest-energy FP16 choice in <b>21 of 24</b> cells.</p></div>
 
-<h2 id="oracle-8k-digest">8K cross-model latency and throughput digest</h2>
+<h2 id="direct-path-audit">Qwen2.5-3B path audit and timing semantics</h2>
+<p>The model artifact is internally consistent; the reversal came from the benchmark
+route. The old INT8 cell was named <code>gpu_gpu</code> but recorded
+<code>compile_target=NPU</code>, <code>NPUW_DEVICES=GPU</code> and
+<code>execution_devices=NPU</code>. The corrected cell compiles
+<code>AUTO:GPU</code> and records <code>GPU.0</code>.</p>
+<table>
+<thead><tr><th>Qwen2.5-3B INT8 · 8K</th><th>post-compile TTFT</th><th>decode tok/s</th><th>end to end</th><th>PSys energy</th><th>compile (separate)</th></tr></thead>
+<tbody>
+<tr><td>stale wrapper labeled iGPU</td><td class="n">111.429 s</td><td class="n">0.197</td><td class="n">209.649 s</td><td class="n">4,421.6 J</td><td class="n">130.33 s</td></tr>
+<tr><td>corrected direct iGPU</td><td class="n pass">6.572 s</td><td class="n pass">18.343</td><td class="n pass">7.387 s</td><td class="n pass">250.1 J</td><td class="n">2.24 s</td></tr>
+</tbody></table>
+
+<div class="note"><b>TTFT definition.</b> In this harness, prefill latency and TTFT
+are the same timed call because prefill returns the first-token logits. Model read,
+<code>compile_model</code>, request creation and a warmup prefill all happen before the
+timer. Therefore every TTFT and end-to-end value plotted below already
+<b>excludes compilation and warmup</b>. Compile duration is recorded separately and is
+cache-state dependent; a true cold-start TTFT would need a separate no-warmup protocol.
+For the refreshed Qwen2.5-3B INT8 8K NPU cell, compilation was 111.14&nbsp;s,
+while the plotted post-compile TTFT is 18.627&nbsp;s and post-compile end-to-end
+time is 38.941&nbsp;s.</div>
+
+<h2 id="oracle-8k-digest">8K cross-model latency, throughput and energy digest</h2>
 <p>These grouped bars compare all six models directly at the largest tested window.
-Whole-device routes are solid; overhead-free split oracles are hatched. Identical
-phase bars are expected: TTFT follows the prefill device, while decode throughput and
-steady TPOT follow the decode device.</p>
+Whole-device routes are solid; overhead-free split oracles are hatched. Post-compile
+TTFT follows the prefill device, decode throughput follows the decode device, and total
+energy adds the independently measured phase components.</p>
 <div class="sweep-shots">
-<figure><img src="nuc16-stage-sweep-figs/oracle_ttft_8k_grouped.png" alt="Eight-thousand-token prefill time to first token by model route and precision"><figcaption>Prefill TTFT at 8K; lower is better.</figcaption></figure>
-<figure><img src="nuc16-stage-sweep-figs/oracle_decode_throughput_8k_grouped.png" alt="Eight-thousand-token decode throughput by model route and precision"><figcaption>Decode output throughput at 8K; higher is better.</figcaption></figure>
-<figure><img src="nuc16-stage-sweep-figs/oracle_end_to_end_8k_grouped.png" alt="Eight-thousand-token end-to-end inference time by model route and precision"><figcaption>End-to-end inference time after phase composition; lower is better.</figcaption></figure>
-<figure><img src="nuc16-stage-sweep-figs/oracle_steady_tpot_8k_grouped.png" alt="Eight-thousand-token steady decode latency by model route and precision"><figcaption>Steady per-token decode latency at 8K; lower is better.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_ttft_8k_grouped.png?v=20260825" alt="Eight-thousand-token post-compile prefill time to first token by model route and precision"><figcaption>Post-compile prefill TTFT at 8K; load, compile and warmup excluded.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_decode_throughput_8k_grouped.png?v=20260825" alt="Eight-thousand-token decode throughput by model route and precision"><figcaption>Decode output throughput at 8K; higher is better.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_end_to_end_8k_grouped.png?v=20260825" alt="Eight-thousand-token end-to-end inference time by model route and precision"><figcaption>End-to-end inference time after phase composition; lower is better.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_energy_8k_grouped.png?v=20260825" alt="Eight-thousand-token idle-subtracted whole-system inference energy by model route and precision"><figcaption>Idle-subtracted PSys inference energy at 8K; compile and warmup energy excluded.</figcaption></figure>
 </div>
 
 
@@ -671,6 +757,12 @@ stream.
 <tr><td>NPU prefill + iGPU decode</td><td>whole-NPU prefill</td><td>whole-iGPU decode</td><td class="warn">overhead-free oracle</td><td class="n">0 ms / 0 J</td></tr>
 <tr><td>iGPU prefill + NPU decode</td><td>whole-iGPU prefill</td><td>whole-NPU decode</td><td class="warn">overhead-free oracle</td><td class="n">0 ms / 0 J</td></tr>
 </tbody></table>
+<div class="note"><b>Correctness qualification.</b> The oracle compares performance
+components; it is not a cross-device token-equivalence proof. The refreshed
+Qwen2.5-7B NPU 8K run reproduces a divergent final top-1
+(<code>8036</code> INT8 and <code>730</code> FP16 versus <code>42</code> on iGPU).
+Those NPU-decode components remain visible as diagnostic measurements but should not be
+treated as a token-equivalent optimal output.</div>
 </div>
 </details>
 
@@ -678,22 +770,22 @@ stream.
 <summary><span>Full four-case 1K–8K sweep</span><small>route choice · latency · throughput · energy</small></summary>
 <div class="group-body">
 <div class="sweep-shots">
-<figure><img src="nuc16-stage-sweep-figs/oracle_optimal_routes.png" alt="Optimal four-case route by precision model and context window"><figcaption>Fastest end-to-end and lowest-energy oracle choice for every model, precision and window.</figcaption></figure>
-<figure><img src="nuc16-stage-sweep-figs/oracle_end_to_end_ms.png" alt="Four-case end-to-end inference time for INT8 and FP16"><figcaption>Measured whole-device paths are solid; overhead-free composed paths are dashed.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_optimal_routes.png?v=20260825" alt="Optimal four-case route by precision model and context window"><figcaption>Fastest end-to-end and lowest-energy oracle choice for every model, precision and window.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_end_to_end_ms.png?v=20260825" alt="Four-case end-to-end inference time for INT8 and FP16"><figcaption>Measured whole-device paths are solid; overhead-free composed paths are dashed.</figcaption></figure>
 </div>
 <div class="sweep-shots">
-<figure><img src="nuc16-stage-sweep-figs/oracle_ttft_ms.png" alt="Four-case time to first token for INT8 and FP16"><figcaption>Time to first token follows the selected prefill device.</figcaption></figure>
-<figure><img src="nuc16-stage-sweep-figs/oracle_handoff_plus_first_decode_ms.png" alt="Four-case first decode call latency for INT8 and FP16"><figcaption>First decode-call latency follows the selected decode device; boundary overhead is zero.</figcaption></figure>
-<figure><img src="nuc16-stage-sweep-figs/oracle_prefill_tokens_per_s.png" alt="Four-case prefill throughput for INT8 and FP16"><figcaption>Prefill throughput across all six models and four windows.</figcaption></figure>
-<figure><img src="nuc16-stage-sweep-figs/oracle_decode_tokens_per_s.png" alt="Four-case decode throughput for INT8 and FP16"><figcaption>Decode throughput across all six models and four windows.</figcaption></figure>
-<figure><img src="nuc16-stage-sweep-figs/oracle_steady_tpot_ms.png?v=104f2f3f" alt="Four-case steady decode latency for INT8 and FP16"><figcaption>Steady per-token decode latency; lower is better.</figcaption></figure>
-<figure><img src="nuc16-stage-sweep-figs/oracle_output_tokens_per_s_e2e.png" alt="Four-case end-to-end output throughput for INT8 and FP16"><figcaption>End-to-end output-token throughput after composing the selected phases.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_ttft_ms.png?v=20260825" alt="Four-case post-compile time to first token for INT8 and FP16"><figcaption>Post-compile TTFT follows the selected prefill device; compilation and warmup are excluded.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_handoff_plus_first_decode_ms.png?v=20260825" alt="Four-case first decode call latency for INT8 and FP16"><figcaption>First decode-call latency follows the selected decode device; boundary overhead is zero.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_prefill_tokens_per_s.png?v=20260825" alt="Four-case prefill throughput for INT8 and FP16"><figcaption>Prefill throughput across all six models and four windows.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_decode_tokens_per_s.png?v=20260825" alt="Four-case decode throughput for INT8 and FP16"><figcaption>Decode throughput across all six models and four windows.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_steady_tpot_ms.png?v=20260825" alt="Four-case steady decode latency for INT8 and FP16"><figcaption>Steady per-token decode latency; lower is better.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_output_tokens_per_s_e2e.png?v=20260825" alt="Four-case end-to-end output throughput for INT8 and FP16"><figcaption>End-to-end output-token throughput after composing the selected phases.</figcaption></figure>
 </div>
 
 <h3>Four-case total and distributed energy</h3>
 <div class="sweep-shots">
-<figure><img src="nuc16-stage-sweep-figs/oracle_energy_net_psys_j.png" alt="Four-case idle-subtracted platform energy for INT8 and FP16"><figcaption>Total idle-subtracted PSys energy across 1K&ndash;8K.</figcaption></figure>
-<figure><img src="nuc16-stage-sweep-figs/oracle_phase_energy_8k.png" alt="Four-case energy split between prefill and decode at 8K"><figcaption>Eight-thousand-token energy split into independently measured prefill and decode components.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_energy_net_psys_j.png?v=20260825" alt="Four-case idle-subtracted platform energy for INT8 and FP16"><figcaption>Total idle-subtracted PSys energy across 1K&ndash;8K.</figcaption></figure>
+<figure><img src="nuc16-stage-sweep-figs/oracle_phase_energy_8k.png?v=20260825" alt="Four-case energy split between prefill and decode at 8K"><figcaption>Eight-thousand-token energy split into independently measured prefill and decode components.</figcaption></figure>
 </div>
 </div>
 </details>
@@ -730,6 +822,17 @@ benchmarking a future runtime fix.
 </div>
 
 
+
+<h2 id="below-stage-affinity">Below-stage affinity</h2>
+<p>The fine-grained study explains why a stage-level route is not enough. At sequence
+512, in-situ decode attention and FFN usually favor NPU energy and often latency,
+whereas FP16 prefill attention strongly favors iGPU. But whole-model INT8 NPU decode
+reverses those kernel wins because composition, precision handling, state and runtime
+overhead dominate. The result is an affinity hierarchy, not a fixed device label:
+<b>operator inside graph &rarr; decoder block &rarr; stage &rarr; whole stateful
+model</b>.</p>
+<p><a href="#xpu">Open the Fine-grained affinity tab for the experiment, fresh
+Qwen2.5-3B validation, rooflines and all operator/block/model tables.</a></p>
 
 <h2 id="validation-appendix">Placement validation appendix</h2>
 <p class="section-lead">The compact qualification result stays above. Open a precision below for every diagnostic matrix and rejected-path measurement.</p>
@@ -820,6 +923,9 @@ ending on token 0 instead of 42.</p>
 <a href="data/nuc16-oracle-failures.json">source failures and unavailable cells (JSON)</a>
 <a href="data/nuc16-oracle-fp16-npu-raw-cells.json">new FP16 whole-NPU raw cells (JSON)</a>
 <a href="data/nuc16-oracle-report.md">four-case result report</a>
+<a href="data/nuc16-qwen25-3b-gpu-path-audit.csv">Qwen2.5-3B direct-path audit (CSV)</a>
+<a href="data/nuc16-qwen25-3b-fine-affinity-2026-08-25.jsonl">fresh Qwen2.5-3B fine-affinity validation (JSONL)</a>
+<a href="data/nuc16-qwen25-3b-fine-affinity-summary-2026-08-25.csv">fresh fine-affinity ratios (CSV)</a>
 <a href="data/nuc16-stage-sweep-summary.csv">cell medians + quartiles (CSV)</a>
 <a href="data/nuc16-stage-sweep-trials.csv">all 354 trials (CSV)</a>
 <a href="data/nuc16-stage-sweep-correctness.json">correctness audit (JSON)</a>
@@ -834,9 +940,10 @@ ending on token 0 instead of 42.</p>
 <a href="data/nuc16-stage-sweep-fp16-report.md">FP16 result report</a>
 </div>
 <p class="src">Core Ultra 7 356H, 96&nbsp;GB DDR5-5600, Ubuntu 24.04,
-OpenVINO 2026.3.0, INT8 and FP16 OpenVINO IRs, 16 generated tokens, three repetitions per
-whole-device cell. The four-case oracle contains 288 measured source trials plus 288
-phase-composed rows. Context qualification uses a 16-token guard band. PSys is a
+OpenVINO 2026.3.0 for the four-case sweep; the fine-grained validation uses the
+validated OpenVINO 2026.0 + NNCF environment. INT8 and FP16 OpenVINO IRs, 16 generated
+tokens and three repetitions per whole-device cell. The four-case oracle contains 288
+measured source trials plus 288 phase-composed rows. Context qualification uses a 16-token guard band. PSys is a
 whole-platform RAPL counter; phase energy is attributed to the scheduled device, not
 read from separate NPU and iGPU power rails.</p>
 </div>
