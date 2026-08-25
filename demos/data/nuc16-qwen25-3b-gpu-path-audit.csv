@@ -1,0 +1,3 @@
+configuration,recorded_compile_target,recorded_execution_device,compile_s,post_compile_ttft_s,decode_tokens_per_s,end_to_end_s,energy_net_psys_j
+stale NPUW-on-GPU wrapper labeled gpu_gpu,NPU,NPU,130.334362,111.428759,0.196916,209.648625,4421.620387
+corrected direct iGPU,AUTO:GPU,GPU.0,2.239817,6.571899,18.343378,7.387451,250.138820

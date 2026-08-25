@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "device": "Intel NUC16",
   "precisions": [
     "INT8",
@@ -52,6 +52,18 @@
       "transfer energy",
       "recompilation"
     ]
+  },
+  "timing_semantics": {
+    "ttft_ms": "timed warmed prefill inference call that returns first-token logits",
+    "end_to_end_ms": "timed prefill plus first-decode and steady-decode inference calls",
+    "energy_net_psys_j": "idle-subtracted PSys energy during timed inference calls",
+    "excluded_from_inference_metrics": [
+      "model read",
+      "compile_model",
+      "request creation",
+      "warmup"
+    ],
+    "compile_s": "recorded by source runs but intentionally excluded; cache state can change it"
   },
   "sources": {
     "int8_trials": "trials.csv",

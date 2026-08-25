@@ -15,10 +15,10 @@ Source failures: 0. Unavailable composed rows: 0.
 
 | Precision | Route | Fastest E2E cells | Lowest-energy cells |
 |---|---|---:|---:|
-| INT8 | Whole iGPU | 17 | 12 |
-| INT8 | Whole NPU | 4 | 12 |
-| INT8 | NPU prefill + iGPU decode · oracle | 0 | 0 |
-| INT8 | iGPU prefill + NPU decode · oracle | 3 | 0 |
+| INT8 | Whole iGPU | 24 | 21 |
+| INT8 | Whole NPU | 0 | 0 |
+| INT8 | NPU prefill + iGPU decode · oracle | 0 | 3 |
+| INT8 | iGPU prefill + NPU decode · oracle | 0 | 0 |
 | FP16 | Whole iGPU | 19 | 0 |
 | FP16 | Whole NPU | 1 | 21 |
 | FP16 | NPU prefill + iGPU decode · oracle | 3 | 0 |
@@ -34,9 +34,9 @@ Source failures: 0. Unavailable composed rows: 0.
 | FP16 | Qwen2.5 1.5B | Whole iGPU | 5.367 | 1.00× | Whole NPU | 145.3 | +18.0% |
 | FP16 | Qwen2.5 3B | Whole iGPU | 9.252 | 1.00× | Whole NPU | 276.9 | +13.1% |
 | FP16 | Qwen2.5 7B | Whole iGPU | 16.528 | 1.00× | iGPU prefill + NPU decode · oracle | 587.2 | +4.8% |
-| INT8 | Llama 3.2 1B | Whole iGPU | 4.121 | 1.00× | Whole iGPU | 119.5 | +0.0% |
-| INT8 | Llama 3.2 3B | Whole iGPU | 8.142 | 1.00× | Whole iGPU | 269.4 | +0.0% |
-| INT8 | Qwen2.5 0.5B | iGPU prefill + NPU decode · oracle | 4.696 | 1.18× | Whole NPU | 93.6 | +40.0% |
-| INT8 | Qwen2.5 1.5B | iGPU prefill + NPU decode · oracle | 14.435 | 1.17× | Whole NPU | 268.2 | +42.9% |
-| INT8 | Qwen2.5 3B | Whole NPU | 39.001 | 5.38× | Whole NPU | 625.4 | +85.9% |
-| INT8 | Qwen2.5 7B | Whole iGPU | 12.362 | 1.00× | Whole iGPU | 438.6 | +0.0% |
+| INT8 | Llama 3.2 1B | Whole iGPU | 4.340 | 1.00× | Whole iGPU | 129.1 | +0.0% |
+| INT8 | Llama 3.2 3B | Whole iGPU | 8.199 | 1.00× | Whole iGPU | 277.0 | +0.0% |
+| INT8 | Qwen2.5 0.5B | Whole iGPU | 3.065 | 1.00× | NPU prefill + iGPU decode · oracle | 71.1 | +14.9% |
+| INT8 | Qwen2.5 1.5B | Whole iGPU | 4.612 | 1.00× | Whole iGPU | 147.2 | +0.0% |
+| INT8 | Qwen2.5 3B | Whole iGPU | 7.387 | 1.00× | Whole iGPU | 250.1 | +0.0% |
+| INT8 | Qwen2.5 7B | Whole iGPU | 12.322 | 1.00× | Whole iGPU | 438.8 | +0.0% |
