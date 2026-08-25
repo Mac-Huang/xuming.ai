@@ -1,0 +1,796 @@
+<details class="result-group oracle-table-group" open>
+<summary><span>INT8 all-window metrics</span><small>prefill latency · decode throughput · energy</small></summary>
+<div class="group-body">
+<table class="oracle-window-table">
+<thead>
+<tr><th rowspan="2">Model</th><th rowspan="2">Route</th>
+<th colspan="3" class="window-group">1K</th>
+<th colspan="3" class="window-group">2K</th>
+<th colspan="3" class="window-group">4K</th>
+<th colspan="3" class="window-group">8K</th>
+</tr>
+<tr>
+<th class="window-start">TTFT<br><span>(s) ↓</span></th>
+<th>Decode<br><span>(tok/s) ↑</span></th>
+<th>Energy<br><span>(J) ↓</span></th>
+<th class="window-start">TTFT<br><span>(s) ↓</span></th>
+<th>Decode<br><span>(tok/s) ↑</span></th>
+<th>Energy<br><span>(J) ↓</span></th>
+<th class="window-start">TTFT<br><span>(s) ↓</span></th>
+<th>Decode<br><span>(tok/s) ↑</span></th>
+<th>Energy<br><span>(J) ↓</span></th>
+<th class="window-start">TTFT<br><span>(s) ↓</span></th>
+<th>Decode<br><span>(tok/s) ↑</span></th>
+<th>Energy<br><span>(J) ↓</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th rowspan="4" class="model-cell">Qwen2.5 0.5B</th>
+<td class="route-cell">Whole iGPU</td>
+<td class="n window-start">0.20</td>
+<td class="n">85.72</td>
+<td class="n">12.0</td>
+<td class="n window-start">0.43</td>
+<td class="n">70.37</td>
+<td class="n">18.8</td>
+<td class="n window-start">1.08</td>
+<td class="n">62.00</td>
+<td class="n">35.2</td>
+<td class="n window-start">2.77</td>
+<td class="n">49.70</td>
+<td class="n">83.6</td>
+</tr>
+<tr>
+<td class="route-cell">Whole NPU</td>
+<td class="n window-start">0.30</td>
+<td class="n">8.12</td>
+<td class="n">37.7</td>
+<td class="n window-start">0.58</td>
+<td class="n">8.09</td>
+<td class="n">43.2</td>
+<td class="n window-start">1.30</td>
+<td class="n">7.64</td>
+<td class="n">64.8</td>
+<td class="n window-start">3.80</td>
+<td class="n">7.54</td>
+<td class="n">92.4</td>
+</tr>
+<tr>
+<td class="route-cell">NPU prefill + iGPU decode · oracle</td>
+<td class="n window-start">0.30</td>
+<td class="n">85.72</td>
+<td class="n">11.0</td>
+<td class="n window-start">0.58</td>
+<td class="n">70.37</td>
+<td class="n">17.6</td>
+<td class="n window-start">1.30</td>
+<td class="n">62.00</td>
+<td class="n">36.9</td>
+<td class="n window-start">3.80</td>
+<td class="n">49.70</td>
+<td class="n">71.1</td>
+</tr>
+<tr>
+<td class="route-cell">iGPU prefill + NPU decode · oracle</td>
+<td class="n window-start">0.20</td>
+<td class="n">8.12</td>
+<td class="n">38.7</td>
+<td class="n window-start">0.43</td>
+<td class="n">8.09</td>
+<td class="n">44.8</td>
+<td class="n window-start">1.08</td>
+<td class="n">7.64</td>
+<td class="n">62.2</td>
+<td class="n window-start">2.77</td>
+<td class="n">7.54</td>
+<td class="n">104.7</td>
+</tr>
+<tr>
+<th rowspan="4" class="model-cell">Qwen2.5 1.5B</th>
+<td class="route-cell">Whole iGPU</td>
+<td class="n window-start">0.34</td>
+<td class="n">39.66</td>
+<td class="n">23.2</td>
+<td class="n window-start">0.70</td>
+<td class="n">35.50</td>
+<td class="n">35.9</td>
+<td class="n window-start">1.60</td>
+<td class="n">37.31</td>
+<td class="n">65.4</td>
+<td class="n window-start">4.14</td>
+<td class="n">31.06</td>
+<td class="n">147.2</td>
+</tr>
+<tr>
+<td class="route-cell">Whole NPU</td>
+<td class="n window-start">0.91</td>
+<td class="n">1.98</td>
+<td class="n">112.1</td>
+<td class="n window-start">1.83</td>
+<td class="n">1.97</td>
+<td class="n">130.3</td>
+<td class="n window-start">4.03</td>
+<td class="n">1.95</td>
+<td class="n">166.0</td>
+<td class="n window-start">8.99</td>
+<td class="n">1.92</td>
+<td class="n">262.8</td>
+</tr>
+<tr>
+<td class="route-cell">NPU prefill + iGPU decode · oracle</td>
+<td class="n window-start">0.91</td>
+<td class="n">39.66</td>
+<td class="n">28.0</td>
+<td class="n window-start">1.83</td>
+<td class="n">35.50</td>
+<td class="n">45.9</td>
+<td class="n window-start">4.03</td>
+<td class="n">37.31</td>
+<td class="n">80.6</td>
+<td class="n window-start">8.99</td>
+<td class="n">31.06</td>
+<td class="n">177.7</td>
+</tr>
+<tr>
+<td class="route-cell">iGPU prefill + NPU decode · oracle</td>
+<td class="n window-start">0.34</td>
+<td class="n">1.98</td>
+<td class="n">107.2</td>
+<td class="n window-start">0.70</td>
+<td class="n">1.97</td>
+<td class="n">120.4</td>
+<td class="n window-start">1.60</td>
+<td class="n">1.95</td>
+<td class="n">151.7</td>
+<td class="n window-start">4.14</td>
+<td class="n">1.92</td>
+<td class="n">231.7</td>
+</tr>
+<tr>
+<th rowspan="4" class="model-cell">Qwen2.5 3B</th>
+<td class="route-cell">Whole iGPU</td>
+<td class="n window-start">0.49</td>
+<td class="n">22.39</td>
+<td class="n">39.8</td>
+<td class="n window-start">1.07</td>
+<td class="n">19.68</td>
+<td class="n">59.9</td>
+<td class="n window-start">2.49</td>
+<td class="n">20.91</td>
+<td class="n">112.9</td>
+<td class="n window-start">6.57</td>
+<td class="n">18.34</td>
+<td class="n">250.1</td>
+</tr>
+<tr>
+<td class="route-cell">Whole NPU</td>
+<td class="n window-start">1.94</td>
+<td class="n">0.75</td>
+<td class="n">263.7</td>
+<td class="n window-start">3.90</td>
+<td class="n">0.75</td>
+<td class="n">303.5</td>
+<td class="n window-start">8.36</td>
+<td class="n">0.74</td>
+<td class="n">388.7</td>
+<td class="n window-start">18.63</td>
+<td class="n">0.74</td>
+<td class="n">574.7</td>
+</tr>
+<tr>
+<td class="route-cell">NPU prefill + iGPU decode · oracle</td>
+<td class="n window-start">1.94</td>
+<td class="n">22.39</td>
+<td class="n">56.1</td>
+<td class="n window-start">3.90</td>
+<td class="n">19.68</td>
+<td class="n">93.4</td>
+<td class="n window-start">8.36</td>
+<td class="n">20.91</td>
+<td class="n">172.7</td>
+<td class="n window-start">18.63</td>
+<td class="n">18.34</td>
+<td class="n">361.0</td>
+</tr>
+<tr>
+<td class="route-cell">iGPU prefill + NPU decode · oracle</td>
+<td class="n window-start">0.49</td>
+<td class="n">0.75</td>
+<td class="n">247.1</td>
+<td class="n window-start">1.07</td>
+<td class="n">0.75</td>
+<td class="n">270.8</td>
+<td class="n window-start">2.49</td>
+<td class="n">0.74</td>
+<td class="n">326.4</td>
+<td class="n window-start">6.57</td>
+<td class="n">0.74</td>
+<td class="n">463.8</td>
+</tr>
+<tr>
+<th rowspan="4" class="model-cell">Qwen2.5 7B</th>
+<td class="route-cell">Whole iGPU</td>
+<td class="n window-start">0.85</td>
+<td class="n">10.33</td>
+<td class="n">79.5</td>
+<td class="n window-start">1.81</td>
+<td class="n">10.44</td>
+<td class="n">118.6</td>
+<td class="n window-start">4.30</td>
+<td class="n">9.99</td>
+<td class="n">211.8</td>
+<td class="n window-start">10.68</td>
+<td class="n">9.12</td>
+<td class="n">438.8</td>
+</tr>
+<tr>
+<td class="route-cell">Whole NPU</td>
+<td class="n window-start">4.75</td>
+<td class="n">0.32</td>
+<td class="n">537.1</td>
+<td class="n window-start">9.48</td>
+<td class="n">0.32</td>
+<td class="n">641.2</td>
+<td class="n window-start">19.79</td>
+<td class="n">0.32</td>
+<td class="n">821.5</td>
+<td class="n window-start">41.95</td>
+<td class="n">0.32</td>
+<td class="n">1275.8</td>
+</tr>
+<tr>
+<td class="route-cell">NPU prefill + iGPU decode · oracle</td>
+<td class="n window-start">4.75</td>
+<td class="n">10.33</td>
+<td class="n">122.3</td>
+<td class="n window-start">9.48</td>
+<td class="n">10.44</td>
+<td class="n">202.5</td>
+<td class="n window-start">19.79</td>
+<td class="n">9.99</td>
+<td class="n">376.1</td>
+<td class="n window-start">41.95</td>
+<td class="n">9.12</td>
+<td class="n">808.8</td>
+</tr>
+<tr>
+<td class="route-cell">iGPU prefill + NPU decode · oracle</td>
+<td class="n window-start">0.85</td>
+<td class="n">0.32</td>
+<td class="n">494.3</td>
+<td class="n window-start">1.81</td>
+<td class="n">0.32</td>
+<td class="n">554.7</td>
+<td class="n window-start">4.30</td>
+<td class="n">0.32</td>
+<td class="n">657.2</td>
+<td class="n window-start">10.68</td>
+<td class="n">0.32</td>
+<td class="n">897.9</td>
+</tr>
+<tr>
+<th rowspan="4" class="model-cell">Llama 3.2 1B</th>
+<td class="route-cell">Whole iGPU</td>
+<td class="n window-start">0.26</td>
+<td class="n">49.30</td>
+<td class="n">19.0</td>
+<td class="n window-start">0.56</td>
+<td class="n">48.72</td>
+<td class="n">28.1</td>
+<td class="n window-start">1.43</td>
+<td class="n">40.43</td>
+<td class="n">54.8</td>
+<td class="n window-start">3.93</td>
+<td class="n">36.72</td>
+<td class="n">129.1</td>
+</tr>
+<tr>
+<td class="route-cell">Whole NPU</td>
+<td class="n window-start">0.72</td>
+<td class="n">2.36</td>
+<td class="n">97.8</td>
+<td class="n window-start">1.43</td>
+<td class="n">2.34</td>
+<td class="n">107.6</td>
+<td class="n window-start">3.12</td>
+<td class="n">2.31</td>
+<td class="n">137.7</td>
+<td class="n window-start">8.10</td>
+<td class="n">2.26</td>
+<td class="n">222.9</td>
+</tr>
+<tr>
+<td class="route-cell">NPU prefill + iGPU decode · oracle</td>
+<td class="n window-start">0.72</td>
+<td class="n">49.30</td>
+<td class="n">22.9</td>
+<td class="n window-start">1.43</td>
+<td class="n">48.72</td>
+<td class="n">35.1</td>
+<td class="n window-start">3.12</td>
+<td class="n">40.43</td>
+<td class="n">66.7</td>
+<td class="n window-start">8.10</td>
+<td class="n">36.72</td>
+<td class="n">148.9</td>
+</tr>
+<tr>
+<td class="route-cell">iGPU prefill + NPU decode · oracle</td>
+<td class="n window-start">0.26</td>
+<td class="n">2.36</td>
+<td class="n">94.2</td>
+<td class="n window-start">0.56</td>
+<td class="n">2.34</td>
+<td class="n">101.0</td>
+<td class="n window-start">1.43</td>
+<td class="n">2.31</td>
+<td class="n">126.1</td>
+<td class="n window-start">3.93</td>
+<td class="n">2.26</td>
+<td class="n">199.5</td>
+</tr>
+<tr>
+<th rowspan="4" class="model-cell">Llama 3.2 3B</th>
+<td class="route-cell">Whole iGPU</td>
+<td class="n window-start">0.50</td>
+<td class="n">21.91</td>
+<td class="n">41.0</td>
+<td class="n window-start">1.09</td>
+<td class="n">20.92</td>
+<td class="n">62.1</td>
+<td class="n window-start">2.72</td>
+<td class="n">19.29</td>
+<td class="n">120.8</td>
+<td class="n window-start">7.31</td>
+<td class="n">16.93</td>
+<td class="n">277.0</td>
+</tr>
+<tr>
+<td class="route-cell">Whole NPU</td>
+<td class="n window-start">3.43</td>
+<td class="n">0.35</td>
+<td class="n">344.9</td>
+<td class="n window-start">6.95</td>
+<td class="n">0.35</td>
+<td class="n">397.6</td>
+<td class="n window-start">14.66</td>
+<td class="n">0.35</td>
+<td class="n">502.7</td>
+<td class="n window-start">31.44</td>
+<td class="n">0.35</td>
+<td class="n">702.1</td>
+</tr>
+<tr>
+<td class="route-cell">NPU prefill + iGPU decode · oracle</td>
+<td class="n window-start">3.43</td>
+<td class="n">21.91</td>
+<td class="n">64.2</td>
+<td class="n window-start">6.95</td>
+<td class="n">20.92</td>
+<td class="n">107.8</td>
+<td class="n window-start">14.66</td>
+<td class="n">19.29</td>
+<td class="n">206.8</td>
+<td class="n window-start">31.44</td>
+<td class="n">16.93</td>
+<td class="n">419.9</td>
+</tr>
+<tr>
+<td class="route-cell">iGPU prefill + NPU decode · oracle</td>
+<td class="n window-start">0.50</td>
+<td class="n">0.35</td>
+<td class="n">321.9</td>
+<td class="n window-start">1.09</td>
+<td class="n">0.35</td>
+<td class="n">354.8</td>
+<td class="n window-start">2.72</td>
+<td class="n">0.35</td>
+<td class="n">413.2</td>
+<td class="n window-start">7.31</td>
+<td class="n">0.35</td>
+<td class="n">564.4</td>
+</tr>
+</tbody>
+</table>
+<p class="table-note">Median of three runs. TTFT and energy exclude model loading, compilation and warmup. Dashed-chart oracle routes remain zero-boundary-overhead phase compositions.</p>
+</div>
+</details>
+<details class="result-group oracle-table-group" open>
+<summary><span>FP16 all-window metrics</span><small>prefill latency · decode throughput · energy</small></summary>
+<div class="group-body">
+<table class="oracle-window-table">
+<thead>
+<tr><th rowspan="2">Model</th><th rowspan="2">Route</th>
+<th colspan="3" class="window-group">1K</th>
+<th colspan="3" class="window-group">2K</th>
+<th colspan="3" class="window-group">4K</th>
+<th colspan="3" class="window-group">8K</th>
+</tr>
+<tr>
+<th class="window-start">TTFT<br><span>(s) ↓</span></th>
+<th>Decode<br><span>(tok/s) ↑</span></th>
+<th>Energy<br><span>(J) ↓</span></th>
+<th class="window-start">TTFT<br><span>(s) ↓</span></th>
+<th>Decode<br><span>(tok/s) ↑</span></th>
+<th>Energy<br><span>(J) ↓</span></th>
+<th class="window-start">TTFT<br><span>(s) ↓</span></th>
+<th>Decode<br><span>(tok/s) ↑</span></th>
+<th>Energy<br><span>(J) ↓</span></th>
+<th class="window-start">TTFT<br><span>(s) ↓</span></th>
+<th>Decode<br><span>(tok/s) ↑</span></th>
+<th>Energy<br><span>(J) ↓</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th rowspan="4" class="model-cell">Qwen2.5 0.5B</th>
+<td class="route-cell">Whole iGPU</td>
+<td class="n window-start">0.21</td>
+<td class="n">61.17</td>
+<td class="n">14.4</td>
+<td class="n window-start">0.44</td>
+<td class="n">54.52</td>
+<td class="n">21.2</td>
+<td class="n window-start">1.10</td>
+<td class="n">44.48</td>
+<td class="n">40.3</td>
+<td class="n window-start">2.86</td>
+<td class="n">39.10</td>
+<td class="n">89.2</td>
+</tr>
+<tr>
+<td class="route-cell">Whole NPU</td>
+<td class="n window-start">0.20</td>
+<td class="n">58.26</td>
+<td class="n">10.2</td>
+<td class="n window-start">0.38</td>
+<td class="n">54.76</td>
+<td class="n">14.6</td>
+<td class="n window-start">0.89</td>
+<td class="n">45.61</td>
+<td class="n">27.8</td>
+<td class="n window-start">2.98</td>
+<td class="n">36.82</td>
+<td class="n">64.3</td>
+</tr>
+<tr>
+<td class="route-cell">NPU prefill + iGPU decode · oracle</td>
+<td class="n window-start">0.20</td>
+<td class="n">61.17</td>
+<td class="n">11.7</td>
+<td class="n window-start">0.38</td>
+<td class="n">54.52</td>
+<td class="n">16.2</td>
+<td class="n window-start">0.89</td>
+<td class="n">44.48</td>
+<td class="n">28.8</td>
+<td class="n window-start">2.98</td>
+<td class="n">39.10</td>
+<td class="n">64.7</td>
+</tr>
+<tr>
+<td class="route-cell">iGPU prefill + NPU decode · oracle</td>
+<td class="n window-start">0.21</td>
+<td class="n">58.26</td>
+<td class="n">12.9</td>
+<td class="n window-start">0.44</td>
+<td class="n">54.76</td>
+<td class="n">20.2</td>
+<td class="n window-start">1.10</td>
+<td class="n">45.61</td>
+<td class="n">39.0</td>
+<td class="n window-start">2.86</td>
+<td class="n">36.82</td>
+<td class="n">88.8</td>
+</tr>
+<tr>
+<th rowspan="4" class="model-cell">Qwen2.5 1.5B</th>
+<td class="route-cell">Whole iGPU</td>
+<td class="n window-start">0.36</td>
+<td class="n">22.48</td>
+<td class="n">34.0</td>
+<td class="n window-start">0.77</td>
+<td class="n">20.42</td>
+<td class="n">48.0</td>
+<td class="n window-start">1.81</td>
+<td class="n">21.28</td>
+<td class="n">81.5</td>
+<td class="n window-start">4.60</td>
+<td class="n">19.55</td>
+<td class="n">177.1</td>
+</tr>
+<tr>
+<td class="route-cell">Whole NPU</td>
+<td class="n window-start">0.47</td>
+<td class="n">20.56</td>
+<td class="n">24.8</td>
+<td class="n window-start">0.95</td>
+<td class="n">19.11</td>
+<td class="n">39.5</td>
+<td class="n window-start">2.21</td>
+<td class="n">17.82</td>
+<td class="n">70.6</td>
+<td class="n window-start">5.48</td>
+<td class="n">16.07</td>
+<td class="n">145.3</td>
+</tr>
+<tr>
+<td class="route-cell">NPU prefill + iGPU decode · oracle</td>
+<td class="n window-start">0.47</td>
+<td class="n">22.48</td>
+<td class="n">31.6</td>
+<td class="n window-start">0.95</td>
+<td class="n">20.42</td>
+<td class="n">44.6</td>
+<td class="n window-start">2.21</td>
+<td class="n">21.28</td>
+<td class="n">73.9</td>
+<td class="n window-start">5.48</td>
+<td class="n">19.55</td>
+<td class="n">151.2</td>
+</tr>
+<tr>
+<td class="route-cell">iGPU prefill + NPU decode · oracle</td>
+<td class="n window-start">0.36</td>
+<td class="n">20.56</td>
+<td class="n">27.4</td>
+<td class="n window-start">0.77</td>
+<td class="n">19.11</td>
+<td class="n">43.0</td>
+<td class="n window-start">1.81</td>
+<td class="n">17.82</td>
+<td class="n">78.2</td>
+<td class="n window-start">4.60</td>
+<td class="n">16.07</td>
+<td class="n">172.3</td>
+</tr>
+<tr>
+<th rowspan="4" class="model-cell">Qwen2.5 3B</th>
+<td class="route-cell">Whole iGPU</td>
+<td class="n window-start">0.61</td>
+<td class="n">10.79</td>
+<td class="n">65.0</td>
+<td class="n window-start">1.30</td>
+<td class="n">9.86</td>
+<td class="n">91.3</td>
+<td class="n window-start">3.24</td>
+<td class="n">10.49</td>
+<td class="n">156.0</td>
+<td class="n window-start">7.71</td>
+<td class="n">9.70</td>
+<td class="n">318.8</td>
+</tr>
+<tr>
+<td class="route-cell">Whole NPU</td>
+<td class="n window-start">0.74</td>
+<td class="n">10.19</td>
+<td class="n">51.0</td>
+<td class="n window-start">1.49</td>
+<td class="n">9.82</td>
+<td class="n">74.0</td>
+<td class="n window-start">3.53</td>
+<td class="n">9.13</td>
+<td class="n">131.3</td>
+<td class="n window-start">8.87</td>
+<td class="n">8.47</td>
+<td class="n">276.9</td>
+</tr>
+<tr>
+<td class="route-cell">NPU prefill + iGPU decode · oracle</td>
+<td class="n window-start">0.74</td>
+<td class="n">10.79</td>
+<td class="n">63.4</td>
+<td class="n window-start">1.49</td>
+<td class="n">9.86</td>
+<td class="n">88.0</td>
+<td class="n window-start">3.53</td>
+<td class="n">10.49</td>
+<td class="n">142.0</td>
+<td class="n window-start">8.87</td>
+<td class="n">9.70</td>
+<td class="n">291.8</td>
+</tr>
+<tr>
+<td class="route-cell">iGPU prefill + NPU decode · oracle</td>
+<td class="n window-start">0.61</td>
+<td class="n">10.19</td>
+<td class="n">51.8</td>
+<td class="n window-start">1.30</td>
+<td class="n">9.82</td>
+<td class="n">74.9</td>
+<td class="n window-start">3.24</td>
+<td class="n">9.13</td>
+<td class="n">145.0</td>
+<td class="n window-start">7.71</td>
+<td class="n">8.47</td>
+<td class="n">301.6</td>
+</tr>
+<tr>
+<th rowspan="4" class="model-cell">Qwen2.5 7B</th>
+<td class="route-cell">Whole iGPU</td>
+<td class="n window-start">1.12</td>
+<td class="n">5.35</td>
+<td class="n">132.9</td>
+<td class="n window-start">2.33</td>
+<td class="n">5.36</td>
+<td class="n">187.8</td>
+<td class="n window-start">5.53</td>
+<td class="n">5.25</td>
+<td class="n">320.5</td>
+<td class="n window-start">13.53</td>
+<td class="n">4.99</td>
+<td class="n">616.6</td>
+</tr>
+<tr>
+<td class="route-cell">Whole NPU</td>
+<td class="n window-start">1.88</td>
+<td class="n">4.85</td>
+<td class="n">104.3</td>
+<td class="n window-start">3.78</td>
+<td class="n">4.73</td>
+<td class="n">157.5</td>
+<td class="n window-start">8.33</td>
+<td class="n">4.50</td>
+<td class="n">297.0</td>
+<td class="n window-start">19.05</td>
+<td class="n">4.22</td>
+<td class="n">594.0</td>
+</tr>
+<tr>
+<td class="route-cell">NPU prefill + iGPU decode · oracle</td>
+<td class="n window-start">1.88</td>
+<td class="n">5.35</td>
+<td class="n">136.7</td>
+<td class="n window-start">3.78</td>
+<td class="n">5.36</td>
+<td class="n">190.2</td>
+<td class="n window-start">8.33</td>
+<td class="n">5.25</td>
+<td class="n">320.7</td>
+<td class="n window-start">19.05</td>
+<td class="n">4.99</td>
+<td class="n">621.2</td>
+</tr>
+<tr>
+<td class="route-cell">iGPU prefill + NPU decode · oracle</td>
+<td class="n window-start">1.12</td>
+<td class="n">4.85</td>
+<td class="n">101.0</td>
+<td class="n window-start">2.33</td>
+<td class="n">4.73</td>
+<td class="n">157.5</td>
+<td class="n window-start">5.53</td>
+<td class="n">4.50</td>
+<td class="n">291.2</td>
+<td class="n window-start">13.53</td>
+<td class="n">4.22</td>
+<td class="n">587.2</td>
+</tr>
+<tr>
+<th rowspan="4" class="model-cell">Llama 3.2 1B</th>
+<td class="route-cell">Whole iGPU</td>
+<td class="n window-start">0.33</td>
+<td class="n">25.39</td>
+<td class="n">28.6</td>
+<td class="n window-start">0.68</td>
+<td class="n">24.57</td>
+<td class="n">38.9</td>
+<td class="n window-start">1.71</td>
+<td class="n">23.81</td>
+<td class="n">72.5</td>
+<td class="n window-start">4.48</td>
+<td class="n">21.24</td>
+<td class="n">156.7</td>
+</tr>
+<tr>
+<td class="route-cell">Whole NPU</td>
+<td class="n window-start">0.37</td>
+<td class="n">25.96</td>
+<td class="n">20.8</td>
+<td class="n window-start">0.70</td>
+<td class="n">23.64</td>
+<td class="n">31.7</td>
+<td class="n window-start">1.65</td>
+<td class="n">20.81</td>
+<td class="n">56.3</td>
+<td class="n window-start">5.12</td>
+<td class="n">18.33</td>
+<td class="n">124.7</td>
+</tr>
+<tr>
+<td class="route-cell">NPU prefill + iGPU decode · oracle</td>
+<td class="n window-start">0.37</td>
+<td class="n">25.39</td>
+<td class="n">26.1</td>
+<td class="n window-start">0.70</td>
+<td class="n">24.57</td>
+<td class="n">34.8</td>
+<td class="n window-start">1.65</td>
+<td class="n">23.81</td>
+<td class="n">59.9</td>
+<td class="n window-start">5.12</td>
+<td class="n">21.24</td>
+<td class="n">128.4</td>
+</tr>
+<tr>
+<td class="route-cell">iGPU prefill + NPU decode · oracle</td>
+<td class="n window-start">0.33</td>
+<td class="n">25.96</td>
+<td class="n">23.8</td>
+<td class="n window-start">0.68</td>
+<td class="n">23.64</td>
+<td class="n">35.8</td>
+<td class="n window-start">1.71</td>
+<td class="n">20.81</td>
+<td class="n">68.5</td>
+<td class="n window-start">4.48</td>
+<td class="n">18.33</td>
+<td class="n">152.7</td>
+</tr>
+<tr>
+<th rowspan="4" class="model-cell">Llama 3.2 3B</th>
+<td class="route-cell">Whole iGPU</td>
+<td class="n window-start">0.61</td>
+<td class="n">11.35</td>
+<td class="n">65.3</td>
+<td class="n window-start">1.33</td>
+<td class="n">11.23</td>
+<td class="n">92.2</td>
+<td class="n window-start">3.40</td>
+<td class="n">10.59</td>
+<td class="n">165.5</td>
+<td class="n window-start">8.39</td>
+<td class="n">9.83</td>
+<td class="n">343.9</td>
+</tr>
+<tr>
+<td class="route-cell">Whole NPU</td>
+<td class="n window-start">0.76</td>
+<td class="n">10.20</td>
+<td class="n">52.6</td>
+<td class="n window-start">1.58</td>
+<td class="n">9.43</td>
+<td class="n">76.8</td>
+<td class="n window-start">3.82</td>
+<td class="n">8.47</td>
+<td class="n">138.7</td>
+<td class="n window-start">9.82</td>
+<td class="n">7.03</td>
+<td class="n">296.4</td>
+</tr>
+<tr>
+<td class="route-cell">NPU prefill + iGPU decode · oracle</td>
+<td class="n window-start">0.76</td>
+<td class="n">11.35</td>
+<td class="n">64.2</td>
+<td class="n window-start">1.58</td>
+<td class="n">11.23</td>
+<td class="n">87.8</td>
+<td class="n window-start">3.82</td>
+<td class="n">10.59</td>
+<td class="n">150.5</td>
+<td class="n window-start">9.82</td>
+<td class="n">9.83</td>
+<td class="n">306.3</td>
+</tr>
+<tr>
+<td class="route-cell">iGPU prefill + NPU decode · oracle</td>
+<td class="n window-start">0.61</td>
+<td class="n">10.20</td>
+<td class="n">53.5</td>
+<td class="n window-start">1.33</td>
+<td class="n">9.43</td>
+<td class="n">81.1</td>
+<td class="n window-start">3.40</td>
+<td class="n">8.47</td>
+<td class="n">153.6</td>
+<td class="n window-start">8.39</td>
+<td class="n">7.03</td>
+<td class="n">333.1</td>
+</tr>
+</tbody>
+</table>
+<p class="table-note">Median of three runs. TTFT and energy exclude model loading, compilation and warmup. Dashed-chart oracle routes remain zero-boundary-overhead phase compositions.</p>
+</div>
+</details>
