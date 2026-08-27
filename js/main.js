@@ -9,7 +9,9 @@ function showEmail() {
   const email = 'xuming' + '@' + 'cs.wisc.edu';
   const emailLink = document.getElementById('email-link');
   if (emailLink) {
-    emailLink.innerHTML = '<a href="mailto:' + email + '">' + email + '</a>';
+    emailLink.textContent = email;
+    emailLink.href = 'mailto:' + email;
+    emailLink.removeAttribute('onclick');
   }
 }
 
@@ -301,8 +303,17 @@ function createProjectRow(project) {
     img.src = project.thumbnail;
     img.alt = project.title;
     img.width = 160;
-    img.style.borderStyle = 'none';
-    tdImage.appendChild(img);
+    img.height = 110;
+    img.style.cssText = 'border:1px solid #ddd;border-radius:6px;object-fit:cover;';
+
+    if (project.demo_url) {
+      const imageLink = document.createElement('a');
+      imageLink.href = project.demo_url;
+      imageLink.appendChild(img);
+      tdImage.appendChild(imageLink);
+    } else {
+      tdImage.appendChild(img);
+    }
   }
   
   tr.appendChild(tdImage);
@@ -334,18 +345,37 @@ function createProjectRow(project) {
     tdContent.appendChild(descP);
   }
   
-  // Links (demo / code)
+  // Links (demo / code / supporting resources)
   const links = [];
   if (project.demo_url) {
-    links.push('[<a href="' + project.demo_url + '">Live Demo</a>]');
+    links.push({ label: 'Live Demo', url: project.demo_url });
   }
   if (project.code_url) {
-    links.push('[<a href="' + project.code_url + '">Code</a>]');
+    links.push({ label: 'Code', url: project.code_url });
+  }
+  if (Array.isArray(project.links)) {
+    links.push(...project.links);
   }
   
   if (links.length > 0) {
     const linksDiv = document.createElement('div');
-    linksDiv.innerHTML = links.join(' ');
+    linksDiv.className = 'project-links';
+
+    links.forEach((link, index) => {
+      const bracketOpen = document.createTextNode(index === 0 ? '[' : ' [');
+      const anchor = document.createElement('a');
+      anchor.href = link.url;
+      anchor.textContent = link.label;
+      if (/^https?:\/\//.test(link.url)) {
+        anchor.target = '_blank';
+        anchor.rel = 'noopener noreferrer';
+      }
+      const bracketClose = document.createTextNode(']');
+      linksDiv.appendChild(bracketOpen);
+      linksDiv.appendChild(anchor);
+      linksDiv.appendChild(bracketClose);
+    });
+
     tdContent.appendChild(linksDiv);
   }
   

@@ -4,8 +4,20 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <title>Xuming Huang | AI & Systems Explorer</title>
   <meta name="author" content="Xuming Huang">
-  <meta name="description" content="Personal academic website of Xuming Huang">
+  <meta name="description" content="Xuming Huang researches AI systems, compilers, edge intelligence, and systems security at UW–Madison and UC San Diego.">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://xuming.ai/">
+  <meta property="og:title" content="Xuming Huang | AI &amp; Systems Explorer">
+  <meta property="og:description" content="Research in AI systems, compilers, edge intelligence, and systems security.">
+  <meta property="og:image" content="https://xuming.ai/images/social-preview.png">
+  <meta property="og:image:width" content="1731">
+  <meta property="og:image:height" content="908">
+  <meta property="og:image:alt" content="Xuming Huang — AI Systems, Compilers, and Edge Intelligence">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Xuming Huang | AI &amp; Systems Explorer">
+  <meta name="twitter:description" content="Research in AI systems, compilers, edge intelligence, and systems security.">
+  <meta name="twitter:image" content="https://xuming.ai/images/social-preview.png">
   <link rel="stylesheet" type="text/css" href="stylesheet.css">
   <link rel="icon" type="image/png" href="images/favicon.png">
   <style>
@@ -14,6 +26,23 @@
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+
+    .profile-photo-frame {
+      width: 100%;
+      max-width: 320px;
+      aspect-ratio: 1;
+      margin: 0 auto;
+      border-radius: 50%;
+      overflow: hidden;
+      background: #dce8f2;
+    }
+
+    .profile-photo-frame img {
+      display: block;
+      width: 270%;
+      max-width: none;
+      transform: translate(-31.5%, -18%);
     }
 
     /* Left Navigation Styles */
@@ -71,6 +100,37 @@
         display: none;
       }
     }
+
+    @media (max-width: 768px) {
+      .bio-section {
+        min-height: auto;
+        padding: 34px 0 18px;
+      }
+
+      .bio-row {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .bio-copy,
+      .bio-photo {
+        display: block;
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+
+      .bio-copy {
+        order: 2;
+      }
+
+      .bio-photo {
+        order: 1;
+      }
+
+      .profile-photo-frame {
+        max-width: 240px;
+      }
+    }
   </style>
 </head>
 
@@ -96,8 +156,8 @@
           <div class="bio-section" id="bio">
           <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
             <tbody>
-              <tr style="padding:0px">
-                <td style="padding:2.5%;width:63%;vertical-align:middle">
+              <tr class="bio-row" style="padding:0px">
+                <td class="bio-copy" style="padding:2.5%;width:63%;vertical-align:middle">
                   <p style="text-align:center">
                     <name>Xuming Huang</name>
                   </p>
@@ -107,37 +167,26 @@
                     <strong>Artificial Intelligence</strong>, <strong>Systems</strong>, and <strong>Security</strong>.
                   </p>
                   <p>
-                    Currently advised by Professor <a href="https://pages.cs.wisc.edu/~remzi/">Remzi Arpaci-Dusseau</a> and
-                    <a href="https://www.vinaybanakar.com/">Vinay Banakar</a> at
-                    <a href="https://research.cs.wisc.edu/adsl/">The ADvanced Systems Laboratory</a>,
-                    I'm developing <a href="linuxguard.html">LinuxGuard</a> - using LLMs to automatically convert kernel bug fixes into static analyzers.
-                    Our system learns from commit history to generate clang-tidy checkers that detect similar vulnerabilities
-                    across different kernel versions, essentially turning every patched bug into a preventive tool.
-                  </p>
-                  <p>
-                    I am also a remote research intern at <a href="https://wuklab.io/">WukLab</a> with
-                    Professor <a href="https://cseweb.ucsd.edu/~yiying/">Yiying Zhang</a> (UC San Diego), where I work on two threads
-                    that meet at the LLM-systems boundary: (i) <strong>LLM-driven low-level code optimization</strong>, building agents that
-                    propose, verify, and benchmark compiler-grade transformations on real kernels, and (ii) <strong>system optimization for
-                    edge-device inference</strong>, profiling Apple M-series memory budgets, KV-cache behavior, and prefix-cache compaction
-                    in agentic frameworks (OpenClaw on ollama) to understand what really governs latency on a 24 GB laptop.
-                  </p>
-                  <p>
-                    Last <a href="blog/posts/stanford-summer-2025.html">summer at Stanford</a> (CS107: A+, CS161: A), I discovered critical access control misconfigurations
-                    in Stanford's AFS through reverse engineering exposed solution binaries. This hands-on experience,
-                    combined with my current research bridging compilers and ML, has prepared me to contribute to projects
-                    in systems security, program analysis, or ML for systems optimization.
+                    With Professor <a href="https://pages.cs.wisc.edu/~remzi/">Remzi Arpaci-Dusseau</a> at ADSL, I build
+                    <a href="linuxguard.html">LinuxGuard</a>, which turns Linux kernel bug-fix commits into clang-tidy checkers that catch
+                    recurring vulnerabilities. With Professor <a href="https://cseweb.ucsd.edu/~yiying/">Yiying Zhang</a> at
+                    <a href="https://wuklab.io/">WukLab</a>, I study practical edge AI systems: measuring CPU/iGPU/NPU tradeoffs,
+                    building copy-on-growth and one-ahead NPU specialization for growing agent contexts, and contributing an
+                    <a href="https://github.com/Mac-Huang/npu_compiler/commit/7883fe9ab694c0ecc99660d9be4817ee814932e1">OpenVINO NPU compiler optimization</a>
+                    that reduced full compile time by about 3.4%.
                   </p>
                   <p style="text-align:center">
                     <a href="javascript:;" onclick="showEmail()" id="email-link">[show email]</a> / 
-                    <a href="cv/Academic_Resume.pdf">CV</a> /
-                    <a href="https://scholar.google.com/citations?user=Wd0QQ7kAAAAJ&hl=en">Google Scholar</a> /
-                    <a href="https://github.com/mac-huang">GitHub</a> /
-                    <a href="https://www.linkedin.com/in/xuminghuang/">LinkedIn</a> 
+                    <a href="cv/Academic_Resume.pdf" target="_blank" rel="noopener noreferrer">CV</a> /
+                    <a href="https://scholar.google.com/citations?user=Wd0QQ7kAAAAJ&hl=en" target="_blank" rel="noopener noreferrer">Google Scholar</a> /
+                    <a href="https://github.com/mac-huang" target="_blank" rel="noopener noreferrer">GitHub</a> /
+                    <a href="https://www.linkedin.com/in/xuminghuang/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
 				  </p>
                 </td>
-                <td style="padding:2.5%;width:40%;max-width:40%">
-                  <img style="width:100%;max-width:100%;border-radius:50%;" alt="profile photo" src="./images/profile.jpg">
+                <td class="bio-photo" style="padding:2.5%;width:40%;max-width:40%">
+                  <div class="profile-photo-frame">
+                    <img alt="Xuming Huang at the coast" src="images/headshot.jpg">
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -217,11 +266,11 @@
               <tr>
                 <td style="padding:20px;width:33%;vertical-align:top">
                   <div style="text-align:center;">
-                    <a href="demos/memory-hierarchy.html">
-                      <img src="images/projects/cache-thumb.jpg" alt="Memory Hierarchy" style="width:100%;max-width:200px;height:120px;object-fit:cover;border-radius:5px;border:1px solid #ddd;">
+                    <a href="demos/npuw-pyramid-jit.html">
+                      <img src="images/papers/wuklab/edge-ai-research-evidence.png" alt="OpenVINO NPU compiler optimization evidence" style="width:100%;max-width:200px;height:120px;object-fit:cover;border-radius:5px;border:1px solid #ddd;">
                     </a>
-                    <p style="margin-top:10px;"><strong>Memory Hierarchy &amp; Cache Indexing</strong></p>
-                    <p style="font-size:13px;color:#666;">VIVT, PIPT, VIPT — TLB, L1/L2/L3, DRAM, disk — one virtual address traced end-to-end</p>
+                    <p style="margin-top:10px;"><strong>OpenVINO NPU Compiler Optimization</strong></p>
+                    <p style="font-size:13px;color:#666;">Cached 33.33M repeated dependency sorts, cutting production compile time by about 3.4%</p>
                   </div>
                 </td>
                 <td style="padding:20px;width:33%;vertical-align:top">

@@ -1,5 +1,22 @@
 // Projects data - simple JavaScript array following publication structure
 const projects = [
+  // WukLab / OpenVINO compiler contribution
+  {
+    id: 'openvino-npu-sorting-cache',
+    title: 'OpenVINO NPU Compiler — Cached Dependency Sorting',
+    description: 'Production compiler contribution motivated by a Qwen2.5-7B profile that issued 33.33M dependency-vector requests and spent 53.0 CPU-seconds repeatedly sorting them. I added an invalidation-aware cache for deterministic dependency and consumer vectors. Release A/B tests won 12/12 paired trials across 1K–8K prompt windows, reducing full compile time by 3.34–3.68% (1.0368× geomean).',
+    tech: 'C++, MLIR, OpenVINO, Intel NPU Compiler, Performance Profiling',
+    thumbnail: 'images/papers/wuklab/edge-ai-research-evidence.png',
+    demo_url: 'demos/npuw-pyramid-jit.html',
+    code_url: 'https://github.com/Mac-Huang/npu_compiler/commit/7883fe9ab694c0ecc99660d9be4817ee814932e1',
+    links: [
+      { label: 'PR Branch', url: 'https://github.com/Mac-Huang/npu_compiler/tree/codex/sorting-cache-pr' },
+      { label: 'Upstream Compiler', url: 'https://github.com/openvinotoolkit/npu_compiler' }
+    ],
+    featured: true,
+    highlighted: true
+  },
+
   // WukLab / Systems Visualizations
   {
     id: 'memory-hierarchy-vivt-pipt-vipt',
@@ -27,30 +44,6 @@ const projects = [
 
   // Machine Learning & Systems Projects
   {
-    id: 'kmap-visualizer',
-    title: 'K-Map Visualizer - 2D & 3D Interactive',
-    description: 'Advanced Karnaugh Map visualizer with automatic grouping and Boolean expression simplification. Features both traditional 2D K-maps and innovative 3D cube representation for 3+ variables. Interactive 3D visualization allows rotation, zooming, and cell toggling. Supports up to 6 variables with truth tables, minterms, and expression input methods.',
-    tech: 'JavaScript, Three.js, Digital Logic, Boolean Algebra',
-    thumbnail: 'images/projects/kmap_thumb.jpg',
-    demo_url: 'demos/kmap-visualizer-fixed.html',
-    code_url: null,
-    featured: true,
-    highlighted: true
-  },
-
-  {
-    id: 'x86-64-memory',
-    title: 'x86-64 Memory Layout Visualizer - Enhanced',
-    description: 'Interactive visualization of process memory layout on x86-64 architecture. Write C code and watch how text, data, heap, and stack segments are allocated in real-time. Features step-by-step execution, register tracking (RIP/RSP), dynamic memory visualization, and multiple example programs.',
-    tech: 'JavaScript, D3.js, Systems Programming, x86-64 Architecture',
-    thumbnail: 'images/projects/x86-memory-layout-thumb.jpg',
-    demo_url: 'demos/x86-64-memory-enhanced.html',
-    code_url: null,
-    featured: true,
-    highlighted: true
-  },
-
-  {
     id: 'heap-allocator',
     title: 'Heap Allocator Visualization',
     description: 'Interactive visualization of heap memory allocation strategies. Compare implicit and explicit free-list implementations, observe block splitting and coalescing, understand fragmentation patterns, and explore memory management algorithms.',
@@ -59,7 +52,7 @@ const projects = [
     demo_url: 'demos/heap-allocator.html',
     code_url: null,
     featured: true,
-    highlighted: true
+    highlighted: false
   },
 
   {
@@ -106,7 +99,7 @@ const projects = [
     demo_url: 'demos/sorting.html',
     code_url: 'https://github.com/mac-huang/algorithms',
     featured: true,
-    highlighted: true
+    highlighted: false
   },
 
   // Interactive Demos (Original)
@@ -154,7 +147,7 @@ const projects = [
     demo_url: null,
     code_url: 'https://github.com/Mac-Huang/Transformer',
     featured: true,
-    highlighted: true
+    highlighted: false
   },
 
   {
@@ -177,7 +170,7 @@ const projects = [
     demo_url: null,
     code_url: 'https://github.com/Mac-Huang/GPT',
     featured: true,
-    highlighted: true
+    highlighted: false
   },
 
   {
@@ -212,7 +205,7 @@ const projects = [
     demo_url: 'demos/bst-tree.html',
     code_url: null,
     featured: true,
-    highlighted: true
+    highlighted: false
   },
 
   {
@@ -258,7 +251,7 @@ const projects = [
     demo_url: null,
     code_url: 'https://github.com/Mac-Huang/Word2Vec',
     featured: true,
-    highlighted: true
+    highlighted: false
   },
 
   {
@@ -270,7 +263,7 @@ const projects = [
     demo_url: null,
     code_url: 'https://github.com/Mac-Huang/LSTM_Tasks',
     featured: true,
-    highlighted: true
+    highlighted: false
   },
   {
     id: 'cpu-cache-simulator',

@@ -79,6 +79,15 @@ tr.highlight-row {
   background-color: #ffffd0;
 }
 
+.project-links {
+  margin-top: 8px;
+  line-height: 1.8;
+}
+
+.project-links a {
+  margin: 0;
+}
+
 /* Profile image */
 img {
   max-width: 100%;
@@ -190,7 +199,7 @@ code {
   .blog-card {
     margin: 10px 0;
   }
-  
+
   /* Code blocks - allow horizontal scroll */
   .code-block, pre {
     overflow-x: auto;

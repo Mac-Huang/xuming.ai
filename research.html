@@ -53,198 +53,67 @@
                 <td style="padding:20px;width:100%;vertical-align:middle">
                   <heading>Research Interests</heading>
                   <p>
-                    My research focuses on the intersection of machine learning and systems, with particular emphasis on:
+                    I work at the boundary between intelligent software and the systems that make it practical, with particular emphasis on:
                   </p>
                   <ul>
-                    <li><strong>Machine Learning Systems:</strong> Optimizing the training and inference of large-scale ML models</li>
-                    <li><strong>Distributed Computing:</strong> Efficient parallelization strategies for deep learning workloads</li>
-                    <li><strong>Compiler Optimization:</strong> Automatic optimization of ML computations for various hardware backends</li>
-                    <li><strong>Memory Management:</strong> Novel techniques for training larger models with limited memory</li>
-                    <li><strong>Hardware-Software Co-design:</strong> Designing systems that leverage modern accelerators effectively</li>
+                    <li><strong>Systems for AI:</strong> efficient, reliable runtimes for agentic and generative workloads</li>
+                    <li><strong>Heterogeneous Edge AI:</strong> correctness-aware placement across CPUs, iGPUs, and NPUs</li>
+                    <li><strong>Compiler and Runtime Optimization:</strong> reducing compilation, memory, and state-migration costs</li>
+                    <li><strong>Program Analysis and Systems Security:</strong> turning software fixes into reusable bug detectors</li>
                   </ul>
                 </td>
               </tr>
             </tbody>
           </table>
 
-          <!-- Featured Research -->
-          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
-            <tbody>
-              <tr>
-                <td style="padding:20px;width:100%;vertical-align:middle">
-                  <heading>Featured Research: LinuxGuard</heading>
-                  <p>
-                    My primary focus at ADSL is <a href="linuxguard.html">LinuxGuard</a>, a pipeline that learns from Linux kernel bug fixes to generate custom
-                    clang-tidy checkers. By mining commit history, the system builds AST matchers that flag unchecked error paths across
-                    kernels v3.0 through v6.0, turning each fixed vulnerability into a proactive safeguard.
-                  </p>
-                  <ul>
-                    <li>End-to-end automation: bug mining, checker synthesis, LLVM build, and multi-version scans.</li>
-                    <li>Flagship checker: <code>linuxkernel-must-check-errs</code> catches missing error handling at scale.</li>
-                    <li>200+ unchecked error flows surfaced per kernel release, revealing long-lived anti-patterns.</li>
-                  </ul>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-          <!-- WukLab Research Banner -->
-          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
-            <tbody>
-              <tr>
-                <td style="padding:20px;width:100%;vertical-align:middle">
-                  <heading>WukLab @ UCSD — Prof. Yiying Zhang</heading>
-                  <p>
-                    As a remote research intern at <a href="https://wuklab.io/">WukLab</a>, I work with
-                    Professor <a href="https://cseweb.ucsd.edu/~yiying/">Yiying Zhang</a> on two complementary threads at the LLM-systems
-                    interface: using LLMs to <em>produce</em> better low-level code, and using <em>systems measurement</em> to understand
-                    what really limits LLM serving on commodity edge hardware.
-                  </p>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-          <!-- WukLab Project 1: LLM-driven low-level code optimization -->
-          <table style="width:100%;border:0px;border-spacing:0px 10px;border-collapse:separate;margin-right:auto;margin-left:auto;background:#fafaf7;border-radius:6px;">
-            <tbody>
-              <tr>
-                <td style="padding:20px;width:30%;vertical-align:middle">
-                  <a href="demos/openclaw-workflow.html">
-                    <img src="images/papers/wuklab/openclaw_turn_gantt.png" alt="LLM kernel generation pipeline" style="width:100%;max-width:240px;border:1px solid #ddd;border-radius:4px;">
-                  </a>
-                </td>
-                <td style="padding:20px;width:70%;vertical-align:middle">
-                  <papertitle>LLM-driven Low-level Code Optimization</papertitle>
-                  <br>
-                  <em><strong>Xuming Huang</strong>, advised by Yiying Zhang &mdash; WukLab, UC San Diego</em>
-                  <br>
-                  <em style="color:#666;">2025–present &middot; <span class="highlight">Ongoing</span></em>
-                  <p style="margin-top:10px;">
-                    Building an agent loop that takes a reference kernel, proposes compiler-grade transformations
-                    (vectorization, tiling, register-pressure reduction), then <em>verifies</em> each candidate by
-                    running it against the original and benchmarking the survivors. The goal: close the gap between
-                    LLM-suggested code edits and the kind of optimizations a production compiler engineer would accept.
-                  </p>
-                  <ul>
-                    <li>Pipeline: <strong>propose &rarr; sandbox-execute &rarr; differential-test &rarr; profile</strong>, fully closed-loop.</li>
-                    <li>Targets numerical and memory-bound kernels where the search space is too large for hand tuning.</li>
-                    <li>Co-designed with the edge-inference workload below so the optimized kernels can be shipped to the same M-series device profile.</li>
-                  </ul>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-          <!-- WukLab Project 2: System Optimization for Edge Device Inference -->
-          <table style="width:100%;border:0px;border-spacing:0px 10px;border-collapse:separate;margin-right:auto;margin-left:auto;background:#fafaf7;border-radius:6px;margin-top:14px;">
-            <tbody>
-              <tr>
-                <td style="padding:20px;width:30%;vertical-align:middle">
-                  <a href="demos/openclaw-workflow.html">
-                    <img src="images/papers/wuklab/mem_budget_summary.png" alt="Peak RSS and decode throughput vs scenario" style="width:100%;max-width:240px;border:1px solid #ddd;border-radius:4px;">
-                  </a>
-                </td>
-                <td style="padding:20px;width:70%;vertical-align:middle">
-                  <papertitle>System Optimization for Edge Device Inference</papertitle>
-                  <br>
-                  <em><strong>Xuming Huang</strong>, advised by Yiying Zhang &mdash; WukLab, UC San Diego</em>
-                  <br>
-                  <em style="color:#666;">2025–present &middot; <span class="highlight">Ongoing</span></em>
-                  <p style="margin-top:10px;">
-                    A measurement-first study of what actually governs latency for agentic LLMs running entirely on-device.
-                    We drive <code>ollama</code> serving <code>qwen2.5</code> (3B / 7B / 14B at q4_K_M) on a 24 GB M3 MacBook Air through an
-                    11-scenario sweep that walks the model-vs-KV-cache budget, and through an 8-scenario suite that exercises
-                    OpenClaw's prefix cache under cold prime, plain append, retrieval-inlined, session growth, and auto-compaction
-                    workloads.
-                  </p>
-                  <ul>
-                    <li>Memory-budget model: <code>RSS &asymp; model_GB + parallel &times; num_ctx &times; KV_q8_bytes + 0.3 GB</code>, mean abs. error <strong>10.2 %</strong> across 11 scenarios.</li>
-                    <li>Found a <strong>page-compressor cliff</strong> at <code>parallel=3</code> on 14B / 32k ctx where observed RSS stops tracking predicted by 20–28 %.</li>
-                    <li>Quantified a <strong>35&times; prefill spike</strong> caused by auto-compaction breaking the ollama prefix cache between two consecutive turns.</li>
-                    <li>Showed decode is bandwidth-bound: 3B &asymp; 35 tok/s, 7B &asymp; 5 tok/s, 14B &asymp; 2.5 tok/s, near-constant across context length.</li>
-                  </ul>
-                  <p style="margin-top:10px;">
-                    <strong>Current phase:</strong> running the full 361-task <a href="https://os-world.github.io/">OSWorld-Verified</a> benchmark with
-                    <a href="https://huggingface.co/Hcompany/Holo3-35B-A3B">Holo3-35B-A3B</a> &mdash; the #1 open-weight computer-use model &mdash;
-                    served entirely on an Intel Panther Lake NUC (96&nbsp;GB unified, CPU-only llama.cpp after measured GPU/NPU bring-up),
-                    replicating the official leaderboard config (100-step budget, screenshot-only) with per-step latency, token,
-                    KV-cache and 5-domain RAPL energy profiling.
-                  </p>
-                  <ul>
-                    <li>The OSWorld prefill wall is <strong>quadratic in steps</strong> — an artifact of in-place screenshot
-                        eviction breaking the KV prefix; an <strong>append-only, never-evict context</strong> (affordable because the
-                        hybrid model caches only 10/40 layers → a 262K window is ~5&nbsp;GB KV in the 96&nbsp;GB pool) turns it linear:
-                        a <strong>4–10× prefill cut</strong>, runtime-agnostic.</li>
-                    <li>The Xe3 iGPU is <strong>2.5× faster at prefill</strong> (Vulkan), but full offload is blocked by two
-                        localized correctness bugs (248k-vocab output projection, vision encoder crash); <code>--cache-reuse</code>
-                        is ruled out as inert &amp; unsound for this hybrid arch. CPU stays the fastest <em>correct</em> path.</li>
-                    <li>Beyond OSWorld, the <strong>same i1-Q4_K_M weights</strong> still hit leaderboard-grade
-                        grounding on a CPU-only NUC: <strong>ScreenSpot-v2 90%</strong>, <strong>ScreenSpot-Pro 66.7%</strong>
-                        (above the published Holo1.5-72B 63.3%); on Multimodal-Mind2Web the model picks the right
-                        operation 67% of the time but strict full-page point-in-box grounding is the bottleneck.
-                        On <strong>WebArena</strong> (shopping, live) the same model runs as a single-model
-                        screenshot+coordinate agent via BrowserGym: it navigates competently but, solo on CPU,
-                        doesn't crack the hard 3-task slice (0/3) — the 69.6% SOTA is a multi-model stack.
-                        Across the broader agent-flow suite the same single model gets <strong>WebVoyager 3/6</strong>
-                        (live sites, GPT-4o judge — wins on BBC/GitHub/Wolfram) and <strong>MiniWoB++ 2/12</strong>
-                        zero-shot, all pixel-native on the one CPU server.</li>
-                  </ul>
-                  <p style="margin-top:8px;">
-                    <a href="demos/holo3-osworld-live.html">[&#128308; Live benchmark tracker]</a>
-                    &nbsp; <a href="demos/holo3-osworld-profiling.html">[&#128202; Profiling corpus &amp; schema]</a>
-                    &nbsp; <a href="demos/holo3-osworld-acceleration.html">[&#9889; KV-cache &amp; iGPU study]</a>
-                    &nbsp; <a href="demos/holo3-igpu-npu-bringup.html">[&#128421; iGPU &amp; NPU bring-up]</a>
-                    &nbsp; <a href="demos/holo3-agentic-leaderboard.html">[&#128202; Beyond-OSWorld leaderboard check]</a>
-                    &nbsp; <a href="demos/holo3-osworld-energy.html">[&#128267; Inference energy profile]</a>
-                    &nbsp; <a href="demos/holo3-operator-energy.html">[&#9889; Operator-level energy microbench]</a>
-                    &nbsp; <a href="demos/holo15-prefill-offload.html">[&#129504; Holo1.5 prefill-offload &amp; memory wall]</a>
-                    &nbsp; <a href="demos/npu-compile-time.html">[&#9881; NPU compile-time profiling]</a>
-                    &nbsp; <a href="demos/npu-compile-dominance.html">[&#128200; NPU Compilation Optimization (multi-family + precision)]</a>
-                    &nbsp; <a href="demos/npuw-pyramid-jit.html">[&#128257; NPUW pyramid JIT &mdash; the eager control]</a>
-                    &nbsp; <a href="demos/openclaw-workflow.html">[Interactive workflow demo]</a>
-                    &nbsp; <a href="demos/memory-hierarchy.html">[Memory hierarchy demo]</a>
-                  </p>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-          <!-- WukLab figures -->
-          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;margin-top:18px;">
-            <tbody>
-              <tr>
-                <td style="padding:10px;width:50%;vertical-align:top;text-align:center;">
-                  <img src="images/papers/wuklab/kv_cache_scenarios.png" alt="KV cache scenarios" style="width:100%;max-width:380px;border:1px solid #ddd;border-radius:4px;">
-                  <p style="font-size:13px;color:#666;margin-top:6px;">KV prefix-cache hit / miss / surprise-miss behavior across 8 OpenClaw workloads. Auto-compaction (scenario 8) drives the longest prefill bar.</p>
-                </td>
-                <td style="padding:10px;width:50%;vertical-align:top;text-align:center;">
-                  <img src="images/papers/wuklab/append_vs_prefill.png" alt="Append vs prefill trend" style="width:100%;max-width:380px;border:1px solid #ddd;border-radius:4px;">
-                  <p style="font-size:13px;color:#666;margin-top:6px;">Append-token count vs. next call's prefill latency across 39 partial-hit data points &mdash; the cache-miss event sits ~24&times; off the trend.</p>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          
-          <!-- Publications -->
+          <!-- Research Projects -->
           <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
             <tbody>
               <tr>
                 <td style="padding:20px;width:100%;vertical-align:middle">
                   <heading>Research Projects</heading>
                   <p>
-                    Representative projects are <span class="highlight">highlighted</span>. 
-                    See also my <a href="https://scholar.google.com/citations?user=XXXX">Google Scholar</a> profile.
+                    My current work spans edge AI systems and automated systems-security analysis. Representative projects are
+                    <span class="highlight">highlighted</span>; see also my
+                    <a href="https://scholar.google.com/citations?user=Wd0QQ7kAAAAJ&amp;hl=en" target="_blank" rel="noopener noreferrer">Google Scholar</a> profile.
                   </p>
-                  
-                  <!-- Filter buttons -->
-                  <div id="publication-filters" style="margin-top:15px;">
-                    <!-- Buttons will be added dynamically by JavaScript -->
-                  </div>
                 </td>
               </tr>
             </tbody>
           </table>
+
+          <!-- WukLab project in the same format as the other research rows; intentionally no attached image. -->
+          <table id="wuklab" style="width:100%;border:0px;border-spacing:0px 10px;border-collapse:separate;margin-right:auto;margin-left:auto;">
+            <tbody>
+              <tr style="background-color:#ffffd0;">
+                <td style="padding:20px;width:25%;vertical-align:middle"></td>
+                <td style="padding:20px;width:75%;vertical-align:middle">
+                  <papertitle>Compiler-Aware Heterogeneous Edge AI</papertitle>
+                  <br>
+                  <strong>Xuming Huang</strong> (advised by
+                  <a href="https://cseweb.ucsd.edu/~yiying/" target="_blank" rel="noopener noreferrer">Yiying Zhang</a>,
+                  <a href="https://wuklab.io/" target="_blank" rel="noopener noreferrer">WukLab</a> @ UC San Diego)
+                  <br>
+                  <em>WukLab Research Internship — Ongoing, Summer 2026</em>
+                  <br>
+                  <a href="demos/npuw-pyramid-jit.html">project</a> /
+                  <a href="images/papers/wuklab/edge-ai-research-evidence.png" target="_blank" rel="noopener noreferrer">evidence</a> /
+                  <a href="https://github.com/Mac-Huang/npu_compiler/commit/7883fe9ab694c0ecc99660d9be4817ee814932e1" target="_blank" rel="noopener noreferrer">compiler patch</a> /
+                  <a href="https://github.com/Mac-Huang/npu_compiler/tree/codex/sorting-cache-pr" target="_blank" rel="noopener noreferrer">PR branch</a> /
+                  <a href="https://github.com/openvinotoolkit/npu_compiler" target="_blank" rel="noopener noreferrer">OpenVINO NPU Compiler</a>
+                  <p>
+                    Building a correctness-first runtime for private edge agents that coordinates CPU/iGPU/NPU placement,
+                    growing KV state, and one-ahead NPU specialization. Across 149 reproducible experiment runs, I traced the
+                    bottleneck into OpenVINO's NPU compiler, cached 33.33M repeated dependency-vector sorts, and reduced full
+                    compile time by 3.34–3.68% in 12/12 production A/B trials. A real 1K→2K future variant compiled in 14.68 s
+                    and switched with zero boundary wait.
+                  </p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div id="publication-filters" style="margin-top:15px;"></div>
           
           <!-- Publications Table -->
           <table style="width:100%;border:0px;border-spacing:0px 10px;border-collapse:separate;margin-right:auto;margin-left:auto;" id="publications-table">

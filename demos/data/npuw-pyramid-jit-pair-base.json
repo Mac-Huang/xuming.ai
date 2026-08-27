@@ -1,0 +1,1078 @@
+{
+  "aggregate": null,
+  "arms": [
+    {
+      "band": null,
+      "context_after": null,
+      "decoded_tokens": 0,
+      "expected_decoded_tokens": 8064,
+      "key": "direct",
+      "label": "B0",
+      "memory": {
+        "npu_alloc": {
+          "latest_bytes": null,
+          "max_bytes": null,
+          "time_weighted_mean_bytes": null
+        },
+        "process_rss": {
+          "latest_bytes": null,
+          "max_bytes": null,
+          "time_weighted_mean_bytes": null
+        },
+        "samples": 0
+      },
+      "metrics": {
+        "compile_model_wall_s": null,
+        "decode_infer_s": null,
+        "decode_wall_s": null,
+        "protocol_critical_path_s": null,
+        "tokens_per_s": null
+      },
+      "pair": null,
+      "phase": "setup",
+      "position": 0,
+      "progress_fraction": 0.0,
+      "proof": {
+        "boundary_logits_complete": null,
+        "deadline_misses": null,
+        "deadlines_met": null,
+        "ok": null,
+        "waited_capacities": null
+      },
+      "state": "pending",
+      "timeline": {
+        "boundaries": [],
+        "compiles": [
+          {
+            "capacity": 1024,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          },
+          {
+            "capacity": 2048,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          },
+          {
+            "capacity": 4096,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          },
+          {
+            "capacity": 8192,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          }
+        ],
+        "decode_end_offset_s": null,
+        "decode_start_offset_s": null,
+        "origin_monotonic_ns": null
+      }
+    },
+    {
+      "band": null,
+      "context_after": null,
+      "decoded_tokens": 0,
+      "expected_decoded_tokens": 8064,
+      "key": "pyramid",
+      "label": "B1",
+      "memory": {
+        "npu_alloc": {
+          "latest_bytes": null,
+          "max_bytes": null,
+          "time_weighted_mean_bytes": null
+        },
+        "process_rss": {
+          "latest_bytes": null,
+          "max_bytes": null,
+          "time_weighted_mean_bytes": null
+        },
+        "samples": 0
+      },
+      "metrics": {
+        "compile_model_wall_s": null,
+        "decode_infer_s": null,
+        "decode_wall_s": null,
+        "protocol_critical_path_s": null,
+        "tokens_per_s": null
+      },
+      "pair": null,
+      "phase": "setup",
+      "position": 1,
+      "progress_fraction": 0.0,
+      "proof": {
+        "boundary_logits_complete": null,
+        "deadline_misses": null,
+        "deadlines_met": null,
+        "ok": null,
+        "waited_capacities": null
+      },
+      "state": "pending",
+      "timeline": {
+        "boundaries": [],
+        "compiles": [
+          {
+            "capacity": 1024,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          },
+          {
+            "capacity": 2048,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          },
+          {
+            "capacity": 4096,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          },
+          {
+            "capacity": 8192,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          }
+        ],
+        "decode_end_offset_s": null,
+        "decode_start_offset_s": null,
+        "origin_monotonic_ns": null
+      }
+    },
+    {
+      "band": "4096-8192",
+      "context_after": 8192,
+      "decoded_tokens": 8064,
+      "expected_decoded_tokens": 8064,
+      "key": "precompiled",
+      "label": "I1",
+      "memory": {
+        "npu_alloc": {
+          "latest_bytes": 1643012840.0,
+          "max_bytes": 1643012840.0,
+          "time_weighted_mean_bytes": 1087559074.865844
+        },
+        "process_rss": {
+          "latest_bytes": 2203516928.0,
+          "max_bytes": 2203516928.0,
+          "time_weighted_mean_bytes": 1909567818.1442642
+        },
+        "samples": 68
+      },
+      "metrics": {
+        "compile_model_wall_s": 84.069572736,
+        "decode_infer_s": 143.221490682,
+        "decode_wall_s": 147.357470573,
+        "protocol_critical_path_s": 231.993970971,
+        "tokens_per_s": 56.304399302090765
+      },
+      "pair": 0,
+      "phase": "complete",
+      "position": 0,
+      "progress_fraction": 1.0,
+      "proof": {
+        "boundary_logits_complete": true,
+        "deadline_misses": [],
+        "deadlines_met": true,
+        "ok": true,
+        "waited_capacities": []
+      },
+      "state": "complete",
+      "timeline": {
+        "boundaries": [
+          {
+            "context_after": 1024,
+            "infer_end_monotonic_ns": 7762984015727394,
+            "infer_start_monotonic_ns": 7762983966982493,
+            "latency_ms": 48.744901
+          },
+          {
+            "context_after": 2048,
+            "infer_end_monotonic_ns": 7763000541952727,
+            "infer_start_monotonic_ns": 7763000483353637,
+            "latency_ms": 58.59909
+          },
+          {
+            "context_after": 4096,
+            "infer_end_monotonic_ns": 7763034981596304,
+            "infer_start_monotonic_ns": 7763034896281934,
+            "latency_ms": 85.31437
+          }
+        ],
+        "compiles": [
+          {
+            "capacity": 1024,
+            "duration_s": 83.527895,
+            "ready_offset_s": 83.527895638,
+            "start_offset_s": 0.0,
+            "state": "ready"
+          },
+          {
+            "capacity": 2048,
+            "duration_s": 76.913245,
+            "ready_offset_s": 83.527907442,
+            "start_offset_s": 6.614662059,
+            "state": "ready"
+          },
+          {
+            "capacity": 4096,
+            "duration_s": 70.240319,
+            "ready_offset_s": 83.527918185,
+            "start_offset_s": 13.287598916,
+            "state": "ready"
+          },
+          {
+            "capacity": 8192,
+            "duration_s": 63.698396,
+            "ready_offset_s": 83.527926039,
+            "start_offset_s": 19.829529506,
+            "state": "ready"
+          }
+        ],
+        "decode_end_offset_s": 291.470434122,
+        "decode_start_offset_s": 144.153630586,
+        "origin_monotonic_ns": 7762825615884516
+      }
+    },
+    {
+      "band": "4096-8192",
+      "context_after": 8192,
+      "decoded_tokens": 8064,
+      "expected_decoded_tokens": 8064,
+      "key": "one_ahead_jit",
+      "label": "I2",
+      "memory": {
+        "npu_alloc": {
+          "latest_bytes": 1693770472.0,
+          "max_bytes": 1693770472.0,
+          "time_weighted_mean_bytes": 1174882636.1609864
+        },
+        "process_rss": {
+          "latest_bytes": 2296958976.0,
+          "max_bytes": 2296958976.0,
+          "time_weighted_mean_bytes": 1841318340.1265788
+        },
+        "samples": 68
+      },
+      "metrics": {
+        "compile_model_wall_s": 65.501335193,
+        "decode_infer_s": 142.540816634,
+        "decode_wall_s": 146.772048491,
+        "protocol_critical_path_s": 212.83618146,
+        "tokens_per_s": 56.5732692601714
+      },
+      "pair": 0,
+      "phase": "complete",
+      "position": 1,
+      "progress_fraction": 1.0,
+      "proof": {
+        "boundary_logits_complete": true,
+        "deadline_misses": [],
+        "deadlines_met": true,
+        "ok": true,
+        "waited_capacities": []
+      },
+      "state": "complete",
+      "timeline": {
+        "boundaries": [
+          {
+            "context_after": 1024,
+            "infer_end_monotonic_ns": 7763558369038749,
+            "infer_start_monotonic_ns": 7763558302147074,
+            "latency_ms": 66.891675
+          },
+          {
+            "context_after": 2048,
+            "infer_end_monotonic_ns": 7763575040457148,
+            "infer_start_monotonic_ns": 7763574968713120,
+            "latency_ms": 71.744028
+          },
+          {
+            "context_after": 4096,
+            "infer_end_monotonic_ns": 7763609574310886,
+            "infer_start_monotonic_ns": 7763609487189870,
+            "latency_ms": 87.121016
+          }
+        ],
+        "compiles": [
+          {
+            "capacity": 1024,
+            "duration_s": 64.964188,
+            "ready_offset_s": 64.964188804,
+            "start_offset_s": 0.0,
+            "state": "ready"
+          },
+          {
+            "capacity": 2048,
+            "duration_s": 6.780602,
+            "ready_offset_s": 132.348392899,
+            "start_offset_s": 125.567790441,
+            "state": "ready"
+          },
+          {
+            "capacity": 4096,
+            "duration_s": 6.93596,
+            "ready_offset_s": 146.945667757,
+            "start_offset_s": 140.009707689,
+            "state": "ready"
+          },
+          {
+            "capacity": 8192,
+            "duration_s": 7.113776,
+            "ready_offset_s": 163.795709356,
+            "start_offset_s": 156.681932837,
+            "state": "ready"
+          }
+        ],
+        "decode_end_offset_s": 272.295810629,
+        "decode_start_offset_s": 125.567600328,
+        "origin_monotonic_ns": 7763418329332172
+      }
+    },
+    {
+      "band": null,
+      "context_after": null,
+      "decoded_tokens": 0,
+      "expected_decoded_tokens": 8064,
+      "key": "precompiled",
+      "label": "I1",
+      "memory": {
+        "npu_alloc": {
+          "latest_bytes": null,
+          "max_bytes": null,
+          "time_weighted_mean_bytes": null
+        },
+        "process_rss": {
+          "latest_bytes": null,
+          "max_bytes": null,
+          "time_weighted_mean_bytes": null
+        },
+        "samples": 0
+      },
+      "metrics": {
+        "compile_model_wall_s": null,
+        "decode_infer_s": null,
+        "decode_wall_s": null,
+        "protocol_critical_path_s": null,
+        "tokens_per_s": null
+      },
+      "pair": 1,
+      "phase": "setup",
+      "position": null,
+      "progress_fraction": 0.0,
+      "proof": {
+        "boundary_logits_complete": null,
+        "deadline_misses": null,
+        "deadlines_met": null,
+        "ok": null,
+        "waited_capacities": null
+      },
+      "state": "pending",
+      "timeline": {
+        "boundaries": [],
+        "compiles": [
+          {
+            "capacity": 1024,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          },
+          {
+            "capacity": 2048,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          },
+          {
+            "capacity": 4096,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          },
+          {
+            "capacity": 8192,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          }
+        ],
+        "decode_end_offset_s": null,
+        "decode_start_offset_s": null,
+        "origin_monotonic_ns": null
+      }
+    },
+    {
+      "band": null,
+      "context_after": null,
+      "decoded_tokens": 0,
+      "expected_decoded_tokens": 8064,
+      "key": "one_ahead_jit",
+      "label": "I2",
+      "memory": {
+        "npu_alloc": {
+          "latest_bytes": null,
+          "max_bytes": null,
+          "time_weighted_mean_bytes": null
+        },
+        "process_rss": {
+          "latest_bytes": null,
+          "max_bytes": null,
+          "time_weighted_mean_bytes": null
+        },
+        "samples": 0
+      },
+      "metrics": {
+        "compile_model_wall_s": null,
+        "decode_infer_s": null,
+        "decode_wall_s": null,
+        "protocol_critical_path_s": null,
+        "tokens_per_s": null
+      },
+      "pair": 1,
+      "phase": "setup",
+      "position": null,
+      "progress_fraction": 0.0,
+      "proof": {
+        "boundary_logits_complete": null,
+        "deadline_misses": null,
+        "deadlines_met": null,
+        "ok": null,
+        "waited_capacities": null
+      },
+      "state": "pending",
+      "timeline": {
+        "boundaries": [],
+        "compiles": [
+          {
+            "capacity": 1024,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          },
+          {
+            "capacity": 2048,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          },
+          {
+            "capacity": 4096,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          },
+          {
+            "capacity": 8192,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          }
+        ],
+        "decode_end_offset_s": null,
+        "decode_start_offset_s": null,
+        "origin_monotonic_ns": null
+      }
+    },
+    {
+      "band": null,
+      "context_after": null,
+      "decoded_tokens": 0,
+      "expected_decoded_tokens": 8064,
+      "key": "precompiled",
+      "label": "I1",
+      "memory": {
+        "npu_alloc": {
+          "latest_bytes": null,
+          "max_bytes": null,
+          "time_weighted_mean_bytes": null
+        },
+        "process_rss": {
+          "latest_bytes": null,
+          "max_bytes": null,
+          "time_weighted_mean_bytes": null
+        },
+        "samples": 0
+      },
+      "metrics": {
+        "compile_model_wall_s": null,
+        "decode_infer_s": null,
+        "decode_wall_s": null,
+        "protocol_critical_path_s": null,
+        "tokens_per_s": null
+      },
+      "pair": 2,
+      "phase": "setup",
+      "position": null,
+      "progress_fraction": 0.0,
+      "proof": {
+        "boundary_logits_complete": null,
+        "deadline_misses": null,
+        "deadlines_met": null,
+        "ok": null,
+        "waited_capacities": null
+      },
+      "state": "pending",
+      "timeline": {
+        "boundaries": [],
+        "compiles": [
+          {
+            "capacity": 1024,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          },
+          {
+            "capacity": 2048,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          },
+          {
+            "capacity": 4096,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          },
+          {
+            "capacity": 8192,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          }
+        ],
+        "decode_end_offset_s": null,
+        "decode_start_offset_s": null,
+        "origin_monotonic_ns": null
+      }
+    },
+    {
+      "band": null,
+      "context_after": null,
+      "decoded_tokens": 0,
+      "expected_decoded_tokens": 8064,
+      "key": "one_ahead_jit",
+      "label": "I2",
+      "memory": {
+        "npu_alloc": {
+          "latest_bytes": null,
+          "max_bytes": null,
+          "time_weighted_mean_bytes": null
+        },
+        "process_rss": {
+          "latest_bytes": null,
+          "max_bytes": null,
+          "time_weighted_mean_bytes": null
+        },
+        "samples": 0
+      },
+      "metrics": {
+        "compile_model_wall_s": null,
+        "decode_infer_s": null,
+        "decode_wall_s": null,
+        "protocol_critical_path_s": null,
+        "tokens_per_s": null
+      },
+      "pair": 2,
+      "phase": "setup",
+      "position": null,
+      "progress_fraction": 0.0,
+      "proof": {
+        "boundary_logits_complete": null,
+        "deadline_misses": null,
+        "deadlines_met": null,
+        "ok": null,
+        "waited_capacities": null
+      },
+      "state": "pending",
+      "timeline": {
+        "boundaries": [],
+        "compiles": [
+          {
+            "capacity": 1024,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          },
+          {
+            "capacity": 2048,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          },
+          {
+            "capacity": 4096,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          },
+          {
+            "capacity": 8192,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          }
+        ],
+        "decode_end_offset_s": null,
+        "decode_start_offset_s": null,
+        "origin_monotonic_ns": null
+      }
+    },
+    {
+      "band": null,
+      "context_after": null,
+      "decoded_tokens": 0,
+      "expected_decoded_tokens": 8064,
+      "key": "precompiled",
+      "label": "I1",
+      "memory": {
+        "npu_alloc": {
+          "latest_bytes": null,
+          "max_bytes": null,
+          "time_weighted_mean_bytes": null
+        },
+        "process_rss": {
+          "latest_bytes": null,
+          "max_bytes": null,
+          "time_weighted_mean_bytes": null
+        },
+        "samples": 0
+      },
+      "metrics": {
+        "compile_model_wall_s": null,
+        "decode_infer_s": null,
+        "decode_wall_s": null,
+        "protocol_critical_path_s": null,
+        "tokens_per_s": null
+      },
+      "pair": 3,
+      "phase": "setup",
+      "position": null,
+      "progress_fraction": 0.0,
+      "proof": {
+        "boundary_logits_complete": null,
+        "deadline_misses": null,
+        "deadlines_met": null,
+        "ok": null,
+        "waited_capacities": null
+      },
+      "state": "pending",
+      "timeline": {
+        "boundaries": [],
+        "compiles": [
+          {
+            "capacity": 1024,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          },
+          {
+            "capacity": 2048,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          },
+          {
+            "capacity": 4096,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          },
+          {
+            "capacity": 8192,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          }
+        ],
+        "decode_end_offset_s": null,
+        "decode_start_offset_s": null,
+        "origin_monotonic_ns": null
+      }
+    },
+    {
+      "band": null,
+      "context_after": null,
+      "decoded_tokens": 0,
+      "expected_decoded_tokens": 8064,
+      "key": "one_ahead_jit",
+      "label": "I2",
+      "memory": {
+        "npu_alloc": {
+          "latest_bytes": null,
+          "max_bytes": null,
+          "time_weighted_mean_bytes": null
+        },
+        "process_rss": {
+          "latest_bytes": null,
+          "max_bytes": null,
+          "time_weighted_mean_bytes": null
+        },
+        "samples": 0
+      },
+      "metrics": {
+        "compile_model_wall_s": null,
+        "decode_infer_s": null,
+        "decode_wall_s": null,
+        "protocol_critical_path_s": null,
+        "tokens_per_s": null
+      },
+      "pair": 3,
+      "phase": "setup",
+      "position": null,
+      "progress_fraction": 0.0,
+      "proof": {
+        "boundary_logits_complete": null,
+        "deadline_misses": null,
+        "deadlines_met": null,
+        "ok": null,
+        "waited_capacities": null
+      },
+      "state": "pending",
+      "timeline": {
+        "boundaries": [],
+        "compiles": [
+          {
+            "capacity": 1024,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          },
+          {
+            "capacity": 2048,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          },
+          {
+            "capacity": 4096,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          },
+          {
+            "capacity": 8192,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          }
+        ],
+        "decode_end_offset_s": null,
+        "decode_start_offset_s": null,
+        "origin_monotonic_ns": null
+      }
+    },
+    {
+      "band": null,
+      "context_after": null,
+      "decoded_tokens": 0,
+      "expected_decoded_tokens": 8064,
+      "key": "precompiled",
+      "label": "I1",
+      "memory": {
+        "npu_alloc": {
+          "latest_bytes": null,
+          "max_bytes": null,
+          "time_weighted_mean_bytes": null
+        },
+        "process_rss": {
+          "latest_bytes": null,
+          "max_bytes": null,
+          "time_weighted_mean_bytes": null
+        },
+        "samples": 0
+      },
+      "metrics": {
+        "compile_model_wall_s": null,
+        "decode_infer_s": null,
+        "decode_wall_s": null,
+        "protocol_critical_path_s": null,
+        "tokens_per_s": null
+      },
+      "pair": 4,
+      "phase": "setup",
+      "position": null,
+      "progress_fraction": 0.0,
+      "proof": {
+        "boundary_logits_complete": null,
+        "deadline_misses": null,
+        "deadlines_met": null,
+        "ok": null,
+        "waited_capacities": null
+      },
+      "state": "pending",
+      "timeline": {
+        "boundaries": [],
+        "compiles": [
+          {
+            "capacity": 1024,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          },
+          {
+            "capacity": 2048,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          },
+          {
+            "capacity": 4096,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          },
+          {
+            "capacity": 8192,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          }
+        ],
+        "decode_end_offset_s": null,
+        "decode_start_offset_s": null,
+        "origin_monotonic_ns": null
+      }
+    },
+    {
+      "band": null,
+      "context_after": null,
+      "decoded_tokens": 0,
+      "expected_decoded_tokens": 8064,
+      "key": "one_ahead_jit",
+      "label": "I2",
+      "memory": {
+        "npu_alloc": {
+          "latest_bytes": null,
+          "max_bytes": null,
+          "time_weighted_mean_bytes": null
+        },
+        "process_rss": {
+          "latest_bytes": null,
+          "max_bytes": null,
+          "time_weighted_mean_bytes": null
+        },
+        "samples": 0
+      },
+      "metrics": {
+        "compile_model_wall_s": null,
+        "decode_infer_s": null,
+        "decode_wall_s": null,
+        "protocol_critical_path_s": null,
+        "tokens_per_s": null
+      },
+      "pair": 4,
+      "phase": "setup",
+      "position": null,
+      "progress_fraction": 0.0,
+      "proof": {
+        "boundary_logits_complete": null,
+        "deadline_misses": null,
+        "deadlines_met": null,
+        "ok": null,
+        "waited_capacities": null
+      },
+      "state": "pending",
+      "timeline": {
+        "boundaries": [],
+        "compiles": [
+          {
+            "capacity": 1024,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          },
+          {
+            "capacity": 2048,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          },
+          {
+            "capacity": 4096,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          },
+          {
+            "capacity": 8192,
+            "duration_s": null,
+            "ready_offset_s": null,
+            "start_offset_s": null,
+            "state": "pending"
+          }
+        ],
+        "decode_end_offset_s": null,
+        "decode_start_offset_s": null,
+        "origin_monotonic_ns": null
+      }
+    }
+  ],
+  "arms_complete": 2,
+  "arms_planned": 12,
+  "campaign_events": [
+    {
+      "event": "campaign_start",
+      "wall_time_ns": 1787346124689631040
+    },
+    {
+      "event": "preflight_control_start",
+      "wall_time_ns": 1787346124696210900
+    },
+    {
+      "event": "preflight_control_complete",
+      "wall_time_ns": 1787346230206481314
+    },
+    {
+      "event": "preflight_treatment_start",
+      "wall_time_ns": 1787346290212313335
+    },
+    {
+      "event": "preflight_treatment_complete",
+      "wall_time_ns": 1787346391300888252
+    },
+    {
+      "event": "preflight_complete",
+      "wall_time_ns": 1787346391761009770
+    },
+    {
+      "event": "jit_pairs_start",
+      "wall_time_ns": 1787346391764402002
+    }
+  ],
+  "capacities": [
+    1024,
+    2048,
+    4096,
+    8192
+  ],
+  "completed_pair_reports": 1,
+  "current_arm": null,
+  "failure": null,
+  "generated_at": "2026-08-21T21:33:13.123011+00:00",
+  "latest_pair": 0,
+  "measurement_scope": {
+    "B0_B1": "one refreshed reference run each",
+    "I1_I2": "five counterbalanced paired runs",
+    "memory": "runner telemetry over each arm; RSS trapezoid, NPU allocation left-hold",
+    "trajectory": "128-token prompt through context 8192"
+  },
+  "memory_comparison": {
+    "npu_alloc_time_weighted_mean_bytes": {
+      "B0": {
+        "mean_bytes": null,
+        "runs": 0
+      },
+      "B1": {
+        "mean_bytes": null,
+        "runs": 0
+      },
+      "I1": {
+        "mean_bytes": 1087559074.865844,
+        "runs": 1
+      },
+      "I2": {
+        "mean_bytes": 1174882636.1609864,
+        "runs": 1
+      }
+    },
+    "process_rss_time_weighted_mean_bytes": {
+      "B0": {
+        "mean_bytes": null,
+        "runs": 0
+      },
+      "B1": {
+        "mean_bytes": null,
+        "runs": 0
+      },
+      "I1": {
+        "mean_bytes": 1909567818.1442642,
+        "runs": 1
+      },
+      "I2": {
+        "mean_bytes": 1841318340.1265788,
+        "runs": 1
+      }
+    }
+  },
+  "overall_progress_fraction": 0.16666666666666666,
+  "pairs_planned": 5,
+  "partial_results": {
+    "compile_model_wall_s": {
+      "i1_mean_s": 84.069572736,
+      "i2_mean_s": 65.501335193,
+      "i2_minus_i1_mean_s": -18.568237542999995,
+      "mean_percent_change": -22.086751411606457,
+      "pairs": 1
+    },
+    "decode_infer_s": {
+      "i1_mean_s": 143.221490682,
+      "i2_mean_s": 142.540816634,
+      "i2_minus_i1_mean_s": -0.680674047999986,
+      "mean_percent_change": -0.4752597146969458,
+      "pairs": 1
+    },
+    "decode_wall_s": {
+      "i1_mean_s": 147.357470573,
+      "i2_mean_s": 146.772048491,
+      "i2_minus_i1_mean_s": -0.585422082000008,
+      "mean_percent_change": -0.3972802191321501,
+      "pairs": 1
+    },
+    "protocol_critical_path_s": {
+      "i1_mean_s": 231.993970971,
+      "i2_mean_s": 212.83618146,
+      "i2_minus_i1_mean_s": -19.157789511000004,
+      "mean_percent_change": -8.257882491866477,
+      "pairs": 1
+    }
+  },
+  "prompt_length": 128,
+  "run_id": "2026-08-21_21-00_wuklab-NUC16_qwen05b-fp16-jit-full-1k8k-5pairs",
+  "schema_version": 1,
+  "state": "running"
+}
