@@ -1,0 +1,449 @@
+stage,window,precision,operator,operator_label,device,path,median_us,p10_us,p90_us
+prefill,128,fp16,token_embedding,Token embedding,GPU,plain,18.338783024710064,16.681467773259055,20.825277603820922
+prefill,128,fp16,token_embedding,Token embedding,NPU,npuw,45.88816436347211,44.90288012706033,47.65605104674008
+prefill,128,fp16,pre_attention_rmsnorm,Pre-attention RMSNorm,GPU,plain,27.990774090346942,24.531570254792726,30.29131287828498
+prefill,128,fp16,pre_attention_rmsnorm,Pre-attention RMSNorm,NPU,npuw,73.29004431569253,72.08203461148618,75.89667388925272
+prefill,128,fp16,qkv_projection,QKV projection,GPU,plain,76.25072941853132,70.65092233380305,84.2477139427301
+prefill,128,fp16,qkv_projection,QKV projection,NPU,npuw,132.49138636248452,128.85174297330354,133.75433087613888
+prefill,128,fp16,rotary_embedding,Rotary embedding (RoPE),GPU,plain,31.851570516601694,29.437884305751272,35.970934042963414
+prefill,128,fp16,rotary_embedding,Rotary embedding (RoPE),NPU,plain,524.0253608899419,522.4915804712298,525.0931780459989
+prefill,128,fp16,kv_cache_and_gqa_layout,KV cache + GQA layout,GPU,plain,20.26918123783744,17.662730583450763,22.718484658713734
+prefill,128,fp16,kv_cache_and_gqa_layout,KV cache + GQA layout,NPU,npuw,40.76658041922601,37.90761403939,40.99828185514204
+prefill,128,fp16,scaled_dot_product_attention,Scaled dot-product attention,GPU,plain,19.303982131273752,16.681467773259055,20.825277603820922
+prefill,128,fp16,scaled_dot_product_attention,Scaled dot-product attention,NPU,plain,151.3664722442627,149.10989402368187,152.11291725833036
+prefill,128,fp16,attention_output_and_residual,Attention output + residual,GPU,plain,46.32955711505701,44.15682645862691,49.22338342721309
+prefill,128,fp16,attention_output_and_residual,Attention output + residual,NPU,plain,190.7574485130989,189.59610093048843,191.43838387257387
+prefill,128,fp16,ffn_rmsnorm,FFN RMSNorm,GPU,plain,28.95597319691063,26.494095875176146,31.237916405731387
+prefill,128,fp16,ffn_rmsnorm,FFN RMSNorm,NPU,plain,125.16842897121722,122.92474190244992,125.9271498477387
+prefill,128,fp16,ffn_gate_projection,FFN gate projection,GPU,plain,179.5270338208459,171.7209917835491,187.4274984343883
+prefill,128,fp16,ffn_gate_projection,FFN gate projection,NPU,plain,148.38252868698098,147.01822624967815,148.52870036897775
+prefill,128,fp16,ffn_up_projection,FFN up projection,GPU,plain,157.32745436988108,151.1144727695232,164.70901377567458
+prefill,128,fp16,ffn_up_projection,FFN up projection,NPU,plain,147.70859025979914,146.9277980135792,147.74603925091418
+prefill,128,fp16,swiglu_activation,SwiGLU activation,GPU,plain,0.0,0.0,0.0
+prefill,128,fp16,swiglu_activation,SwiGLU activation,NPU,plain,48.75746942483462,48.50132814500867,48.7694742184884
+prefill,128,fp16,ffn_down_and_residual,FFN down projection + residual,GPU,plain,156.3622552633174,152.0957355797149,161.86920319333535
+prefill,128,fp16,ffn_down_and_residual,FFN down projection + residual,NPU,plain,195.63720899497744,195.02987769933847,195.85402156497557
+prefill,128,fp16,final_rmsnorm,Final RMSNorm,GPU,plain,28.155386970200784,26.494095875176146,31.237916405731387
+prefill,128,fp16,final_rmsnorm,Final RMSNorm,NPU,plain,36.39065006180152,36.36379349349023,36.40409322769062
+prefill,128,fp16,lm_head,LM head,GPU,plain,3336.6933113906684,3253.7364362557314,3366.585255994677
+prefill,128,fp16,lm_head,LM head,NPU,plain,3866.39455304696,3858.1984896593135,3867.401495238617
+prefill,128,int8,token_embedding,Token embedding,GPU,plain,16.031000187252367,14.508420482594916,17.55962237618552
+prefill,128,int8,token_embedding,Token embedding,NPU,plain,25.901621361180023,24.38189767006427,26.371224122527533
+prefill,128,int8,pre_attention_rmsnorm,Pre-attention RMSNorm,GPU,plain,3.8876402229010556,3.807767725235763,4.620953256890926
+prefill,128,int8,pre_attention_rmsnorm,Pre-attention RMSNorm,NPU,plain,88.51545784547257,86.99904395909296,88.7915026786841
+prefill,128,int8,qkv_projection,QKV projection,GPU,plain,51.4048642906828,48.36140160864972,55.45143908269112
+prefill,128,int8,qkv_projection,QKV projection,NPU,plain,44.501440706765216,43.798704869980725,44.63896447352302
+prefill,128,int8,rotary_embedding,Rotary embedding (RoPE),GPU,plain,31.414083733195046,27.213481560307386,34.195054100992856
+prefill,128,int8,rotary_embedding,Rotary embedding (RoPE),NPU,plain,173.34354032972783,170.6732836904499,174.2944311840836
+prefill,128,int8,kv_cache_and_gqa_layout,KV cache + GQA layout,GPU,plain,33.317967595812924,30.12921172748318,36.96762605512741
+prefill,128,int8,kv_cache_and_gqa_layout,KV cache + GQA layout,NPU,npuw,35.94373018026914,32.76021254319183,37.232272931647806
+prefill,128,int8,scaled_dot_product_attention,Scaled dot-product attention,GPU,plain,68.53981905424374,63.17415362214215,74.859442761633
+prefill,128,int8,scaled_dot_product_attention,Scaled dot-product attention,NPU,npuw,158.9885369979124,149.87076557989792,161.33984937047381
+prefill,128,int8,attention_output_and_residual,Attention output + residual,GPU,plain,35.221851458430805,33.04494189465897,36.96762605512741
+prefill,128,int8,attention_output_and_residual,Attention output + residual,NPU,npuw,103.5274194405011,98.28063762957548,106.37792266185086
+prefill,128,int8,ffn_rmsnorm,FFN RMSNorm,GPU,plain,26.654374076650342,25.26966144885686,28.649910192723745
+prefill,128,int8,ffn_rmsnorm,FFN RMSNorm,NPU,npuw,146.26964366004495,138.19252410613964,148.55524526287286
+prefill,128,int8,ffn_gate_projection,FFN gate projection,GPU,plain,145.64711549026794,138.98313796871273,153.41564812877877
+prefill,128,int8,ffn_gate_projection,FFN gate projection,NPU,plain,81.4577035795329,81.11816294102005,81.57508782033909
+prefill,128,int8,ffn_up_projection,FFN up projection,GPU,plain,104.6730012226478,103.02246590687797,105.35773425711312
+prefill,128,int8,ffn_up_projection,FFN up projection,NPU,plain,203.36719192985424,202.72878544193043,203.66397764541037
+prefill,128,int8,swiglu_activation,SwiGLU activation,GPU,plain,65.68399326031691,62.20224356641689,68.39010820198571
+prefill,128,int8,swiglu_activation,SwiGLU activation,NPU,plain,296.7362254941194,296.3343588739734,297.31708499592554
+prefill,128,int8,ffn_down_and_residual,FFN down projection + residual,GPU,plain,81.78755087545885,79.69662456947164,82.2529679726585
+prefill,128,int8,ffn_down_and_residual,FFN down projection + residual,NPU,plain,74.39827412253837,73.99291889890341,74.80809512406083
+prefill,128,int8,final_rmsnorm,Final RMSNorm,GPU,plain,27.606316007959283,25.26966144885686,29.57410084410193
+prefill,128,int8,final_rmsnorm,Final RMSNorm,NPU,npuw,134.7453687050111,126.51428263238135,136.850892605798
+prefill,128,int8,lm_head,LM head,GPU,plain,1717.3032440813292,1661.0980778932571,1744.879370040082
+prefill,128,int8,lm_head,LM head,NPU,plain,1487.7194343468868,1484.480157897279,1490.1698757581019
+prefill,512,fp16,token_embedding,Token embedding,GPU,plain,52.31622452946736,49.93670511465131,54.76000051496122
+prefill,512,fp16,token_embedding,Token embedding,NPU,npuw,80.96641870561865,74.75132420630064,81.79408462645299
+prefill,512,fp16,pre_attention_rmsnorm,Pre-attention RMSNorm,GPU,plain,67.65925718538884,65.34523830015155,71.27492130518762
+prefill,512,fp16,pre_attention_rmsnorm,Pre-attention RMSNorm,NPU,plain,100.92968494677581,100.20484227164302,101.0899522009759
+prefill,512,fp16,qkv_projection,QKV projection,GPU,plain,199.34285553469462,188.5676876661516,212.08635120080217
+prefill,512,fp16,qkv_projection,QKV projection,NPU,plain,253.50210019642245,252.448421627526,254.04344509636553
+prefill,512,fp16,rotary_embedding,Rotary embedding (RoPE),GPU,plain,90.20038711977132,84.94880979019702,95.61269931183705
+prefill,512,fp16,rotary_embedding,Rotary embedding (RoPE),NPU,plain,714.6620099077688,711.6850286229907,714.8934659518488
+prefill,512,fp16,kv_cache_and_gqa_layout,KV cache + GQA layout,GPU,plain,62.23826711264221,57.87721106584852,66.05968316090559
+prefill,512,fp16,kv_cache_and_gqa_layout,KV cache + GQA layout,NPU,plain,56.63935251565773,56.169563796466534,56.94137424520045
+prefill,512,fp16,scaled_dot_product_attention,Scaled dot-product attention,GPU,plain,179.49877036834494,178.29915021898495,182.53333504987071
+prefill,512,fp16,scaled_dot_product_attention,Scaled dot-product attention,NPU,plain,358.519793919634,357.8377697694655,358.7624878212346
+prefill,512,fp16,attention_output_and_residual,Attention output + residual,GPU,plain,248.95306845056885,245.9845103795787,249.46222456815664
+prefill,512,fp16,attention_output_and_residual,Attention output + residual,NPU,npuw,909.711545019296,888.7101877860187,917.9473040668557
+prefill,512,fp16,ffn_rmsnorm,FFN RMSNorm,GPU,plain,74.8663213094102,71.87976213016671,77.35936580684998
+prefill,512,fp16,ffn_rmsnorm,FFN RMSNorm,NPU,npuw,573.5138001208604,560.6349315472547,576.0273250487971
+prefill,512,fp16,ffn_gate_projection,FFN gate projection,GPU,plain,473.5520323787994,452.74915107962147,494.5784173494116
+prefill,512,fp16,ffn_gate_projection,FFN gate projection,NPU,plain,344.7143194690212,343.41201462594944,345.3550524048372
+prefill,512,fp16,ffn_up_projection,FFN up projection,GPU,plain,375.2336104182487,353.79779022510627,396.35809896543356
+prefill,512,fp16,ffn_up_projection,FFN up projection,NPU,plain,324.5528618431706,324.12782262652564,325.68545469966585
+prefill,512,fp16,swiglu_activation,SwiGLU activation,GPU,plain,0.0,0.0,0.0
+prefill,512,fp16,swiglu_activation,SwiGLU activation,NPU,plain,145.61020288099007,144.7893756171758,145.76949639688655
+prefill,512,fp16,ffn_down_and_residual,FFN down projection + residual,GPU,plain,414.01977687975034,394.8719400137729,438.9492104770701
+prefill,512,fp16,ffn_down_and_residual,FFN down projection + residual,NPU,plain,387.69417264593625,385.88731315401225,388.53703367679435
+prefill,512,fp16,final_rmsnorm,Final RMSNorm,GPU,plain,75.7683251806079,71.87976213016671,77.35936580684998
+prefill,512,fp16,final_rmsnorm,Final RMSNorm,NPU,plain,28.962431332553056,28.470687122600225,29.008421066367
+prefill,512,fp16,lm_head,LM head,GPU,plain,3112.815359503308,2937.0382517627336,3183.0025741598115
+prefill,512,fp16,lm_head,LM head,NPU,plain,2405.6357552968116,2389.907559729847,2410.462876608197
+prefill,512,int8,token_embedding,Token embedding,GPU,plain,49.17299831717476,47.5546396396119,51.53195426157377
+prefill,512,int8,token_embedding,Token embedding,NPU,plain,786.5646125002213,782.1926630845209,787.0964438849571
+prefill,512,int8,pre_attention_rmsnorm,Pre-attention RMSNorm,GPU,plain,6.558612360563934,5.851492463693632,6.749235063141633
+prefill,512,int8,pre_attention_rmsnorm,Pre-attention RMSNorm,NPU,plain,124.77048535736317,123.37399161743728,125.21265950562486
+prefill,512,int8,qkv_projection,QKV projection,GPU,plain,161.01746507780754,154.55257882873866,164.90225363703607
+prefill,512,int8,qkv_projection,QKV projection,NPU,plain,82.70218868581395,82.36827405133224,83.0886475114486
+prefill,512,int8,rotary_embedding,Rotary embedding (RoPE),GPU,plain,93.5251144463912,90.15567098343088,101.19001927727214
+prefill,512,int8,rotary_embedding,Rotary embedding (RoPE),NPU,npuw,315.55156739034203,303.6282913351436,330.37395665011354
+prefill,512,int8,kv_cache_and_gqa_layout,KV cache + GQA layout,GPU,plain,91.59676157120788,87.18350600595514,96.5052961625836
+prefill,512,int8,kv_cache_and_gqa_layout,KV cache + GQA layout,NPU,npuw,94.85145345917944,89.48394764958502,102.09472965923648
+prefill,512,int8,scaled_dot_product_attention,Scaled dot-product attention,GPU,plain,724.6098167540614,718.2545827162088,726.5492498315741
+prefill,512,int8,scaled_dot_product_attention,Scaled dot-product attention,NPU,npuw,545.8671784334742,519.6240270410385,589.0521761799768
+prefill,512,int8,attention_output_and_residual,Attention output + residual,GPU,plain,90.63258513361622,89.1649493242723,92.7575176708328
+prefill,512,int8,attention_output_and_residual,Attention output + residual,NPU,npuw,132.69699365233626,125.27752670941902,148.5535673131587
+prefill,512,int8,ffn_rmsnorm,FFN RMSNorm,GPU,plain,77.13411500733295,75.29484609605217,79.64029294970493
+prefill,512,int8,ffn_rmsnorm,FFN RMSNorm,NPU,npuw,197.2359860196089,187.60772472740584,213.366513669865
+prefill,512,int8,ffn_gate_projection,FFN gate projection,GPU,plain,525.4761584874557,517.1567060807794,534.0584350744919
+prefill,512,int8,ffn_gate_projection,FFN gate projection,NPU,npuw,174.31559620693264,161.07110576925302,189.2767459974609
+prefill,512,int8,ffn_up_projection,FFN up projection,GPU,plain,259.36346171215706,252.63402308543826,266.0922729143082
+prefill,512,int8,ffn_up_projection,FFN up projection,NPU,plain,118.6428594698359,118.57757977390271,118.7413308465267
+prefill,512,int8,swiglu_activation,SwiGLU activation,GPU,plain,225.6172863964489,222.91237331068075,228.61448799680002
+prefill,512,int8,swiglu_activation,SwiGLU activation,NPU,plain,461.66204391972786,458.7205810553116,461.9984535213819
+prefill,512,int8,ffn_down_and_residual,FFN down projection + residual,GPU,plain,202.477051894249,198.14433183171624,207.0647616692328
+prefill,512,int8,ffn_down_and_residual,FFN down projection + residual,NPU,plain,168.49604797670506,167.9849046796955,168.8825068023397
+prefill,512,int8,final_rmsnorm,Final RMSNorm,GPU,plain,77.13411500733295,75.29484609605217,78.70334832676721
+prefill,512,int8,final_rmsnorm,Final RMSNorm,NPU,plain,203.68347672690118,202.76766141337362,203.8328382935491
+prefill,512,int8,lm_head,LM head,GPU,plain,1661.2760019704333,1587.8654951235728,1691.0212580653688
+prefill,512,int8,lm_head,LM head,NPU,plain,1008.2710760807878,1006.2077421669787,1011.4667554713901
+prefill,1024,fp16,token_embedding,Token embedding,GPU,plain,99.71132922130198,96.08742799953161,104.71705113609778
+prefill,1024,fp16,token_embedding,Token embedding,NPU,npuw,88.10478911554097,87.4576561249037,92.74344937763075
+prefill,1024,fp16,pre_attention_rmsnorm,Pre-attention RMSNorm,GPU,plain,127.08306665460057,122.11110641607142,132.32427370834174
+prefill,1024,fp16,pre_attention_rmsnorm,Pre-attention RMSNorm,NPU,npuw,144.7219944701854,139.01540522803003,149.42000177507177
+prefill,1024,fp16,qkv_projection,QKV projection,GPU,plain,351.92233842812465,337.3069087066891,369.36559855278125
+prefill,1024,fp16,qkv_projection,QKV projection,NPU,plain,132.22714576974204,130.10711562527734,133.6966855021114
+prefill,1024,fp16,rotary_embedding,Rotary embedding (RoPE),GPU,plain,240.48026459255183,237.54722535854185,242.75316399731759
+prefill,1024,fp16,rotary_embedding,Rotary embedding (RoPE),NPU,plain,1402.6448208123616,1389.5688296448952,1431.3041143825712
+prefill,1024,fp16,kv_cache_and_gqa_layout,KV cache + GQA layout,GPU,plain,114.37475998914051,109.09926720780152,118.04467582614659
+prefill,1024,fp16,kv_cache_and_gqa_layout,KV cache + GQA layout,NPU,npuw,365.5590285625975,359.9585465468484,367.66846665005636
+prefill,1024,fp16,scaled_dot_product_attention,Scaled dot-product attention,GPU,plain,737.0817865966833,720.5115897314889,742.4593194260701
+prefill,1024,fp16,scaled_dot_product_attention,Scaled dot-product attention,NPU,plain,850.747283874451,834.050861585497,852.2250472033493
+prefill,1024,fp16,attention_output_and_residual,Attention output + residual,GPU,plain,778.1393927466312,776.4893851103936,779.2344128916185
+prefill,1024,fp16,attention_output_and_residual,Attention output + residual,NPU,npuw,1436.4925206896437,1431.7140167229054,1444.7817210614892
+prefill,1024,fp16,ffn_rmsnorm,FFN RMSNorm,GPU,plain,132.2302825707954,130.11839208269905,133.63574232373918
+prefill,1024,fp16,ffn_rmsnorm,FFN RMSNorm,NPU,npuw,1206.5739821051145,1193.5397777045682,1215.9696696178255
+prefill,1024,fp16,ffn_gate_projection,FFN gate projection,GPU,plain,810.3989404358759,793.7221917044642,830.1206235516115
+prefill,1024,fp16,ffn_gate_projection,FFN gate projection,NPU,plain,362.97647858360557,357.39300279782975,367.13164086507237
+prefill,1024,fp16,ffn_up_projection,FFN up projection,GPU,plain,651.0563260920306,629.5728355385977,673.9970200396112
+prefill,1024,fp16,ffn_up_projection,FFN up projection,NPU,plain,370.75454598182563,365.02274105980587,374.7954226326336
+prefill,1024,fp16,swiglu_activation,SwiGLU activation,GPU,plain,0.0,0.0,0.0
+prefill,1024,fp16,swiglu_activation,SwiGLU activation,NPU,plain,272.6614101933949,271.454228589798,274.07143368754413
+prefill,1024,fp16,ffn_down_and_residual,FFN down projection + residual,GPU,plain,714.5978594193309,698.6356744132611,730.1634383762455
+prefill,1024,fp16,ffn_down_and_residual,FFN down projection + residual,NPU,plain,674.8399428360503,670.538215223947,680.9033381856165
+prefill,1024,fp16,final_rmsnorm,Final RMSNorm,GPU,plain,130.20370929694135,129.03819075697905,131.3723005161954
+prefill,1024,fp16,final_rmsnorm,Final RMSNorm,NPU,plain,20.74151306192032,20.436184822811494,21.316631843589455
+prefill,1024,fp16,lm_head,LM head,GPU,plain,3369.6563904492937,3225.0136137008667,3422.0715351860235
+prefill,1024,fp16,lm_head,LM head,NPU,plain,1955.7706398314326,1946.8534335304082,1987.4814123261506
+prefill,1024,int8,token_embedding,Token embedding,GPU,plain,82.38783122651012,80.66688493198278,84.02841111890561
+prefill,1024,int8,token_embedding,Token embedding,NPU,plain,161.0969889503523,151.74359760501167,164.3456143922774
+prefill,1024,int8,pre_attention_rmsnorm,Pre-attention RMSNorm,GPU,plain,7.869939993364174,7.7541488213186,8.593814773524437
+prefill,1024,int8,pre_attention_rmsnorm,Pre-attention RMSNorm,NPU,plain,154.82537342921245,153.60087883022658,155.87883313946188
+prefill,1024,int8,qkv_projection,QKV projection,GPU,plain,290.7805807994475,287.57415103443304,295.05430722433897
+prefill,1024,int8,qkv_projection,QKV projection,NPU,plain,75.68353015125551,75.12086375266064,76.79425228338737
+prefill,1024,int8,rotary_embedding,Rotary embedding (RoPE),GPU,plain,156.77975664965237,153.4638298706014,161.37274408062552
+prefill,1024,int8,rotary_embedding,Rotary embedding (RoPE),NPU,plain,605.0904021487555,597.2886288707906,606.2763113249573
+prefill,1024,int8,kv_cache_and_gqa_layout,KV cache + GQA layout,GPU,plain,178.3454228903278,175.08766338490992,181.42497855218255
+prefill,1024,int8,kv_cache_and_gqa_layout,KV cache + GQA layout,NPU,plain,174.8856042670729,174.17854510786398,176.3591294490315
+prefill,1024,int8,scaled_dot_product_attention,Scaled dot-product attention,GPU,plain,2747.876488554779,2709.7594533910374,2768.1457395491343
+prefill,1024,int8,scaled_dot_product_attention,Scaled dot-product attention,NPU,plain,1909.2636008552452,1900.1277002934949,1912.8071285805481
+prefill,1024,int8,attention_output_and_residual,Attention output + residual,GPU,plain,162.8371252476906,160.35002736479504,165.19221731330308
+prefill,1024,int8,attention_output_and_residual,Attention output + residual,NPU,plain,97.37475997653746,96.75011747232286,97.92805942925025
+prefill,1024,int8,ffn_rmsnorm,FFN RMSNorm,GPU,plain,170.5912740690092,169.2188031597174,171.2073416174118
+prefill,1024,int8,ffn_rmsnorm,FFN RMSNorm,NPU,npuw,386.58170472983954,380.6855840976792,388.33300670966156
+prefill,1024,int8,ffn_gate_projection,FFN gate projection,GPU,plain,962.4837224461712,953.2464816962355,969.1913327919226
+prefill,1024,int8,ffn_gate_projection,FFN gate projection,NPU,plain,314.28705822935694,309.8879415509659,315.7592907529017
+prefill,1024,int8,ffn_up_projection,FFN up projection,GPU,plain,436.17087119917124,428.9117296383475,445.92349991510133
+prefill,1024,int8,ffn_up_projection,FFN up projection,NPU,plain,306.4693698396205,303.7938659556751,306.71807292934983
+prefill,1024,int8,swiglu_activation,SwiGLU activation,GPU,plain,434.23233399384156,429.89547213751797,437.3296851415769
+prefill,1024,int8,swiglu_activation,SwiGLU activation,NPU,plain,606.4113381589693,602.926184152352,610.4205032795728
+prefill,1024,int8,ffn_down_and_residual,FFN down projection + residual,GPU,plain,358.6293829859852,351.19607220387627,364.75969372070386
+prefill,1024,int8,ffn_down_and_residual,FFN down projection + residual,NPU,plain,230.26987578923396,227.14512022838403,231.07459696082327
+prefill,1024,int8,final_rmsnorm,Final RMSNorm,GPU,plain,175.43761708233333,174.1095200140445,176.65063701133565
+prefill,1024,int8,final_rmsnorm,Final RMSNorm,NPU,npuw,442.01885167962536,424.5288519491133,449.2757778356303
+prefill,1024,int8,lm_head,LM head,GPU,plain,1740.8064103860256,1696.9065475210261,1757.723637445157
+prefill,1024,int8,lm_head,LM head,NPU,plain,670.1624538604315,650.7122856742641,678.3835316222089
+prefill,2048,fp16,token_embedding,Token embedding,GPU,plain,200.37299839348123,193.9104232168847,206.6313643824532
+prefill,2048,fp16,token_embedding,Token embedding,NPU,npuw,59.17723892585232,53.38659626372283,60.947843642916226
+prefill,2048,fp16,pre_attention_rmsnorm,Pre-attention RMSNorm,GPU,plain,331.0029089483474,326.5273218537196,335.22641562046925
+prefill,2048,fp16,pre_attention_rmsnorm,Pre-attention RMSNorm,NPU,npuw,93.43774567239839,87.93086443436701,98.35542314534273
+prefill,2048,fp16,qkv_projection,QKV projection,GPU,plain,772.7091319262424,750.0098553158816,801.2460884830233
+prefill,2048,fp16,qkv_projection,QKV projection,NPU,plain,224.93879035855784,178.7400687110608,225.63681453453964
+prefill,2048,fp16,rotary_embedding,Rotary embedding (RoPE),GPU,plain,588.9416306371934,580.6168419310169,596.8129301046388
+prefill,2048,fp16,rotary_embedding,Rotary embedding (RoPE),NPU,plain,2457.1867628846408,2094.010789425227,2468.9400474878644
+prefill,2048,fp16,kv_cache_and_gqa_layout,KV cache + GQA layout,GPU,plain,232.47695946205002,223.99997164709094,241.8026604475516
+prefill,2048,fp16,kv_cache_and_gqa_layout,KV cache + GQA layout,NPU,plain,488.8660233163075,411.1299558688319,489.22163878625184
+prefill,2048,fp16,scaled_dot_product_attention,Scaled dot-product attention,GPU,plain,3343.7663172521898,3327.6138445199576,3348.376078445927
+prefill,2048,fp16,scaled_dot_product_attention,Scaled dot-product attention,NPU,plain,2094.9203684010827,1517.4837248735316,2097.1791367017718
+prefill,2048,fp16,attention_output_and_residual,Attention output + residual,GPU,plain,3304.4939237819967,3290.4582219538893,3308.342355820868
+prefill,2048,fp16,attention_output_and_residual,Attention output + residual,NPU,plain,181.75459388110227,139.54512362823098,182.01094732804316
+prefill,2048,fp16,ffn_rmsnorm,FFN RMSNorm,GPU,plain,285.81936412361483,284.1312313875826,286.407923946778
+prefill,2048,fp16,ffn_rmsnorm,FFN RMSNorm,NPU,npuw,1191.5056975321518,1166.2104392747854,1214.6906937411793
+prefill,2048,fp16,ffn_gate_projection,FFN gate projection,GPU,plain,1512.2784155477732,1503.7099014973603,1514.4213359242117
+prefill,2048,fp16,ffn_gate_projection,FFN gate projection,NPU,plain,3034.199397992562,2986.7890188239876,3035.6465520763363
+prefill,2048,fp16,ffn_up_projection,FFN up projection,GPU,plain,1195.5957915191145,1187.667104543424,1196.9231692153805
+prefill,2048,fp16,ffn_up_projection,FFN up projection,NPU,plain,2894.4305226961933,2850.5973062855383,2895.958536145908
+prefill,2048,fp16,swiglu_activation,SwiGLU activation,GPU,plain,0.0,0.0,0.0
+prefill,2048,fp16,swiglu_activation,SwiGLU activation,NPU,plain,2901.408312477173,2859.6767537881015,2902.89158105422
+prefill,2048,fp16,ffn_down_and_residual,FFN down projection + residual,GPU,plain,1331.760867775458,1327.716426457465,1360.034521401318
+prefill,2048,fp16,ffn_down_and_residual,FFN down projection + residual,NPU,plain,857.758633464271,827.6265608105753,859.9543480717011
+prefill,2048,fp16,final_rmsnorm,Final RMSNorm,GPU,plain,284.5075170559374,283.03841895916884,284.68424977819905
+prefill,2048,fp16,final_rmsnorm,Final RMSNorm,NPU,plain,14.369513233243511,14.355793028690728,15.016009331162335
+prefill,2048,fp16,lm_head,LM head,GPU,plain,3794.9096049328928,3746.1610046024352,3809.8759364848042
+prefill,2048,fp16,lm_head,LM head,NPU,plain,1358.363243146999,1354.0700237826074,1464.9339335866512
+prefill,2048,int8,token_embedding,Token embedding,GPU,plain,171.63444596837118,168.08085074117884,176.21231416031944
+prefill,2048,int8,token_embedding,Token embedding,NPU,plain,581.2229294011651,552.9708173267975,587.4754970564561
+prefill,2048,int8,pre_attention_rmsnorm,Pre-attention RMSNorm,GPU,plain,16.585729391364364,16.524001300637998,17.46884400526981
+prefill,2048,int8,pre_attention_rmsnorm,Pre-attention RMSNorm,NPU,plain,364.6011443042145,305.1664676533779,365.3259468055018
+prefill,2048,int8,qkv_projection,QKV projection,GPU,plain,624.5012371379289,613.183844370597,636.8374862636107
+prefill,2048,int8,qkv_projection,QKV projection,NPU,plain,233.17179900562016,185.85326225506472,233.7558289617365
+prefill,2048,int8,rotary_embedding,Rotary embedding (RoPE),GPU,plain,444.5952516048169,433.6900963568689,455.47276525649823
+prefill,2048,int8,rotary_embedding,Rotary embedding (RoPE),NPU,plain,2581.6066794726075,2317.7573499216273,2586.791911830657
+prefill,2048,int8,kv_cache_and_gqa_layout,KV cache + GQA layout,GPU,plain,445.6291940504095,436.80270470392776,456.50324662585683
+prefill,2048,int8,kv_cache_and_gqa_layout,KV cache + GQA layout,NPU,plain,426.56892772350784,389.07905166977395,430.9513250686202
+prefill,2048,int8,scaled_dot_product_attention,Scaled dot-product attention,GPU,plain,11037.335606700977,11005.37172331998,11048.168990822587
+prefill,2048,int8,scaled_dot_product_attention,Scaled dot-product attention,NPU,plain,10118.62499927617,9354.941983702905,10129.91273020297
+prefill,2048,int8,attention_output_and_residual,Attention output + residual,GPU,plain,314.9887747934119,313.41161303572306,315.35244590574223
+prefill,2048,int8,attention_output_and_residual,Attention output + residual,NPU,plain,2796.644501348967,2701.150650446656,2798.736661534486
+prefill,2048,int8,ffn_rmsnorm,FFN RMSNorm,GPU,plain,374.2871653045203,371.9836194063336,374.73948796120396
+prefill,2048,int8,ffn_rmsnorm,FFN RMSNorm,NPU,plain,473.2609319743242,446.812737501713,474.8802056939143
+prefill,2048,int8,ffn_gate_projection,FFN gate projection,GPU,plain,1860.0624596210828,1848.6147273811994,1865.894556528491
+prefill,2048,int8,ffn_gate_projection,FFN gate projection,NPU,plain,1042.6213280003358,987.5887121220236,1043.5528078648952
+prefill,2048,int8,ffn_up_projection,FFN up projection,GPU,plain,797.4013498876102,796.8277368470701,798.6230612529098
+prefill,2048,int8,ffn_up_projection,FFN up projection,NPU,plain,683.0867288545362,675.6775515623635,685.146395232676
+prefill,2048,int8,swiglu_activation,SwiGLU activation,GPU,plain,825.0860715828928,820.0080891885475,827.2132533942977
+prefill,2048,int8,swiglu_activation,SwiGLU activation,NPU,plain,1936.0498803365354,1932.1021605069336,1974.3976463426482
+prefill,2048,int8,ffn_down_and_residual,FFN down projection + residual,GPU,plain,641.0443162674104,636.0714376036477,643.7336220023294
+prefill,2048,int8,ffn_down_and_residual,FFN down projection + residual,NPU,plain,572.0108770282887,508.41519171224587,573.4892101549457
+prefill,2048,int8,final_rmsnorm,Final RMSNorm,GPU,plain,370.40039330000525,368.900882228933,370.7572791830651
+prefill,2048,int8,final_rmsnorm,Final RMSNorm,NPU,plain,417.214121213779,402.755286072661,417.99687641926283
+prefill,2048,int8,lm_head,LM head,GPU,plain,1776.3131215280825,1766.408402650518,1781.929301484709
+prefill,2048,int8,lm_head,LM head,NPU,plain,813.091791169908,809.7969789031587,870.2321379614515
+decode,128,fp16,token_embedding,Token embedding,GPU,plain,1.9823181095631661,1.0065984578310407,2.00042606489031
+decode,128,fp16,token_embedding,Token embedding,NPU,npuw,27.988244080561664,26.612963423783793,29.028467657765088
+decode,128,fp16,pre_attention_rmsnorm,Pre-attention RMSNorm,GPU,plain,4.032572440783996,4.00085212978062,5.906852488810723
+decode,128,fp16,pre_attention_rmsnorm,Pre-attention RMSNorm,NPU,npuw,45.443259034170616,44.19692113413908,46.44554825242414
+decode,128,fp16,qkv_projection,QKV projection,GPU,plain,36.00766916802558,34.276865746663965,36.86755908798159
+decode,128,fp16,qkv_projection,QKV projection,NPU,npuw,54.046264431429414,53.14586594977854,54.18647296116149
+decode,128,fp16,rotary_embedding,Rotary embedding (RoPE),GPU,plain,6.00127819467093,5.906852488810723,6.039590746986245
+decode,128,fp16,rotary_embedding,Rotary embedding (RoPE),NPU,npuw,17.393192492654794,16.449465006066884,17.741975615855864
+decode,128,fp16,kv_cache_and_gqa_layout,KV cache + GQA layout,GPU,plain,28.00596490846434,26.17155990360706,30.725930698229075
+decode,128,fp16,kv_cache_and_gqa_layout,KV cache + GQA layout,NPU,npuw,43.214767331158214,42.38360841565567,43.509503330588885
+decode,128,fp16,scaled_dot_product_attention,Scaled dot-product attention,GPU,plain,18.045043767953818,16.105575325296652,19.82318109563166
+decode,128,fp16,scaled_dot_product_attention,Scaled dot-product attention,NPU,npuw,75.4164724396874,74.31361359321545,75.55472445149252
+decode,128,fp16,attention_output_and_residual,Attention output + residual,GPU,plain,25.005325811128877,24.15836298794498,25.596360784846468
+decode,128,fp16,attention_output_and_residual,Attention output + residual,NPU,npuw,71.41827799867458,70.53905844243333,71.60355355582054
+decode,128,fp16,ffn_rmsnorm,FFN RMSNorm,GPU,plain,5.012512157764949,4.955795273907915,5.040715550979995
+decode,128,fp16,ffn_rmsnorm,FFN RMSNorm,NPU,npuw,139.46584002328333,135.61104388729424,141.9358049268469
+decode,128,fp16,ffn_gate_projection,FFN gate projection,GPU,plain,116.29028206014682,115.7588226505697,116.9567684642268
+decode,128,fp16,ffn_gate_projection,FFN gate projection,NPU,plain,113.56651152350085,112.86592858646851,114.48566648838909
+decode,128,fp16,ffn_up_projection,FFN up projection,GPU,plain,117.57762087518452,116.76542110840073,118.93908657378996
+decode,128,fp16,ffn_up_projection,FFN up projection,NPU,plain,126.78202903342346,124.83154162108964,126.97501192348608
+decode,128,fp16,swiglu_activation,SwiGLU activation,GPU,plain,0.0,0.0,0.0
+decode,128,fp16,swiglu_activation,SwiGLU activation,NPU,plain,9.002223474423849,8.326230290064661,9.01561133930092
+decode,128,fp16,ffn_down_and_residual,FFN down projection + residual,GPU,plain,116.29028206014682,115.7588226505697,116.9567684642268
+decode,128,fp16,ffn_down_and_residual,FFN down projection + residual,NPU,plain,114.25933511222739,112.91595184624445,114.48566648838909
+decode,128,fp16,final_rmsnorm,Final RMSNorm,GPU,plain,5.040715550979995,5.001065162225775,5.946954328689499
+decode,128,fp16,final_rmsnorm,Final RMSNorm,NPU,plain,6.244672717548496,6.23230855921651,6.270329365914917
+decode,128,fp16,lm_head,LM head,GPU,plain,3462.7375183251265,3444.6794763914536,3470.751482601429
+decode,128,fp16,lm_head,LM head,NPU,plain,3791.794135050235,3781.4962567377,3794.8788652811254
+decode,128,int8,token_embedding,Token embedding,GPU,plain,1.9808786044664242,1.021904182863665,2.017973709418979
+decode,128,int8,token_embedding,Token embedding,NPU,npuw,11.811768748709223,11.144480671640482,11.923305697542382
+decode,128,int8,pre_attention_rmsnorm,Pre-attention RMSNorm,GPU,plain,3.0657125485909953,3.0072501232457713,3.9149789675921336
+decode,128,int8,pre_attention_rmsnorm,Pre-attention RMSNorm,NPU,plain,182.99475892251155,180.16890012321088,184.20397539116252
+decode,128,int8,qkv_projection,QKV projection,GPU,plain,22.05316757046899,21.328517603604553,22.511129063654767
+decode,128,int8,qkv_projection,QKV projection,NPU,plain,61.13413488836964,59.78144283264434,61.67003990119883
+decode,128,int8,rotary_embedding,Rotary embedding (RoPE),GPU,plain,5.044934273547447,4.062574781638962,6.014500246491543
+decode,128,int8,rotary_embedding,Rotary embedding (RoPE),NPU,npuw,7.972943905378726,7.407923790211847,8.15298256810628
+decode,128,int8,kv_cache_and_gqa_layout,KV cache + GQA layout,GPU,plain,38.341500478960604,33.81905155243105,42.58888999602812
+decode,128,int8,kv_cache_and_gqa_layout,KV cache + GQA layout,NPU,npuw,11.437756478788915,10.074776354688112,12.113202512143936
+decode,128,int8,scaled_dot_product_attention,Scaled dot-product attention,GPU,plain,119.06044885571977,106.58125337735846,130.737987894784
+decode,128,int8,scaled_dot_product_attention,Scaled dot-product attention,NPU,npuw,33.72671782206988,32.594864676932126,36.05119795280933
+decode,128,int8,attention_output_and_residual,Attention output + residual,GPU,plain,15.372296160195932,15.134802820642342,16.03866732397745
+decode,128,int8,attention_output_and_residual,Attention output + residual,NPU,npuw,9.384825828749879,8.889508548254216,10.094335426786612
+decode,128,int8,ffn_rmsnorm,FFN RMSNorm,GPU,plain,4.08761673145466,4.009666830994362,5.8724684513882
+decode,128,int8,ffn_rmsnorm,FFN RMSNorm,NPU,npuw,45.75102591515566,43.69361092555778,48.54488748285113
+decode,128,int8,ffn_gate_projection,FFN gate projection,GPU,plain,66.59313241082631,65.40186770327456,68.34031185409164
+decode,128,int8,ffn_gate_projection,FFN gate projection,NPU,npuw,31.967062979179275,31.11327991888976,33.45551170020706
+decode,128,int8,ffn_up_projection,FFN up projection,GPU,plain,68.61110612024528,67.44567606900189,70.32119045855806
+decode,128,int8,ffn_up_projection,FFN up projection,NPU,npuw,24.635167800468434,23.409039177069438,25.668452942400243
+decode,128,int8,swiglu_activation,SwiGLU activation,GPU,plain,1.021904182863665,1.0024167077485906,1.9574894837960668
+decode,128,int8,swiglu_activation,SwiGLU activation,NPU,npuw,65.40050499410073,62.52287678938799,68.35307131852649
+decode,128,int8,ffn_down_and_residual,FFN down projection + residual,GPU,plain,61.14741917266402,60.41679743622594,61.489184640783726
+decode,128,int8,ffn_down_and_residual,FFN down projection + residual,NPU,npuw,39.59223396503855,37.789068908590515,41.63844668711422
+decode,128,int8,final_rmsnorm,Final RMSNorm,GPU,plain,5.078218477048703,4.099278976052249,6.851213193286234
+decode,128,int8,final_rmsnorm,Final RMSNorm,NPU,npuw,60.70809207972578,59.045420169672674,64.31533714781185
+decode,128,int8,lm_head,LM head,GPU,plain,1743.5292849379978,1701.0583614187822,1761.7628112569585
+decode,128,int8,lm_head,LM head,NPU,plain,1045.0424204325377,1041.5384516646914,1046.3451218923042
+decode,512,fp16,token_embedding,Token embedding,GPU,plain,1.9720279427559024,1.00509811275946,1.9953425588278935
+decode,512,fp16,token_embedding,Token embedding,NPU,npuw,27.795788714305285,26.0947146695751,27.913653588221774
+decode,512,fp16,pre_attention_rmsnorm,Pre-attention RMSNorm,GPU,plain,4.9626873247005925,4.00647417845759,5.916083828267707
+decode,512,fp16,pre_attention_rmsnorm,Pre-attention RMSNorm,NPU,npuw,43.693057773668805,41.937934290388554,43.73778596969333
+decode,512,fp16,qkv_projection,QKV projection,GPU,plain,35.05664906150391,34.17333583382164,36.723886202784385
+decode,512,fp16,qkv_projection,QKV projection,NPU,npuw,48.383666219584406,47.252840814318986,49.350201322612335
+decode,512,fp16,rotary_embedding,Rotary embedding (RoPE),GPU,plain,5.955224789640711,5.045522414574768,6.009711267686385
+decode,512,fp16,rotary_embedding,Rotary embedding (RoPE),NPU,npuw,13.956826794110887,12.176033753154908,14.898173984184856
+decode,512,fp16,kv_cache_and_gqa_layout,KV cache + GQA layout,GPU,plain,101.76247050022256,88.80119449651592,113.3916067084644
+decode,512,fp16,kv_cache_and_gqa_layout,KV cache + GQA layout,NPU,npuw,138.73924522772148,136.99725201526928,139.58867862668083
+decode,512,fp16,scaled_dot_product_attention,Scaled dot-product attention,GPU,plain,56.86726292659496,50.45522414574768,63.10489416818888
+decode,512,fp16,scaled_dot_product_attention,Scaled dot-product attention,NPU,plain,204.33877337757133,203.98109021561856,205.63236570784025
+decode,512,fp16,attention_output_and_residual,Attention output + residual,GPU,plain,25.805974088443083,25.04046361535994,26.39110174936217
+decode,512,fp16,attention_output_and_residual,Attention output + residual,NPU,npuw,69.72296453245022,66.70989291433268,70.24634857589369
+decode,512,fp16,ffn_rmsnorm,FFN RMSNorm,GPU,plain,5.986027676483681,5.0254905637973,6.842137490575378
+decode,512,fp16,ffn_rmsnorm,FFN RMSNorm,NPU,npuw,138.61946118976357,135.8464474626793,139.7931143012952
+decode,512,fp16,ffn_gate_projection,FFN gate projection,GPU,plain,117.72521097084572,117.05612001813462,118.32167656535415
+decode,512,fp16,ffn_gate_projection,FFN gate projection,NPU,plain,112.3089643657905,111.29936625770891,112.82956390155134
+decode,512,fp16,ffn_up_projection,FFN up projection,GPU,plain,116.72753969143177,116.04701553521967,117.29378555272076
+decode,512,fp16,ffn_up_projection,FFN up projection,NPU,plain,122.40310891313509,121.64649385019297,123.06859109675653
+decode,512,fp16,swiglu_activation,SwiGLU activation,GPU,plain,0.0,0.0,0.0
+decode,512,fp16,swiglu_activation,SwiGLU activation,NPU,plain,8.840224532615313,8.143856067637238,8.873761839674433
+decode,512,fp16,ffn_down_and_residual,FFN down projection + residual,GPU,plain,116.04701553521967,115.18613263065572,116.31633733978143
+decode,512,fp16,ffn_down_and_residual,FFN down projection + residual,NPU,plain,119.79622865684321,118.94682941428606,120.36305709791617
+decode,512,fp16,final_rmsnorm,Final RMSNorm,GPU,plain,5.0254905637973,4.9626873247005925,5.864689277636038
+decode,512,fp16,final_rmsnorm,Final RMSNorm,NPU,plain,6.120155445656755,6.107892050727928,6.143373581313069
+decode,512,fp16,lm_head,LM head,GPU,plain,3456.9309831693254,3417.1589524359315,3474.6241758094534
+decode,512,fp16,lm_head,LM head,NPU,plain,3732.1740139784342,3723.0995322548238,3742.1350463832355
+decode,512,int8,token_embedding,Token embedding,GPU,plain,1.9431368514951954,1.012085985205904,1.99613149289961
+decode,512,int8,token_embedding,Token embedding,NPU,npuw,11.914937788757257,11.616584696460125,12.225430902850286
+decode,512,int8,pre_attention_rmsnorm,Pre-attention RMSNorm,GPU,plain,3.886273702990391,3.0177118773547766,3.99226298579922
+decode,512,int8,pre_attention_rmsnorm,Pre-attention RMSNorm,NPU,plain,265.78460895105604,265.1017584999778,266.449214701368
+decode,512,int8,qkv_projection,QKV projection,GPU,plain,20.366889348931533,19.9613149289961,20.699516614057305
+decode,512,int8,qkv_projection,QKV projection,NPU,plain,52.769402584077994,52.64122933202958,52.97264149420055
+decode,512,int8,rotary_embedding,Rotary embedding (RoPE),GPU,plain,3.9427650693442486,3.0177118773547766,5.725658628226116
+decode,512,int8,rotary_embedding,Rotary embedding (RoPE),NPU,npuw,13.702178457070847,12.808029280712445,14.32345270061153
+decode,512,int8,kv_cache_and_gqa_layout,KV cache + GQA layout,GPU,plain,126.75434979912522,118.12795822380288,139.90585330765407
+decode,512,int8,kv_cache_and_gqa_layout,KV cache + GQA layout,NPU,npuw,34.255446142677116,32.50175532708978,35.95478943214731
+decode,512,int8,scaled_dot_product_attention,Scaled dot-product attention,GPU,plain,210.59187250090883,193.48544881484955,230.26171690218067
+decode,512,int8,scaled_dot_product_attention,Scaled dot-product attention,NPU,npuw,87.27691930264692,81.70166018002386,91.4947080671716
+decode,512,int8,attention_output_and_residual,Attention output + residual,GPU,plain,14.785369010040933,14.169203792882657,15.088559386773884
+decode,512,int8,attention_output_and_residual,Attention output + residual,NPU,npuw,9.42397087929825,8.945437245988014,9.814055798024455
+decode,512,int8,ffn_rmsnorm,FFN RMSNorm,GPU,plain,4.073377869786306,3.99226298579922,5.725658628226116
+decode,512,int8,ffn_rmsnorm,FFN RMSNorm,NPU,npuw,45.87251048671544,43.83264250534127,46.53085621653511
+decode,512,int8,ffn_gate_projection,FFN gate projection,GPU,plain,64.87427351923732,64.15570144913433,65.84507422460034
+decode,512,int8,ffn_gate_projection,FFN gate projection,NPU,npuw,31.872458584925663,30.67969804449725,33.031635819777605
+decode,512,int8,ffn_up_projection,FFN up projection,GPU,plain,66.38966130180509,65.78558903838376,66.87040501213693
+decode,512,int8,ffn_up_projection,FFN up projection,NPU,npuw,24.127749022233445,22.93530824685717,25.139121066379417
+decode,512,int8,swiglu_activation,SwiGLU activation,GPU,plain,1.0183444674465765,0.998065746449805,1.9431368514951954
+decode,512,int8,swiglu_activation,SwiGLU activation,NPU,npuw,65.23428439344599,61.95511838112066,67.52484844574006
+decode,512,int8,ffn_down_and_residual,FFN down projection + residual,GPU,plain,59.14147604016373,58.21086272029885,59.713073127148334
+decode,512,int8,ffn_down_and_residual,FFN down projection + residual,NPU,plain,37.78777594405695,37.531087348620986,38.0539007219491
+decode,512,int8,final_rmsnorm,Final RMSNorm,GPU,plain,4.073377869786306,3.99226298579922,4.928456336680311
+decode,512,int8,final_rmsnorm,Final RMSNorm,NPU,npuw,61.36192961209988,56.891478898048305,65.08429888515354
+decode,512,int8,lm_head,LM head,GPU,plain,1723.659544118813,1659.486725747536,1743.8241525097726
+decode,512,int8,lm_head,LM head,NPU,plain,873.8740223110265,866.360473103041,874.1995560839395
+decode,1024,fp16,token_embedding,Token embedding,GPU,plain,1.9618629551923266,1.0055911038156462,1.9938319657250556
+decode,1024,fp16,token_embedding,Token embedding,NPU,npuw,27.342029715122436,26.41590824078398,28.053328944418073
+decode,1024,fp16,pre_attention_rmsnorm,Pre-attention RMSNorm,GPU,plain,5.048701937482195,4.984579914312639,5.937388767581345
+decode,1024,fp16,pre_attention_rmsnorm,Pre-attention RMSNorm,NPU,npuw,42.889622898925914,42.70985953059347,43.950215346254986
+decode,1024,fp16,qkv_projection,QKV projection,GPU,plain,36.88589136591353,35.470052101580144,37.27539614865421
+decode,1024,fp16,qkv_projection,QKV projection,NPU,npuw,52.94238955917694,51.99461160246161,53.9379740470178
+decode,1024,fp16,rotary_embedding,Rotary embedding (RoPE),GPU,plain,5.981495897175167,5.067150300225736,6.033546622893878
+decode,1024,fp16,rotary_embedding,Rotary embedding (RoPE),NPU,npuw,13.713044249241815,13.671014857561218,15.485187589425093
+decode,1024,fp16,kv_cache_and_gqa_layout,KV cache + GQA layout,GPU,plain,185.36226477595997,165.18909978735897,205.82947727615328
+decode,1024,fp16,kv_cache_and_gqa_layout,KV cache + GQA layout,NPU,npuw,255.9768259858472,253.68755672130646,256.8719353069339
+decode,1024,fp16,scaled_dot_product_attention,Scaled dot-product attention,GPU,plain,58.1135749027334,52.698363122347644,63.33214685420101
+decode,1024,fp16,scaled_dot_product_attention,Scaled dot-product attention,NPU,npuw,396.044602939018,393.67348784720934,397.06792169382703
+decode,1024,fp16,attention_output_and_residual,Attention output + residual,GPU,plain,24.922899571563196,24.134186491575512,25.504218417500248
+decode,1024,fp16,attention_output_and_residual,Attention output + residual,NPU,plain,40.38331128959357,39.6213620199786,40.38853349459676
+decode,1024,fp16,ffn_rmsnorm,FFN RMSNorm,GPU,plain,5.88558886557698,5.0279555190782315,5.981495897175167
+decode,1024,fp16,ffn_rmsnorm,FFN RMSNorm,NPU,plain,6.106648343214717,5.339858842513322,6.8575434265347575
+decode,1024,fp16,ffn_gate_projection,FFN gate projection,GPU,plain,117.22910799344496,116.63916999491576,117.65415914643062
+decode,1024,fp16,ffn_gate_projection,FFN gate projection,NPU,plain,128.15661222031972,128.00747729531548,128.76942656493046
+decode,1024,fp16,ffn_up_projection,FFN up projection,GPU,plain,116.76864576243311,116.2271498054668,117.55788696523706
+decode,1024,fp16,ffn_up_projection,FFN up projection,NPU,plain,139.43671633954008,138.03775499774795,139.68958085103665
+decode,1024,fp16,swiglu_activation,SwiGLU activation,GPU,plain,0.0,0.0,0.0
+decode,1024,fp16,swiglu_activation,SwiGLU activation,NPU,plain,9.159972514822075,9.143391235379678,9.906621423202978
+decode,1024,fp16,ffn_down_and_residual,FFN down projection + residual,GPU,plain,115.77908096783622,115.22519161748863,116.54445690519191
+decode,1024,fp16,ffn_down_and_residual,FFN down projection + residual,NPU,plain,127.26198289806902,126.48357875608554,128.12344110288208
+decode,1024,fp16,final_rmsnorm,Final RMSNorm,GPU,plain,5.88558886557698,5.0279555190782315,5.981495897175167
+decode,1024,fp16,final_rmsnorm,Final RMSNorm,NPU,plain,7.6263953037429815,7.619492696149731,7.633310429018396
+decode,1024,fp16,lm_head,LM head,GPU,plain,3480.8027450361346,3437.1838974969564,3502.789404225147
+decode,1024,fp16,lm_head,LM head,NPU,plain,4031.4735855328227,4026.139940645518,4034.5213826112827
+decode,1024,int8,token_embedding,Token embedding,GPU,plain,1.7915376446818154,0.971365497521123,1.8846306288353751
+decode,1024,int8,token_embedding,Token embedding,NPU,npuw,11.240900851475653,11.032550126241418,11.496115978934345
+decode,1024,int8,pre_attention_rmsnorm,Pre-attention RMSNorm,GPU,plain,3.7692612576707503,2.9458825080646447,3.885461990084492
+decode,1024,int8,pre_attention_rmsnorm,Pre-attention RMSNorm,NPU,plain,431.51578937513335,429.6263842412233,433.4597509693016
+decode,1024,int8,qkv_projection,QKV projection,GPU,plain,20.621177556452512,19.847980047774126,21.213300299871285
+decode,1024,int8,qkv_projection,QKV projection,NPU,plain,60.78417732598049,60.44522996664227,60.96219140065284
+decode,1024,int8,rotary_embedding,Rotary embedding (RoPE),GPU,plain,3.9278433440861926,3.7692612576707503,4.611587021711149
+decode,1024,int8,rotary_embedding,Rotary embedding (RoPE),NPU,npuw,14.4271809343157,13.472890021719188,15.27609602892845
+decode,1024,int8,kv_cache_and_gqa_layout,KV cache + GQA layout,GPU,plain,256.9592426420845,238.17576057328952,276.6952213026689
+decode,1024,int8,kv_cache_and_gqa_layout,KV cache + GQA layout,NPU,npuw,68.02186156277574,63.55689423289269,70.65905430954768
+decode,1024,int8,scaled_dot_product_attention,Scaled dot-product attention,GPU,plain,353.79836020495964,324.514473781107,382.76172280202536
+decode,1024,int8,scaled_dot_product_attention,Scaled dot-product attention,NPU,npuw,145.26702638830074,134.1431223901606,151.9730453800589
+decode,1024,int8,attention_output_and_residual,Attention output + residual,GPU,plain,14.885985035830595,14.570482462816845,15.22806997979543
+decode,1024,int8,attention_output_and_residual,Attention output + residual,NPU,npuw,9.799759716671081,9.086277214397004,10.460135782674959
+decode,1024,int8,ffn_rmsnorm,FFN RMSNorm,GPU,plain,3.9695960095548255,3.83521257674753,5.374612934045446
+decode,1024,int8,ffn_rmsnorm,FFN RMSNorm,NPU,npuw,48.422342129433574,45.728681308495666,50.19036000559141
+decode,1024,int8,ffn_gate_projection,FFN gate projection,GPU,plain,64.23981066052113,63.82745434140063,64.50593515526592
+decode,1024,int8,ffn_gate_projection,FFN gate projection,NPU,npuw,33.146246100505124,31.632002659688524,33.946308080742824
+decode,1024,int8,ffn_up_projection,FFN up projection,GPU,plain,66.40685311264055,66.05285383143637,66.77333684946528
+decode,1024,int8,ffn_up_projection,FFN up projection,NPU,npuw,25.23537653912417,23.724001994766393,25.459731060557118
+decode,1024,int8,swiglu_activation,SwiGLU activation,GPU,plain,1.942730995042246,1.8446348086844597,1.9847980047774127
+decode,1024,int8,swiglu_activation,SwiGLU activation,NPU,npuw,67.73363333581483,64.14267205992395,68.17550206215851
+decode,1024,int8,ffn_down_and_residual,FFN down projection + residual,GPU,plain,58.48699179539983,57.32920462981809,59.253295348788505
+decode,1024,int8,ffn_down_and_residual,FFN down projection + residual,NPU,plain,36.38581057421164,35.324836037611696,36.62836238985748
+decode,1024,int8,final_rmsnorm,Final RMSNorm,GPU,plain,3.9695960095548255,3.83521257674753,5.374612934045446
+decode,1024,int8,final_rmsnorm,Final RMSNorm,NPU,npuw,64.27489461228386,60.96598905143796,65.33158592906591
+decode,1024,int8,lm_head,LM head,GPU,plain,1666.3998645968018,1574.7615896753157,1699.7742071532998
+decode,1024,int8,lm_head,LM head,NPU,plain,830.7711979832296,821.3819983159981,831.5216820807932
+decode,2048,fp16,token_embedding,Token embedding,GPU,plain,1.9735724773128067,1.0210113665800078,2.013895698268004
+decode,2048,fp16,token_embedding,Token embedding,NPU,npuw,25.668771194985517,23.884416157605955,26.466073038276296
+decode,2048,fp16,pre_attention_rmsnorm,Pre-attention RMSNorm,GPU,plain,4.106989541973514,4.027791396536008,4.9339311932820165
+decode,2048,fp16,pre_attention_rmsnorm,Pre-attention RMSNorm,NPU,npuw,41.07003391197683,39.32989178512975,41.833470286307694
+decode,2048,fp16,qkv_projection,QKV projection,GPU,plain,35.51220658777931,32.97943481825348,36.511090830286925
+decode,2048,fp16,qkv_projection,QKV projection,NPU,npuw,66.73880510696235,66.53515929618801,67.96191997427609
+decode,2048,fp16,rotary_embedding,Rotary embedding (RoPE),GPU,plain,5.982629912472444,3.0802421564801357,6.08780684361931
+decode,2048,fp16,rotary_embedding,Rotary embedding (RoPE),NPU,npuw,13.659908664916799,11.978759890993242,13.940906661389965
+decode,2048,fp16,kv_cache_and_gqa_layout,KV cache + GQA layout,GPU,plain,351.0635279820469,318.4576674637602,388.8709443107088
+decode,2048,fp16,kv_cache_and_gqa_layout,KV cache + GQA layout,NPU,npuw,744.39436465458,742.9759454740996,747.2679439174653
+decode,2048,fp16,scaled_dot_product_attention,Scaled dot-product attention,GPU,plain,95.37564055003585,88.63223107405624,103.69891848285569
+decode,2048,fp16,scaled_dot_product_attention,Scaled dot-product attention,NPU,plain,681.2599600546403,679.5283702689155,681.9773941176319
+decode,2048,fp16,attention_output_and_residual,Attention output + residual,GPU,plain,24.73457611369011,24.35122737447724,25.173696228350053
+decode,2048,fp16,attention_output_and_residual,Attention output + residual,NPU,npuw,64.0308218667975,62.914485557581905,64.17192798746379
+decode,2048,fp16,ffn_rmsnorm,FFN RMSNorm,GPU,plain,5.105056832900038,4.98552492706037,5.153036690352106
+decode,2048,fp16,ffn_rmsnorm,FFN RMSNorm,NPU,npuw,124.06572744243,122.08543369269388,127.14577104182179
+decode,2048,fp16,ffn_gate_projection,FFN gate projection,GPU,plain,117.41630715670088,116.4407761614556,118.07594933173853
+decode,2048,fp16,ffn_gate_projection,FFN gate projection,NPU,plain,108.8234696699992,108.27013373765324,109.1787500913595
+decode,2048,fp16,ffn_up_projection,FFN up projection,GPU,plain,118.4373185232809,117.427562400112,118.71223345057655
+decode,2048,fp16,ffn_up_projection,FFN up projection,NPU,plain,113.5210867427204,111.5166626244168,113.87031306891116
+decode,2048,fp16,swiglu_activation,SwiGLU activation,GPU,plain,0.0,0.0,0.0
+decode,2048,fp16,swiglu_activation,SwiGLU activation,NPU,plain,7.460982597400247,7.419782022954491,7.479523806638319
+decode,2048,fp16,ffn_down_and_residual,FFN down projection + residual,GPU,plain,117.65838827862471,117.41630715670088,117.81289834867825
+decode,2048,fp16,ffn_down_and_residual,FFN down projection + residual,NPU,plain,100.72326506490334,100.18098581472512,101.4036876470447
+decode,2048,fp16,final_rmsnorm,Final RMSNorm,GPU,plain,5.105056832900038,4.98552492706037,5.153036690352106
+decode,2048,fp16,final_rmsnorm,Final RMSNorm,NPU,plain,5.5957369480501855,5.564836517215868,5.609642854978739
+decode,2048,fp16,lm_head,LM head,GPU,plain,3503.532838502913,3430.0689655696583,3538.1714904101823
+decode,2048,fp16,lm_head,LM head,NPU,plain,3291.660962483825,3282.6352299887826,3295.8890624015594
+decode,2048,int8,token_embedding,Token embedding,GPU,plain,1.0082061596679814,0.9754953269900289,1.8896807423272932
+decode,2048,int8,token_embedding,Token embedding,NPU,npuw,12.297594363556742,10.678680596448448,12.861497205092611
+decode,2048,int8,pre_attention_rmsnorm,Pre-attention RMSNorm,GPU,plain,2.8838717501614055,2.016412319335963,2.966509559999961
+decode,2048,int8,pre_attention_rmsnorm,Pre-attention RMSNorm,NPU,plain,806.1082368857183,804.3449899541455,806.5961211608177
+decode,2048,int8,qkv_projection,QKV projection,GPU,plain,19.225811667742704,18.147710874023666,19.50990653980058
+decode,2048,int8,qkv_projection,QKV projection,NPU,plain,59.468484166354614,58.78965186923856,59.75738584143224
+decode,2048,int8,rotary_embedding,Rotary embedding (RoPE),GPU,plain,3.7793614846545864,2.966509559999961,3.9019813079601158
+decode,2048,int8,rotary_embedding,Rotary embedding (RoPE),NPU,npuw,16.79671425266287,15.712705947970578,17.348065997566778
+decode,2048,int8,kv_cache_and_gqa_layout,KV cache + GQA layout,GPU,plain,487.7476634950145,469.8240704052793,501.7102370878963
+decode,2048,int8,kv_cache_and_gqa_layout,KV cache + GQA layout,NPU,npuw,132.21408534090634,125.70332587819317,140.28005091135893
+decode,2048,int8,scaled_dot_product_attention,Scaled dot-product attention,GPU,plain,636.9984485244889,603.9154896411209,672.7263442685163
+decode,2048,int8,scaled_dot_product_attention,Scaled dot-product attention,NPU,npuw,191.9236722690576,181.53757013962363,206.98037362614156
+decode,2048,int8,attention_output_and_residual,Attention output + residual,GPU,plain,13.984880704236659,13.656934577860405,14.1726055674547
+decode,2048,int8,attention_output_and_residual,Attention output + residual,NPU,plain,7.156417325625851,7.133701211378038,7.401828218164048
+decode,2048,int8,ffn_rmsnorm,FFN RMSNorm,GPU,plain,3.7793614846545864,2.966509559999961,3.9019813079601158
+decode,2048,int8,ffn_rmsnorm,FFN RMSNorm,NPU,npuw,49.65644219024823,46.37598430457612,52.04419799270033
+decode,2048,int8,ffn_gate_projection,FFN gate projection,GPU,plain,61.30786423999919,59.75979471383512,61.500575739746864
+decode,2048,int8,ffn_gate_projection,FFN gate projection,NPU,plain,26.481825166323677,26.138466774114878,26.694741781341403
+decode,2048,int8,ffn_up_projection,FFN up projection,GPU,plain,62.48388792016379,61.59855762810697,63.28553727999917
+decode,2048,int8,ffn_up_projection,FFN up projection,NPU,npuw,25.285182219574253,23.798202472085116,26.59613601933057
+decode,2048,int8,swiglu_activation,SwiGLU activation,GPU,plain,0.988836519999987,0.9448403711636466,1.0082061596679814
+decode,2048,int8,swiglu_activation,SwiGLU activation,NPU,npuw,67.63024641862029,63.76697841879216,69.7409788951335
+decode,2048,int8,ffn_down_and_residual,FFN down projection + residual,GPU,plain,57.35251815999924,55.16288742815549,57.937362917551866
+decode,2048,int8,ffn_down_and_residual,FFN down projection + residual,NPU,plain,31.96954987321269,31.682990029230155,32.258411825905895
+decode,2048,int8,final_rmsnorm,Final RMSNorm,GPU,plain,2.966509559999961,2.83452111349094,3.0246184790039443
+decode,2048,int8,final_rmsnorm,Final RMSNorm,NPU,npuw,64.88847967191947,61.02103197970542,68.19584564560733
+decode,2048,int8,lm_head,LM head,GPU,plain,1681.7539437308099,1595.1268281308298,1719.1414065708063
+decode,2048,int8,lm_head,LM head,NPU,plain,689.1364832084153,687.4556769630593,689.5896560816606
