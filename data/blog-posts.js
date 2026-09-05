@@ -5,9 +5,9 @@ const blogPosts = [
     title: 'Compile Ahead, Not Up Front: JIT Specialization for Static-Shape NPUs',
     date: 'September 5, 2026',
     category: 'research',
-    excerpt: 'How one-ahead JIT hides NPU specialization behind LLM decoding—cutting the measured critical path by 8.37% with zero boundary wait.',
+    excerpt: 'From direct 8K allocation to copy-and-grow KV and one-ahead JIT: how the design evolved, what each stage fixed, and what still remains.',
     url: 'blog/posts/npu-jit-static-shapes.html',
-    readTime: '9 min',
+    readTime: '11 min',
     cover: 'images/papers/wuklab/npu-jit-sketch-one-ahead.png'
   },
 
