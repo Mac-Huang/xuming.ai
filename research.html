@@ -88,25 +88,25 @@
               <tr style="background-color:#ffffd0;">
                 <td style="padding:20px;width:25%;vertical-align:middle"></td>
                 <td style="padding:20px;width:75%;vertical-align:middle">
-                  <papertitle>Compiler-Aware Heterogeneous Edge AI</papertitle>
+                  <papertitle>JIT Specialization for Static-Shape NPUs</papertitle>
                   <br>
-                  <strong>Xuming Huang</strong> (advised by
-                  <a href="https://cseweb.ucsd.edu/~yiying/" target="_blank" rel="noopener noreferrer">Yiying Zhang</a>,
-                  <a href="https://wuklab.io/" target="_blank" rel="noopener noreferrer">WukLab</a> @ UC San Diego)
+                  Vikranth Srivatsa, <strong>Xuming Huang</strong>, *Prof.
+                  <a href="https://cseweb.ucsd.edu/~yiying/" target="_blank" rel="noopener noreferrer">Yiying Zhang</a>
                   <br>
-                  <em>WukLab Research Internship — Ongoing, Summer 2026</em>
+                  <em><a href="https://wuklab.io/" target="_blank" rel="noopener noreferrer">WukLab</a> @ UC San Diego — 2026 · *advising faculty</em>
                   <br>
-                  <a href="demos/npuw-pyramid-jit.html">project</a> /
-                  <a href="images/papers/wuklab/edge-ai-research-evidence.png" target="_blank" rel="noopener noreferrer">evidence</a> /
+                  <a href="blog/posts/npu-jit-static-shapes.html"><strong>tech blog</strong></a> /
+                  <a href="demos/npuw-pyramid-jit.html">full experiments</a> /
+                  <a href="demos/data/npuw-pyramid-jit-live.json">campaign data</a> /
                   <a href="https://github.com/Mac-Huang/npu_compiler/commit/7883fe9ab694c0ecc99660d9be4817ee814932e1" target="_blank" rel="noopener noreferrer">compiler patch</a> /
                   <a href="https://github.com/Mac-Huang/npu_compiler/tree/codex/sorting-cache-pr" target="_blank" rel="noopener noreferrer">PR branch</a> /
                   <a href="https://github.com/openvinotoolkit/npu_compiler" target="_blank" rel="noopener noreferrer">OpenVINO NPU Compiler</a>
                   <p>
-                    Building a correctness-first runtime for private edge agents that coordinates CPU/iGPU/NPU placement,
-                    growing KV state, and one-ahead NPU specialization. Across 149 reproducible experiment runs, I traced the
-                    bottleneck into OpenVINO's NPU compiler, cached 33.33M repeated dependency-vector sorts, and reduced full
-                    compile time by 3.34–3.68% in 12/12 production A/B trials. A real 1K→2K future variant compiled in 14.68 s
-                    and switched with zero boundary wait.
+                    A correctness-first runtime that grows an LLM through 1K→2K→4K→8K NPU specializations while the CPU
+                    compiles exactly one step ahead. On NUC16, five counterbalanced pairs cut foreground compile wall time by
+                    22.49% and the measured protocol critical path by 8.37%, with 15/15 successor deadlines met and 20/20
+                    boundary outputs matching the eager control. Separately, compiler tracing and memoization reduced full
+                    compile time by 3.34–3.68% in 12/12 A/B trials.
                   </p>
                 </td>
               </tr>

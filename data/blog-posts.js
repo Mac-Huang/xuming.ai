@@ -1,6 +1,17 @@
 // Blog posts data - simple and clean
 const blogPosts = [
   {
+    id: 'npu-jit-static-shapes',
+    title: 'Compile Ahead, Not Up Front: JIT Specialization for Static-Shape NPUs',
+    date: 'September 5, 2026',
+    category: 'research',
+    excerpt: 'How one-ahead JIT hides NPU specialization behind LLM decoding—cutting the measured critical path by 8.37% with zero boundary wait.',
+    url: 'blog/posts/npu-jit-static-shapes.html',
+    readTime: '9 min',
+    cover: 'images/papers/wuklab/npu-jit-sketch-one-ahead.png'
+  },
+
+  {
     id: 'linuxguard-journey',
     title: 'My Journey with LinuxGuard',
     date: 'November 19, 2025',
@@ -84,6 +95,7 @@ function getRecentPosts(limit = 5) {
 // Blog categories - simplified
 const blogCategories = [
   { label: 'All', value: 'all' },
+  { label: 'Research', value: 'research' },
   { label: 'Academic', value: 'education' },
   { label: 'Life', value: 'life' },
   { label: 'Career', value: 'career' }

@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Compile Ahead, Not Up Front — WukLab</title>
+  <meta name="author" content="Vikranth Srivatsa, Xuming Huang, Yiying Zhang">
+  <meta name="description" content="A one-ahead JIT runtime hides NPU specialization behind LLM decoding, cutting the measured critical path by 8.37% with zero boundary wait.">
+  <meta property="og:title" content="Compile Ahead, Not Up Front">
+  <meta property="og:description" content="JIT specialization for long-context LLM inference on static-shape NPUs.">
+  <meta property="og:image" content="../../images/papers/wuklab/npu-jit-sketch-one-ahead.png">
+  <link rel="icon" type="image/png" href="../../images/favicon.png">
+  <style>
+    :root {
+      --ink: #16212b;
+      --muted: #5d6972;
+      --paper: #f7f5ef;
+      --card: #fffdf8;
+      --line: #d9d6cc;
+      --blue: #1667d9;
+      --blue-soft: #eaf2ff;
+      --red: #d83b45;
+      --gold: #d88b00;
+      --green: #18794e;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% 0%, rgba(22, 103, 217, .08), transparent 28rem),
+        var(--paper);
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.68;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: var(--blue); text-underline-offset: 3px; }
+    a:hover { text-decoration-thickness: 2px; }
+
+    .site-nav {
+      width: min(1120px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 22px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(22, 33, 43, .12);
+      font-size: .92rem;
+    }
+
+    .site-nav .mark {
+      color: var(--ink);
+      font-weight: 800;
+      letter-spacing: -.02em;
+      text-decoration: none;
+    }
+
+    .site-nav .links { display: flex; gap: 22px; }
+    .site-nav .links a { color: var(--muted); text-decoration: none; }
+    .site-nav .links a:hover { color: var(--blue); }
+
+    .hero {
+      width: min(1120px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 88px 0 54px;
+    }
+
+    .eyebrow {
+      margin: 0 0 18px;
+      color: var(--blue);
+      font-family: var(--mono);
+      font-size: .77rem;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 920px;
+      margin: 0;
+      font-size: clamp(3rem, 8vw, 6.7rem);
+      line-height: .94;
+      letter-spacing: -.066em;
+    }
+
+    h1 span { color: var(--blue); }
+
+    .deck {
+      max-width: 760px;
+      margin: 30px 0 24px;
+      color: #33414b;
+      font-size: clamp(1.16rem, 2.3vw, 1.55rem);
+      line-height: 1.45;
+    }
+
+    .byline { margin: 0; font-weight: 720; }
+    .byline-note, .post-meta { color: var(--muted); font-size: .88rem; }
+    .post-meta { margin-top: 8px; font-family: var(--mono); }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 52px;
+    }
+
+    .metric {
+      min-height: 126px;
+      padding: 22px;
+      background: rgba(255, 253, 248, .82);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+    }
+
+    .metric strong {
+      display: block;
+      color: var(--blue);
+      font-size: 2rem;
+      line-height: 1;
+      letter-spacing: -.04em;
+    }
+
+    .metric span { display: block; margin-top: 12px; color: var(--muted); font-size: .86rem; line-height: 1.35; }
+
+    article {
+      width: min(760px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 28px 0 100px;
+    }
+
+    article p, article li { font-size: 1.06rem; }
+    article p { margin: 0 0 1.35rem; }
+    article ul { padding-left: 1.25rem; }
+    article li + li { margin-top: .55rem; }
+
+    h2 {
+      margin: 4.5rem 0 1.15rem;
+      font-size: clamp(1.8rem, 4vw, 2.55rem);
+      line-height: 1.1;
+      letter-spacing: -.045em;
+    }
+
+    h3 { margin: 2rem 0 .7rem; font-size: 1.2rem; letter-spacing: -.015em; }
+
+    .lede {
+      margin-bottom: 4rem;
+      padding: 30px 32px;
+      background: var(--ink);
+      color: white;
+      border-radius: 18px;
+      font-size: 1.22rem;
+      line-height: 1.55;
+    }
+
+    .lede b { color: #8ec5ff; }
+
+    .figure-wide {
+      width: min(1120px, calc(100vw - 40px));
+      margin: 3rem 0 3.5rem;
+      position: relative;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    figure { margin: 0; }
+    figure a { display: block; }
+    figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: 0 18px 50px rgba(28, 37, 44, .09);
+    }
+
+    figcaption {
+      max-width: 760px;
+      margin: 13px auto 0;
+      color: var(--muted);
+      font-size: .86rem;
+      line-height: 1.5;
+    }
+
+    .choice-grid, .lesson-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 2rem 0;
+    }
+
+    .choice, .lesson {
+      padding: 23px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--card);
+    }
+
+    .choice b, .lesson b { display: block; margin-bottom: 7px; }
+    .choice span, .lesson span { color: var(--muted); font-size: .92rem; line-height: 1.48; }
+
+    .equation {
+      margin: 2.2rem 0;
+      padding: 24px;
+      border-left: 5px solid var(--blue);
+      background: var(--blue-soft);
+      border-radius: 0 14px 14px 0;
+    }
+
+    .equation code { display: block; margin-top: 7px; font-family: var(--mono); font-size: .98rem; }
+
+    .pipeline {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      width: min(1000px, calc(100vw - 40px));
+      margin: 2.4rem 0 3rem;
+      position: relative;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .stage {
+      position: relative;
+      min-height: 168px;
+      padding: 20px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+    }
+
+    .stage:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      z-index: 2;
+      top: 50%;
+      right: -19px;
+      width: 28px;
+      color: var(--blue);
+      background: var(--paper);
+      text-align: center;
+      font-weight: 900;
+    }
+
+    .stage .number { color: var(--blue); font-family: var(--mono); font-size: .76rem; font-weight: 800; }
+    .stage b { display: block; margin: 11px 0 7px; line-height: 1.25; }
+    .stage span { display: block; color: var(--muted); font-size: .84rem; line-height: 1.4; }
+
+    .method-strip {
+      margin: 2rem 0 2.4rem;
+      padding: 22px 24px;
+      background: #eeeae0;
+      border-radius: 14px;
+      font-family: var(--mono);
+      font-size: .86rem;
+      line-height: 1.65;
+    }
+
+    .result-table-wrap { overflow-x: auto; margin: 1.5rem 0 1rem; }
+    .result-table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+    .result-table th, .result-table td { padding: 14px 12px; border-bottom: 1px solid var(--line); text-align: right; }
+    .result-table th:first-child, .result-table td:first-child { padding-left: 0; text-align: left; }
+    .result-table th { color: var(--muted); font-family: var(--mono); font-size: .72rem; letter-spacing: .04em; text-transform: uppercase; }
+    .result-table .win { color: var(--green); font-weight: 800; }
+
+    .result-note { color: var(--muted); font-size: .83rem; }
+
+    .compiler-note {
+      width: min(920px, calc(100vw - 40px));
+      margin: 3.2rem 0;
+      padding: 32px;
+      position: relative;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #fff6df;
+      border: 1px solid #e8d8aa;
+      border-radius: 18px;
+    }
+
+    .compiler-note h3 { margin-top: 0; }
+    .compiler-note p:last-child { margin-bottom: 0; }
+
+    .caveat {
+      margin: 2rem 0;
+      padding: 24px 26px;
+      border: 1px solid #ead2d4;
+      border-radius: 14px;
+      background: #fff5f5;
+    }
+
+    .caveat b { color: var(--red); }
+
+    .resources {
+      margin-top: 4rem;
+      padding: 28px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--card);
+    }
+
+    .resources h2 { margin-top: 0; font-size: 1.55rem; }
+    .resources ul { margin-bottom: 0; }
+
+    .article-footer {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: .86rem;
+    }
+
+    @media (max-width: 820px) {
+      .metrics { grid-template-columns: 1fr 1fr; }
+      .pipeline { grid-template-columns: 1fr 1fr; }
+      .stage:not(:last-child)::after { display: none; }
+    }
+
+    @media (max-width: 560px) {
+      .site-nav { width: min(100% - 28px, 1120px); }
+      .site-nav .links { gap: 13px; }
+      .hero { width: min(100% - 28px, 1120px); padding-top: 58px; }
+      article { width: min(100% - 28px, 760px); }
+      h1 { font-size: clamp(2.75rem, 16vw, 4.2rem); }
+      .metrics, .choice-grid, .lesson-grid, .pipeline { grid-template-columns: 1fr; }
+      .metric { min-height: 0; }
+      .lede, .compiler-note { padding: 24px; }
+      .figure-wide, .pipeline, .compiler-note { width: calc(100vw - 28px); }
+    }
+  </style>
+</head>
+<body>
+  <nav class="site-nav" aria-label="Site navigation">
+    <a class="mark" href="../../index.html">Xuming Huang</a>
+    <div class="links">
+      <a href="../../research.html#wuklab">Research</a>
+      <a href="../../blog.html">Blog</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <p class="eyebrow">WukLab systems note · Edge AI</p>
+    <h1>Compile ahead,<br><span>not up front.</span></h1>
+    <p class="deck">A CPU compiler and an NPU decoder can cooperate: specialize only the context window needed next, build it while tokens are running, then switch without stopping at the boundary.</p>
+    <p class="byline">Vikranth Srivatsa, Xuming Huang, *Prof. Yiying Zhang</p>
+    <p class="byline-note">* advising faculty · WukLab, UC San Diego</p>
+    <p class="post-meta">September 5, 2026 · 9 min read</p>
+
+    <div class="metrics" aria-label="Key experiment results">
+      <div class="metric"><strong>22.49%</strong><span>less foreground compilation wall time</span></div>
+      <div class="metric"><strong>8.37%</strong><span>shorter measured protocol critical path</span></div>
+      <div class="metric"><strong>15 / 15</strong><span>successor artifacts ready before their boundary</span></div>
+      <div class="metric"><strong>20 / 20</strong><span>boundary top-1 outputs matched the eager control</span></div>
+    </div>
+  </header>
+
+  <article>
+    <div class="lede"><b>The result:</b> one-ahead JIT moved 20.65 seconds of successor compilation behind useful NPU decoding. Across five counterbalanced pairs, this removed 18.96 seconds from the foreground compile path and 19.46 seconds from the measured critical path, without a detectable decode regression.</div>
+
+    <h2>The static-shape tax</h2>
+    <p>Long-context generation is dynamic: each decoded token makes the KV cache a little larger. The NPU compiler sees something different. It wants concrete tensor shapes and turns each supported context capacity into a separate compiled artifact.</p>
+    <p>That creates an uncomfortable choice:</p>
+
+    <div class="choice-grid">
+      <div class="choice"><b>Compile the largest window</b><span>Simple, but pay the biggest compilation and reservation costs before the first useful token.</span></div>
+      <div class="choice"><b>Start with a small window</b><span>Fast startup, but a naïve runtime stops to compile whenever the sequence outgrows it.</span></div>
+    </div>
+
+    <p>Vikranth’s first sketch framed the design space as a ladder of compiled capacities—1K, 2K, 4K, 8K and beyond—and asked when to compile, how to carry live KV state forward, and whether the next allocation could be prepared cheaply.</p>
+
+    <figure class="figure-wide">
+      <a href="../../images/papers/wuklab/npu-jit-sketch-copy-grow.png" target="_blank" rel="noopener noreferrer">
+        <img src="../../images/papers/wuklab/npu-jit-sketch-copy-grow.png" alt="Hand-drawn context-window ladder comparing preallocation and incremental KV growth" loading="lazy">
+      </a>
+      <figcaption><b>Sketch 1 · Capacity as a ladder.</b> Starting small avoids committing the maximum context from token one; the open question is how to grow without turning each boundary into a stall. Drawing by Vikranth Srivatsa.</figcaption>
+    </figure>
+
+    <h2>Turn compilation into a deadline</h2>
+    <p>The central move is scheduling, not a new compiler backend. Compile only the smallest variant before decode. Once that variant starts running on the NPU, launch compilation of the immediate successor on the CPU. The tokens remaining before the current capacity is full become a natural latency-hiding window.</p>
+
+    <div class="equation">
+      The switch is stall-free when the next artifact beats its boundary:
+      <code>T_compile(next) &lt; T_decode(tokens remaining)</code>
+    </div>
+
+    <div class="pipeline" aria-label="One-ahead JIT pipeline">
+      <div class="stage"><span class="number">01</span><b>Boot the 1K artifact</b><span>Pay for the first usable specialization, not the whole pyramid.</span></div>
+      <div class="stage"><span class="number">02</span><b>Decode on the NPU</b><span>The active artifact keeps producing tokens.</span></div>
+      <div class="stage"><span class="number">03</span><b>Compile 2K on the CPU</b><span>Exactly one successor is prepared in the background.</span></div>
+      <div class="stage"><span class="number">04</span><b>Move state and switch</b><span>At 1K, consume the ready 2K artifact; then repeat for 4K and 8K.</span></div>
+    </div>
+
+    <p>One-ahead matters. Compiling every future size in parallel front-loads work and memory. Waiting until the boundary is too late. Staying one step ahead bounds speculative work while giving compilation the longest useful runway.</p>
+
+    <figure class="figure-wide">
+      <a href="../../images/papers/wuklab/npu-jit-sketch-one-ahead.png" target="_blank" rel="noopener noreferrer">
+        <img src="../../images/papers/wuklab/npu-jit-sketch-one-ahead.png" alt="Hand-drawn one-ahead JIT timeline with LLM inference and background compilation" loading="lazy">
+      </a>
+      <figcaption><b>Sketch 2 · Overlap the timelines.</b> The red bars are useful LLM inference; the blue boxes are later compiled shapes. The prototype turns those blue boxes into background work and checks readiness at every transition. Drawing by Vikranth Srivatsa.</figcaption>
+    </figure>
+
+    <h2>What we ran on NUC16</h2>
+    <p>We evaluated the idea on the NUC16 machine with Intel NPU 5 and OpenVINO 2026.3. The workload used Qwen2.5-0.5B in FP16, a 128-token prompt, and 8,064 teacher-forced decoded tokens. The runtime grew through four capacities: 1K → 2K → 4K → 8K.</p>
+
+    <div class="method-strip">I1 control = compile all four copy-on-grow variants before decode<br>I2 treatment = compile 1K first, then compile 2K / 4K / 8K one step ahead<br>Design = N=5 paired, Williams-order counterbalanced runs</div>
+
+    <p>The control and treatment use the same capacity ladder and the same copy-on-grow state path. Only compile scheduling changes. That isolates the question we care about: how much wall time can be removed from the foreground by moving successor compilation into decode?</p>
+
+    <div class="result-table-wrap">
+      <table class="result-table">
+        <thead>
+          <tr><th>Endpoint</th><th>I1 eager</th><th>I2 one-ahead</th><th>Paired effect</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Foreground compile wall</td><td>84.29 s</td><td>65.33 s</td><td class="win">−18.96 s · 22.49%</td></tr>
+          <tr><td>Protocol critical path</td><td>232.43 s</td><td>212.98 s</td><td class="win">−19.46 s · 8.37%</td></tr>
+          <tr><td>Decode inference</td><td>143.32 s</td><td>142.94 s</td><td>−0.38 s · 0.26%</td></tr>
+          <tr><td>Boundary wait</td><td>—</td><td>0.00 s</td><td class="win">15 / 15 ready</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="result-note">Paired-t 95% CI: compile savings 17.95–19.96 s; critical-path savings 18.71–20.21 s; decode change −1.05–0.29 s. With five pairs, the minimum exact two-sided sign-flip p-value is 0.0625, so we emphasize effect size, interval, replication, and boundary evidence—not a p&lt;.05 claim.</p>
+
+    <h3>Correctness is a transition property</h3>
+    <p>A model that survives startup can still fail when live state crosses a compiled-shape boundary. We therefore checked the boundary logits against the eager control. All 20 comparisons preserved the top-1 token, with minimum cosine similarity reported as 1.0. Device checks also confirmed that successor variants remained placed on the NPU.</p>
+
+    <div class="compiler-note">
+      <h3>Make the work smaller, then hide what remains</h3>
+      <p>Tracing the OpenVINO NPU compiler exposed 33.33 million repeated dependency-vector sorts in the scheduling path; 94.2% were cache hits under memoization. The resulting compiler patch reduced full compile time by 3.34–3.68% in 12/12 production A/B trials.</p>
+      <p>The two levers compound: compiler work attacks <em>how much</em> CPU time a specialization needs, while one-ahead JIT changes <em>where that time lands</em> on the application’s critical path.</p>
+    </div>
+
+    <h2>What this result does—and does not—show</h2>
+    <p>The campaign demonstrates a latency result: successor compilation can be hidden behind decode, all measured deadlines can be met, and the handoff can preserve outputs. It does not yet establish a memory win.</p>
+
+    <div class="caveat"><b>Memory caveat.</b> Relative to eager copy-on-grow, the one-ahead prototype’s time-weighted NPU allocation was 8.2% higher and peak process RSS was about 5.6% higher in this campaign. Scheduling reduced latency; allocation and lifetime management remain separate optimization problems.</div>
+
+    <p>The drawing below points toward that next layer: decouple logical KV addresses from physical storage so a larger specialization can inherit existing pages rather than recopying all prior state. That remapping path is a design direction, not a measured result reported here.</p>
+
+    <figure class="figure-wide">
+      <a href="../../images/papers/wuklab/npu-jit-sketch-remap.png" target="_blank" rel="noopener noreferrer">
+        <img src="../../images/papers/wuklab/npu-jit-sketch-remap.png" alt="Hand-drawn future design for virtual allocation and fast switching between context capacities" loading="lazy">
+      </a>
+      <figcaption><b>Sketch 3 · Beyond copying.</b> A virtual allocation table could make context growth a mapping operation and reduce switch cost independently of batch size. This remains future work. Drawing by Vikranth Srivatsa.</figcaption>
+    </figure>
+
+    <h2>Three lessons</h2>
+    <div class="lesson-grid">
+      <div class="lesson"><b>Static does not have to mean up front.</b><span>Shape-specialized artifacts can be generated incrementally if the application exposes a predictable next boundary.</span></div>
+      <div class="lesson"><b>The decoder is a compile budget.</b><span>Tokens-to-boundary translate directly into seconds available for background specialization.</span></div>
+      <div class="lesson"><b>State is part of correctness.</b><span>Validate logits and device placement at the transition, not only final text or steady-state throughput.</span></div>
+      <div class="lesson"><b>Latency and memory are different claims.</b><span>Hiding compilation works today; page-aware KV remapping is the next systems problem.</span></div>
+    </div>
+
+    <p>The larger idea is broader than this model or device: when an accelerator requires static programs but the workload evolves predictably, the runtime can treat future specializations as deadline-driven background jobs. Compile the next world while the current one is still useful.</p>
+
+    <section class="resources">
+      <h2>Evidence and implementation</h2>
+      <ul>
+        <li><a href="../../demos/npuw-pyramid-jit.html">Open the full interactive experiment dashboard</a></li>
+        <li><a href="../../demos/data/npuw-pyramid-jit-live.json">Inspect the complete N=5 campaign data</a></li>
+        <li><a href="https://github.com/Mac-Huang/npu_compiler/commit/7883fe9ab694c0ecc99660d9be4817ee814932e1" target="_blank" rel="noopener noreferrer">View the dependency-sort cache patch</a></li>
+        <li><a href="https://github.com/Mac-Huang/npu_compiler/tree/codex/sorting-cache-pr" target="_blank" rel="noopener noreferrer">Browse the compiler experiment branch</a></li>
+      </ul>
+    </section>
+
+    <footer class="article-footer">Research and experiments by Vikranth Srivatsa and Xuming Huang, advised by Prof. Yiying Zhang. Original concept drawings by Vikranth Srivatsa.</footer>
+  </article>
+</body>
+</html>
