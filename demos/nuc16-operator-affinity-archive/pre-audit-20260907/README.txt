@@ -1,0 +1,1 @@
+SUPERSEDED: OpenVINO 2026.0, inflated compiled prompt limits, reconstructed latency, invalid/mixed-trace oracle. Do not combine with current E2E data. See ../../nuc16-operator-affinity.html#e2e-corrected.

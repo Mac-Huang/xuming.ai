@@ -1,0 +1,24 @@
+{
+  "status": "pass",
+  "scope": "Two FP16 E2E comparison charts; not a revalidation of all historical isolated operator or W8A16 data.",
+  "accepted_processes": 48,
+  "timed_requests": 240,
+  "energy_requests": 240,
+  "model": "Qwen2.5-0.5B FP16 IR; GPU default inference precision, NPU f16 hint",
+  "runtime": "2026.3.0-22451-8a17657b995-releases/2026/3",
+  "inputs": "Identical numpy seed 20260903; prompt W and 32 fixed decode inputs.",
+  "timer": "Whole prefill + 32 decode infer calls, including Python feed and first decode. Reset/compile/warmup/output summaries excluded from latency.",
+  "throughput": "(W+32)/request_seconds; processed-input work rate, NOT output-generation speed or concurrency throughput.",
+  "energy": "Median of 3 process-level means: separate 5-request RAPL psys windows minus contemporaneous 8.617 W idle. Includes state reset/output-summary CPU work, unlike latency timer.",
+  "uncertainty": "Whiskers are range of 3 process medians (energy: process means), not confidence intervals.",
+  "correctness_scope": "Final-step logits vs same-window GPU r1; not all positions, CPU reference, or language-model quality.",
+  "minimum_cosine": 0.9997430410614053,
+  "maximum_relative_l2": 0.02283414291372768,
+  "oracle_status": "WITHDRAWN at all windows. Cannot claim fused optimal latency or energy from invalid/mixed-runtime isolated traces.",
+  "canonical_sha256": "32eee0d41ae2853d8e4216ac21e55a86680fde0e80ee6045bf10191e2b48863d",
+  "control_runtime_versions": [
+    "2026.0.0-20965-c6d6a13a886-releases/2026/0",
+    "2026.3.0-22451-8a17657b995-releases/2026/3"
+  ],
+  "control_timed_requests": 60
+}
