@@ -1,0 +1,32 @@
+[
+  {
+    "tag": "mha__npu__fp16__prefill__w32736__rep1",
+    "stage": "prefill",
+    "window": 32736,
+    "device": "NPU",
+    "replicate": 1,
+    "returncode": null,
+    "timed_out": true,
+    "error_tail": ""
+  },
+  {
+    "tag": "mha__npu__fp16__prefill__w32736__rep2",
+    "stage": "prefill",
+    "window": 32736,
+    "device": "NPU",
+    "replicate": 2,
+    "returncode": null,
+    "timed_out": true,
+    "error_tail": ""
+  },
+  {
+    "tag": "mha__npu__fp16__prefill__w32736__rep3",
+    "stage": "prefill",
+    "window": 32736,
+    "device": "NPU",
+    "replicate": 3,
+    "returncode": null,
+    "timed_out": true,
+    "error_tail": ""
+  }
+]

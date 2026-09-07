@@ -1,0 +1,11 @@
+stage,window,valid_comparison,gpu_median_ms,npu_median_ms,npu_speedup_over_gpu,winner,correctness,sampled_cpu_gpu_pass,sampled_cpu_npu_pass
+prefill,2048,True,9.36221145093441,7.042393088340759,1.3294076791075884,NPU,True,True,True
+prefill,4096,False,32.79246762394905,27.517450973391533,,,False,True,False
+prefill,8192,False,128.62368114292622,215.65506421029568,,,False,True,False
+prefill,16384,False,519.7894237935543,844.2997206002474,,,False,True,False
+prefill,32736,False,1972.7572407573462,,,,,False,
+decode,2048,True,0.6451960653066635,1.124560832977295,0.5737315815974983,GPU,True,True,True
+decode,4096,False,1.1182595044374466,1.532791182398796,,,False,True,False
+decode,8192,False,2.1081045269966125,2.918832004070282,,,False,True,False
+decode,16384,False,4.220630973577499,1.308400183916092,,,False,True,False
+decode,32736,False,10.172219946980476,2.3939907550811768,,,False,True,False

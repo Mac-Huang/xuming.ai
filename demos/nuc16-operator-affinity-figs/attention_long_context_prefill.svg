@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="560" viewBox="0 0 1180 560">
+<rect width="100%" height="100%" fill="#fff"/>
+<text x="92" y="38" font-family="Arial,sans-serif" font-size="26" font-weight="700">Corrected FP16 multi-head attention · prefill</text>
+<text x="92" y="62" font-family="Arial,sans-serif" font-size="14" fill="#526174">OpenVINO 2026.3 · compilation excluded · logarithmic latency axis</text>
+<rect x="920" y="28" width="16" height="16" rx="2" fill="#4d7cfe"/>
+<text x="943" y="42" font-family="Arial,sans-serif" font-size="14">GPU</text>
+<rect x="1030" y="28" width="16" height="16" rx="2" fill="#f59e0b"/>
+<text x="1053" y="42" font-family="Arial,sans-serif" font-size="14">NPU</text>
+<line x1="92" y1="466.8" x2="1148" y2="466.8" stroke="#e1e7ef"/>
+<text x="80" y="471.8" text-anchor="end" font-family="Arial,sans-serif" font-size="13" fill="#526174">5</text>
+<line x1="92" y1="425.4" x2="1148" y2="425.4" stroke="#e1e7ef"/>
+<text x="80" y="430.4" text-anchor="end" font-family="Arial,sans-serif" font-size="13" fill="#526174">10</text>
+<line x1="92" y1="384.0" x2="1148" y2="384.0" stroke="#e1e7ef"/>
+<text x="80" y="389.0" text-anchor="end" font-family="Arial,sans-serif" font-size="13" fill="#526174">20</text>
+<line x1="92" y1="329.2" x2="1148" y2="329.2" stroke="#e1e7ef"/>
+<text x="80" y="334.2" text-anchor="end" font-family="Arial,sans-serif" font-size="13" fill="#526174">50</text>
+<line x1="92" y1="287.8" x2="1148" y2="287.8" stroke="#e1e7ef"/>
+<text x="80" y="292.8" text-anchor="end" font-family="Arial,sans-serif" font-size="13" fill="#526174">100</text>
+<line x1="92" y1="246.4" x2="1148" y2="246.4" stroke="#e1e7ef"/>
+<text x="80" y="251.4" text-anchor="end" font-family="Arial,sans-serif" font-size="13" fill="#526174">200</text>
+<line x1="92" y1="191.7" x2="1148" y2="191.7" stroke="#e1e7ef"/>
+<text x="80" y="196.7" text-anchor="end" font-family="Arial,sans-serif" font-size="13" fill="#526174">500</text>
+<line x1="92" y1="150.3" x2="1148" y2="150.3" stroke="#e1e7ef"/>
+<text x="80" y="155.3" text-anchor="end" font-family="Arial,sans-serif" font-size="13" fill="#526174">1000</text>
+<line x1="92" y1="108.9" x2="1148" y2="108.9" stroke="#e1e7ef"/>
+<text x="80" y="113.9" text-anchor="end" font-family="Arial,sans-serif" font-size="13" fill="#526174">2000</text>
+<rect x="138.8" y="429.3" width="56.0" height="48.7" rx="2" fill="#4d7cfe" fill-opacity="1"/>
+<text x="166.8" y="422.3" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#334155">9.36</text>
+<rect x="200.4" y="446.3" width="56.0" height="31.7" rx="2" fill="#f59e0b" fill-opacity="1"/>
+<text x="228.4" y="439.3" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#334155">7.04</text>
+<text x="197.6" y="505" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#334155">2K</text>
+<rect x="350.0" y="354.4" width="56.0" height="123.6" rx="2" fill="#4d7cfe" fill-opacity="1"/>
+<text x="378.0" y="347.4" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#334155">32.79</text>
+<rect x="411.6" y="364.9" width="56.0" height="113.1" rx="2" fill="#f59e0b" fill-opacity="0.30" stroke="#b91c1c" stroke-width="2" stroke-dasharray="5 3"/>
+<text x="439.6" y="357.9" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#334155">27.52†</text>
+<text x="408.8" y="505" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#334155">4K</text>
+<rect x="561.2" y="272.8" width="56.0" height="205.2" rx="2" fill="#4d7cfe" fill-opacity="1"/>
+<text x="589.2" y="265.8" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#334155">129</text>
+<rect x="622.8" y="241.9" width="56.0" height="236.1" rx="2" fill="#f59e0b" fill-opacity="0.30" stroke="#b91c1c" stroke-width="2" stroke-dasharray="5 3"/>
+<text x="650.8" y="234.9" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#334155">216†</text>
+<text x="620.0" y="505" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#334155">8K</text>
+<rect x="772.4" y="189.4" width="56.0" height="288.6" rx="2" fill="#4d7cfe" fill-opacity="1"/>
+<text x="800.4" y="182.4" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#334155">520</text>
+<rect x="834.0" y="160.4" width="56.0" height="317.6" rx="2" fill="#f59e0b" fill-opacity="0.30" stroke="#b91c1c" stroke-width="2" stroke-dasharray="5 3"/>
+<text x="862.0" y="153.4" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#334155">844†</text>
+<text x="831.2" y="505" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#334155">16K</text>
+<rect x="983.6" y="109.7" width="56.0" height="368.3" rx="2" fill="#4d7cfe" fill-opacity="0.30" stroke="#b91c1c" stroke-width="2" stroke-dasharray="5 3"/>
+<text x="1011.6" y="102.7" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#334155">1973†</text>
+<rect x="1045.2" y="455.0" width="56.0" height="23" rx="2" fill="#f8fafc" stroke="#f59e0b" stroke-dasharray="5 4"/>
+<text x="1073.2" y="471.0" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#64748b">N/A</text>
+<text x="1042.4" y="505" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#334155">32K</text>
+<line x1="92" y1="478" x2="1148" y2="478" stroke="#334155"/>
+<line x1="92" y1="78" x2="92" y2="478" stroke="#334155"/>
+<text x="620.0" y="538" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" fill="#334155">Context window (tokens)</text>
+<text x="24" y="278.0" text-anchor="middle" transform="rotate(-90 24 278.0)" font-family="Arial,sans-serif" font-size="16" fill="#334155">Median latency (ms, log scale)</text>
+<text x="1148" y="538" text-anchor="end" font-family="Arial,sans-serif" font-size="12" fill="#b91c1c">† measured, rejected by CPU-reference gate</text>
+</svg>
