@@ -4,7 +4,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="Latency, throughput, net system energy, and operator work rate for Qwen2.5-0.5B across Intel Xe3 iGPU and NPU 5.">
 <meta property="og:title" content="Three main LLM blocks on Intel NPU 5 vs Xe3">
-<meta property="og:description" content="Audited FP16 end-to-end latency, work throughput and system energy; historical operator study with explicit corrections.">
+<meta property="og:description" content="Focused FP16 MHA-at-2K compute-only bound; historical operator study with explicit corrections.">
 <title>Main LLM blocks · NPU 5 vs Xe3</title>
 <style>
 :root{--bg:#080d14;--panel:#101822;--panel2:#0d141d;--line:#243141;--text:#e8eef6;--muted:#91a0b3;--blue:#4d7cfe;--cyan:#38bdf8;--gold:#f59e0b;--red:#f43f5e;--green:#10b981}
@@ -25,9 +25,9 @@ h2{font-size:22px;margin:46px 0 10px;letter-spacing:-.02em}h3{font-size:17px;mar
 .method{color:var(--muted);font-size:13px;border-top:1px solid var(--line);margin-top:46px;padding-top:24px}.downloads{display:flex;gap:16px;flex-wrap:wrap;margin-top:13px}
 @media(max-width:820px){.kpis{grid-template-columns:1fr 1fr}.chart-grid,.callouts,.caveats{grid-template-columns:1fr}}@media(max-width:520px){.kpis{grid-template-columns:1fr}.wrap{padding:24px 14px 60px}}
 </style></head><body><main class="wrap">
-<aside id="e2e-audit-notice" class="verdict"><b>Measurement correction · September 7, 2026</b><p><a href="#e2e-corrected">Go to the audited E2E comparison.</a> The earlier charts mixed runtimes, compiled prompt limits and timing definitions. Numeric oracle claims are withdrawn. Other operator and concurrency charts remain historical, not newly validated; their original 2.50× MHA claim used an invalid GPU baseline (corrected standalone result: 1.55×).</p></aside>
+<aside id="e2e-audit-notice" class="verdict"><b>Focused E2E result · September 7, 2026</b><p><a href="#e2e-corrected">Go to the retained 2K comparison.</a> The page now keeps only the validated FP16 MHA-at-2K NPU candidate and tests it with a zero-switch, compute-only bound.</p></aside>
 <a class="back" href="../research.html">← research</a>
-<div class="eyebrow">Historical operator study · E2E corrected 7 September 2026</div>
+<div class="eyebrow">Historical operator study · focused E2E bound 7 September 2026</div>
 <h1>QKV, attention, or FFN: where does the NPU actually win?</h1>
 <p class="dek">Qwen2.5-0.5B on Intel Xe3 iGPU and NPU 5. The original FP16/W8A16 study spans 128–2048 tokens; a new corrected FP16 attention sweep reaches the 32K request bucket. Compilation is excluded.</p>
 <div class="thesis"><b>Validated conclusion: attention affinity is narrow and non-monotonic.</b> Corrected FP16 MHA favors NPU at 2K, but the 4K+ NPU outputs fail the projection correctness gate and 32K NPU compilation times out. Long context is not a validated reason to route attention to NPU on this stack.</div>
@@ -56,7 +56,7 @@ h2{font-size:22px;margin:46px 0 10px;letter-spacing:-.02em}h3{font-size:17px;mar
 <article class='chart-card'><img loading='lazy' src='nuc16-operator-affinity-figs/workrate_ffn_decode.svg' alt='Feed-forward network (SwiGLU) decode effective dense work rate grouped bar chart'></article></div></section>
 
 <div class="callouts">
-<article class="callout"><b>Strongest NPU affinity</b><p>Historical 2.50× result withdrawn: the GPU output was invalid. Corrected standalone W2048 FP16 MHA wall-time speedup: 1.55×; not an E2E speedup.</p></article>
+<article class="callout"><b>Strongest NPU affinity</b><p>Corrected OpenVINO 2026.3 isolated W2048 FP16 MHA: NPU is 1.33× faster in wall time. The focused fused-compute test below shows why this is not an E2E win.</p></article>
 <article class="callout"><b>Strongest GPU affinity</b><p>QKV projection + RoPE, decode W=2048 W8A16: 41.54× faster than NPU.</p></article>
 </div>
 <div class="table-wrap"><table><thead><tr><th>Main block</th><th>GPU wins</th><th>NPU wins</th></tr></thead><tbody><tr><td>QKV projection + RoPE</td><td class='num'>16 / 16</td><td class='num'>0 / 16</td></tr><tr><td>Multi-head attention</td><td class='num'>13 / 16</td><td class='num'>3 / 16</td></tr><tr><td>Feed-forward network (SwiGLU)</td><td class='num'>15 / 16</td><td class='num'>1 / 16</td></tr></tbody></table></div>
@@ -81,40 +81,17 @@ h2{font-size:22px;margin:46px 0 10px;letter-spacing:-.02em}h3{font-size:17px;mar
 <div class="table-wrap"><table><thead><tr><th>Window</th><th>Full graph median</th><th>Across-process range</th><th>FFN profile share</th><th>FFN attributed</th></tr></thead><tbody><tr><td>1024</td><td class='num'>9.666 ms</td><td class='num'>9.659–9.671 ms</td><td class='num'>32.1%</td><td class='num'>3.10 ms</td></tr><tr><td>1536</td><td class='num'>12.956 ms</td><td class='num'>12.937–12.978 ms</td><td class='num'>42.8%</td><td class='num'>5.54 ms</td></tr><tr><td>1792</td><td class='num'>17.010 ms</td><td class='num'>16.970–17.165 ms</td><td class='num'>46.8%</td><td class='num'>7.95 ms</td></tr><tr><td>2048</td><td class='num'>21.423 ms</td><td class='num'>21.384–21.434 ms</td><td class='num'>63.1%</td><td class='num'>13.50 ms</td></tr></tbody></table></div>
 
 <section id="e2e-corrected">
-<h2>Audited end-to-end comparison</h2>
-<p class="lead">Corrected September 7, 2026. Both views below use <b>one September 4 OpenVINO 2026.3 dataset</b>, with identical values and axis scales: a W-token prompt and 32 fixed decode calls. NPU’s compiled prompt limit is W, not W+32 rounded up. Compilation is excluded.</p>
-<figure class="hero-figure"><img src="nuc16-operator-affinity-figs/e2e_four_way_fp16.svg?v=20260907" alt="Audited FP16 GPU, native NPU and real NPUW hybrid latency, processed-input throughput, and energy at four prompt lengths; compute oracle withdrawn"></figure>
-<details><summary>Matching three-series view (same data, hybrid hidden)</summary>
-<figure class="hero-figure"><img src="nuc16-operator-affinity-figs/e2e_oracle_latency_throughput_energy.svg?v=20260907" alt="The identical GPU and NPU measurements with oracle N/A; not another experiment"></figure>
-</details>
-<div class="table-wrap"><table><thead><tr><th>Prompt W</th><th>FP16 model system</th><th>Request s ↓</th><th>Processed-input tok/s ↑</th><th>Net system J ↓</th></tr></thead><tbody><tr><td>128</td><td>GPU e2e</td><td class="num">0.4832</td><td class="num">331.1</td><td class="num">13.61</td></tr>
-<tr><td>128</td><td>NPU e2e (native NPUW)</td><td class="num">0.5433</td><td class="num">294.5</td><td class="num">9.13</td></tr>
-<tr><td>128</td><td>Compute oracle: withdrawn</td><td colspan="3">N/A — withdrawn, not zero</td></tr>
-<tr><td>128</td><td>NPUW hybrid (prefill MHA on NPU)</td><td class="num">1.2392</td><td class="num">129.1</td><td class="num">35.34</td></tr>
-<tr><td>512</td><td>GPU e2e</td><td class="num">0.5765</td><td class="num">943.6</td><td class="num">16.18</td></tr>
-<tr><td>512</td><td>NPU e2e (native NPUW)</td><td class="num">0.5898</td><td class="num">922.3</td><td class="num">10.25</td></tr>
-<tr><td>512</td><td>Compute oracle: withdrawn</td><td colspan="3">N/A — withdrawn, not zero</td></tr>
-<tr><td>512</td><td>NPUW hybrid (prefill MHA on NPU)</td><td class="num">1.3549</td><td class="num">401.5</td><td class="num">37.07</td></tr>
-<tr><td>1024</td><td>GPU e2e</td><td class="num">0.6846</td><td class="num">1,542.5</td><td class="num">19.89</td></tr>
-<tr><td>1024</td><td>NPU e2e (native NPUW)</td><td class="num">0.6667</td><td class="num">1,583.9</td><td class="num">12.25</td></tr>
-<tr><td>1024</td><td>Compute oracle: withdrawn</td><td colspan="3">N/A — withdrawn, not zero</td></tr>
-<tr><td>1024</td><td>NPUW hybrid (prefill MHA on NPU)</td><td class="num">1.5539</td><td class="num">679.6</td><td class="num">43.59</td></tr>
-<tr><td>2048</td><td>GPU e2e</td><td class="num">0.9464</td><td class="num">2,197.8</td><td class="num">27.71</td></tr>
-<tr><td>2048</td><td>NPU e2e (native NPUW)</td><td class="num">0.8403</td><td class="num">2,475.2</td><td class="num">16.28</td></tr>
-<tr><td>2048</td><td>Compute oracle: withdrawn</td><td colspan="3">N/A — withdrawn, not zero</td></tr>
-<tr><td>2048</td><td>NPUW hybrid (prefill MHA on NPU)</td><td class="num">1.8547</td><td class="num">1,121.5</td><td class="num">57.81</td></tr></tbody></table></div>
-<p class="lead"><b>Throughput = (W+32)/request seconds.</b> These are teacher-forced model forward calls, not sampled text, output-generation speed or concurrency throughput. “FP16” describes the model; GPU uses its default internal precision policy. Native NPU e2e already uses NPUW; the hybrid adds GPU/NPU partition routing.</p>
-<h3>Why the previous NPU 2K bars disagreed</h3>
-<p class="lead">The old 1.1815 s bar used OpenVINO 2026.0 and a 4096-token compiled prompt limit. The 0.8403 s bar used 2026.3 and a 2048-token limit. The old chart also reconstructed latency from separate stage medians; it did not time complete requests. A new controlled experiment kept the actual prompt at 2048 and reproduced the difference:</p>
-<div class="table-wrap"><table><thead><tr><th>Runtime</th><th>Compiled prompt limit</th><th>Whole request</th><th>Prefill</th></tr></thead><tbody><tr><td>2026.0.0</td><td>2048</td><td>0.8813 s</td><td>0.3416 s</td></tr>
-<tr><td>2026.0.0</td><td>4096</td><td>1.1811 s</td><td>0.6229 s</td></tr>
-<tr><td>2026.3.0</td><td>2048</td><td>0.8352 s</td><td>0.2957 s</td></tr>
-<tr><td>2026.3.0</td><td>4096</td><td>0.8423 s</td><td>0.2994 s</td></tr></tbody></table></div>
-<p class="lead">Each control cell: 3 fresh processes × 5 timed requests. All 12 final-logit checks passed. Runtime and capacity interact: 2026.3 stays near 0.84 s at either limit. These September 7 controls are kept separate from the September 4 baseline and energy data.</p>
-<div class="verdict"><b>Numeric compute oracle withdrawn</b><p>The former green bars reused an invalid-output GPU attention trace and mixed historical block shares with a newer full-model baseline. Removing launch/layout/DMA from one ratio did not remove them from the full-model anchor. The energy estimate was unsupported too. N/A means unavailable—not zero latency or zero energy. A valid fused-compute oracle requires new correctness-gated, same-runtime profiling.</p></div>
-<p class="lead"><b>Audit scope.</b> Rechecked 48 accepted processes / 240 timed requests: inputs, settings, timing samples, energy arithmetic and final logits. Minimum cosine 0.999743, matching top-1 and top-5 sets; this is not all-token or model-quality validation. Whiskers show the range of three process medians, not confidence intervals.</p>
-<p class="lead"><b>Energy scope.</b> RAPL psys, minus an 8.617 W idle baseline, measured over separate five-request windows. Energy includes state reset and CPU output summaries that the latency timer excludes. It is system energy, not accelerator-only energy; historical cross-date energy values are not interchangeable.</p>
-<div class="downloads"><a href="nuc16-operator-affinity-data/e2e_four_way_fp16.csv">canonical comparison CSV</a><a href="nuc16-operator-affinity-data/historical_vs_current.csv">all baseline differences</a><a href="nuc16-operator-affinity-data/capacity_runtime_control.csv">controlled reproduction CSV</a><a href="nuc16-operator-affinity-data/e2e_chart_audit.md">full audit report</a><a href="nuc16-operator-affinity-data/e2e_audit_manifest.json">method and validation</a></div>
+<h2>Only retained E2E case: FP16 MHA prefill → NPU at 2K</h2>
+<p class="lead">The corrected isolated operator test has exactly one validated NPU latency win: FP16 MHA prefill at W=2048. This focused comparison asks the most favorable possible E2E question: what if every layer's MHA compute runs on NPU and every switching/data-movement cost is zero? All other E2E windows, native-NPU bars, and measured NPUW-hybrid bars have been removed from this view.</p>
+<figure class="hero-figure"><img src="nuc16-operator-affinity-figs/mha2k_compute_only_oracle.svg?v=20260907b" alt="At W 2048, measured GPU E2E latency is 0.9464 seconds and the MHA-to-NPU compute-only bound is 0.9680 seconds"></figure>
+<div class="table-wrap"><table><thead><tr><th>W</th><th>Comparison</th><th>Request s ↓</th><th>Processed-input tok/s ↑</th><th>Status</th></tr></thead><tbody>
+<tr><td>2048</td><td>GPU E2E (measured)</td><td class="num">0.9464</td><td class="num">2,197.8</td><td>Measured · 3 processes × 5 requests</td></tr>
+<tr><td>2048</td><td>MHA-&gt;NPU compute-only bound</td><td class="num">0.9677</td><td class="num">2,149.5</td><td>Modeled · not a switched run</td></tr>
+</tbody></table></div>
+<p class="lead"><b>Construction.</b> <code>0.9464 s − 81.703 ms + 102.937 ms = 0.9677 s</code>. The 81.703 ms term is executed IndirectSDPA + output-projection compute from three full-model GPU prefill profiles. The NPU term is 24 × 4.289 ms, the median interval union of the matching SDPA + output-projection DPU/Shave tasks from three corrected MHA traces; overlapping engines are counted once, and DMA plus residual/output-boundary work is excluded.</p>
+<div class="verdict"><b>No E2E opportunity remains under this best-case assumption.</b><p>The compute-only bound is 2.24% slower in latency and 2.19% lower in processed-input work rate than measured GPU E2E. Real switching can only add synchronization, tensor handoff, layout/materialization, DMA, submission, and lost-fusion cost. The isolated 1.33× NPU wall-time affinity therefore does not survive the fused-compute comparison.</p></div>
+<p class="lead"><b>Scope.</b> Qwen2.5-0.5B FP16, OpenVINO 2026.3, 2048-token prefill plus 32 fixed decode calls. Compilation is excluded. This is a compute-only upper bound, not measured heterogeneous inference; energy is intentionally not estimated because a latency decomposition cannot identify system energy.</p>
+<div class="downloads"><a href="nuc16-operator-affinity-data/mha2k_compute_only_oracle.csv">focused comparison CSV</a><a href="nuc16-operator-affinity-data/mha2k_compute_only_oracle.json">formula and provenance JSON</a><a href="nuc16-operator-affinity-data/mha2k_compute_only_oracle_report.md">concise report</a></div>
 </section>
 
 <h3>Historical stage throughput · OpenVINO 2026.0</h3>
@@ -131,15 +108,15 @@ h2{font-size:22px;margin:46px 0 10px;letter-spacing:-.02em}h3{font-size:17px;mar
 <div class="caveats">
 <article class="caveat"><b>Attribution is model-based</b><p>NPU profiling counters can overlap or be fused. The block bars apportion full-graph wall time; they are not independently runnable kernel latencies.</p></article>
 <article class="caveat"><b>The oracle is not a measured hybrid</b><p>It ignores synchronization, tensor transfer, layout conversion, and recompilation boundaries. Any real scheduler must beat those costs.</p></article>
-<article class="caveat"><b>Oracle energy is modeled</b><p>It applies measured stage-average net system power to routed block time. Per-block power can differ, so the previous green energy bars have been withdrawn; historical files are not current predictions.</p></article>
+<article class="caveat"><b>Oracle energy is not claimed</b><p>Compute-time substitution cannot identify whole-system power. Energy is omitted instead of inventing a green bar.</p></article>
 <article class="caveat"><b>W8A16 is not full INT8</b><p>Weights are post-training INT8 while activations remain FP16. Results should not be labeled as integer-only execution.</p></article>
 <article class="caveat"><b>Scope is deliberately narrow</b><p>One Qwen2.5-0.5B shape, one NUC16 software stack, static windows, and native NPU. Affinity is not portable without remeasurement.</p></article>
-<article class="caveat"><b>Single-layer profile, real-model e2e</b><p>The profile graph represents one realistic layer plus boundaries; the oracle scales its block shares to the measured 24-layer model, so it is an opportunity estimate.</p></article>
+<article class="caveat"><b>Fused GPU vs isolated NPU compute</b><p>GPU MHA is read from the fused full-model profile. NPU compute is a corrected single-layer trace scaled to 24 layers; the bound assumes identical NPU compute after partitioning and zero boundary cost.</p></article>
 <article class="caveat"><b>Throughput is bounded and partly unstable</b><p>The maximum is only over C=1/2/4 in one process. 23 of 96 stateful concurrency points failed in the GPU/NPU runtime and are retained in the download, not silently converted to slow bars.</p></article>
 </div>
 
-<footer class="method"><b>Method.</b> 32 required GPU/native-NPU graph cells; 5 warm-ups, 21 wall trials, and 7 profiled trials per cell. The W=1024/2048 NPU FP16 anomaly endpoints include 27 additional profile trials across three fresh compilations. Real Qwen2.5-0.5B end-to-end results contain 32 stage/backend rows. The throughput-mode matrix has 73 successful C points, each repeated 3 times. Compilation time is excluded throughout.
-<div class="downloads"><a href="nuc16-operator-affinity-data/main_block_latency.csv">block latency CSV</a><a href="nuc16-operator-affinity-data/block_work_rate.csv">block work-rate CSV</a><a href="nuc16-operator-affinity-data/main_block_affinity.csv">affinity CSV</a><a href="nuc16-operator-affinity-data/e2e_oracle_latency_throughput_energy.csv">audited FP16 e2e CSV</a><a href="nuc16-operator-affinity-data/concurrency_throughput.csv">full throughput sweep CSV</a><a href="nuc16-operator-affinity-data/throughput_payload.json">historical throughput JSON (not current e2e)</a></div>
+<footer class="method"><b>Method.</b> 32 required GPU/native-NPU graph cells; 5 warm-ups, 21 wall trials, and 7 profiled trials per cell. The W=1024/2048 NPU FP16 anomaly endpoints include 27 additional profile trials across three fresh compilations. The retained E2E view contains one measured GPU baseline and one compute-only MHA-to-NPU bound at W=2048. The throughput-mode matrix has 73 successful C points, each repeated 3 times. Compilation time is excluded throughout.
+<div class="downloads"><a href="nuc16-operator-affinity-data/main_block_latency.csv">block latency CSV</a><a href="nuc16-operator-affinity-data/block_work_rate.csv">block work-rate CSV</a><a href="nuc16-operator-affinity-data/main_block_affinity.csv">affinity CSV</a><a href="nuc16-operator-affinity-data/mha2k_compute_only_oracle.csv">focused 2K MHA compute-bound CSV</a><a href="nuc16-operator-affinity-data/concurrency_throughput.csv">full throughput sweep CSV</a><a href="nuc16-operator-affinity-data/throughput_payload.json">historical throughput JSON (not current e2e)</a></div>
 </footer>
 </main><script>
 document.querySelectorAll('[data-tab-group]').forEach(nav=>{

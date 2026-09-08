@@ -1,0 +1,87 @@
+{
+  "schema": 1,
+  "runtime": "OpenVINO 2026.3.0",
+  "model": "Qwen2.5-0.5B FP16 IR",
+  "window": 2048,
+  "decode_calls": 32,
+  "layers": 24,
+  "baseline": {
+    "source": "wuklab_nuc16_npu_affinity/packages/web_dashboard/site/demos/nuc16-operator-affinity-data/e2e_four_way_fp16.csv",
+    "request_latency_s": 0.9464181941002607,
+    "range_s": [
+      0.9462052118033171,
+      0.9482075925916433
+    ],
+    "process_repetitions": 3,
+    "timed_requests_per_process": 5
+  },
+  "gpu_fused_mha_compute_ms": {
+    "samples": [
+      80.946,
+      81.703,
+      82.038
+    ],
+    "median": 81.703,
+    "definition": "24 executed IndirectSDPA primitives plus 24 executed o_proj FullyConnected primitives in a full-model GPU prefill; optimized-out and layout/state primitives excluded."
+  },
+  "npu_mha_compute_only_ms": {
+    "per_layer_samples": [
+      4.305809000000003,
+      4.28482500000001,
+      4.289055999999999
+    ],
+    "per_layer_median": 4.289055999999999,
+    "all_layers": 102.93734399999997,
+    "definition": "Interval union of DPU/Shave events belonging to attention_av (SDPA) or attention_output_projection on the corrected isolated MHA graph; parallel work counted once; DMA and residual/output-boundary work excluded."
+  },
+  "oracle": {
+    "formula": "GPU E2E - fused GPU MHA compute + 24 * NPU MHA compute union",
+    "latency_s": 0.9676525381002608,
+    "range_s": [
+      0.9670030118033173,
+      0.9706010085916434
+    ],
+    "processed_input_tokens_per_s": 2149.531901278893,
+    "latency_change_percent_vs_gpu": 2.243653401040868,
+    "throughput_change_percent_vs_gpu": -2.19441826109279,
+    "excludes": [
+      "GPU-to-NPU and NPU-to-GPU synchronization",
+      "tensor import/export and cache visibility",
+      "layout or precision conversion",
+      "DMA and intermediate materialization",
+      "command submission and kernel-launch overhead",
+      "compile/JIT cost"
+    ],
+    "status": "compute-only upper bound; not a measured heterogeneous execution"
+  },
+  "source_files": [
+    {
+      "path": "wuklab_nuc16_npu_affinity/packages/real_heterogeneous_inference/artifacts/mha2k_compute_only_oracle/raw/gpu/result_rep1.json",
+      "sha256": "8fb7db1724f2e373b52caf4e56a74b0ee3abbc2c0a58e772c028fd2680f50930"
+    },
+    {
+      "path": "wuklab_nuc16_npu_affinity/packages/real_heterogeneous_inference/artifacts/mha2k_compute_only_oracle/raw/gpu/result_rep2.json",
+      "sha256": "684fde815e6a565078a11e37cc0c6f8f233b7135632d890bc3870352135e2be1"
+    },
+    {
+      "path": "wuklab_nuc16_npu_affinity/packages/real_heterogeneous_inference/artifacts/mha2k_compute_only_oracle/raw/gpu/result_rep3.json",
+      "sha256": "50d8bd2f5e71e30410f4abd1d3725a6891a6564d1010989fc647744359270a1c"
+    },
+    {
+      "path": "wuklab_nuc16_npu_affinity/packages/real_heterogeneous_inference/artifacts/mha2k_compute_only_oracle/raw/npu/tasks_rep1.trace.json",
+      "sha256": "f0b7e1480c075dac5a44c5c545ebde0ca0eb6c7598d0707e9ec1841ff25ecb82"
+    },
+    {
+      "path": "wuklab_nuc16_npu_affinity/packages/real_heterogeneous_inference/artifacts/mha2k_compute_only_oracle/raw/npu/tasks_rep2.trace.json",
+      "sha256": "819cf1cf1a79029e488d9cd2d7624efa41334738c2e02430e3366db30a8e03fd"
+    },
+    {
+      "path": "wuklab_nuc16_npu_affinity/packages/real_heterogeneous_inference/artifacts/mha2k_compute_only_oracle/raw/npu/tasks_rep3.trace.json",
+      "sha256": "384a127c3e3b42252be03b83683f75fc3abd1a9bebb234fa68fb51dc651068dc"
+    },
+    {
+      "path": "wuklab_nuc16_npu_affinity/packages/web_dashboard/site/demos/nuc16-operator-affinity-data/e2e_four_way_fp16.csv",
+      "sha256": "32eee0d41ae2853d8e4216ac21e55a86680fde0e80ee6045bf10191e2b48863d"
+    }
+  ]
+}

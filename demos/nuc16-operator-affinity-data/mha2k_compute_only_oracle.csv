@@ -1,0 +1,3 @@
+window,series,label,kind,latency_s,latency_min_s,latency_max_s,processed_input_tokens_per_s,mha_compute_ms,npu_compute_only
+2048,gpu_e2e,GPU E2E (measured),measured,0.9464181941002607,0.9462052118033171,0.9482075925916433,2197.7599468883955,81.703,no
+2048,mha_npu_compute_only,MHA->NPU compute-only bound,modeled; not a switched run,0.9676525381002608,0.9670030118033173,0.9706010085916434,2149.531901278893,102.93734399999997,yes; MHA DPU/Shave interval union; DMA and residual excluded
