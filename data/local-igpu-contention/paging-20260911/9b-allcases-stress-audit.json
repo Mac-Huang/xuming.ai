@@ -1,0 +1,116 @@
+[
+  {
+    "trial": "r0_gpu",
+    "mode": "one_shot",
+    "kind": "gpu",
+    "samples": 33,
+    "counter_delta": 3753,
+    "errors": []
+  },
+  {
+    "trial": "r0_gpu",
+    "mode": "agentic",
+    "kind": "gpu",
+    "samples": 57,
+    "counter_delta": 5955,
+    "errors": []
+  },
+  {
+    "trial": "r1_gpu",
+    "mode": "one_shot",
+    "kind": "gpu",
+    "samples": 32,
+    "counter_delta": 3925,
+    "errors": []
+  },
+  {
+    "trial": "r1_gpu",
+    "mode": "agentic",
+    "kind": "gpu",
+    "samples": 49,
+    "counter_delta": 5759,
+    "errors": []
+  },
+  {
+    "trial": "r2_gpu",
+    "mode": "one_shot",
+    "kind": "gpu",
+    "samples": 32,
+    "counter_delta": 4361,
+    "errors": []
+  },
+  {
+    "trial": "r2_gpu",
+    "mode": "agentic",
+    "kind": "gpu",
+    "samples": 46,
+    "counter_delta": 5646,
+    "errors": []
+  },
+  {
+    "trial": "r0_fault",
+    "mode": "one_shot",
+    "kind": "fault",
+    "samples": 5,
+    "counter_delta": 4,
+    "errors": [],
+    "minor_faults": 831840,
+    "major_faults": 478880,
+    "inblocks": 0
+  },
+  {
+    "trial": "r0_fault",
+    "mode": "agentic",
+    "kind": "fault",
+    "samples": 5,
+    "counter_delta": 4,
+    "errors": [],
+    "minor_faults": 385242,
+    "major_faults": 925553,
+    "inblocks": 0
+  },
+  {
+    "trial": "r1_fault",
+    "mode": "one_shot",
+    "kind": "fault",
+    "samples": 3,
+    "counter_delta": 2,
+    "errors": [],
+    "minor_faults": 356927,
+    "major_faults": 429505,
+    "inblocks": 0
+  },
+  {
+    "trial": "r1_fault",
+    "mode": "agentic",
+    "kind": "fault",
+    "samples": 12,
+    "counter_delta": 11,
+    "errors": [],
+    "minor_faults": 2459543,
+    "major_faults": 686249,
+    "inblocks": 0
+  },
+  {
+    "trial": "r2_fault",
+    "mode": "one_shot",
+    "kind": "fault",
+    "samples": 12,
+    "counter_delta": 11,
+    "errors": [],
+    "minor_faults": 3144829,
+    "major_faults": 899,
+    "inblocks": 0
+  },
+  {
+    "trial": "r2_fault",
+    "mode": "agentic",
+    "kind": "fault",
+    "samples": 17,
+    "counter_delta": 16,
+    "errors": [],
+    "minor_faults": 4207396,
+    "major_faults": 249052,
+    "inblocks": 0
+  }
+]

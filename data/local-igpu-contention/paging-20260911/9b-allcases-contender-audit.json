@@ -1,0 +1,635 @@
+[
+  {
+    "trial": "9b/r0_browser",
+    "condition": "browser",
+    "observed_seconds": 27.71801209449768,
+    "frame_or_callback_delta": {
+      "browser0": 1663,
+      "browser1": 1663,
+      "browser2": 1662,
+      "browser3": 1662,
+      "browser4": 1662,
+      "browser5": 1662,
+      "browser6": 1662,
+      "browser7": 1662
+    },
+    "consecutive_intervals_checked": 27,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "9b/r0_browser",
+    "task": "one_shot",
+    "condition": "browser",
+    "task_seconds": 8.993974685668945,
+    "samples_within_task": 9,
+    "frame_or_callback_delta": {
+      "browser0": 492,
+      "browser1": 493,
+      "browser2": 493,
+      "browser3": 493,
+      "browser4": 493,
+      "browser5": 493,
+      "browser6": 493,
+      "browser7": 493
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r0_browser",
+    "task": "agentic",
+    "condition": "browser",
+    "task_seconds": 13.711277961730957,
+    "samples_within_task": 14,
+    "frame_or_callback_delta": {
+      "browser0": 802,
+      "browser1": 802,
+      "browser2": 802,
+      "browser3": 802,
+      "browser4": 802,
+      "browser5": 802,
+      "browser6": 802,
+      "browser7": 802
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r0_combined",
+    "condition": "combined",
+    "observed_seconds": 26.832985877990723,
+    "frame_or_callback_delta": {
+      "video": 1610,
+      "browser0": 1610,
+      "browser1": 1610,
+      "browser2": 1609,
+      "browser3": 1609,
+      "browser4": 1610,
+      "browser5": 1610,
+      "browser6": 1609,
+      "browser7": 1609,
+      "game": 1609
+    },
+    "consecutive_intervals_checked": 26,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "9b/r0_combined",
+    "task": "one_shot",
+    "condition": "combined",
+    "task_seconds": 9.11696481704712,
+    "samples_within_task": 8,
+    "frame_or_callback_delta": {
+      "video": 433,
+      "browser0": 433,
+      "browser1": 433,
+      "browser2": 433,
+      "browser3": 433,
+      "browser4": 433,
+      "browser5": 433,
+      "browser6": 433,
+      "browser7": 433,
+      "game": 433
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r0_combined",
+    "task": "agentic",
+    "condition": "combined",
+    "task_seconds": 13.391993761062622,
+    "samples_within_task": 13,
+    "frame_or_callback_delta": {
+      "video": 746,
+      "browser0": 746,
+      "browser1": 746,
+      "browser2": 746,
+      "browser3": 745,
+      "browser4": 746,
+      "browser5": 746,
+      "browser6": 746,
+      "browser7": 746,
+      "game": 746
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r0_game",
+    "condition": "game",
+    "observed_seconds": 24.148141145706177,
+    "frame_or_callback_delta": {},
+    "consecutive_intervals_checked": 24,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "9b/r0_game",
+    "task": "one_shot",
+    "condition": "game",
+    "task_seconds": 8.247750759124756,
+    "samples_within_task": 9,
+    "frame_or_callback_delta": {},
+    "errors": []
+  },
+  {
+    "trial": "9b/r0_game",
+    "task": "agentic",
+    "condition": "game",
+    "task_seconds": 11.468509912490845,
+    "samples_within_task": 11,
+    "frame_or_callback_delta": {},
+    "errors": []
+  },
+  {
+    "trial": "9b/r0_quiet",
+    "condition": "quiet",
+    "observed_seconds": 24.183552026748657,
+    "frame_or_callback_delta": {
+      "quiet": 1418
+    },
+    "consecutive_intervals_checked": 24,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "9b/r0_quiet",
+    "task": "one_shot",
+    "condition": "quiet",
+    "task_seconds": 7.283167839050293,
+    "samples_within_task": 7,
+    "frame_or_callback_delta": {
+      "quiet": 363
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r0_quiet",
+    "task": "agentic",
+    "condition": "quiet",
+    "task_seconds": 12.428385972976685,
+    "samples_within_task": 12,
+    "frame_or_callback_delta": {
+      "quiet": 665
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r0_video",
+    "condition": "video",
+    "observed_seconds": 26.147659063339233,
+    "frame_or_callback_delta": {
+      "video": 1568
+    },
+    "consecutive_intervals_checked": 26,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "9b/r0_video",
+    "task": "one_shot",
+    "condition": "video",
+    "task_seconds": 8.675524711608887,
+    "samples_within_task": 9,
+    "frame_or_callback_delta": {
+      "video": 483
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r0_video",
+    "task": "agentic",
+    "condition": "video",
+    "task_seconds": 13.2792649269104,
+    "samples_within_task": 13,
+    "frame_or_callback_delta": {
+      "video": 722
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r1_browser",
+    "condition": "browser",
+    "observed_seconds": 27.751611709594727,
+    "frame_or_callback_delta": {
+      "browser0": 1665,
+      "browser1": 1664,
+      "browser2": 1664,
+      "browser3": 1663,
+      "browser4": 1663,
+      "browser5": 1663,
+      "browser6": 1663,
+      "browser7": 1663
+    },
+    "consecutive_intervals_checked": 27,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "9b/r1_browser",
+    "task": "one_shot",
+    "condition": "browser",
+    "task_seconds": 8.642128944396973,
+    "samples_within_task": 9,
+    "frame_or_callback_delta": {
+      "browser0": 493,
+      "browser1": 493,
+      "browser2": 493,
+      "browser3": 492,
+      "browser4": 492,
+      "browser5": 493,
+      "browser6": 493,
+      "browser7": 493
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r1_browser",
+    "task": "agentic",
+    "condition": "browser",
+    "task_seconds": 14.368743896484375,
+    "samples_within_task": 14,
+    "frame_or_callback_delta": {
+      "browser0": 802,
+      "browser1": 802,
+      "browser2": 802,
+      "browser3": 802,
+      "browser4": 802,
+      "browser5": 802,
+      "browser6": 802,
+      "browser7": 802
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r1_combined",
+    "condition": "combined",
+    "observed_seconds": 25.715737104415894,
+    "frame_or_callback_delta": {
+      "video": 1542,
+      "browser0": 1542,
+      "browser1": 1542,
+      "browser2": 1541,
+      "browser3": 1541,
+      "browser4": 1541,
+      "browser5": 1540,
+      "browser6": 1540,
+      "browser7": 1540,
+      "game": 1541
+    },
+    "consecutive_intervals_checked": 25,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "9b/r1_combined",
+    "task": "one_shot",
+    "condition": "combined",
+    "task_seconds": 7.639617919921875,
+    "samples_within_task": 7,
+    "frame_or_callback_delta": {
+      "video": 371,
+      "browser0": 371,
+      "browser1": 371,
+      "browser2": 371,
+      "browser3": 371,
+      "browser4": 371,
+      "browser5": 371,
+      "browser6": 371,
+      "browser7": 370,
+      "game": 371
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r1_combined",
+    "task": "agentic",
+    "condition": "combined",
+    "task_seconds": 13.69885802268982,
+    "samples_within_task": 13,
+    "frame_or_callback_delta": {
+      "video": 739,
+      "browser0": 740,
+      "browser1": 740,
+      "browser2": 740,
+      "browser3": 740,
+      "browser4": 741,
+      "browser5": 741,
+      "browser6": 741,
+      "browser7": 741,
+      "game": 741
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r1_game",
+    "condition": "game",
+    "observed_seconds": 24.191210985183716,
+    "frame_or_callback_delta": {
+      "game": 1451
+    },
+    "consecutive_intervals_checked": 24,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "9b/r1_game",
+    "task": "one_shot",
+    "condition": "game",
+    "task_seconds": 7.071209907531738,
+    "samples_within_task": 7,
+    "frame_or_callback_delta": {
+      "game": 363
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r1_game",
+    "task": "agentic",
+    "condition": "game",
+    "task_seconds": 12.491562128067017,
+    "samples_within_task": 12,
+    "frame_or_callback_delta": {
+      "game": 666
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r1_quiet",
+    "condition": "quiet",
+    "observed_seconds": 22.25991201400757,
+    "frame_or_callback_delta": {
+      "quiet": 1335
+    },
+    "consecutive_intervals_checked": 22,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "9b/r1_quiet",
+    "task": "one_shot",
+    "condition": "quiet",
+    "task_seconds": 6.633197784423828,
+    "samples_within_task": 6,
+    "frame_or_callback_delta": {
+      "quiet": 303
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r1_quiet",
+    "task": "agentic",
+    "condition": "quiet",
+    "task_seconds": 11.404606819152832,
+    "samples_within_task": 11,
+    "frame_or_callback_delta": {
+      "quiet": 607
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r1_video",
+    "condition": "video",
+    "observed_seconds": 23.186800956726074,
+    "frame_or_callback_delta": {
+      "video": 1391
+    },
+    "consecutive_intervals_checked": 23,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "9b/r1_video",
+    "task": "one_shot",
+    "condition": "video",
+    "task_seconds": 6.515934944152832,
+    "samples_within_task": 7,
+    "frame_or_callback_delta": {
+      "video": 363
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r1_video",
+    "task": "agentic",
+    "condition": "video",
+    "task_seconds": 11.76737904548645,
+    "samples_within_task": 11,
+    "frame_or_callback_delta": {
+      "video": 604
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r2_browser",
+    "condition": "browser",
+    "observed_seconds": 26.71458601951599,
+    "frame_or_callback_delta": {
+      "browser0": 1602,
+      "browser1": 1602,
+      "browser2": 1602,
+      "browser3": 1602,
+      "browser4": 1602,
+      "browser5": 1599,
+      "browser6": 1599,
+      "browser7": 1598
+    },
+    "consecutive_intervals_checked": 26,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "9b/r2_browser",
+    "task": "one_shot",
+    "condition": "browser",
+    "task_seconds": 9.083437204360962,
+    "samples_within_task": 9,
+    "frame_or_callback_delta": {
+      "browser0": 493,
+      "browser1": 493,
+      "browser2": 493,
+      "browser3": 493,
+      "browser4": 493,
+      "browser5": 493,
+      "browser6": 493,
+      "browser7": 494
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r2_browser",
+    "task": "agentic",
+    "condition": "browser",
+    "task_seconds": 13.014355897903442,
+    "samples_within_task": 13,
+    "frame_or_callback_delta": {
+      "browser0": 739,
+      "browser1": 739,
+      "browser2": 739,
+      "browser3": 740,
+      "browser4": 739,
+      "browser5": 739,
+      "browser6": 739,
+      "browser7": 739
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r2_combined",
+    "condition": "combined",
+    "observed_seconds": 25.725976943969727,
+    "frame_or_callback_delta": {
+      "video": 1542,
+      "browser0": 1543,
+      "browser1": 1542,
+      "browser2": 1543,
+      "browser3": 1543,
+      "browser4": 1543,
+      "browser5": 1542,
+      "browser6": 1542,
+      "browser7": 1542,
+      "game": 1542
+    },
+    "consecutive_intervals_checked": 25,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "9b/r2_combined",
+    "task": "one_shot",
+    "condition": "combined",
+    "task_seconds": 8.260206699371338,
+    "samples_within_task": 8,
+    "frame_or_callback_delta": {
+      "video": 429,
+      "browser0": 433,
+      "browser1": 433,
+      "browser2": 433,
+      "browser3": 433,
+      "browser4": 433,
+      "browser5": 433,
+      "browser6": 433,
+      "browser7": 434,
+      "game": 433
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r2_combined",
+    "task": "agentic",
+    "condition": "combined",
+    "task_seconds": 12.745469808578491,
+    "samples_within_task": 12,
+    "frame_or_callback_delta": {
+      "video": 678,
+      "browser0": 679,
+      "browser1": 678,
+      "browser2": 679,
+      "browser3": 679,
+      "browser4": 679,
+      "browser5": 679,
+      "browser6": 679,
+      "browser7": 679,
+      "game": 678
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r2_game",
+    "condition": "game",
+    "observed_seconds": 26.280367136001587,
+    "frame_or_callback_delta": {
+      "game": 1576
+    },
+    "consecutive_intervals_checked": 26,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "9b/r2_game",
+    "task": "one_shot",
+    "condition": "game",
+    "task_seconds": 8.243088960647583,
+    "samples_within_task": 9,
+    "frame_or_callback_delta": {
+      "game": 485
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r2_game",
+    "task": "agentic",
+    "condition": "game",
+    "task_seconds": 13.880099773406982,
+    "samples_within_task": 13,
+    "frame_or_callback_delta": {
+      "game": 728
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r2_quiet",
+    "condition": "quiet",
+    "observed_seconds": 26.274699926376343,
+    "frame_or_callback_delta": {
+      "quiet": 1577
+    },
+    "consecutive_intervals_checked": 26,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "9b/r2_quiet",
+    "task": "one_shot",
+    "condition": "quiet",
+    "task_seconds": 8.5638108253479,
+    "samples_within_task": 8,
+    "frame_or_callback_delta": {
+      "quiet": 426
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r2_quiet",
+    "task": "agentic",
+    "condition": "quiet",
+    "task_seconds": 12.979072093963623,
+    "samples_within_task": 13,
+    "frame_or_callback_delta": {
+      "quiet": 728
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r2_video",
+    "condition": "video",
+    "observed_seconds": 23.21551012992859,
+    "frame_or_callback_delta": {
+      "video": 1393
+    },
+    "consecutive_intervals_checked": 23,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "9b/r2_video",
+    "task": "one_shot",
+    "condition": "video",
+    "task_seconds": 7.158501148223877,
+    "samples_within_task": 7,
+    "frame_or_callback_delta": {
+      "video": 363
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r2_video",
+    "task": "agentic",
+    "condition": "video",
+    "task_seconds": 11.28171706199646,
+    "samples_within_task": 11,
+    "frame_or_callback_delta": {
+      "video": 604
+    },
+    "errors": []
+  }
+]

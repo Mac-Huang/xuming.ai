@@ -1,9 +1,16 @@
 {
   "integrity_pass": true,
   "errors": [],
-  "frozen_sources_and_fixtures_checked": 15,
-  "completed_workloads": 12,
-  "pairs": 6,
-  "matched_pairs": 6,
-  "stops": []
+  "published_workloads_by_model": {
+    "4b": 42,
+    "9b": 42,
+    "cloud": 24,
+    "cloud_agent": 6
+  },
+  "source_audit_paths": {
+    "retained_cloud_and_4b": "/Users/xuming/Desktop/WukLab/EdgeAI/local_igpu_contention/rerun_20260911/artifacts/audit.json",
+    "paging_campaign": "/Users/xuming/Desktop/WukLab/EdgeAI/local_igpu_contention/paging_rerun_20260911/artifacts/audit.json",
+    "full_9b_matrix": "/Users/xuming/Desktop/WukLab/EdgeAI/local_igpu_contention/paging_9b_allcases_20260911/artifacts/audit.json"
+  },
+  "campaign_note": "Cloud and 4B retain rerun_20260911; 9B uses the fresh full matrix when available, while 35B uses paging_rerun_20260911. Campaign tags distinguish every row. Earlier guarded larger-model observations remain archived."
 }

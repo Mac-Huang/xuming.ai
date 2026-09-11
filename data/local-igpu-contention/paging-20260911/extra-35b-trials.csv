@@ -1,0 +1,3 @@
+model,condition,mode,wall_s,generated_tokens,exclusion_reason,raw_path
+35b,combined,one_shot,505.0735404170118,324,Unpaired extra trial: repetition restarted after full 9B publication interruption.,extra_trials/35b/r1_combined_before_9b/one_shot/result.json
+35b,combined,agentic,500.1346897089388,239,Unpaired extra trial: repetition restarted after full 9B publication interruption.,extra_trials/35b/r1_combined_before_9b/agentic/result.json

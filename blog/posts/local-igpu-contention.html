@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>When Local AI Shares Your GPU — Paging Rerun</title>
-<meta name="description" content="Completed 9B quiet/combined rerun, retained cloud and 4B results, and a 35B rerun in progress, with per-run latency, throughput, cache and reasoning accounting.">
+<meta name="description" content="Completed seven-condition 9B rerun, retained cloud and 4B results, and a 35B rerun in progress, with per-run latency, throughput, cache and reasoning accounting.">
 <link rel="canonical" href="https://xuming.ai/blog/posts/local-igpu-contention.html">
 <meta property="og:title" content="When Local AI Shares Your GPU — Paging Rerun">
 <meta property="og:image" content="https://xuming.ai/images/blog/local-igpu-contention/paging-20260911/9b-wall_s.png">
@@ -28,7 +28,7 @@
 <p class="lead">Compare quiet and contended runs—then check whether they did the same work.</p>
 <p class="meta">M5 Pro · 16 GPU cores · 24 GiB unified memory · Native macOS · Same frozen robotics research fixture</p>
 <div class="correction">
-<strong>9B complete · 35B rerun in progress.</strong> Custom thermal and swap-volume cutoffs removed. All three fresh 9B quiet/combined pairs completed; the 35B repetitions are still running. Cloud and 4B retain their prior measurements and controls. <a href="local-igpu-contention-guarded.html">Previous guarded run ↗</a>
+<strong>9B complete · 35B rerun in progress.</strong> Custom thermal and swap-volume cutoffs removed. All seven 9B conditions completed across three repetitions; the 35B repetitions are still running. Cloud and 4B retain their prior measurements and controls. <a href="local-igpu-contention-guarded.html">Previous guarded run ↗</a>
 </div>
 </header>
 <p>One-shot synthesizes six source cards about robotic arms and EdgeAI. The autonomous agent chooses source reads, sees screenshots and writes a cited answer. Quiet adds no benchmark contender; combined runs video, eight active tabs and synthetic WebGL.</p>
@@ -65,7 +65,7 @@
 <td>7.42</td>
 <td>9.39</td>
 <td>9.39</td>
-<td>Complete, 3 paired repetitions</td>
+<td>Complete, 3 repetitions</td>
 </tr>
 <tr>
 <td>35B</td>
@@ -125,6 +125,8 @@
 <th>Seconds</th>
 <th>Effective tok/s</th>
 <th>Decode tok/s</th>
+<th>Peak MLX, GB</th>
+<th>Paired latency ×</th>
 </tr>
 </thead>
 <tbody>
@@ -135,6 +137,8 @@
 <td>41.81</td>
 <td>10.01</td>
 <td>Not exposed</td>
+<td>Not exposed</td>
+<td>0.966×</td>
 </tr>
 <tr>
 <td>combined</td>
@@ -143,6 +147,8 @@
 <td>20.17</td>
 <td>17.93</td>
 <td>Not exposed</td>
+<td>Not exposed</td>
+<td>1.101×</td>
 </tr>
 <tr>
 <td>quiet</td>
@@ -151,6 +157,8 @@
 <td>42.09</td>
 <td>9.85</td>
 <td>Not exposed</td>
+<td>Not exposed</td>
+<td>Baseline</td>
 </tr>
 <tr>
 <td>quiet</td>
@@ -159,6 +167,8 @@
 <td>18.48</td>
 <td>19.37</td>
 <td>Not exposed</td>
+<td>Not exposed</td>
+<td>Baseline</td>
 </tr>
 </tbody>
 </table>
@@ -320,6 +330,8 @@
 <th>Seconds</th>
 <th>Effective tok/s</th>
 <th>Decode tok/s</th>
+<th>Peak MLX, GB</th>
+<th>Paired latency ×</th>
 </tr>
 </thead>
 <tbody>
@@ -330,6 +342,8 @@
 <td>37.98</td>
 <td>11.01</td>
 <td>Not exposed</td>
+<td>Not exposed</td>
+<td>0.920×</td>
 </tr>
 <tr>
 <td>quiet</td>
@@ -338,6 +352,8 @@
 <td>41.95</td>
 <td>9.92</td>
 <td>Not exposed</td>
+<td>Not exposed</td>
+<td>Baseline</td>
 </tr>
 </tbody>
 </table>
@@ -379,6 +395,8 @@
 <th>Seconds</th>
 <th>Effective tok/s</th>
 <th>Decode tok/s</th>
+<th>Peak MLX, GB</th>
+<th>Paired latency ×</th>
 </tr>
 </thead>
 <tbody>
@@ -389,6 +407,8 @@
 <td>13.60</td>
 <td>34.64</td>
 <td>67.94</td>
+<td>5.53</td>
+<td>1.083×</td>
 </tr>
 <tr>
 <td>browser</td>
@@ -397,6 +417,8 @@
 <td>4.66</td>
 <td>55.97</td>
 <td>68.33</td>
+<td>4.87</td>
+<td>1.103×</td>
 </tr>
 <tr>
 <td>combined</td>
@@ -405,6 +427,8 @@
 <td>14.92</td>
 <td>31.58</td>
 <td>62.47</td>
+<td>5.53</td>
+<td>1.189×</td>
 </tr>
 <tr>
 <td>combined</td>
@@ -413,6 +437,8 @@
 <td>5.13</td>
 <td>50.86</td>
 <td>61.83</td>
+<td>4.87</td>
+<td>1.204×</td>
 </tr>
 <tr>
 <td>fault</td>
@@ -421,6 +447,8 @@
 <td>13.43</td>
 <td>35.08</td>
 <td>70.26</td>
+<td>5.53</td>
+<td>1.064×</td>
 </tr>
 <tr>
 <td>fault</td>
@@ -429,6 +457,8 @@
 <td>4.97</td>
 <td>52.54</td>
 <td>70.03</td>
+<td>4.87</td>
+<td>1.143×</td>
 </tr>
 <tr>
 <td>game</td>
@@ -437,6 +467,8 @@
 <td>14.53</td>
 <td>32.40</td>
 <td>64.83</td>
+<td>5.53</td>
+<td>1.152×</td>
 </tr>
 <tr>
 <td>game</td>
@@ -445,6 +477,8 @@
 <td>4.96</td>
 <td>52.58</td>
 <td>64.11</td>
+<td>4.87</td>
+<td>1.155×</td>
 </tr>
 <tr>
 <td>gpu</td>
@@ -453,6 +487,8 @@
 <td>63.51</td>
 <td>7.42</td>
 <td>12.38</td>
+<td>5.64</td>
+<td>5.061×</td>
 </tr>
 <tr>
 <td>gpu</td>
@@ -461,6 +497,8 @@
 <td>24.60</td>
 <td>10.61</td>
 <td>12.64</td>
+<td>4.87</td>
+<td>5.799×</td>
 </tr>
 <tr>
 <td>quiet</td>
@@ -469,6 +507,8 @@
 <td>12.55</td>
 <td>37.53</td>
 <td>74.88</td>
+<td>5.53</td>
+<td>Baseline</td>
 </tr>
 <tr>
 <td>quiet</td>
@@ -477,6 +517,8 @@
 <td>4.26</td>
 <td>61.23</td>
 <td>74.37</td>
+<td>4.87</td>
+<td>Baseline</td>
 </tr>
 <tr>
 <td>video</td>
@@ -485,6 +527,8 @@
 <td>12.63</td>
 <td>37.30</td>
 <td>74.30</td>
+<td>5.53</td>
+<td>1.007×</td>
 </tr>
 <tr>
 <td>video</td>
@@ -493,6 +537,8 @@
 <td>4.31</td>
 <td>60.61</td>
 <td>74.06</td>
+<td>4.87</td>
+<td>1.010×</td>
 </tr>
 </tbody>
 </table>
@@ -501,9 +547,9 @@
 </section>
 <section class="model-panel" id="panel-9b" aria-labelledby="title-9b">
 <h2 id="title-9b">Local 9B</h2>
-<p>Holo 3.1 9B, affine 4-bit MLX. Quiet and combined desktop load use the same guarded protocol. These fresh pairs remove the custom thermal and swap-volume cutoffs.</p>
+<p>Holo 3.1 9B, affine 4-bit MLX. Three fresh repetitions of all seven conditions: quiet, video, eight browser tabs, synthetic WebGL, combined desktop load, heavy GPU compute and 4 GiB file remapping. Custom thermal and swap-volume cutoffs are removed.</p>
 <p>
-<strong>Median of paired latency ratios:</strong> combined: one-shot 1.270× (n=3), agent 1.163× (n=3).</p>
+<strong>Median of paired latency ratios:</strong> combined: one-shot 1.152× (n=3), agent 1.078× (n=3); heavy GPU: one-shot 4.648× (n=3), agent 4.327× (n=3).</p>
 <p class="warning">
 <strong>Source-use failure:</strong> at least one final answer cited unread source(s) S5. The original bracket-only runtime gate missed alternative citation formatting; a separate format-tolerant audit flags it here.</p>
 <div class="chart-grid">
@@ -518,10 +564,12 @@
 </div>
 <details>
 <summary>Run controls &amp; answer checks</summary>
-<p class="note">6/6 completed pairs match prompts, generated token counts and final answer. Different models can still produce different answers.</p>
-<p class="note">Host swap-outs across completed trial groups: <strong>2164.9 MiB (page equivalents)</strong>. This includes loading and warmup; it is not a per-task attribution. Stopped trials are listed separately.</p>
+<p class="note">Only this full matrix enters the 9B charts; the earlier quiet/combined-only runs are preserved separately. <a href="../../data/local-igpu-contention/paging-20260911/9b-allcases-protocol.md">Full 9B protocol ↗</a>
+</p>
+<p class="note">36/36 completed pairs match prompts, generated token counts and final answer. Different models can still produce different answers.</p>
+<p class="note">Host swap-outs across completed trial groups: <strong>5060.9 MiB (page equivalents)</strong>. This includes loading and warmup; it is not a per-task attribution. Stopped trials are listed separately.</p>
 <p class="note">
-<strong>Answer-length check:</strong> one-shot 176–176 words, agent 162–162 words. 0/12 meet the requested 180–230 words; length alone is not a factual-quality score.</p>
+<strong>Answer-length check:</strong> one-shot 176–176 words, agent 162–162 words. 0/42 meet the requested 180–230 words; length alone is not a factual-quality score.</p>
 </details>
 <details>
 <summary>Swap and thermal observations</summary>
@@ -542,15 +590,50 @@
 <td>quiet</td>
 <td>3</td>
 <td>0.0</td>
-<td>2.79</td>
-<td>Nominal</td>
+<td>2.69</td>
+<td>Fair</td>
+</tr>
+<tr>
+<td>video</td>
+<td>3</td>
+<td>0.0</td>
+<td>2.62</td>
+<td>Fair</td>
+</tr>
+<tr>
+<td>browser</td>
+<td>3</td>
+<td>887.3</td>
+<td>2.25</td>
+<td>Fair</td>
+</tr>
+<tr>
+<td>game</td>
+<td>3</td>
+<td>0.0</td>
+<td>3.15</td>
+<td>Fair</td>
 </tr>
 <tr>
 <td>combined</td>
 <td>3</td>
-<td>270.2</td>
-<td>2.75</td>
-<td>Nominal</td>
+<td>848.2</td>
+<td>2.51</td>
+<td>Fair</td>
+</tr>
+<tr>
+<td>gpu</td>
+<td>3</td>
+<td>0.0</td>
+<td>2.41</td>
+<td>Fair</td>
+</tr>
+<tr>
+<td>fault</td>
+<td>3</td>
+<td>0.0</td>
+<td>2.99</td>
+<td>Fair</td>
 </tr>
 </tbody>
 </table>
@@ -569,40 +652,150 @@
 <th>Seconds</th>
 <th>Effective tok/s</th>
 <th>Decode tok/s</th>
+<th>Peak MLX, GB</th>
+<th>Paired latency ×</th>
 </tr>
 </thead>
 <tbody>
 <tr>
+<td>browser</td>
+<td>Agentic</td>
+<td>3</td>
+<td>13.71</td>
+<td>19.18</td>
+<td>40.40</td>
+<td>9.39</td>
+<td>1.103×</td>
+</tr>
+<tr>
+<td>browser</td>
+<td>One-shot</td>
+<td>3</td>
+<td>8.99</td>
+<td>29.24</td>
+<td>39.55</td>
+<td>8.27</td>
+<td>1.235×</td>
+</tr>
+<tr>
 <td>combined</td>
 <td>Agentic</td>
 <td>3</td>
-<td>13.04</td>
-<td>20.17</td>
-<td>43.21</td>
+<td>13.39</td>
+<td>19.64</td>
+<td>43.43</td>
+<td>9.39</td>
+<td>1.078×</td>
 </tr>
 <tr>
 <td>combined</td>
 <td>One-shot</td>
 <td>3</td>
-<td>8.47</td>
-<td>31.07</td>
-<td>42.85</td>
+<td>8.26</td>
+<td>31.84</td>
+<td>42.05</td>
+<td>8.27</td>
+<td>1.152×</td>
+</tr>
+<tr>
+<td>fault</td>
+<td>Agentic</td>
+<td>3</td>
+<td>12.11</td>
+<td>21.73</td>
+<td>49.64</td>
+<td>9.39</td>
+<td>1.035×</td>
+</tr>
+<tr>
+<td>fault</td>
+<td>One-shot</td>
+<td>3</td>
+<td>7.13</td>
+<td>36.88</td>
+<td>48.23</td>
+<td>8.27</td>
+<td>1.073×</td>
+</tr>
+<tr>
+<td>game</td>
+<td>Agentic</td>
+<td>3</td>
+<td>12.49</td>
+<td>21.05</td>
+<td>45.15</td>
+<td>9.39</td>
+<td>1.069×</td>
+</tr>
+<tr>
+<td>game</td>
+<td>One-shot</td>
+<td>3</td>
+<td>8.24</td>
+<td>31.91</td>
+<td>40.50</td>
+<td>8.27</td>
+<td>1.066×</td>
+</tr>
+<tr>
+<td>gpu</td>
+<td>Agentic</td>
+<td>3</td>
+<td>49.35</td>
+<td>5.33</td>
+<td>9.41</td>
+<td>9.39</td>
+<td>4.327×</td>
+</tr>
+<tr>
+<td>gpu</td>
+<td>One-shot</td>
+<td>3</td>
+<td>32.89</td>
+<td>8.00</td>
+<td>9.21</td>
+<td>8.27</td>
+<td>4.648×</td>
 </tr>
 <tr>
 <td>quiet</td>
 <td>Agentic</td>
 <td>3</td>
-<td>11.16</td>
-<td>23.56</td>
-<td>50.18</td>
+<td>12.43</td>
+<td>21.16</td>
+<td>43.67</td>
+<td>9.39</td>
+<td>Baseline</td>
 </tr>
 <tr>
 <td>quiet</td>
 <td>One-shot</td>
 <td>3</td>
-<td>6.55</td>
-<td>40.16</td>
-<td>49.80</td>
+<td>7.28</td>
+<td>36.11</td>
+<td>45.02</td>
+<td>8.27</td>
+<td>Baseline</td>
+</tr>
+<tr>
+<td>video</td>
+<td>Agentic</td>
+<td>3</td>
+<td>11.77</td>
+<td>22.35</td>
+<td>49.24</td>
+<td>9.39</td>
+<td>1.032×</td>
+</tr>
+<tr>
+<td>video</td>
+<td>One-shot</td>
+<td>3</td>
+<td>7.16</td>
+<td>36.74</td>
+<td>49.08</td>
+<td>8.27</td>
+<td>0.982×</td>
 </tr>
 </tbody>
 </table>
@@ -654,13 +847,15 @@
 <tr>
 <td>9b</td>
 <td>162–176</td>
-<td>0/12</td>
+<td>0/42</td>
 </tr>
 </tbody>
 </table>
 </div>
 <p>For these new 9B/35B runs, macOS thermal pressure and swap volume are recorded without triggering a stop. AC-power, available-memory and time checks remain. The prior cloud/4B series retains its original guard policy. Stopped trials, if any, remain in the data. Models: <a href="https://huggingface.co/pipenetwork/Holo-3.1-4B-MLX-4bit">4B MLX</a>, <a href="https://huggingface.co/pipenetwork/Holo-3.1-9B-MLX-4bit">9B MLX</a>, <a href="https://huggingface.co/Hcompany/Holo-3.1-35B-A3B-NVFP4">official 35B NVFP4</a>.</p>
 </details>
+<p class="note">
+<strong>9B cleanup complete:</strong> 11.75 GB of temporary 9B weights and remapping files removed. The 35B files remain for its ongoing rerun; raw evidence is retained.</p>
 <div class="downloads">
 <a href="../../data/local-igpu-contention/paging-20260911/runs.csv">Every run ↗</a>
 <a href="../../data/local-igpu-contention/paging-20260911/pairs.csv">Paired comparisons ↗</a>

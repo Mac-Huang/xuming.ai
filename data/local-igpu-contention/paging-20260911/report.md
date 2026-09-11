@@ -1,24 +1,34 @@
 # Completed 9B rerun — September 11, 2026
 
-Interim publication: all three 9B quiet/combined pairs are complete. The 35B rerun is still in progress and is excluded from this interim comparison. Model-file cleanup is deferred until the remaining 35B measurements finish.
+Interim publication: the completed 9B conditions are reported below. The 35B rerun is still in progress and is excluded from this interim comparison. Model-file cleanup is deferred until the remaining 35B measurements finish.
 The custom thermal and swap-volume stop conditions were removed at the user’s request. macOS thermal pressure and swap volume remain observations. Native macOS protections, AC-power, minimum-available-memory and duration checks remain. This does not equate swap activity with temperature or a hardware damage threshold.
 
-Fresh quiet/combined pairs use the same pinned models, corpus, prompts, greedy decoding, 128-token prefill, 128 MiB allocator cache and identical warmups. The 35B custom Metal adapter retains the 0.5 GB expert cache and all model experts. The earlier aborted attempts are archived, not pooled.
+Fresh 9B conditions and 35B quiet/combined pairs use the same pinned models, corpus, prompts, greedy decoding, 128-token prefill, 128 MiB allocator cache and identical warmups. The 9B full matrix, when present, replaces its earlier quiet/combined-only dataset; campaign tags identify the source of each row. The 35B custom Metal adapter retains the 0.5 GB expert cache and all model experts. The earlier aborted attempts are archived, not pooled.
 
 ## Fresh measurements
 
 | Model | Condition | Task | n | Median seconds | Effective output tokens/s | Median paired latency ratio |
 |---|---|---|---:|---:|---:|---:|
-| 9b | combined | agentic | 3 | 13.04 | 20.17 | 1.163× |
-| 9b | combined | one_shot | 3 | 8.47 | 31.07 | 1.270× |
-| 9b | quiet | agentic | 3 | 11.16 | 23.56 | — |
-| 9b | quiet | one_shot | 3 | 6.55 | 40.16 | — |
+| 9b | browser | agentic | 3 | 13.71 | 19.18 | 1.103× |
+| 9b | browser | one_shot | 3 | 8.99 | 29.24 | 1.235× |
+| 9b | combined | agentic | 3 | 13.39 | 19.64 | 1.078× |
+| 9b | combined | one_shot | 3 | 8.26 | 31.84 | 1.152× |
+| 9b | fault | agentic | 3 | 12.11 | 21.73 | 1.035× |
+| 9b | fault | one_shot | 3 | 7.13 | 36.88 | 1.073× |
+| 9b | game | agentic | 3 | 12.49 | 21.05 | 1.069× |
+| 9b | game | one_shot | 3 | 8.24 | 31.91 | 1.066× |
+| 9b | gpu | agentic | 3 | 49.35 | 5.33 | 4.327× |
+| 9b | gpu | one_shot | 3 | 32.89 | 8.00 | 4.648× |
+| 9b | quiet | agentic | 3 | 12.43 | 21.16 | — |
+| 9b | quiet | one_shot | 3 | 7.28 | 36.11 | — |
+| 9b | video | agentic | 3 | 11.77 | 22.35 | 1.032× |
+| 9b | video | one_shot | 3 | 7.16 | 36.74 | 0.982× |
 
 Effective throughput counts every generated action/recovery token and includes full task time, including prefill and source calls. Decode throughput is separately retained in the CSV. Loading and warmup are excluded from task latency. Ratios are paired within repetition; ranges are observed sample spread, not p95 or confidence intervals.
 
 ## Work and output quality
 
-- 9b: 12 completed workloads; 6/6 pairs match task prompts, generated-token counts and final answer. 0/12 meet the 180–230-word target; 6/12 pass the format-tolerant source-ID/read check.
+- 9b: 42 completed workloads; 36/36 pairs match task prompts, generated-token counts and final answer. 0/42 meet the 180–230-word target; 21/42 pass the format-tolerant source-ID/read check.
   Unread source IDs in final answers: S5. The original bracket-only runtime gate missed alternate citation formatting; timed behavior is preserved and failures are reported.
 
 
@@ -30,12 +40,27 @@ The following host counters cover loading, warmup and both tasks for each condit
 
 | Model | Rep | Condition | Swap-outs MiB | Minimum available GiB | Maximum thermal state | Completed |
 |---|---:|---|---:|---:|---:|---|
-| 9b | 1 | combined | 1876.4 | 2.75 | 0 | True |
-| 9b | 1 | quiet | 0.0 | 2.79 | 0 | True |
-| 9b | 2 | combined | 18.3 | 3.12 | 0 | True |
-| 9b | 2 | quiet | 0.0 | 4.10 | 0 | True |
-| 9b | 3 | combined | 270.2 | 3.36 | 0 | True |
-| 9b | 3 | quiet | 0.0 | 4.06 | 0 | True |
+| 9b | 1 | browser | 1164.5 | 2.25 | 0 | True |
+| 9b | 1 | combined | 1150.1 | 2.51 | 0 | True |
+| 9b | 1 | fault | 0.0 | 2.99 | 1 | True |
+| 9b | 1 | game | 0.0 | 3.15 | 0 | True |
+| 9b | 1 | gpu | 0.0 | 2.41 | 1 | True |
+| 9b | 1 | quiet | 0.0 | 2.69 | 0 | True |
+| 9b | 1 | video | 0.0 | 2.62 | 0 | True |
+| 9b | 2 | browser | 887.3 | 3.05 | 1 | True |
+| 9b | 2 | combined | 848.2 | 2.90 | 1 | True |
+| 9b | 2 | fault | 0.0 | 3.09 | 1 | True |
+| 9b | 2 | game | 0.0 | 3.63 | 1 | True |
+| 9b | 2 | gpu | 0.0 | 3.23 | 1 | True |
+| 9b | 2 | quiet | 0.0 | 3.64 | 1 | True |
+| 9b | 2 | video | 0.0 | 3.32 | 1 | True |
+| 9b | 3 | browser | 473.6 | 2.96 | 1 | True |
+| 9b | 3 | combined | 537.1 | 3.39 | 1 | True |
+| 9b | 3 | fault | 0.0 | 3.66 | 1 | True |
+| 9b | 3 | game | 0.0 | 3.23 | 1 | True |
+| 9b | 3 | gpu | 0.0 | 4.10 | 1 | True |
+| 9b | 3 | quiet | 0.0 | 3.40 | 1 | True |
+| 9b | 3 | video | 0.0 | 3.11 | 1 | True |
 
 ## Retained cloud and 4B data
 
@@ -43,6 +68,8 @@ The page retains the preceding cloud and 4B campaigns unchanged, with an explici
 
 ## Cleanup
 
-Cleanup pending while measurements are active.
+Inter-condition pause: User requested publishing 9B first; pause between 35B conditions to avoid rendering during timed inference. Duration: 144.26458096504211 seconds. No timed workload was suspended.
+Inter-condition pause: User requested all seven 9B cases; pause between 35B conditions for a fresh complete 9B matrix. Duration: still pending seconds. No timed workload was suspended.
+Removed 11.75 GB of temporary 9B weights and remapping files. Remaining 35B files are retained until its rerun finishes.
 
 See PROTOCOL.md and artifacts/{runs,steps,pairs,summary,resources}.csv for the fresh campaign, and artifacts/publication-analysis.json for the explicitly tagged combined publication dataset.

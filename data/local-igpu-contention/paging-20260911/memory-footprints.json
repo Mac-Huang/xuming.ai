@@ -1,5 +1,5 @@
 {
-  "time": 1789152019.5041559,
+  "time": 1789154343.939659,
   "units": "GB = 10^9 bytes; macOS hardware capacity is reported separately in GiB",
   "metric": "Maximum per-call MLX tracked peak allocation across completed one-shot and agentic tasks. This includes tracked model/context/activation memory; it excludes untracked process memory and OS file cache. It is not RSS or total machine memory, and the two memory columns must not be added.",
   "models": [
@@ -24,8 +24,8 @@
       "checkpoint_gb": 7.423906797,
       "quiet_peak_mlx_gb": 9.393618834,
       "combined_peak_mlx_gb": 9.393618834,
-      "condition_trials": 6,
-      "status": "Complete, 3 paired repetitions"
+      "condition_trials": 21,
+      "status": "Complete, 3 repetitions"
     },
     {
       "model": "35b",

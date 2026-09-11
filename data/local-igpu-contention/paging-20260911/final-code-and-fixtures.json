@@ -1,5 +1,5 @@
 {
-  "time": 1789152070.3004212,
+  "time": 1789154390.062371,
   "scope": "Final source and fixture snapshot. The pre-run-code-and-fixtures.json snapshot precedes this campaign. Analysis, cleanup and presentation code were refined later; audit.json verifies that frozen measurement sources and fixtures did not change. The custom thermal and swap-volume guards were removed before all fresh trials.",
   "files": [
     {
@@ -53,6 +53,66 @@
       "sha256": "e802e11bd63208ccf0bb9285a06ffe93d6fd36042dd6408d29cd862637ac659e"
     },
     {
+      "path": "paging_9b_allcases_20260911/PROTOCOL.md",
+      "bytes": 1230,
+      "sha256": "a99647444c69da54a8b993f691edfeba4535723b03bf6c63cea5616936108657"
+    },
+    {
+      "path": "paging_9b_allcases_20260911/artifacts/pre-run-code-and-fixtures.json",
+      "bytes": 2157,
+      "sha256": "814987239cc711745244e6974e473bc77815c782bd0576781ef344fd9ff7ce03"
+    },
+    {
+      "path": "paging_9b_allcases_20260911/scripts/analyze.py",
+      "bytes": 6665,
+      "sha256": "bfa076e53baab95695b49dc51ad21a49f35955cee91519b6a807d834192c2a57"
+    },
+    {
+      "path": "paging_9b_allcases_20260911/scripts/check_frames.py",
+      "bytes": 3089,
+      "sha256": "893de56fbba2e0cb360c329f62e2fbf7fac211af9aedd64470deb86d3543912a"
+    },
+    {
+      "path": "paging_9b_allcases_20260911/scripts/check_stress.py",
+      "bytes": 1346,
+      "sha256": "9c042c674344bae14df4c8e8a326ef0f719ca7c0be8d88693330eadd9b0e6184"
+    },
+    {
+      "path": "paging_9b_allcases_20260911/scripts/guard.py",
+      "bytes": 2572,
+      "sha256": "00d62a2e3eadd2f929e1fa12fe1d1ba895007d85b033478c09d560f856c536ad"
+    },
+    {
+      "path": "paging_9b_allcases_20260911/scripts/local_worker.py",
+      "bytes": 4349,
+      "sha256": "7a3a6958caf39fad0dc2afd0ac17be3dc64125bc0abd8439555f0e9f4ec074f5"
+    },
+    {
+      "path": "paging_9b_allcases_20260911/scripts/pipeline.py",
+      "bytes": 1199,
+      "sha256": "9f91a7e5e0353e847adaa485b2fa3929eac6ddd722800b500bffd507fa04ffc4"
+    },
+    {
+      "path": "paging_9b_allcases_20260911/scripts/progress.py",
+      "bytes": 1218,
+      "sha256": "9938442d24a0665269492787c2ceade421ba45e16f146adae39b3b84ad11746b"
+    },
+    {
+      "path": "paging_9b_allcases_20260911/scripts/resources.py",
+      "bytes": 1562,
+      "sha256": "cdaa1449129b10ee90336d45582126ae5d365bdc53f2256a55371de7de62d25d"
+    },
+    {
+      "path": "paging_9b_allcases_20260911/scripts/run_local.py",
+      "bytes": 1633,
+      "sha256": "b53abf323a8ad3d5f664ca7120cbdf079378081ea9d536c7e86ab60649b769b3"
+    },
+    {
+      "path": "paging_9b_allcases_20260911/scripts/validate.py",
+      "bytes": 1591,
+      "sha256": "87f5678aa39daecb86cc8165beb9c6fd080cd4425613ae54293b2ce0e15a7841"
+    },
+    {
       "path": "paging_rerun_20260911/PROTOCOL.md",
       "bytes": 3864,
       "sha256": "68faab1f13039d185820770350e9809ab0c6938d3ca76b7141e3d796da3f1ac7"
@@ -74,8 +134,8 @@
     },
     {
       "path": "paging_rerun_20260911/scripts/build_page.py",
-      "bytes": 23260,
-      "sha256": "6e4b4f9c878a6ffef43a00808cad915492db3445ddb893051003b3787a09e133"
+      "bytes": 25424,
+      "sha256": "08737b762acd08d9ff462303eda3e236ebe312abc8419a75b4010cbc3892172b"
     },
     {
       "path": "paging_rerun_20260911/scripts/check_frames.py",
@@ -89,8 +149,8 @@
     },
     {
       "path": "paging_rerun_20260911/scripts/cleanup.py",
-      "bytes": 1308,
-      "sha256": "929e4a179560ec0aa0ae1335c318dd0bdf4b549e95f067684cb653885413df68"
+      "bytes": 1417,
+      "sha256": "f4b62582a1c1053a0426852379d33892b6aa1adf47b069121e59102cc6880598"
     },
     {
       "path": "paging_rerun_20260911/scripts/download_35b_parallel.py",
@@ -104,8 +164,8 @@
     },
     {
       "path": "paging_rerun_20260911/scripts/final_manifest.py",
-      "bytes": 1201,
-      "sha256": "6cea71a24eb0d54aec0d2d88c4834a392665b732b80a4a10bac61d8bcd003a3d"
+      "bytes": 1372,
+      "sha256": "fd686377fae6cd2996c81fcf24f08de334e4e6c4c61437cae7c3c1406a4599a5"
     },
     {
       "path": "paging_rerun_20260911/scripts/guard.py",
@@ -119,13 +179,13 @@
     },
     {
       "path": "paging_rerun_20260911/scripts/memory.py",
-      "bytes": 2693,
-      "sha256": "b48f5c6b87030b9aa04da6fd2da1f6e6d8f77ed8f2c545037c52018c12dea445"
+      "bytes": 2913,
+      "sha256": "4062f9240552a95399c4be938749f3cd278da051729d031ca1e78e28ba0ce88a"
     },
     {
       "path": "paging_rerun_20260911/scripts/merge_publication.py",
-      "bytes": 1314,
-      "sha256": "3d3d33a5a5e18a87af7fc4348ab50a5edd328b1594a3ba11b5bf2d48a20a0661"
+      "bytes": 3124,
+      "sha256": "278498a82b0880fde7552a7865b790ba8c12437942f50d31630d36e9db2a0243"
     },
     {
       "path": "paging_rerun_20260911/scripts/pipeline.py",
@@ -134,8 +194,8 @@
     },
     {
       "path": "paging_rerun_20260911/scripts/plot.py",
-      "bytes": 4608,
-      "sha256": "f2f1381f0a1ca727587d1e47718d43264c70bf7707d758dfbc01c53c2e78d5c5"
+      "bytes": 4697,
+      "sha256": "04c16d08fa2f5c44fde6a8a1ba20d5dc2881b936e6821d3e7f2a5d8e7b4db793"
     },
     {
       "path": "paging_rerun_20260911/scripts/progress.py",
@@ -144,13 +204,13 @@
     },
     {
       "path": "paging_rerun_20260911/scripts/report.py",
-      "bytes": 5452,
-      "sha256": "a4de093981aca3bf4d0ce09a4ffbc9acd5e1282f86dadfa6f50a0de79bb39fe8"
+      "bytes": 6314,
+      "sha256": "ce998501cf32e9f6ae1c251761b05b008f063d2e441a7b95517a0dedfa673b84"
     },
     {
       "path": "paging_rerun_20260911/scripts/resources.py",
-      "bytes": 1562,
-      "sha256": "cdaa1449129b10ee90336d45582126ae5d365bdc53f2256a55371de7de62d25d"
+      "bytes": 1733,
+      "sha256": "cb0c6103a9ab01646f2af9fc060def953770dca3dfb886a1a7482453bf6c6ae7"
     },
     {
       "path": "paging_rerun_20260911/scripts/run_local.py",

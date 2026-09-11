@@ -5,7 +5,7 @@ const blogPosts = [
     title: 'When Local AI Shares Your GPU',
     date: 'September 11, 2026',
     category: 'research',
-    excerpt: 'Fresh 9B and paged 35B quiet/combined runs without custom thermal or swap cutoffs, alongside the cloud and 4B baselines: latency, throughput and paired results.',
+    excerpt: 'All seven 9B contention cases with three paired repetitions, latency, throughput and memory use; cloud and 4B baselines retained, with the 35B rerun in progress.',
     url: 'blog/posts/local-igpu-contention.html',
     readTime: '4 min',
     cover: 'images/blog/local-igpu-contention/paging-20260911/9b-wall_s.png'

@@ -1,0 +1,65 @@
+{
+  "time": 1789152344.749036,
+  "files": [
+    {
+      "path": "paging_9b_allcases_20260911/scripts/guard.py",
+      "sha256": "00d62a2e3eadd2f929e1fa12fe1d1ba895007d85b033478c09d560f856c536ad"
+    },
+    {
+      "path": "paging_9b_allcases_20260911/scripts/local_worker.py",
+      "sha256": "7a3a6958caf39fad0dc2afd0ac17be3dc64125bc0abd8439555f0e9f4ec074f5"
+    },
+    {
+      "path": "paging_9b_allcases_20260911/scripts/run_local.py",
+      "sha256": "b53abf323a8ad3d5f664ca7120cbdf079378081ea9d536c7e86ab60649b769b3"
+    },
+    {
+      "path": "scripts/bench.py",
+      "sha256": "14f5bc556cc2ef84f3ea0b9fcea4e251883b959853b599eb2e0c807a238db739"
+    },
+    {
+      "path": "scripts/contend.py",
+      "sha256": "524328c4b9b9102909aa1228ad7ca03f0e4b4977b04418546f79a0d8047c5d4a"
+    },
+    {
+      "path": "aggressive/scripts/stress.py",
+      "sha256": "95f9a1d01c8e7e1099d7cfbadc9007c882f47ea9edf9c16dc5bf4a9ae95ecb8c"
+    },
+    {
+      "path": "nvfp4_35b/scripts/telemetry.py",
+      "sha256": "e802e11bd63208ccf0bb9285a06ffe93d6fd36042dd6408d29cd862637ac659e"
+    },
+    {
+      "path": "artifacts/corpus.json",
+      "sha256": "4a52309d4eb9a52e085662a87764d82dc3205e4b3ce7d8ae2bb1b19940b8e7c9"
+    },
+    {
+      "path": "artifacts/S6.png",
+      "sha256": "fa56326efe5661fb155aa37d703ea64d15d50e195d2d2364f64bd15e9163ecb6"
+    },
+    {
+      "path": "artifacts/S5.png",
+      "sha256": "9cd6ff0d556d282ccfa7b2abcfebfa24770caefa9fab0d0530057892fc077544"
+    },
+    {
+      "path": "artifacts/S4.png",
+      "sha256": "00565983e1541c03419ad3248a6282ee39cb599730c62ec7f63335369de93072"
+    },
+    {
+      "path": "artifacts/S1.png",
+      "sha256": "b1105e0767f9f3c07994a539634c8c5b499e8023ba1cc2f803bbba3578b511ce"
+    },
+    {
+      "path": "artifacts/S3.png",
+      "sha256": "ddf844969b5530f2f7902f5e8adbeeed2ef474673512ae116b0a6796883c8642"
+    },
+    {
+      "path": "artifacts/S2.png",
+      "sha256": "5bd2061bd1b486f33c1304b11d163e4c3e3e073a5f2c37e17c88f41a9ed2cf76"
+    },
+    {
+      "path": "paging_9b_allcases_20260911/scripts/pipeline.py",
+      "sha256": "9f91a7e5e0353e847adaa485b2fa3929eac6ddd722800b500bffd507fa04ffc4"
+    }
+  ]
+}
