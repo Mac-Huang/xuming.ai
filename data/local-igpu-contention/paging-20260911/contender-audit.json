@@ -1,5 +1,284 @@
 [
   {
+    "trial": "35b/r0_combined",
+    "condition": "combined",
+    "observed_seconds": 965.1074848175049,
+    "frame_or_callback_delta": {
+      "video": 57882,
+      "browser0": 57903,
+      "browser1": 57902,
+      "browser2": 57902,
+      "browser3": 57902,
+      "browser4": 57901,
+      "browser5": 57902,
+      "browser6": 57902,
+      "browser7": 57902,
+      "game": 57902
+    },
+    "consecutive_intervals_checked": 943,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "35b/r0_combined",
+    "task": "one_shot",
+    "condition": "combined",
+    "task_seconds": 466.707631111145,
+    "samples_within_task": 456,
+    "frame_or_callback_delta": {
+      "video": 27917,
+      "browser0": 27927,
+      "browser1": 27927,
+      "browser2": 27927,
+      "browser3": 27927,
+      "browser4": 27926,
+      "browser5": 27926,
+      "browser6": 27926,
+      "browser7": 27926,
+      "game": 27927
+    },
+    "errors": []
+  },
+  {
+    "trial": "35b/r0_combined",
+    "task": "agentic",
+    "condition": "combined",
+    "task_seconds": 493.2762191295624,
+    "samples_within_task": 482,
+    "frame_or_callback_delta": {
+      "video": 29535,
+      "browser0": 29546,
+      "browser1": 29546,
+      "browser2": 29546,
+      "browser3": 29546,
+      "browser4": 29546,
+      "browser5": 29546,
+      "browser6": 29546,
+      "browser7": 29546,
+      "game": 29546
+    },
+    "errors": []
+  },
+  {
+    "trial": "35b/r0_quiet",
+    "condition": "quiet",
+    "observed_seconds": 829.8023197650909,
+    "frame_or_callback_delta": {
+      "quiet": 49784
+    },
+    "consecutive_intervals_checked": 822,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "35b/r0_quiet",
+    "task": "one_shot",
+    "condition": "quiet",
+    "task_seconds": 407.40731406211853,
+    "samples_within_task": 403,
+    "frame_or_callback_delta": {
+      "quiet": 24346
+    },
+    "errors": []
+  },
+  {
+    "trial": "35b/r0_quiet",
+    "task": "agentic",
+    "condition": "quiet",
+    "task_seconds": 417.75892400741577,
+    "samples_within_task": 414,
+    "frame_or_callback_delta": {
+      "quiet": 25013
+    },
+    "errors": []
+  },
+  {
+    "trial": "35b/r1_combined",
+    "condition": "combined",
+    "observed_seconds": 960.3680188655853,
+    "frame_or_callback_delta": {
+      "video": 57596,
+      "browser0": 57619,
+      "browser1": 57618,
+      "browser2": 57618,
+      "browser3": 57619,
+      "browser4": 57619,
+      "browser5": 57618,
+      "browser6": 57618,
+      "browser7": 57618,
+      "game": 57618
+    },
+    "consecutive_intervals_checked": 936,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "35b/r1_combined",
+    "task": "one_shot",
+    "condition": "combined",
+    "task_seconds": 484.61858916282654,
+    "samples_within_task": 472,
+    "frame_or_callback_delta": {
+      "video": 28970,
+      "browser0": 28982,
+      "browser1": 28982,
+      "browser2": 28982,
+      "browser3": 28983,
+      "browser4": 28983,
+      "browser5": 28983,
+      "browser6": 28983,
+      "browser7": 28983,
+      "game": 28982
+    },
+    "errors": []
+  },
+  {
+    "trial": "35b/r1_combined",
+    "task": "agentic",
+    "condition": "combined",
+    "task_seconds": 471.0637469291687,
+    "samples_within_task": 459,
+    "frame_or_callback_delta": {
+      "video": 28194,
+      "browser0": 28205,
+      "browser1": 28205,
+      "browser2": 28205,
+      "browser3": 28204,
+      "browser4": 28205,
+      "browser5": 28205,
+      "browser6": 28205,
+      "browser7": 28205,
+      "game": 28205
+    },
+    "errors": []
+  },
+  {
+    "trial": "35b/r1_quiet",
+    "condition": "quiet",
+    "observed_seconds": 833.0556118488312,
+    "frame_or_callback_delta": {
+      "quiet": 49980
+    },
+    "consecutive_intervals_checked": 825,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "35b/r1_quiet",
+    "task": "one_shot",
+    "condition": "quiet",
+    "task_seconds": 418.5163073539734,
+    "samples_within_task": 415,
+    "frame_or_callback_delta": {
+      "quiet": 25082
+    },
+    "errors": []
+  },
+  {
+    "trial": "35b/r1_quiet",
+    "task": "agentic",
+    "condition": "quiet",
+    "task_seconds": 409.74053597450256,
+    "samples_within_task": 405,
+    "frame_or_callback_delta": {
+      "quiet": 24473
+    },
+    "errors": []
+  },
+  {
+    "trial": "35b/r2_combined",
+    "condition": "combined",
+    "observed_seconds": 930.0618648529053,
+    "frame_or_callback_delta": {
+      "video": 55776,
+      "browser0": 55801,
+      "browser1": 55801,
+      "browser2": 55800,
+      "browser3": 55800,
+      "browser4": 55800,
+      "browser5": 55800,
+      "browser6": 55799,
+      "browser7": 55799,
+      "game": 55799
+    },
+    "consecutive_intervals_checked": 907,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "35b/r2_combined",
+    "task": "one_shot",
+    "condition": "combined",
+    "task_seconds": 459.09237599372864,
+    "samples_within_task": 447,
+    "frame_or_callback_delta": {
+      "video": 27426,
+      "browser0": 27439,
+      "browser1": 27439,
+      "browser2": 27439,
+      "browser3": 27439,
+      "browser4": 27438,
+      "browser5": 27438,
+      "browser6": 27438,
+      "browser7": 27438,
+      "game": 27438
+    },
+    "errors": []
+  },
+  {
+    "trial": "35b/r2_combined",
+    "task": "agentic",
+    "condition": "combined",
+    "task_seconds": 465.8839979171753,
+    "samples_within_task": 455,
+    "frame_or_callback_delta": {
+      "video": 27921,
+      "browser0": 27932,
+      "browser1": 27932,
+      "browser2": 27932,
+      "browser3": 27932,
+      "browser4": 27932,
+      "browser5": 27931,
+      "browser6": 27931,
+      "browser7": 27931,
+      "game": 27931
+    },
+    "errors": []
+  },
+  {
+    "trial": "35b/r2_quiet",
+    "condition": "quiet",
+    "observed_seconds": 842.2107856273651,
+    "frame_or_callback_delta": {
+      "quiet": 50530
+    },
+    "consecutive_intervals_checked": 834,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "35b/r2_quiet",
+    "task": "one_shot",
+    "condition": "quiet",
+    "task_seconds": 416.21661281585693,
+    "samples_within_task": 413,
+    "frame_or_callback_delta": {
+      "quiet": 24967
+    },
+    "errors": []
+  },
+  {
+    "trial": "35b/r2_quiet",
+    "task": "agentic",
+    "condition": "quiet",
+    "task_seconds": 421.9415888786316,
+    "samples_within_task": 417,
+    "frame_or_callback_delta": {
+      "quiet": 25199
+    },
+    "errors": []
+  },
+  {
     "trial": "9b/r0_combined",
     "condition": "combined",
     "observed_seconds": 25.747610092163086,

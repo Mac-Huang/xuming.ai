@@ -2,6 +2,7 @@
   "integrity_pass": true,
   "errors": [],
   "published_workloads_by_model": {
+    "35b": 12,
     "4b": 42,
     "9b": 42,
     "cloud": 24,

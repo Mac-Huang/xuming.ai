@@ -1,5 +1,5 @@
 {
-  "time": 1789154390.062371,
+  "time": 1789158563.488574,
   "scope": "Final source and fixture snapshot. The pre-run-code-and-fixtures.json snapshot precedes this campaign. Analysis, cleanup and presentation code were refined later; audit.json verifies that frozen measurement sources and fixtures did not change. The custom thermal and swap-volume guards were removed before all fresh trials.",
   "files": [
     {
@@ -134,8 +134,8 @@
     },
     {
       "path": "paging_rerun_20260911/scripts/build_page.py",
-      "bytes": 25424,
-      "sha256": "08737b762acd08d9ff462303eda3e236ebe312abc8419a75b4010cbc3892172b"
+      "bytes": 25847,
+      "sha256": "817fb9a2153444ec6bb6011748bd628c4c4375448c0c86caf54a370b9c2a3fbc"
     },
     {
       "path": "paging_rerun_20260911/scripts/check_frames.py",
@@ -204,13 +204,18 @@
     },
     {
       "path": "paging_rerun_20260911/scripts/report.py",
-      "bytes": 6314,
-      "sha256": "ce998501cf32e9f6ae1c251761b05b008f063d2e441a7b95517a0dedfa673b84"
+      "bytes": 6697,
+      "sha256": "e77129a1ca27cdd7a9618a6993965a0db44c6a77ca777db2bd79dd40e3fb4d35"
     },
     {
       "path": "paging_rerun_20260911/scripts/resources.py",
       "bytes": 1733,
       "sha256": "cb0c6103a9ab01646f2af9fc060def953770dca3dfb886a1a7482453bf6c6ae7"
+    },
+    {
+      "path": "paging_rerun_20260911/scripts/resume_after_9b.py",
+      "bytes": 991,
+      "sha256": "b9b3e228924a0115333e987d3eff5dfee0489d7a5c28cd3827e358a2a6ad7586"
     },
     {
       "path": "paging_rerun_20260911/scripts/run_local.py",

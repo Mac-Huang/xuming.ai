@@ -1,14 +1,19 @@
-# Completed 9B rerun — September 11, 2026
+# Larger-model paging rerun — September 11, 2026
 
-Interim publication: the completed 9B conditions are reported below. The 35B rerun is still in progress and is excluded from this interim comparison. Model-file cleanup is deferred until the remaining 35B measurements finish.
 The custom thermal and swap-volume stop conditions were removed at the user’s request. macOS thermal pressure and swap volume remain observations. Native macOS protections, AC-power, minimum-available-memory and duration checks remain. This does not equate swap activity with temperature or a hardware damage threshold.
 
-Fresh 9B conditions and 35B quiet/combined pairs use the same pinned models, corpus, prompts, greedy decoding, 128-token prefill, 128 MiB allocator cache and identical warmups. The 9B full matrix, when present, replaces its earlier quiet/combined-only dataset; campaign tags identify the source of each row. The 35B custom Metal adapter retains the 0.5 GB expert cache and all model experts. The earlier aborted attempts are archived, not pooled.
+Fresh 9B conditions and 35B quiet/combined pairs use the same pinned models, corpus, prompts, greedy decoding, 128-token prefill, 128 MiB allocator cache and identical warmups. The 9B full matrix replaces its earlier quiet/combined-only dataset; campaign tags identify the source of each row. The 35B custom Metal adapter retains the 0.5 GB expert cache and all model experts. The earlier aborted attempts are archived, not pooled.
+
+One additional completed 35B combined condition is retained in artifacts/extra-35b-trials.csv. Its quiet counterpart had not run before the user-requested full 9B campaign. Both conditions of that repetition were therefore repeated together; the extra unpaired condition is excluded from the main medians.
 
 ## Fresh measurements
 
 | Model | Condition | Task | n | Median seconds | Effective output tokens/s | Median paired latency ratio |
 |---|---|---|---:|---:|---:|---:|
+| 35b | combined | agentic | 3 | 471.06 | 0.51 | 1.150× |
+| 35b | combined | one_shot | 3 | 466.70 | 0.69 | 1.146× |
+| 35b | quiet | agentic | 3 | 417.75 | 0.57 | — |
+| 35b | quiet | one_shot | 3 | 416.22 | 0.78 | — |
 | 9b | browser | agentic | 3 | 13.71 | 19.18 | 1.103× |
 | 9b | browser | one_shot | 3 | 8.99 | 29.24 | 1.235× |
 | 9b | combined | agentic | 3 | 13.39 | 19.64 | 1.078× |
@@ -30,7 +35,9 @@ Effective throughput counts every generated action/recovery token and includes f
 
 - 9b: 42 completed workloads; 36/36 pairs match task prompts, generated-token counts and final answer. 0/42 meet the 180–230-word target; 21/42 pass the format-tolerant source-ID/read check.
   Unread source IDs in final answers: S5. The original bracket-only runtime gate missed alternate citation formatting; timed behavior is preserved and failures are reported.
+- 35b: 12 completed workloads; 6/6 pairs match task prompts, generated-token counts and final answer. 6/12 meet the 180–230-word target; 12/12 pass the format-tolerant source-ID/read check.
 
+Manual review of the first fresh 35B quiet agent answer: it omits the requested frontier-policy comparison and contains only 127 words. Its timing is retained as completed inference, not successful completion of the research request.
 
 Mechanical completion, word count and citation checks are not factual-quality validation. The 35B runtime is a custom paged Metal path, not native NVIDIA NVFP4 or proof of full-model backend parity.
 
@@ -61,6 +68,12 @@ The following host counters cover loading, warmup and both tasks for each condit
 | 9b | 3 | gpu | 0.0 | 4.10 | 1 | True |
 | 9b | 3 | quiet | 0.0 | 3.40 | 1 | True |
 | 9b | 3 | video | 0.0 | 3.11 | 1 | True |
+| 35b | 1 | combined | 0.0 | 3.08 | 0 | True |
+| 35b | 1 | quiet | 0.0 | 4.46 | 0 | True |
+| 35b | 2 | combined | 61.2 | 2.73 | 0 | True |
+| 35b | 2 | quiet | 0.0 | 4.23 | 0 | True |
+| 35b | 3 | combined | 691.0 | 2.97 | 0 | True |
+| 35b | 3 | quiet | 0.0 | 3.24 | 0 | True |
 
 ## Retained cloud and 4B data
 
@@ -69,7 +82,7 @@ The page retains the preceding cloud and 4B campaigns unchanged, with an explici
 ## Cleanup
 
 Inter-condition pause: User requested publishing 9B first; pause between 35B conditions to avoid rendering during timed inference. Duration: 144.26458096504211 seconds. No timed workload was suspended.
-Inter-condition pause: User requested all seven 9B cases; pause between 35B conditions for a fresh complete 9B matrix. Duration: still pending seconds. No timed workload was suspended.
-Removed 11.75 GB of temporary 9B weights and remapping files. Remaining 35B files are retained until its rerun finishes.
+Inter-condition pause: User requested all seven 9B cases; pause between 35B conditions for a fresh complete 9B matrix. Duration: 1239.4354531764984 seconds. No timed workload was suspended.
+Removed 58.50 GB of newly downloaded/repacked models and temporary files. Owned benchmark workers remaining: 0. Final recorded thermal state: 0. Raw evidence and the reusable original environment remain.
 
 See PROTOCOL.md and artifacts/{runs,steps,pairs,summary,resources}.csv for the fresh campaign, and artifacts/publication-analysis.json for the explicitly tagged combined publication dataset.

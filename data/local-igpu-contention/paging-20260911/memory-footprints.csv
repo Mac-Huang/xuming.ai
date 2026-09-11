@@ -2,4 +2,4 @@ model,checkpoint_gb,quiet_peak_mlx_gb,combined_peak_mlx_gb,condition_trials,stat
 cloud,,,,,Remote model memory not exposed,,,
 4b,3.966047789,5.532877321,5.532877321,6,Previous campaign,,,
 9b,7.423906797,9.393618834,9.393618834,21,"Complete, 3 repetitions",,,
-35b,23.69380518,7.252326864,7.252326784,2,Provisional; rerun in progress,4.87908704,18.11939328,0.5
+35b,23.69380518,7.252326864,7.252326784,6,"Complete, 3 repetitions",4.87908704,18.11939328,0.5
