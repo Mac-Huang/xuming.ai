@@ -1,6 +1,16 @@
 // Blog posts data - simple and clean
 const blogPosts = [
   {
+    id: 'local-igpu-contention',
+    title: 'When Local AI Shares Your GPU',
+    date: 'September 11, 2026',
+    category: 'research',
+    excerpt: 'Cloud and local baselines on a 24 GiB Mac: desktop load added 30–39%, heavy GPU compute caused a 5.6–6.0× slowdown, and a paged 35B model ran in 4–5 minutes.',
+    url: 'blog/posts/local-igpu-contention.html',
+    readTime: '4 min',
+    cover: 'images/blog/local-igpu-contention/contention.png'
+  },
+  {
     id: 'npu-jit-static-shapes',
     title: 'Compile Ahead, Not Up Front: JIT Specialization for Static-Shape NPUs',
     date: 'September 5, 2026',

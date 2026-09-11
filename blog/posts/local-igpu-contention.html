@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>When Local AI Shares Your GPU — Xuming Huang</title>
+<meta name="description" content="On a 24 GiB M5 Pro: desktop contention slowed Holo 4B by 30–39%; heavy GPU compute by 5.6–6.0×. Cloud baselines and a paged 35B NVFP4 experiment, with measured graphs.">
+<meta name="author" content="Xuming Huang">
+<link rel="canonical" href="https://xuming.ai/blog/posts/local-igpu-contention.html">
+<meta property="og:title" content="When Local AI Shares Your GPU">
+<meta property="og:description" content="Cloud baselines, desktop contention, GPU stress, and a paged 35B model on a 24 GiB Mac.">
+<meta property="og:image" content="https://xuming.ai/images/blog/local-igpu-contention/contention.png">
+<meta property="og:type" content="article">
+<link rel="icon" href="../../images/favicon.png">
+<style>
+:root{--ink:#172c42;--muted:#536477;--blue:#2166d1;--teal:#087e77;--paper:#f5f7fa;--line:#dce3eb}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}a{color:var(--blue);text-underline-offset:4px}a:hover{text-decoration-thickness:2px}nav,main,footer{width:min(980px,calc(100% - 40px));margin:auto}nav{display:flex;justify-content:space-between;padding:24px 0;border-bottom:1px solid var(--line);font-size:14px}nav a{text-decoration:none}nav .name{color:var(--ink);font-weight:750}header{padding:58px 0 30px}.eyebrow{color:var(--blue);font-size:12px;letter-spacing:.13em;text-transform:uppercase;font-weight:750;margin:0 0 15px}h1{font-size:clamp(38px,6.7vw,68px);line-height:1.03;letter-spacing:-.055em;max-width:800px;margin:0 0 22px}h1 span{color:var(--blue)}.lead{font-size:21px;line-height:1.5;max-width:800px}.meta,.note,figcaption,footer{color:var(--muted);font-size:14px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:26px 0 12px}.stat{padding:20px 22px;border:1px solid var(--line);border-radius:12px;background:white}.stat strong{display:block;font-size:34px;letter-spacing:-.04em;line-height:1.2;color:var(--blue)}.stat span{display:block;font-size:13px;color:var(--muted);margin-top:7px}section{margin:38px 0 45px}h2{font-size:27px;line-height:1.2;letter-spacing:-.03em;margin:0 0 12px}p{margin:12px 0}.number{font-size:12px;color:var(--teal);letter-spacing:.12em;display:block;margin-bottom:10px}figure{margin:22px 0 14px;padding:22px 26px 18px;border:1px solid var(--line);border-radius:14px;background:white}figure img{display:block;width:100%;height:auto}figcaption{margin-top:8px;line-height:1.5}.takeaway{border-left:3px solid var(--teal);padding:2px 0 2px 17px}.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;margin-top:20px;background:#fff}table{width:100%;border-collapse:collapse;font-size:15px}th,td{text-align:left;padding:14px 18px;border-bottom:1px solid var(--line);vertical-align:top}th{font-weight:650;background:#edf2f7}tr:last-child td{border-bottom:0}.warning{font-size:15px;background:#fff5e4;border-radius:10px;padding:16px 20px;color:#674a19}.method{padding-top:28px;border-top:1px solid var(--line)}details{margin:20px 0;font-size:14px}summary{cursor:pointer;font-weight:650;color:var(--blue)}details p{max-width:880px}.downloads{display:flex;flex-wrap:wrap;gap:10px 22px;font-size:14px;margin-top:18px}footer{padding:24px 0 40px;border-top:1px solid var(--line)}@media(max-width:600px){body{font-size:16px}nav,main,footer{width:calc(100% - 32px)}header{padding-top:38px}.lead{font-size:19px}.stats{gap:8px}.stat{padding:14px 10px}.stat strong{font-size:28px}.stat span{font-size:12px}figure{padding:15px 8px 14px}figcaption{padding:0 7px;font-size:13px}h2{font-size:25px}th,td{padding:12px;font-size:14px}.meta{font-size:13px}}
+</style>
+</head>
+<body>
+<nav aria-label="Site"><a class="name" href="../../index.html">Xuming Huang</a><a href="../../blog.html">← All writing</a></nav>
+<main>
+<header>
+<p class="eyebrow">Edge AI / measured on a working laptop</p>
+<h1>When local AI<br><span>shares your GPU.</span></h1>
+<p class="lead">Everyday desktop load added 30–39% to our local research task. Heavy GPU compute stretched the same task to nearly six times its quiet latency.</p>
+<p class="meta">September 11, 2026 · Apple M5 Pro · 16 GPU cores · 24 GiB unified memory · macOS 26.6.2</p>
+<div class="stats">
+<div class="stat"><strong>1.39×</strong><span>One-shot · combined desktop load</span></div>
+<div class="stat"><strong>6.01×</strong><span>One-shot · heavy GPU compute</span></div>
+<div class="stat"><strong>4.84 min</strong><span>35B agent run · paged experts</span></div>
+</div>
+</header>
+<section aria-labelledby="baselines">
+<span class="number">01 / BASELINES</span>
+<h2 id="baselines">Cloud service and local 4B</h2>
+<p>One-shot receives six frozen robotics source cards. The agent chooses sources, reads text and screenshots, then synthesizes an answer. “Quiet” retains existing apps but adds no benchmark load.</p>
+<figure>
+<picture><source media="(max-width:600px)" srcset="../../images/blog/local-igpu-contention/baselines-mobile.svg"><img src="../../images/blog/local-igpu-contention/baselines.svg" width="950" height="420" alt="Median seconds, one-shot / agentic: cloud quiet 21.17 / 46.95; cloud combined 20.78 / 39.64; local 4B quiet 3.87 / 11.26; local 4B combined 5.38 / 14.62."></picture>
+<figcaption>Three runs per cell; bars = median, whiskers = observed minimum–maximum. Combined = video + eight active tabs + a synthetic WebGL game.</figcaption>
+</figure>
+<p class="note"><strong>Different-quality application baselines.</strong> Cloud uses the signed-in Codex CLI/service (GPT-6 Astra, high reasoning), including client/service overhead—not raw API latency. Local uses Holo 3.1 4B, MLX 4-bit. Different reasoning, calls and answers prevent an equal-quality speedup claim; the lower cloud time under load is not evidence that contention helps.</p>
+</section>
+<section aria-labelledby="contention">
+<span class="number">02 / CONTROLLED COMPARISON</span>
+<h2 id="contention">GPU competition dominates these tests</h2>
+<figure>
+<picture><source media="(max-width:600px)" srcset="../../images/blog/local-igpu-contention/contention-mobile.svg"><img src="../../images/blog/local-igpu-contention/contention.svg" width="950" height="520" alt="Paired median slowdown, one-shot / agentic: video 1.00 / 1.00; browser 1.19 / 1.04; WebGL 1.19 / 1.20; combined 1.39 / 1.30; file remapping 1.06 / 1.01; heavy GPU compute 6.01 / 5.56. Quiet baseline is 1×."></picture>
+<figcaption>Each condition uses its own campaign’s quiet control (three pairs). Bars = median paired ratio; whiskers = observed paired range. Dashed line = quiet, 1×. The bottom two conditions are separate follow-up campaigns.</figcaption>
+</figure>
+<p class="takeaway">Heavy compute raised one-shot latency <strong>4.62 → 27.28 s</strong> and agent latency <strong>13.46 → 74.70 s</strong>. One-shot decoding fell <strong>69.7 → 10.9 tokens/s</strong>. Completed local outputs were identical across contention conditions.</p>
+<p class="note">Heavy load repeats 4096² FP16 matrix multiplies on Metal. The 4 GiB mapping test generated page faults but no swap writes; it does not establish sustained SSD thrashing. A 9B load and a RAM-pressure probe hit the swap guard before inference, so neither has a latency result.</p>
+</section>
+<section aria-labelledby="large">
+<span class="number">03 / LARGER-MODEL BOUNDARY</span>
+<h2 id="large">35B-A3B NVFP4 ran—with expert paging</h2>
+<p>The <a href="https://huggingface.co/Hcompany/Holo-3.1-35B-A3B-NVFP4">23.69 GB checkpoint</a> used a custom Metal adapter, BF16 dense matrices and a 2 GB disk-backed expert cache. This is a separate execution experiment, with no added contender.</p>
+<div class="table-wrap"><table aria-label="Single-run 35B results"><thead><tr><th scope="col">35B request</th><th scope="col">Task time</th><th scope="col">Peak MLX memory</th><th scope="col">Final answer</th></tr></thead><tbody><tr><th scope="row">One-shot</th><td>258.00 s</td><td>7.33 GB</td><td>211 words</td></tr><tr><th scope="row">Agent · 4 calls</th><td>290.23 s</td><td>8.75 GB</td><td>127 words</td></tr></tbody></table></div>
+<p class="note">One observation each; load excluded, first-use work included. No extra host swap writes during this 35B attempt. Custom paging, precision and warmup differ from 4B; these are not native NVIDIA NVFP4 speeds or an isolated model-size comparison.</p>
+<p class="warning"><strong>Completion is not correctness.</strong> The 35B agent omitted the frontier-policy comparison and missed the 180–230-word target. The 4B answers also missed that target: 174 words one-shot, 93 agentic. Timing alone does not establish research quality.</p>
+</section>
+<section class="method" aria-labelledby="method">
+<h2 id="method">What this establishes</h2>
+<p>For this fixed task, shared GPU compute is a substantial latency risk. The useful next test is whether admission control or scheduling can protect agent deadlines while preserving foreground responsiveness.</p>
+<details><summary>Method, boundaries &amp; cleanup</summary>
+<p>Native macOS, AC power, MLX 0.32.2 / MLX-VLM 0.7.0. The 4B model uses the <a href="https://huggingface.co/pipenetwork/Holo-3.1-4B-MLX-4bit">pipenetwork conversion</a>, revision <code>7c3327a5765ab21cefe2d91e953d1038b1d3ef3e</code>. The 35B checkpoint revision is <code>76ebefd59b500fe55e1afa45995aa8553198ee6e</code>; all 40 layers and 256 experts per layer are retained. Sampled custom-kernel numeric checks passed, but full-model backend quality parity was not tested.</p>
+<p>The source fixture covers low-cost arms, SmolVLA, OpenPI, frontier robotics policies and computer use. Agent actions are allowlisted source reads, limited to eight calls and at least three distinct sources. This measures bounded retrieval/synthesis with screenshots, not live web research, unrestricted computer control or physical robot performance.</p>
+<p>4B loading and two vision warmups are outside task timing. The stress campaign has fresh quiet controls: GPU 4.62/13.46 s and file-remapping 4.62/13.56 s (one-shot/agentic). Median paired ratios need not equal ratios of medians. Three repetitions characterize observed spread, not p95 latency or confidence intervals. Existing desktop activity, cache history and thermal transitions remain confounders.</p>
+<p>Supervisors bounded duration, memory pressure, swap writes and thermal state. The 9B and RAM probes stopped after 582 and 833 MiB of host swap writes respectively; sampled guards can overshoot their 512 MiB trigger. Those are stopped setup attempts, not completed inference tests. All owned benchmark workers were stopped; 11.75 GB of stress fixtures and 46.75 GB of 35B temporary files were removed. Final thermal state was nominal. The reusable 4B environment and evidence remain.</p>
+</details>
+<div class="downloads" aria-label="Download measurement evidence"><a href="../../data/local-igpu-contention/desktop-summary.csv">Desktop data ↗</a><a href="../../data/local-igpu-contention/stress-summary.csv">Stress data ↗</a><a href="../../data/local-igpu-contention/35b-metrics.csv">35B data ↗</a><a href="../../data/local-igpu-contention/chart-data.json">Chart values ↗</a></div>
+</section>
+</main>
+<footer>Xuming Huang · Exploratory measurements, September 10–11, 2026</footer>
+</body>
+</html>
