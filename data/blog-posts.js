@@ -5,10 +5,10 @@ const blogPosts = [
     title: 'When Local AI Shares Your GPU',
     date: 'September 11, 2026',
     category: 'research',
-    excerpt: 'A paired cloud audit and fresh 4B, 9B and paged 35B experiments: latency, throughput, cache and reasoning work, with every measured run visible.',
+    excerpt: 'Fresh 9B and paged 35B quiet/combined runs without custom thermal or swap cutoffs, alongside the cloud and 4B baselines: latency, throughput and paired results.',
     url: 'blog/posts/local-igpu-contention.html',
     readTime: '4 min',
-    cover: 'images/blog/local-igpu-contention/rerun-20260911/4b-wall_s.png'
+    cover: 'images/blog/local-igpu-contention/paging-20260911/9b-wall_s.png'
   },
   {
     id: 'npu-jit-static-shapes',

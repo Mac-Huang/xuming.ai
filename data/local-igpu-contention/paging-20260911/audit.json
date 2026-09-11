@@ -1,0 +1,9 @@
+{
+  "integrity_pass": true,
+  "errors": [],
+  "frozen_sources_and_fixtures_checked": 15,
+  "completed_workloads": 12,
+  "pairs": 6,
+  "matched_pairs": 6,
+  "stops": []
+}

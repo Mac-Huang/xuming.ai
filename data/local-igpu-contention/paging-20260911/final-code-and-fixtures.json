@@ -1,0 +1,176 @@
+{
+  "time": 1789152070.3004212,
+  "scope": "Final source and fixture snapshot. The pre-run-code-and-fixtures.json snapshot precedes this campaign. Analysis, cleanup and presentation code were refined later; audit.json verifies that frozen measurement sources and fixtures did not change. The custom thermal and swap-volume guards were removed before all fresh trials.",
+  "files": [
+    {
+      "path": "aggressive/scripts/stress.py",
+      "bytes": 3465,
+      "sha256": "95f9a1d01c8e7e1099d7cfbadc9007c882f47ea9edf9c16dc5bf4a9ae95ecb8c"
+    },
+    {
+      "path": "artifacts/S1.png",
+      "bytes": 77548,
+      "sha256": "b1105e0767f9f3c07994a539634c8c5b499e8023ba1cc2f803bbba3578b511ce"
+    },
+    {
+      "path": "artifacts/S2.png",
+      "bytes": 96251,
+      "sha256": "5bd2061bd1b486f33c1304b11d163e4c3e3e073a5f2c37e17c88f41a9ed2cf76"
+    },
+    {
+      "path": "artifacts/S3.png",
+      "bytes": 94663,
+      "sha256": "ddf844969b5530f2f7902f5e8adbeeed2ef474673512ae116b0a6796883c8642"
+    },
+    {
+      "path": "artifacts/S4.png",
+      "bytes": 99920,
+      "sha256": "00565983e1541c03419ad3248a6282ee39cb599730c62ec7f63335369de93072"
+    },
+    {
+      "path": "artifacts/S5.png",
+      "bytes": 93320,
+      "sha256": "9cd6ff0d556d282ccfa7b2abcfebfa24770caefa9fab0d0530057892fc077544"
+    },
+    {
+      "path": "artifacts/S6.png",
+      "bytes": 95673,
+      "sha256": "fa56326efe5661fb155aa37d703ea64d15d50e195d2d2364f64bd15e9163ecb6"
+    },
+    {
+      "path": "artifacts/corpus.json",
+      "bytes": 4059,
+      "sha256": "4a52309d4eb9a52e085662a87764d82dc3205e4b3ce7d8ae2bb1b19940b8e7c9"
+    },
+    {
+      "path": "nvfp4_35b/scripts/exact_scaling.py",
+      "bytes": 2257,
+      "sha256": "bdd2ee2dc2a9e3d11cf94e239340d4f7aa82d15da9c1e0e42f2d43caf80d5120"
+    },
+    {
+      "path": "nvfp4_35b/scripts/telemetry.py",
+      "bytes": 1604,
+      "sha256": "e802e11bd63208ccf0bb9285a06ffe93d6fd36042dd6408d29cd862637ac659e"
+    },
+    {
+      "path": "paging_rerun_20260911/PROTOCOL.md",
+      "bytes": 3864,
+      "sha256": "68faab1f13039d185820770350e9809ab0c6938d3ca76b7141e3d796da3f1ac7"
+    },
+    {
+      "path": "paging_rerun_20260911/large/scripts/compact_resident.py",
+      "bytes": 1407,
+      "sha256": "0bcec4a30de6e09bafe161f10d5355bdd63669c6cd05938e71aba3e8597991a3"
+    },
+    {
+      "path": "paging_rerun_20260911/large/scripts/prepare_offload.py",
+      "bytes": 8101,
+      "sha256": "1b37af1c087ccd45c6095d1a1b532c0f91e7c86f4a78f2420e90bfad3841aab6"
+    },
+    {
+      "path": "paging_rerun_20260911/scripts/analyze.py",
+      "bytes": 6665,
+      "sha256": "bfa076e53baab95695b49dc51ad21a49f35955cee91519b6a807d834192c2a57"
+    },
+    {
+      "path": "paging_rerun_20260911/scripts/build_page.py",
+      "bytes": 23260,
+      "sha256": "6e4b4f9c878a6ffef43a00808cad915492db3445ddb893051003b3787a09e133"
+    },
+    {
+      "path": "paging_rerun_20260911/scripts/check_frames.py",
+      "bytes": 3089,
+      "sha256": "893de56fbba2e0cb360c329f62e2fbf7fac211af9aedd64470deb86d3543912a"
+    },
+    {
+      "path": "paging_rerun_20260911/scripts/check_page.py",
+      "bytes": 1568,
+      "sha256": "688e5c579a45fc0afbc2a7a2e49ab1d9b953bde3663ae3762610c1b8f43a9f04"
+    },
+    {
+      "path": "paging_rerun_20260911/scripts/cleanup.py",
+      "bytes": 1308,
+      "sha256": "929e4a179560ec0aa0ae1335c318dd0bdf4b549e95f067684cb653885413df68"
+    },
+    {
+      "path": "paging_rerun_20260911/scripts/download_35b_parallel.py",
+      "bytes": 1946,
+      "sha256": "cd06f4e792bccbc4a1f810dc1f9b7f695546f2635e9d21587ad813662dbb4db7"
+    },
+    {
+      "path": "paging_rerun_20260911/scripts/download_models.py",
+      "bytes": 2090,
+      "sha256": "6e58d9ec45a15b89f3276a04d88571d0ade6da3ea8246cee3e4040ff4d5a1c32"
+    },
+    {
+      "path": "paging_rerun_20260911/scripts/final_manifest.py",
+      "bytes": 1201,
+      "sha256": "6cea71a24eb0d54aec0d2d88c4834a392665b732b80a4a10bac61d8bcd003a3d"
+    },
+    {
+      "path": "paging_rerun_20260911/scripts/guard.py",
+      "bytes": 2572,
+      "sha256": "00d62a2e3eadd2f929e1fa12fe1d1ba895007d85b033478c09d560f856c536ad"
+    },
+    {
+      "path": "paging_rerun_20260911/scripts/local_worker.py",
+      "bytes": 4349,
+      "sha256": "7a3a6958caf39fad0dc2afd0ac17be3dc64125bc0abd8439555f0e9f4ec074f5"
+    },
+    {
+      "path": "paging_rerun_20260911/scripts/memory.py",
+      "bytes": 2693,
+      "sha256": "b48f5c6b87030b9aa04da6fd2da1f6e6d8f77ed8f2c545037c52018c12dea445"
+    },
+    {
+      "path": "paging_rerun_20260911/scripts/merge_publication.py",
+      "bytes": 1314,
+      "sha256": "3d3d33a5a5e18a87af7fc4348ab50a5edd328b1594a3ba11b5bf2d48a20a0661"
+    },
+    {
+      "path": "paging_rerun_20260911/scripts/pipeline.py",
+      "bytes": 2169,
+      "sha256": "9c6a0a0a8bb31e37e1f3ea8294028509a29efa18029ebe39b1d56c79a6eed3e2"
+    },
+    {
+      "path": "paging_rerun_20260911/scripts/plot.py",
+      "bytes": 4608,
+      "sha256": "f2f1381f0a1ca727587d1e47718d43264c70bf7707d758dfbc01c53c2e78d5c5"
+    },
+    {
+      "path": "paging_rerun_20260911/scripts/progress.py",
+      "bytes": 1218,
+      "sha256": "9938442d24a0665269492787c2ceade421ba45e16f146adae39b3b84ad11746b"
+    },
+    {
+      "path": "paging_rerun_20260911/scripts/report.py",
+      "bytes": 5452,
+      "sha256": "a4de093981aca3bf4d0ce09a4ffbc9acd5e1282f86dadfa6f50a0de79bb39fe8"
+    },
+    {
+      "path": "paging_rerun_20260911/scripts/resources.py",
+      "bytes": 1562,
+      "sha256": "cdaa1449129b10ee90336d45582126ae5d365bdc53f2256a55371de7de62d25d"
+    },
+    {
+      "path": "paging_rerun_20260911/scripts/run_local.py",
+      "bytes": 1633,
+      "sha256": "b53abf323a8ad3d5f664ca7120cbdf079378081ea9d536c7e86ab60649b769b3"
+    },
+    {
+      "path": "paging_rerun_20260911/scripts/validate.py",
+      "bytes": 1579,
+      "sha256": "38428ab284ea85f789f1276eb8b1c5a905cce83ffce1e633b2b9818e85e92aaf"
+    },
+    {
+      "path": "scripts/bench.py",
+      "bytes": 11028,
+      "sha256": "14f5bc556cc2ef84f3ea0b9fcea4e251883b959853b599eb2e0c807a238db739"
+    },
+    {
+      "path": "scripts/contend.py",
+      "bytes": 4369,
+      "sha256": "524328c4b9b9102909aa1228ad7ca03f0e4b4977b04418546f79a0d8047c5d4a"
+    }
+  ]
+}

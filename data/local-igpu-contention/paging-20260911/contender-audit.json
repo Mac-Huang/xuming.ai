@@ -1,0 +1,281 @@
+[
+  {
+    "trial": "9b/r0_combined",
+    "condition": "combined",
+    "observed_seconds": 25.747610092163086,
+    "frame_or_callback_delta": {
+      "video": 1543,
+      "browser0": 1544,
+      "browser1": 1544,
+      "browser2": 1545,
+      "browser3": 1544,
+      "browser4": 1544,
+      "browser5": 1544,
+      "browser6": 1544,
+      "browser7": 1544,
+      "game": 1543
+    },
+    "consecutive_intervals_checked": 25,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "9b/r0_combined",
+    "task": "one_shot",
+    "condition": "combined",
+    "task_seconds": 8.465523958206177,
+    "samples_within_task": 9,
+    "frame_or_callback_delta": {
+      "video": 493,
+      "browser0": 495,
+      "browser1": 494,
+      "browser2": 495,
+      "browser3": 495,
+      "browser4": 495,
+      "browser5": 495,
+      "browser6": 495,
+      "browser7": 496,
+      "game": 495
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r0_combined",
+    "task": "agentic",
+    "condition": "combined",
+    "task_seconds": 12.690908908843994,
+    "samples_within_task": 12,
+    "frame_or_callback_delta": {
+      "video": 680,
+      "browser0": 680,
+      "browser1": 680,
+      "browser2": 680,
+      "browser3": 680,
+      "browser4": 680,
+      "browser5": 680,
+      "browser6": 680,
+      "browser7": 680,
+      "game": 680
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r0_quiet",
+    "condition": "quiet",
+    "observed_seconds": 22.208094835281372,
+    "frame_or_callback_delta": {
+      "quiet": 1333
+    },
+    "consecutive_intervals_checked": 22,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "9b/r0_quiet",
+    "task": "one_shot",
+    "condition": "quiet",
+    "task_seconds": 6.664549112319946,
+    "samples_within_task": 7,
+    "frame_or_callback_delta": {
+      "quiet": 364
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r0_quiet",
+    "task": "agentic",
+    "condition": "quiet",
+    "task_seconds": 11.12292218208313,
+    "samples_within_task": 11,
+    "frame_or_callback_delta": {
+      "quiet": 606
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r1_combined",
+    "condition": "combined",
+    "observed_seconds": 25.736966133117676,
+    "frame_or_callback_delta": {
+      "video": 1546,
+      "browser0": 1544,
+      "browser1": 1544,
+      "browser2": 1543,
+      "browser3": 1543,
+      "browser4": 1543,
+      "browser5": 1544,
+      "browser6": 1544,
+      "browser7": 1543,
+      "game": 1543
+    },
+    "consecutive_intervals_checked": 25,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "9b/r1_combined",
+    "task": "one_shot",
+    "condition": "combined",
+    "task_seconds": 7.48372483253479,
+    "samples_within_task": 7,
+    "frame_or_callback_delta": {
+      "video": 372,
+      "browser0": 372,
+      "browser1": 372,
+      "browser2": 372,
+      "browser3": 372,
+      "browser4": 372,
+      "browser5": 372,
+      "browser6": 372,
+      "browser7": 372,
+      "game": 372
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r1_combined",
+    "task": "agentic",
+    "condition": "combined",
+    "task_seconds": 13.664921045303345,
+    "samples_within_task": 14,
+    "frame_or_callback_delta": {
+      "video": 804,
+      "browser0": 803,
+      "browser1": 803,
+      "browser2": 803,
+      "browser3": 804,
+      "browser4": 804,
+      "browser5": 803,
+      "browser6": 803,
+      "browser7": 803,
+      "game": 803
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r1_quiet",
+    "condition": "quiet",
+    "observed_seconds": 22.223388195037842,
+    "frame_or_callback_delta": {
+      "quiet": 1333
+    },
+    "consecutive_intervals_checked": 22,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "9b/r1_quiet",
+    "task": "one_shot",
+    "condition": "quiet",
+    "task_seconds": 6.465638875961304,
+    "samples_within_task": 6,
+    "frame_or_callback_delta": {
+      "quiet": 302
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r1_quiet",
+    "task": "agentic",
+    "condition": "quiet",
+    "task_seconds": 11.161795854568481,
+    "samples_within_task": 11,
+    "frame_or_callback_delta": {
+      "quiet": 606
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r2_combined",
+    "condition": "combined",
+    "observed_seconds": 25.79160475730896,
+    "frame_or_callback_delta": {
+      "video": 1547,
+      "browser0": 1548,
+      "browser1": 1547,
+      "browser2": 1547,
+      "browser3": 1548,
+      "browser4": 1547,
+      "browser5": 1547,
+      "browser6": 1547,
+      "browser7": 1548,
+      "game": 1547
+    },
+    "consecutive_intervals_checked": 25,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "9b/r2_combined",
+    "task": "one_shot",
+    "condition": "combined",
+    "task_seconds": 8.567537784576416,
+    "samples_within_task": 9,
+    "frame_or_callback_delta": {
+      "video": 495,
+      "browser0": 495,
+      "browser1": 495,
+      "browser2": 494,
+      "browser3": 494,
+      "browser4": 494,
+      "browser5": 494,
+      "browser6": 494,
+      "browser7": 495,
+      "game": 495
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r2_combined",
+    "task": "agentic",
+    "condition": "combined",
+    "task_seconds": 13.039719820022583,
+    "samples_within_task": 12,
+    "frame_or_callback_delta": {
+      "video": 682,
+      "browser0": 682,
+      "browser1": 682,
+      "browser2": 682,
+      "browser3": 683,
+      "browser4": 683,
+      "browser5": 683,
+      "browser6": 682,
+      "browser7": 683,
+      "game": 683
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r2_quiet",
+    "condition": "quiet",
+    "observed_seconds": 22.2322359085083,
+    "frame_or_callback_delta": {
+      "quiet": 1333
+    },
+    "consecutive_intervals_checked": 22,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "9b/r2_quiet",
+    "task": "one_shot",
+    "condition": "quiet",
+    "task_seconds": 6.548961162567139,
+    "samples_within_task": 6,
+    "frame_or_callback_delta": {
+      "quiet": 303
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r2_quiet",
+    "task": "agentic",
+    "condition": "quiet",
+    "task_seconds": 11.212995052337646,
+    "samples_within_task": 11,
+    "frame_or_callback_delta": {
+      "quiet": 606
+    },
+    "errors": []
+  }
+]

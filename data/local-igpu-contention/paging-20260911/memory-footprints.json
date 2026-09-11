@@ -1,0 +1,42 @@
+{
+  "time": 1789152019.5041559,
+  "units": "GB = 10^9 bytes; macOS hardware capacity is reported separately in GiB",
+  "metric": "Maximum per-call MLX tracked peak allocation across completed one-shot and agentic tasks. This includes tracked model/context/activation memory; it excludes untracked process memory and OS file cache. It is not RSS or total machine memory, and the two memory columns must not be added.",
+  "models": [
+    {
+      "model": "cloud",
+      "checkpoint_gb": null,
+      "quiet_peak_mlx_gb": null,
+      "combined_peak_mlx_gb": null,
+      "condition_trials": null,
+      "status": "Remote model memory not exposed"
+    },
+    {
+      "model": "4b",
+      "checkpoint_gb": 3.966047789,
+      "quiet_peak_mlx_gb": 5.532877321,
+      "combined_peak_mlx_gb": 5.532877321,
+      "condition_trials": 6,
+      "status": "Previous campaign"
+    },
+    {
+      "model": "9b",
+      "checkpoint_gb": 7.423906797,
+      "quiet_peak_mlx_gb": 9.393618834,
+      "combined_peak_mlx_gb": 9.393618834,
+      "condition_trials": 6,
+      "status": "Complete, 3 paired repetitions"
+    },
+    {
+      "model": "35b",
+      "checkpoint_gb": 23.69380518,
+      "quiet_peak_mlx_gb": 7.252326864,
+      "combined_peak_mlx_gb": 7.252326784,
+      "condition_trials": 2,
+      "status": "Provisional; rerun in progress",
+      "resident_tensor_payload_gb": 4.87908704,
+      "disk_expert_payload_gb": 18.11939328,
+      "expert_cache_budget_gb": 0.5
+    }
+  ]
+}
