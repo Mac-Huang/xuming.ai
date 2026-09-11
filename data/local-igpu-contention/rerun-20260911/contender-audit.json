@@ -1,0 +1,1403 @@
+[
+  {
+    "trial": "35b/r0_quiet",
+    "condition": "quiet",
+    "observed_seconds": 855.2651150226593,
+    "frame_or_callback_delta": {
+      "quiet": 51315
+    },
+    "consecutive_intervals_checked": 847,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "35b/r0_quiet",
+    "task": "one_shot",
+    "condition": "quiet",
+    "task_seconds": 422.28655791282654,
+    "samples_within_task": 418,
+    "frame_or_callback_delta": {
+      "quiet": 25271
+    },
+    "errors": []
+  },
+  {
+    "trial": "35b/r0_quiet",
+    "task": "agentic",
+    "condition": "quiet",
+    "task_seconds": 428.53930592536926,
+    "samples_within_task": 424,
+    "frame_or_callback_delta": {
+      "quiet": 25620
+    },
+    "errors": []
+  },
+  {
+    "trial": "35b/r1_quiet",
+    "condition": "quiet",
+    "observed_seconds": 847.2811839580536,
+    "frame_or_callback_delta": {
+      "quiet": 50836
+    },
+    "consecutive_intervals_checked": 840,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "35b/r1_quiet",
+    "task": "one_shot",
+    "condition": "quiet",
+    "task_seconds": 430.8729090690613,
+    "samples_within_task": 427,
+    "frame_or_callback_delta": {
+      "quiet": 25746
+    },
+    "errors": []
+  },
+  {
+    "trial": "35b/r1_quiet",
+    "task": "agentic",
+    "condition": "quiet",
+    "task_seconds": 412.1001181602478,
+    "samples_within_task": 407,
+    "frame_or_callback_delta": {
+      "quiet": 24606
+    },
+    "errors": []
+  },
+  {
+    "trial": "35b/r2_quiet",
+    "condition": "quiet",
+    "observed_seconds": 834.7988750934601,
+    "frame_or_callback_delta": {
+      "quiet": 50088
+    },
+    "consecutive_intervals_checked": 827,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "35b/r2_quiet",
+    "task": "one_shot",
+    "condition": "quiet",
+    "task_seconds": 411.2182068824768,
+    "samples_within_task": 407,
+    "frame_or_callback_delta": {
+      "quiet": 24589
+    },
+    "errors": []
+  },
+  {
+    "trial": "35b/r2_quiet",
+    "task": "agentic",
+    "condition": "quiet",
+    "task_seconds": 419.2750070095062,
+    "samples_within_task": 415,
+    "frame_or_callback_delta": {
+      "quiet": 25075
+    },
+    "errors": []
+  },
+  {
+    "trial": "4b/r0_browser",
+    "condition": "browser",
+    "observed_seconds": 20.53322196006775,
+    "frame_or_callback_delta": {
+      "browser0": 1231,
+      "browser1": 1232,
+      "browser2": 1232,
+      "browser3": 1232,
+      "browser4": 1231,
+      "browser5": 1230,
+      "browser6": 1230,
+      "browser7": 1230
+    },
+    "consecutive_intervals_checked": 20,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "4b/r0_browser",
+    "task": "one_shot",
+    "condition": "browser",
+    "task_seconds": 4.531268835067749,
+    "samples_within_task": 5,
+    "frame_or_callback_delta": {
+      "browser0": 245,
+      "browser1": 246,
+      "browser2": 246,
+      "browser3": 246,
+      "browser4": 246,
+      "browser5": 246,
+      "browser6": 246,
+      "browser7": 246
+    },
+    "errors": []
+  },
+  {
+    "trial": "4b/r0_browser",
+    "task": "agentic",
+    "condition": "browser",
+    "task_seconds": 11.572833776473999,
+    "samples_within_task": 11,
+    "frame_or_callback_delta": {
+      "browser0": 615,
+      "browser1": 616,
+      "browser2": 615,
+      "browser3": 615,
+      "browser4": 615,
+      "browser5": 615,
+      "browser6": 615,
+      "browser7": 614
+    },
+    "errors": []
+  },
+  {
+    "trial": "4b/r0_combined",
+    "condition": "combined",
+    "observed_seconds": 22.67712688446045,
+    "frame_or_callback_delta": {
+      "video": 1360,
+      "browser0": 1361,
+      "browser1": 1360,
+      "browser2": 1359,
+      "browser3": 1360,
+      "browser4": 1359,
+      "browser5": 1359,
+      "browser6": 1360,
+      "browser7": 1360,
+      "game": 1360
+    },
+    "consecutive_intervals_checked": 22,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "4b/r0_combined",
+    "task": "one_shot",
+    "condition": "combined",
+    "task_seconds": 4.851491928100586,
+    "samples_within_task": 4,
+    "frame_or_callback_delta": {
+      "video": 185,
+      "browser0": 185,
+      "browser1": 186,
+      "browser2": 186,
+      "browser3": 186,
+      "browser4": 185,
+      "browser5": 185,
+      "browser6": 185,
+      "browser7": 186,
+      "game": 186
+    },
+    "errors": []
+  },
+  {
+    "trial": "4b/r0_combined",
+    "task": "agentic",
+    "condition": "combined",
+    "task_seconds": 12.800769090652466,
+    "samples_within_task": 13,
+    "frame_or_callback_delta": {
+      "video": 743,
+      "browser0": 744,
+      "browser1": 744,
+      "browser2": 744,
+      "browser3": 744,
+      "browser4": 744,
+      "browser5": 744,
+      "browser6": 744,
+      "browser7": 744,
+      "game": 744
+    },
+    "errors": []
+  },
+  {
+    "trial": "4b/r0_game",
+    "condition": "game",
+    "observed_seconds": 21.214313983917236,
+    "frame_or_callback_delta": {
+      "game": 1273
+    },
+    "consecutive_intervals_checked": 21,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "4b/r0_game",
+    "task": "one_shot",
+    "condition": "game",
+    "task_seconds": 4.260301113128662,
+    "samples_within_task": 4,
+    "frame_or_callback_delta": {
+      "game": 182
+    },
+    "errors": []
+  },
+  {
+    "trial": "4b/r0_game",
+    "task": "agentic",
+    "condition": "game",
+    "task_seconds": 12.2710862159729,
+    "samples_within_task": 12,
+    "frame_or_callback_delta": {
+      "game": 666
+    },
+    "errors": []
+  },
+  {
+    "trial": "4b/r0_quiet",
+    "condition": "quiet",
+    "observed_seconds": 20.222000122070312,
+    "frame_or_callback_delta": {
+      "quiet": 1213
+    },
+    "consecutive_intervals_checked": 20,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "4b/r0_quiet",
+    "task": "one_shot",
+    "condition": "quiet",
+    "task_seconds": 4.107738971710205,
+    "samples_within_task": 4,
+    "frame_or_callback_delta": {
+      "quiet": 182
+    },
+    "errors": []
+  },
+  {
+    "trial": "4b/r0_quiet",
+    "task": "agentic",
+    "condition": "quiet",
+    "task_seconds": 11.232070207595825,
+    "samples_within_task": 11,
+    "frame_or_callback_delta": {
+      "quiet": 606
+    },
+    "errors": []
+  },
+  {
+    "trial": "4b/r0_video",
+    "condition": "video",
+    "observed_seconds": 20.184669971466064,
+    "frame_or_callback_delta": {
+      "video": 1212
+    },
+    "consecutive_intervals_checked": 20,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "4b/r0_video",
+    "task": "one_shot",
+    "condition": "video",
+    "task_seconds": 3.9178061485290527,
+    "samples_within_task": 3,
+    "frame_or_callback_delta": {
+      "video": 121
+    },
+    "errors": []
+  },
+  {
+    "trial": "4b/r0_video",
+    "task": "agentic",
+    "condition": "video",
+    "task_seconds": 11.306652069091797,
+    "samples_within_task": 12,
+    "frame_or_callback_delta": {
+      "video": 665
+    },
+    "errors": []
+  },
+  {
+    "trial": "4b/r1_browser",
+    "condition": "browser",
+    "observed_seconds": 23.605998992919922,
+    "frame_or_callback_delta": {
+      "browser0": 1416,
+      "browser1": 1416,
+      "browser2": 1416,
+      "browser3": 1416,
+      "browser4": 1414,
+      "browser5": 1413,
+      "browser6": 1413,
+      "browser7": 1412
+    },
+    "consecutive_intervals_checked": 23,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "4b/r1_browser",
+    "task": "one_shot",
+    "condition": "browser",
+    "task_seconds": 4.663034915924072,
+    "samples_within_task": 5,
+    "frame_or_callback_delta": {
+      "browser0": 245,
+      "browser1": 246,
+      "browser2": 246,
+      "browser3": 246,
+      "browser4": 246,
+      "browser5": 246,
+      "browser6": 246,
+      "browser7": 246
+    },
+    "errors": []
+  },
+  {
+    "trial": "4b/r1_browser",
+    "task": "agentic",
+    "condition": "browser",
+    "task_seconds": 14.09779405593872,
+    "samples_within_task": 14,
+    "frame_or_callback_delta": {
+      "browser0": 799,
+      "browser1": 799,
+      "browser2": 799,
+      "browser3": 799,
+      "browser4": 799,
+      "browser5": 799,
+      "browser6": 800,
+      "browser7": 800
+    },
+    "errors": []
+  },
+  {
+    "trial": "4b/r1_combined",
+    "condition": "combined",
+    "observed_seconds": 24.637047052383423,
+    "frame_or_callback_delta": {
+      "video": 1479,
+      "browser0": 1478,
+      "browser1": 1478,
+      "browser2": 1478,
+      "browser3": 1478,
+      "browser4": 1478,
+      "browser5": 1477,
+      "browser6": 1477,
+      "browser7": 1477,
+      "game": 1478
+    },
+    "consecutive_intervals_checked": 24,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "4b/r1_combined",
+    "task": "one_shot",
+    "condition": "combined",
+    "task_seconds": 5.131606101989746,
+    "samples_within_task": 5,
+    "frame_or_callback_delta": {
+      "video": 247,
+      "browser0": 247,
+      "browser1": 246,
+      "browser2": 246,
+      "browser3": 246,
+      "browser4": 246,
+      "browser5": 246,
+      "browser6": 246,
+      "browser7": 246,
+      "game": 247
+    },
+    "errors": []
+  },
+  {
+    "trial": "4b/r1_combined",
+    "task": "agentic",
+    "condition": "combined",
+    "task_seconds": 15.363204956054688,
+    "samples_within_task": 15,
+    "frame_or_callback_delta": {
+      "video": 864,
+      "browser0": 864,
+      "browser1": 863,
+      "browser2": 863,
+      "browser3": 863,
+      "browser4": 863,
+      "browser5": 863,
+      "browser6": 863,
+      "browser7": 863,
+      "game": 864
+    },
+    "errors": []
+  },
+  {
+    "trial": "4b/r1_game",
+    "condition": "game",
+    "observed_seconds": 24.239381074905396,
+    "frame_or_callback_delta": {
+      "game": 1455
+    },
+    "consecutive_intervals_checked": 24,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "4b/r1_game",
+    "task": "one_shot",
+    "condition": "game",
+    "task_seconds": 4.964284896850586,
+    "samples_within_task": 5,
+    "frame_or_callback_delta": {
+      "game": 243
+    },
+    "errors": []
+  },
+  {
+    "trial": "4b/r1_game",
+    "task": "agentic",
+    "condition": "game",
+    "task_seconds": 14.54855990409851,
+    "samples_within_task": 15,
+    "frame_or_callback_delta": {
+      "game": 848
+    },
+    "errors": []
+  },
+  {
+    "trial": "4b/r1_quiet",
+    "condition": "quiet",
+    "observed_seconds": 21.22375512123108,
+    "frame_or_callback_delta": {
+      "quiet": 1274
+    },
+    "consecutive_intervals_checked": 21,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "4b/r1_quiet",
+    "task": "one_shot",
+    "condition": "quiet",
+    "task_seconds": 4.26228404045105,
+    "samples_within_task": 4,
+    "frame_or_callback_delta": {
+      "quiet": 182
+    },
+    "errors": []
+  },
+  {
+    "trial": "4b/r1_quiet",
+    "task": "agentic",
+    "condition": "quiet",
+    "task_seconds": 12.624277114868164,
+    "samples_within_task": 13,
+    "frame_or_callback_delta": {
+      "quiet": 728
+    },
+    "errors": []
+  },
+  {
+    "trial": "4b/r1_video",
+    "condition": "video",
+    "observed_seconds": 22.195183038711548,
+    "frame_or_callback_delta": {
+      "video": 1332
+    },
+    "consecutive_intervals_checked": 22,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "4b/r1_video",
+    "task": "one_shot",
+    "condition": "video",
+    "task_seconds": 4.306098937988281,
+    "samples_within_task": 4,
+    "frame_or_callback_delta": {
+      "video": 182
+    },
+    "errors": []
+  },
+  {
+    "trial": "4b/r1_video",
+    "task": "agentic",
+    "condition": "video",
+    "task_seconds": 13.084007263183594,
+    "samples_within_task": 13,
+    "frame_or_callback_delta": {
+      "video": 725
+    },
+    "errors": []
+  },
+  {
+    "trial": "4b/r2_browser",
+    "condition": "browser",
+    "observed_seconds": 23.558239936828613,
+    "frame_or_callback_delta": {
+      "browser0": 1414,
+      "browser1": 1413,
+      "browser2": 1413,
+      "browser3": 1413,
+      "browser4": 1413,
+      "browser5": 1413,
+      "browser6": 1414,
+      "browser7": 1414
+    },
+    "consecutive_intervals_checked": 23,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "4b/r2_browser",
+    "task": "one_shot",
+    "condition": "browser",
+    "task_seconds": 5.074905157089233,
+    "samples_within_task": 4,
+    "frame_or_callback_delta": {
+      "browser0": 185,
+      "browser1": 185,
+      "browser2": 185,
+      "browser3": 185,
+      "browser4": 185,
+      "browser5": 185,
+      "browser6": 185,
+      "browser7": 185
+    },
+    "errors": []
+  },
+  {
+    "trial": "4b/r2_browser",
+    "task": "agentic",
+    "condition": "browser",
+    "task_seconds": 13.595372676849365,
+    "samples_within_task": 14,
+    "frame_or_callback_delta": {
+      "browser0": 798,
+      "browser1": 798,
+      "browser2": 798,
+      "browser3": 798,
+      "browser4": 798,
+      "browser5": 798,
+      "browser6": 799,
+      "browser7": 798
+    },
+    "errors": []
+  },
+  {
+    "trial": "4b/r2_combined",
+    "condition": "combined",
+    "observed_seconds": 24.672695875167847,
+    "frame_or_callback_delta": {
+      "video": 1480,
+      "browser0": 1480,
+      "browser1": 1480,
+      "browser2": 1480,
+      "browser3": 1480,
+      "browser4": 1480,
+      "browser5": 1480,
+      "browser6": 1480,
+      "browser7": 1480,
+      "game": 1480
+    },
+    "consecutive_intervals_checked": 24,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "4b/r2_combined",
+    "task": "one_shot",
+    "condition": "combined",
+    "task_seconds": 5.616434812545776,
+    "samples_within_task": 5,
+    "frame_or_callback_delta": {
+      "video": 247,
+      "browser0": 247,
+      "browser1": 248,
+      "browser2": 248,
+      "browser3": 248,
+      "browser4": 248,
+      "browser5": 248,
+      "browser6": 247,
+      "browser7": 248,
+      "game": 248
+    },
+    "errors": []
+  },
+  {
+    "trial": "4b/r2_combined",
+    "task": "agentic",
+    "condition": "combined",
+    "task_seconds": 14.916429996490479,
+    "samples_within_task": 14,
+    "frame_or_callback_delta": {
+      "video": 803,
+      "browser0": 803,
+      "browser1": 803,
+      "browser2": 803,
+      "browser3": 804,
+      "browser4": 804,
+      "browser5": 804,
+      "browser6": 803,
+      "browser7": 803,
+      "game": 803
+    },
+    "errors": []
+  },
+  {
+    "trial": "4b/r2_game",
+    "condition": "game",
+    "observed_seconds": 24.240418910980225,
+    "frame_or_callback_delta": {
+      "game": 1454
+    },
+    "consecutive_intervals_checked": 24,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "4b/r2_game",
+    "task": "one_shot",
+    "condition": "game",
+    "task_seconds": 5.021799802780151,
+    "samples_within_task": 5,
+    "frame_or_callback_delta": {
+      "game": 242
+    },
+    "errors": []
+  },
+  {
+    "trial": "4b/r2_game",
+    "task": "agentic",
+    "condition": "game",
+    "task_seconds": 14.534718990325928,
+    "samples_within_task": 14,
+    "frame_or_callback_delta": {
+      "game": 787
+    },
+    "errors": []
+  },
+  {
+    "trial": "4b/r2_quiet",
+    "condition": "quiet",
+    "observed_seconds": 21.215966939926147,
+    "frame_or_callback_delta": {
+      "quiet": 1273
+    },
+    "consecutive_intervals_checked": 21,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "4b/r2_quiet",
+    "task": "one_shot",
+    "condition": "quiet",
+    "task_seconds": 4.347531080245972,
+    "samples_within_task": 4,
+    "frame_or_callback_delta": {
+      "quiet": 182
+    },
+    "errors": []
+  },
+  {
+    "trial": "4b/r2_quiet",
+    "task": "agentic",
+    "condition": "quiet",
+    "task_seconds": 12.548371076583862,
+    "samples_within_task": 12,
+    "frame_or_callback_delta": {
+      "quiet": 666
+    },
+    "errors": []
+  },
+  {
+    "trial": "4b/r2_video",
+    "condition": "video",
+    "observed_seconds": 21.22058391571045,
+    "frame_or_callback_delta": {
+      "video": 1274
+    },
+    "consecutive_intervals_checked": 21,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "4b/r2_video",
+    "task": "one_shot",
+    "condition": "video",
+    "task_seconds": 4.400573968887329,
+    "samples_within_task": 4,
+    "frame_or_callback_delta": {
+      "video": 182
+    },
+    "errors": []
+  },
+  {
+    "trial": "4b/r2_video",
+    "task": "agentic",
+    "condition": "video",
+    "task_seconds": 12.627413034439087,
+    "samples_within_task": 12,
+    "frame_or_callback_delta": {
+      "video": 667
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r0_quiet",
+    "condition": "quiet",
+    "observed_seconds": 25.266134023666382,
+    "frame_or_callback_delta": {
+      "quiet": 1516
+    },
+    "consecutive_intervals_checked": 25,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "9b/r0_quiet",
+    "task": "one_shot",
+    "condition": "quiet",
+    "task_seconds": 7.847728252410889,
+    "samples_within_task": 7,
+    "frame_or_callback_delta": {
+      "quiet": 364
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r0_quiet",
+    "task": "agentic",
+    "condition": "quiet",
+    "task_seconds": 13.143626928329468,
+    "samples_within_task": 13,
+    "frame_or_callback_delta": {
+      "quiet": 727
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r1_quiet",
+    "condition": "quiet",
+    "observed_seconds": 25.25961184501648,
+    "frame_or_callback_delta": {
+      "quiet": 1515
+    },
+    "consecutive_intervals_checked": 25,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "9b/r1_quiet",
+    "task": "one_shot",
+    "condition": "quiet",
+    "task_seconds": 7.721165895462036,
+    "samples_within_task": 7,
+    "frame_or_callback_delta": {
+      "quiet": 363
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r1_quiet",
+    "task": "agentic",
+    "condition": "quiet",
+    "task_seconds": 13.316824197769165,
+    "samples_within_task": 13,
+    "frame_or_callback_delta": {
+      "quiet": 728
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r2_quiet",
+    "condition": "quiet",
+    "observed_seconds": 25.245171785354614,
+    "frame_or_callback_delta": {
+      "quiet": 1514
+    },
+    "consecutive_intervals_checked": 25,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "9b/r2_quiet",
+    "task": "one_shot",
+    "condition": "quiet",
+    "task_seconds": 7.819779634475708,
+    "samples_within_task": 7,
+    "frame_or_callback_delta": {
+      "quiet": 363
+    },
+    "errors": []
+  },
+  {
+    "trial": "9b/r2_quiet",
+    "task": "agentic",
+    "condition": "quiet",
+    "task_seconds": 13.2657790184021,
+    "samples_within_task": 13,
+    "frame_or_callback_delta": {
+      "quiet": 727
+    },
+    "errors": []
+  },
+  {
+    "trial": "cloud/r0_combined",
+    "condition": "combined",
+    "observed_seconds": 68.59168100357056,
+    "frame_or_callback_delta": {
+      "video": 4114,
+      "browser0": 4116,
+      "browser1": 4115,
+      "browser2": 4115,
+      "browser3": 4115,
+      "browser4": 4115,
+      "browser5": 4115,
+      "browser6": 4114,
+      "browser7": 4115,
+      "game": 4115
+    },
+    "consecutive_intervals_checked": 67,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "cloud/r0_combined",
+    "task": "one_shot",
+    "condition": "combined",
+    "task_window": "Wall-clock boundaries not logged; verify continuous whole-trial samples instead.",
+    "stalled_intervals": 0,
+    "errors": []
+  },
+  {
+    "trial": "cloud/r0_combined",
+    "task": "agentic",
+    "condition": "combined",
+    "task_window": "Wall-clock boundaries not logged; verify continuous whole-trial samples instead.",
+    "stalled_intervals": 0,
+    "errors": []
+  },
+  {
+    "trial": "cloud/r0_quiet",
+    "condition": "quiet",
+    "observed_seconds": 66.4961621761322,
+    "frame_or_callback_delta": {
+      "quiet": 3990
+    },
+    "consecutive_intervals_checked": 66,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "cloud/r0_quiet",
+    "task": "one_shot",
+    "condition": "quiet",
+    "task_window": "Wall-clock boundaries not logged; verify continuous whole-trial samples instead.",
+    "stalled_intervals": 0,
+    "errors": []
+  },
+  {
+    "trial": "cloud/r0_quiet",
+    "task": "agentic",
+    "condition": "quiet",
+    "task_window": "Wall-clock boundaries not logged; verify continuous whole-trial samples instead.",
+    "stalled_intervals": 0,
+    "errors": []
+  },
+  {
+    "trial": "cloud/r1_combined",
+    "condition": "combined",
+    "observed_seconds": 61.536338090896606,
+    "frame_or_callback_delta": {
+      "video": 3691,
+      "browser0": 3692,
+      "browser1": 3692,
+      "browser2": 3692,
+      "browser3": 3692,
+      "browser4": 3692,
+      "browser5": 3692,
+      "browser6": 3692,
+      "browser7": 3691,
+      "game": 3691
+    },
+    "consecutive_intervals_checked": 60,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "cloud/r1_combined",
+    "task": "one_shot",
+    "condition": "combined",
+    "task_window": "Wall-clock boundaries not logged; verify continuous whole-trial samples instead.",
+    "stalled_intervals": 0,
+    "errors": []
+  },
+  {
+    "trial": "cloud/r1_combined",
+    "task": "agentic",
+    "condition": "combined",
+    "task_window": "Wall-clock boundaries not logged; verify continuous whole-trial samples instead.",
+    "stalled_intervals": 0,
+    "errors": []
+  },
+  {
+    "trial": "cloud/r1_quiet",
+    "condition": "quiet",
+    "observed_seconds": 64.70010185241699,
+    "frame_or_callback_delta": {
+      "quiet": 3883
+    },
+    "consecutive_intervals_checked": 64,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "cloud/r1_quiet",
+    "task": "one_shot",
+    "condition": "quiet",
+    "task_window": "Wall-clock boundaries not logged; verify continuous whole-trial samples instead.",
+    "stalled_intervals": 0,
+    "errors": []
+  },
+  {
+    "trial": "cloud/r1_quiet",
+    "task": "agentic",
+    "condition": "quiet",
+    "task_window": "Wall-clock boundaries not logged; verify continuous whole-trial samples instead.",
+    "stalled_intervals": 0,
+    "errors": []
+  },
+  {
+    "trial": "cloud/r2_combined",
+    "condition": "combined",
+    "observed_seconds": 66.78063488006592,
+    "frame_or_callback_delta": {
+      "video": 4005,
+      "browser0": 4007,
+      "browser1": 4007,
+      "browser2": 4007,
+      "browser3": 4007,
+      "browser4": 4007,
+      "browser5": 4007,
+      "browser6": 4006,
+      "browser7": 4006,
+      "game": 4006
+    },
+    "consecutive_intervals_checked": 65,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "cloud/r2_combined",
+    "task": "one_shot",
+    "condition": "combined",
+    "task_window": "Wall-clock boundaries not logged; verify continuous whole-trial samples instead.",
+    "stalled_intervals": 0,
+    "errors": []
+  },
+  {
+    "trial": "cloud/r2_combined",
+    "task": "agentic",
+    "condition": "combined",
+    "task_window": "Wall-clock boundaries not logged; verify continuous whole-trial samples instead.",
+    "stalled_intervals": 0,
+    "errors": []
+  },
+  {
+    "trial": "cloud/r2_quiet",
+    "condition": "quiet",
+    "observed_seconds": 58.64474606513977,
+    "frame_or_callback_delta": {
+      "quiet": 3519
+    },
+    "consecutive_intervals_checked": 58,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "cloud/r2_quiet",
+    "task": "one_shot",
+    "condition": "quiet",
+    "task_window": "Wall-clock boundaries not logged; verify continuous whole-trial samples instead.",
+    "stalled_intervals": 0,
+    "errors": []
+  },
+  {
+    "trial": "cloud/r2_quiet",
+    "task": "agentic",
+    "condition": "quiet",
+    "task_window": "Wall-clock boundaries not logged; verify continuous whole-trial samples instead.",
+    "stalled_intervals": 0,
+    "errors": []
+  },
+  {
+    "trial": "cloud/r3_combined",
+    "condition": "combined",
+    "observed_seconds": 63.68913292884827,
+    "frame_or_callback_delta": {
+      "video": 3820,
+      "browser0": 3821,
+      "browser1": 3821,
+      "browser2": 3820,
+      "browser3": 3820,
+      "browser4": 3821,
+      "browser5": 3821,
+      "browser6": 3821,
+      "browser7": 3821,
+      "game": 3821
+    },
+    "consecutive_intervals_checked": 62,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "cloud/r3_combined",
+    "task": "one_shot",
+    "condition": "combined",
+    "task_window": "Wall-clock boundaries not logged; verify continuous whole-trial samples instead.",
+    "stalled_intervals": 0,
+    "errors": []
+  },
+  {
+    "trial": "cloud/r3_combined",
+    "task": "agentic",
+    "condition": "combined",
+    "task_window": "Wall-clock boundaries not logged; verify continuous whole-trial samples instead.",
+    "stalled_intervals": 0,
+    "errors": []
+  },
+  {
+    "trial": "cloud/r3_quiet",
+    "condition": "quiet",
+    "observed_seconds": 65.7566409111023,
+    "frame_or_callback_delta": {
+      "quiet": 3946
+    },
+    "consecutive_intervals_checked": 65,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "cloud/r3_quiet",
+    "task": "one_shot",
+    "condition": "quiet",
+    "task_window": "Wall-clock boundaries not logged; verify continuous whole-trial samples instead.",
+    "stalled_intervals": 0,
+    "errors": []
+  },
+  {
+    "trial": "cloud/r3_quiet",
+    "task": "agentic",
+    "condition": "quiet",
+    "task_window": "Wall-clock boundaries not logged; verify continuous whole-trial samples instead.",
+    "stalled_intervals": 0,
+    "errors": []
+  },
+  {
+    "trial": "cloud/r4_combined",
+    "condition": "combined",
+    "observed_seconds": 68.80372190475464,
+    "frame_or_callback_delta": {
+      "video": 4126,
+      "browser0": 4128,
+      "browser1": 4128,
+      "browser2": 4128,
+      "browser3": 4128,
+      "browser4": 4128,
+      "browser5": 4128,
+      "browser6": 4128,
+      "browser7": 4127,
+      "game": 4127
+    },
+    "consecutive_intervals_checked": 67,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "cloud/r4_combined",
+    "task": "one_shot",
+    "condition": "combined",
+    "task_window": "Wall-clock boundaries not logged; verify continuous whole-trial samples instead.",
+    "stalled_intervals": 0,
+    "errors": []
+  },
+  {
+    "trial": "cloud/r4_combined",
+    "task": "agentic",
+    "condition": "combined",
+    "task_window": "Wall-clock boundaries not logged; verify continuous whole-trial samples instead.",
+    "stalled_intervals": 0,
+    "errors": []
+  },
+  {
+    "trial": "cloud/r4_quiet",
+    "condition": "quiet",
+    "observed_seconds": 65.73070406913757,
+    "frame_or_callback_delta": {
+      "quiet": 3943
+    },
+    "consecutive_intervals_checked": 65,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "cloud/r4_quiet",
+    "task": "one_shot",
+    "condition": "quiet",
+    "task_window": "Wall-clock boundaries not logged; verify continuous whole-trial samples instead.",
+    "stalled_intervals": 0,
+    "errors": []
+  },
+  {
+    "trial": "cloud/r4_quiet",
+    "task": "agentic",
+    "condition": "quiet",
+    "task_window": "Wall-clock boundaries not logged; verify continuous whole-trial samples instead.",
+    "stalled_intervals": 0,
+    "errors": []
+  },
+  {
+    "trial": "cloud/r5_combined",
+    "condition": "combined",
+    "observed_seconds": 66.69258117675781,
+    "frame_or_callback_delta": {
+      "video": 4000,
+      "browser0": 4002,
+      "browser1": 4002,
+      "browser2": 4002,
+      "browser3": 4002,
+      "browser4": 4002,
+      "browser5": 4001,
+      "browser6": 4001,
+      "browser7": 4002,
+      "game": 4002
+    },
+    "consecutive_intervals_checked": 65,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "cloud/r5_combined",
+    "task": "one_shot",
+    "condition": "combined",
+    "task_window": "Wall-clock boundaries not logged; verify continuous whole-trial samples instead.",
+    "stalled_intervals": 0,
+    "errors": []
+  },
+  {
+    "trial": "cloud/r5_combined",
+    "task": "agentic",
+    "condition": "combined",
+    "task_window": "Wall-clock boundaries not logged; verify continuous whole-trial samples instead.",
+    "stalled_intervals": 0,
+    "errors": []
+  },
+  {
+    "trial": "cloud/r5_quiet",
+    "condition": "quiet",
+    "observed_seconds": 65.72109580039978,
+    "frame_or_callback_delta": {
+      "quiet": 3943
+    },
+    "consecutive_intervals_checked": 65,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "cloud/r5_quiet",
+    "task": "one_shot",
+    "condition": "quiet",
+    "task_window": "Wall-clock boundaries not logged; verify continuous whole-trial samples instead.",
+    "stalled_intervals": 0,
+    "errors": []
+  },
+  {
+    "trial": "cloud/r5_quiet",
+    "task": "agentic",
+    "condition": "quiet",
+    "task_window": "Wall-clock boundaries not logged; verify continuous whole-trial samples instead.",
+    "stalled_intervals": 0,
+    "errors": []
+  },
+  {
+    "trial": "cloud_agent/r0_combined",
+    "condition": "combined",
+    "observed_seconds": 42.13493299484253,
+    "frame_or_callback_delta": {
+      "video": 2527,
+      "browser0": 2528,
+      "browser1": 2527,
+      "browser2": 2528,
+      "browser3": 2528,
+      "browser4": 2528,
+      "browser5": 2528,
+      "browser6": 2528,
+      "browser7": 2528,
+      "game": 2528
+    },
+    "consecutive_intervals_checked": 41,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "cloud_agent/r0_combined",
+    "task": "agentic",
+    "condition": "combined",
+    "task_seconds": 37.98204326629639,
+    "samples_within_task": 37,
+    "frame_or_callback_delta": {
+      "video": 2219,
+      "browser0": 2220,
+      "browser1": 2220,
+      "browser2": 2221,
+      "browser3": 2221,
+      "browser4": 2221,
+      "browser5": 2221,
+      "browser6": 2221,
+      "browser7": 2221,
+      "game": 2220
+    },
+    "errors": []
+  },
+  {
+    "trial": "cloud_agent/r0_quiet",
+    "condition": "quiet",
+    "observed_seconds": 43.51489496231079,
+    "frame_or_callback_delta": {
+      "quiet": 2610
+    },
+    "consecutive_intervals_checked": 43,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "cloud_agent/r0_quiet",
+    "task": "agentic",
+    "condition": "quiet",
+    "task_seconds": 38.82963418960571,
+    "samples_within_task": 38,
+    "frame_or_callback_delta": {
+      "quiet": 2246
+    },
+    "errors": []
+  },
+  {
+    "trial": "cloud_agent/r1_combined",
+    "condition": "combined",
+    "observed_seconds": 43.10496187210083,
+    "frame_or_callback_delta": {
+      "video": 2585,
+      "browser0": 2586,
+      "browser1": 2586,
+      "browser2": 2586,
+      "browser3": 2586,
+      "browser4": 2586,
+      "browser5": 2586,
+      "browser6": 2587,
+      "browser7": 2586,
+      "game": 2586
+    },
+    "consecutive_intervals_checked": 42,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "cloud_agent/r1_combined",
+    "task": "agentic",
+    "condition": "combined",
+    "task_seconds": 38.608633041381836,
+    "samples_within_task": 38,
+    "frame_or_callback_delta": {
+      "video": 2279,
+      "browser0": 2281,
+      "browser1": 2280,
+      "browser2": 2280,
+      "browser3": 2280,
+      "browser4": 2280,
+      "browser5": 2280,
+      "browser6": 2281,
+      "browser7": 2281,
+      "game": 2281
+    },
+    "errors": []
+  },
+  {
+    "trial": "cloud_agent/r1_quiet",
+    "condition": "quiet",
+    "observed_seconds": 46.51727485656738,
+    "frame_or_callback_delta": {
+      "quiet": 2791
+    },
+    "consecutive_intervals_checked": 46,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "cloud_agent/r1_quiet",
+    "task": "agentic",
+    "condition": "quiet",
+    "task_seconds": 41.95089101791382,
+    "samples_within_task": 41,
+    "frame_or_callback_delta": {
+      "quiet": 2427
+    },
+    "errors": []
+  },
+  {
+    "trial": "cloud_agent/r2_combined",
+    "condition": "combined",
+    "observed_seconds": 39.015461921691895,
+    "frame_or_callback_delta": {
+      "video": 2341,
+      "browser0": 2341,
+      "browser1": 2340,
+      "browser2": 2340,
+      "browser3": 2340,
+      "browser4": 2340,
+      "browser5": 2341,
+      "browser6": 2341,
+      "browser7": 2341,
+      "game": 2341
+    },
+    "consecutive_intervals_checked": 38,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "cloud_agent/r2_combined",
+    "task": "agentic",
+    "condition": "combined",
+    "task_seconds": 34.54343605041504,
+    "samples_within_task": 34,
+    "frame_or_callback_delta": {
+      "video": 2034,
+      "browser0": 2034,
+      "browser1": 2034,
+      "browser2": 2034,
+      "browser3": 2034,
+      "browser4": 2034,
+      "browser5": 2035,
+      "browser6": 2035,
+      "browser7": 2034,
+      "game": 2034
+    },
+    "errors": []
+  },
+  {
+    "trial": "cloud_agent/r2_quiet",
+    "condition": "quiet",
+    "observed_seconds": 48.54735589027405,
+    "frame_or_callback_delta": {
+      "quiet": 2913
+    },
+    "consecutive_intervals_checked": 48,
+    "stalled_intervals": [],
+    "errors": []
+  },
+  {
+    "trial": "cloud_agent/r2_quiet",
+    "task": "agentic",
+    "condition": "quiet",
+    "task_seconds": 43.71765398979187,
+    "samples_within_task": 43,
+    "frame_or_callback_delta": {
+      "quiet": 2549
+    },
+    "errors": []
+  }
+]

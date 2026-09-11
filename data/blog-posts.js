@@ -5,10 +5,10 @@ const blogPosts = [
     title: 'When Local AI Shares Your GPU',
     date: 'September 11, 2026',
     category: 'research',
-    excerpt: 'Cloud and local baselines on a 24 GiB Mac: desktop load added 30–39%, heavy GPU compute caused a 5.6–6.0× slowdown, and a paged 35B model ran in 4–5 minutes.',
+    excerpt: 'A paired cloud audit and fresh 4B, 9B and paged 35B experiments: latency, throughput, cache and reasoning work, with every measured run visible.',
     url: 'blog/posts/local-igpu-contention.html',
     readTime: '4 min',
-    cover: 'images/blog/local-igpu-contention/contention.png'
+    cover: 'images/blog/local-igpu-contention/rerun-20260911/4b-wall_s.png'
   },
   {
     id: 'npu-jit-static-shapes',

@@ -2,75 +2,638 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>When Local AI Shares Your GPU — Xuming Huang</title>
-<meta name="description" content="On a 24 GiB M5 Pro: desktop contention slowed Holo 4B by 30–39%; heavy GPU compute by 5.6–6.0×. Cloud baselines and a paged 35B NVFP4 experiment, with measured graphs.">
-<meta name="author" content="Xuming Huang">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>When Local AI Shares Your GPU — Clean Rerun</title>
+<meta name="description" content="Paired cloud audit and fresh local 4B, 9B and paged 35B experiments, with per-run latency, throughput, cache and reasoning accounting.">
 <link rel="canonical" href="https://xuming.ai/blog/posts/local-igpu-contention.html">
-<meta property="og:title" content="When Local AI Shares Your GPU">
-<meta property="og:description" content="Cloud baselines, desktop contention, GPU stress, and a paged 35B model on a 24 GiB Mac.">
-<meta property="og:image" content="https://xuming.ai/images/blog/local-igpu-contention/contention.png">
-<meta property="og:type" content="article">
+<meta property="og:title" content="When Local AI Shares Your GPU — Clean Rerun">
+<meta property="og:image" content="https://xuming.ai/images/blog/local-igpu-contention/rerun-20260911/4b-wall_s.png">
 <link rel="icon" href="../../images/favicon.png">
 <style>
 :root{--ink:#172c42;--muted:#536477;--blue:#2166d1;--teal:#087e77;--paper:#f5f7fa;--line:#dce3eb}
 *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}a{color:var(--blue);text-underline-offset:4px}a:hover{text-decoration-thickness:2px}nav,main,footer{width:min(980px,calc(100% - 40px));margin:auto}nav{display:flex;justify-content:space-between;padding:24px 0;border-bottom:1px solid var(--line);font-size:14px}nav a{text-decoration:none}nav .name{color:var(--ink);font-weight:750}header{padding:58px 0 30px}.eyebrow{color:var(--blue);font-size:12px;letter-spacing:.13em;text-transform:uppercase;font-weight:750;margin:0 0 15px}h1{font-size:clamp(38px,6.7vw,68px);line-height:1.03;letter-spacing:-.055em;max-width:800px;margin:0 0 22px}h1 span{color:var(--blue)}.lead{font-size:21px;line-height:1.5;max-width:800px}.meta,.note,figcaption,footer{color:var(--muted);font-size:14px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:26px 0 12px}.stat{padding:20px 22px;border:1px solid var(--line);border-radius:12px;background:white}.stat strong{display:block;font-size:34px;letter-spacing:-.04em;line-height:1.2;color:var(--blue)}.stat span{display:block;font-size:13px;color:var(--muted);margin-top:7px}section{margin:38px 0 45px}h2{font-size:27px;line-height:1.2;letter-spacing:-.03em;margin:0 0 12px}p{margin:12px 0}.number{font-size:12px;color:var(--teal);letter-spacing:.12em;display:block;margin-bottom:10px}figure{margin:22px 0 14px;padding:22px 26px 18px;border:1px solid var(--line);border-radius:14px;background:white}figure img{display:block;width:100%;height:auto}figcaption{margin-top:8px;line-height:1.5}.takeaway{border-left:3px solid var(--teal);padding:2px 0 2px 17px}.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;margin-top:20px;background:#fff}table{width:100%;border-collapse:collapse;font-size:15px}th,td{text-align:left;padding:14px 18px;border-bottom:1px solid var(--line);vertical-align:top}th{font-weight:650;background:#edf2f7}tr:last-child td{border-bottom:0}.warning{font-size:15px;background:#fff5e4;border-radius:10px;padding:16px 20px;color:#674a19}.method{padding-top:28px;border-top:1px solid var(--line)}details{margin:20px 0;font-size:14px}summary{cursor:pointer;font-weight:650;color:var(--blue)}details p{max-width:880px}.downloads{display:flex;flex-wrap:wrap;gap:10px 22px;font-size:14px;margin-top:18px}footer{padding:24px 0 40px;border-top:1px solid var(--line)}@media(max-width:600px){body{font-size:16px}nav,main,footer{width:calc(100% - 32px)}header{padding-top:38px}.lead{font-size:19px}.stats{gap:8px}.stat{padding:14px 10px}.stat strong{font-size:28px}.stat span{font-size:12px}figure{padding:15px 8px 14px}figcaption{padding:0 7px;font-size:13px}h2{font-size:25px}th,td{padding:12px;font-size:14px}.meta{font-size:13px}}
-</style>
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.chart-grid figure{margin:12px 0;padding:18px 12px 14px}.model-picker{display:flex;gap:9px;flex-wrap:wrap;margin:28px 0 24px}.model-picker button{font:inherit;font-size:15px;font-weight:650;padding:10px 18px;border:1px solid var(--line);border-radius:9px;background:white;color:var(--ink);cursor:pointer}.model-picker button[aria-pressed=true]{background:var(--blue);color:white;border-color:var(--blue)}.model-panel{margin-top:20px}.pair-chart{width:100%;height:auto;margin-top:20px}[hidden]{display:none!important}code{overflow-wrap:anywhere}.table-wrap th,.table-wrap td{white-space:nowrap}.correction{border-left:3px solid #b57720;background:#fff6e8;padding:16px 20px;border-radius:5px;font-size:15px}.chart-grid img{width:100%;height:auto}@media(max-width:720px){.chart-grid{grid-template-columns:1fr}.model-picker button{padding:9px 12px;font-size:14px}}</style>
 </head>
 <body>
-<nav aria-label="Site"><a class="name" href="../../index.html">Xuming Huang</a><a href="../../blog.html">← All writing</a></nav>
+<nav aria-label="Site">
+<a class="name" href="../../index.html">Xuming Huang</a>
+<a href="../../blog.html">← All writing</a>
+</nav>
 <main>
 <header>
-<p class="eyebrow">Edge AI / measured on a working laptop</p>
-<h1>When local AI<br><span>shares your GPU.</span></h1>
-<p class="lead">Everyday desktop load added 30–39% to our local research task. Heavy GPU compute stretched the same task to nearly six times its quiet latency.</p>
-<p class="meta">September 11, 2026 · Apple M5 Pro · 16 GPU cores · 24 GiB unified memory · macOS 26.6.2</p>
-<div class="stats">
-<div class="stat"><strong>1.39×</strong><span>One-shot · combined desktop load</span></div>
-<div class="stat"><strong>6.01×</strong><span>One-shot · heavy GPU compute</span></div>
-<div class="stat"><strong>4.84 min</strong><span>35B agent run · paged experts</span></div>
+<p class="eyebrow">Edge AI / paired rerun · September 11, 2026</p>
+<h1>When local AI<br>
+<span>shares your GPU.</span>
+</h1>
+<p class="lead">Compare quiet and contended runs—then check whether they did the same work.</p>
+<p class="meta">M5 Pro · 16 GPU cores · 24 GiB unified memory · Native macOS · Same frozen robotics research fixture</p>
+<div class="correction">
+<strong>Cloud baseline corrected.</strong> Originally, one-shot combined was slower in 2/3 pairs despite its lower group median. Agentic combined was faster in 3/3, but every run had more cached input (+3,200 / +6,400 / +4,864 tokens), with different reasoning work. The first chart did not establish a cloud contention benefit. <a href="../../data/local-igpu-contention/rerun-20260911/original-cloud-pairs.csv">Original pairs ↗</a>
 </div>
 </header>
-<section aria-labelledby="baselines">
-<span class="number">01 / BASELINES</span>
-<h2 id="baselines">Cloud service and local 4B</h2>
-<p>One-shot receives six frozen robotics source cards. The agent chooses sources, reads text and screenshots, then synthesizes an answer. “Quiet” retains existing apps but adds no benchmark load.</p>
+<p>One-shot synthesizes six source cards about robotic arms and EdgeAI. The autonomous agent chooses source reads, sees screenshots and writes a cited answer. Quiet adds no benchmark contender; combined runs video, eight active tabs and synthetic WebGL.</p>
+<div class="model-picker" aria-label="Choose model">
+<button type="button" aria-controls="panel-cloud" aria-pressed="false" data-model="cloud">Cloud</button>
+<button type="button" aria-controls="panel-4b" aria-pressed="false" data-model="4b">4B</button>
+<button type="button" aria-controls="panel-9b" aria-pressed="false" data-model="9b">9B</button>
+<button type="button" aria-controls="panel-35b" aria-pressed="false" data-model="35b">35B NVFP4</button>
+</div>
+<section class="model-panel" id="panel-cloud" aria-labelledby="title-cloud">
+<h2 id="title-cloud">Cloud baseline · GPT-6 Astra</h2>
+<p>
+<strong>10/12 pairs match input and cached-input counts at every step; 0/12 match generated token counts too.</strong> Reasoning still varies. These are application observations, not an isolated contention effect.</p>
+<p>Observed direction: combined was slower in 5/6 one-shot pairs and faster in 4/6 replayed-agent pairs. The remaining work differences prevent a causal speedup claim.</p>
+<p>
+<strong>Median of paired latency ratios:</strong> combined: one-shot 1.101× (n=6), agent 0.966× (n=6). Generated-work differences still confound these cloud ratios.</p>
+<div class="chart-grid">
 <figure>
-<picture><source media="(max-width:600px)" srcset="../../images/blog/local-igpu-contention/baselines-mobile.svg"><img src="../../images/blog/local-igpu-contention/baselines.svg" width="950" height="420" alt="Median seconds, one-shot / agentic: cloud quiet 21.17 / 46.95; cloud combined 20.78 / 39.64; local 4B quiet 3.87 / 11.26; local 4B combined 5.38 / 14.62."></picture>
-<figcaption>Three runs per cell; bars = median, whiskers = observed minimum–maximum. Combined = video + eight active tabs + a synthetic WebGL game.</figcaption>
+<img src="../../images/blog/local-igpu-contention/rerun-20260911/cloud-wall_s.svg" alt="cloud Task latency; exact values available in the measurement table and downloads.">
+<figcaption>Task latency. Bars = median; dots = individual runs; whiskers = observed range. Sample count is shown.</figcaption>
 </figure>
-<p class="note"><strong>Different-quality application baselines.</strong> Cloud uses the signed-in Codex CLI/service (GPT-6 Astra, high reasoning), including client/service overhead—not raw API latency. Local uses Holo 3.1 4B, MLX 4-bit. Different reasoning, calls and answers prevent an equal-quality speedup claim; the lower cloud time under load is not evidence that contention helps.</p>
-</section>
-<section aria-labelledby="contention">
-<span class="number">02 / CONTROLLED COMPARISON</span>
-<h2 id="contention">GPU competition dominates these tests</h2>
 <figure>
-<picture><source media="(max-width:600px)" srcset="../../images/blog/local-igpu-contention/contention-mobile.svg"><img src="../../images/blog/local-igpu-contention/contention.svg" width="950" height="520" alt="Paired median slowdown, one-shot / agentic: video 1.00 / 1.00; browser 1.19 / 1.04; WebGL 1.19 / 1.20; combined 1.39 / 1.30; file remapping 1.06 / 1.01; heavy GPU compute 6.01 / 5.56. Quiet baseline is 1×."></picture>
-<figcaption>Each condition uses its own campaign’s quiet control (three pairs). Bars = median paired ratio; whiskers = observed paired range. Dashed line = quiet, 1×. The bottom two conditions are separate follow-up campaigns.</figcaption>
+<img src="../../images/blog/local-igpu-contention/rerun-20260911/cloud-effective_tps.svg" alt="cloud Effective output throughput; exact values available in the measurement table and downloads.">
+<figcaption>Effective output throughput. Bars = median; dots = individual runs; whiskers = observed range. Sample count is shown.</figcaption>
 </figure>
-<p class="takeaway">Heavy compute raised one-shot latency <strong>4.62 → 27.28 s</strong> and agent latency <strong>13.46 → 74.70 s</strong>. One-shot decoding fell <strong>69.7 → 10.9 tokens/s</strong>. Completed local outputs were identical across contention conditions.</p>
-<p class="note">Heavy load repeats 4096² FP16 matrix multiplies on Metal. The 4 GiB mapping test generated page faults but no swap writes; it does not establish sustained SSD thrashing. A 9B load and a RAM-pressure probe hit the swap guard before inference, so neither has a latency result.</p>
-</section>
-<section aria-labelledby="large">
-<span class="number">03 / LARGER-MODEL BOUNDARY</span>
-<h2 id="large">35B-A3B NVFP4 ran—with expert paging</h2>
-<p>The <a href="https://huggingface.co/Hcompany/Holo-3.1-35B-A3B-NVFP4">23.69 GB checkpoint</a> used a custom Metal adapter, BF16 dense matrices and a 2 GB disk-backed expert cache. This is a separate execution experiment, with no added contender.</p>
-<div class="table-wrap"><table aria-label="Single-run 35B results"><thead><tr><th scope="col">35B request</th><th scope="col">Task time</th><th scope="col">Peak MLX memory</th><th scope="col">Final answer</th></tr></thead><tbody><tr><th scope="row">One-shot</th><td>258.00 s</td><td>7.33 GB</td><td>211 words</td></tr><tr><th scope="row">Agent · 4 calls</th><td>290.23 s</td><td>8.75 GB</td><td>127 words</td></tr></tbody></table></div>
-<p class="note">One observation each; load excluded, first-use work included. No extra host swap writes during this 35B attempt. Custom paging, precision and warmup differ from 4B; these are not native NVIDIA NVFP4 speeds or an isolated model-size comparison.</p>
-<p class="warning"><strong>Completion is not correctness.</strong> The 35B agent omitted the frontier-policy comparison and missed the 180–230-word target. The 4B answers also missed that target: 174 words one-shot, 93 agentic. Timing alone does not establish research quality.</p>
-</section>
-<section class="method" aria-labelledby="method">
-<h2 id="method">What this establishes</h2>
-<p>For this fixed task, shared GPU compute is a substantial latency risk. The useful next test is whether admission control or scheduling can protect agent deadlines while preserving foreground responsiveness.</p>
-<details><summary>Method, boundaries &amp; cleanup</summary>
-<p>Native macOS, AC power, MLX 0.32.2 / MLX-VLM 0.7.0. The 4B model uses the <a href="https://huggingface.co/pipenetwork/Holo-3.1-4B-MLX-4bit">pipenetwork conversion</a>, revision <code>7c3327a5765ab21cefe2d91e953d1038b1d3ef3e</code>. The 35B checkpoint revision is <code>76ebefd59b500fe55e1afa45995aa8553198ee6e</code>; all 40 layers and 256 experts per layer are retained. Sampled custom-kernel numeric checks passed, but full-model backend quality parity was not tested.</p>
-<p>The source fixture covers low-cost arms, SmolVLA, OpenPI, frontier robotics policies and computer use. Agent actions are allowlisted source reads, limited to eight calls and at least three distinct sources. This measures bounded retrieval/synthesis with screenshots, not live web research, unrestricted computer control or physical robot performance.</p>
-<p>4B loading and two vision warmups are outside task timing. The stress campaign has fresh quiet controls: GPU 4.62/13.46 s and file-remapping 4.62/13.56 s (one-shot/agentic). Median paired ratios need not equal ratios of medians. Three repetitions characterize observed spread, not p95 latency or confidence intervals. Existing desktop activity, cache history and thermal transitions remain confounders.</p>
-<p>Supervisors bounded duration, memory pressure, swap writes and thermal state. The 9B and RAM probes stopped after 582 and 833 MiB of host swap writes respectively; sampled guards can overshoot their 512 MiB trigger. Those are stopped setup attempts, not completed inference tests. All owned benchmark workers were stopped; 11.75 GB of stress fixtures and 46.75 GB of 35B temporary files were removed. Final thermal state was nominal. The reusable 4B environment and evidence remain.</p>
+</div>
+<details>
+<summary>Run controls &amp; answer checks</summary>
+<p class="note">GPT-6 Astra, high reasoning, signed-in Codex CLI. Six balanced quiet/combined pairs. One-shot is fresh synthesis; the five-call agent trace replays identical prompts and screenshots from a prior real trajectory. Fresh autonomous-agent results are separate below.</p>
+<p class="note">
+<strong>Answer-length check:</strong> one-shot 220–234 words, agent 221–232 words. 18/24 meet the requested 180–230 words; length alone is not a factual-quality score.</p>
 </details>
-<div class="downloads" aria-label="Download measurement evidence"><a href="../../data/local-igpu-contention/desktop-summary.csv">Desktop data ↗</a><a href="../../data/local-igpu-contention/stress-summary.csv">Stress data ↗</a><a href="../../data/local-igpu-contention/35b-metrics.csv">35B data ↗</a><a href="../../data/local-igpu-contention/chart-data.json">Chart values ↗</a></div>
+<details>
+<summary>Exact medians &amp; decode throughput</summary>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Load</th>
+<th>Task</th>
+<th>n</th>
+<th>Seconds</th>
+<th>Effective tok/s</th>
+<th>Decode tok/s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>combined</td>
+<td>Agent trace</td>
+<td>6</td>
+<td>41.81</td>
+<td>10.01</td>
+<td>Not exposed</td>
+</tr>
+<tr>
+<td>combined</td>
+<td>One-shot</td>
+<td>6</td>
+<td>20.17</td>
+<td>17.93</td>
+<td>Not exposed</td>
+</tr>
+<tr>
+<td>quiet</td>
+<td>Agent trace</td>
+<td>6</td>
+<td>42.09</td>
+<td>9.85</td>
+<td>Not exposed</td>
+</tr>
+<tr>
+<td>quiet</td>
+<td>One-shot</td>
+<td>6</td>
+<td>18.48</td>
+<td>19.37</td>
+<td>Not exposed</td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+<details>
+<summary>Every cloud pair: time, cache and reasoning</summary>
+<img class="pair-chart" src="../../images/blog/local-igpu-contention/rerun-20260911/cloud-pairs.svg" alt="Each line links the quiet and combined latency of one pair; dashed lines mark cache mismatches.">
+<p class="note">Quiet → combined. Dashed lines mark cache mismatches. Reasoning counts remain different even where cache matches.</p>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Pair</th>
+<th>Seconds</th>
+<th>Paired ratio</th>
+<th>Cached input</th>
+<th>Reasoning output</th>
+<th>Visible output</th>
+<th>Input/cache match</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>One-shot r1</td>
+<td>19.70 → 22.71</td>
+<td>1.153×</td>
+<td>7424 → 7424</td>
+<td>66 → 77</td>
+<td>361 → 368</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Trace r1</td>
+<td>42.65 → 41.34</td>
+<td>0.969×</td>
+<td>37120 → 37120</td>
+<td>160 → 86</td>
+<td>417 → 413</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>One-shot r2</td>
+<td>18.92 → 19.84</td>
+<td>1.049×</td>
+<td>7424 → 7424</td>
+<td>122 → 117</td>
+<td>362 → 373</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Trace r2</td>
+<td>41.22 → 36.80</td>
+<td>0.893×</td>
+<td>37120 → 36096</td>
+<td>122 → 95</td>
+<td>411 → 421</td>
+<td>No</td>
+</tr>
+<tr>
+<td>One-shot r3</td>
+<td>16.49 → 20.37</td>
+<td>1.235×</td>
+<td>7424 → 7424</td>
+<td>66 → 116</td>
+<td>363 → 357</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Trace r3</td>
+<td>37.24 → 42.14</td>
+<td>1.132×</td>
+<td>37120 → 37120</td>
+<td>96 → 165</td>
+<td>415 → 423</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>One-shot r4</td>
+<td>18.05 → 17.56</td>
+<td>0.973×</td>
+<td>7424 → 7424</td>
+<td>111 → 103</td>
+<td>354 → 356</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Trace r4</td>
+<td>43.42 → 41.84</td>
+<td>0.964×</td>
+<td>37120 → 37120</td>
+<td>151 → 132</td>
+<td>425 → 410</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>One-shot r5</td>
+<td>19.51 → 19.96</td>
+<td>1.023×</td>
+<td>7424 → 7424</td>
+<td>116 → 168</td>
+<td>353 → 365</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Trace r5</td>
+<td>41.53 → 44.51</td>
+<td>1.072×</td>
+<td>29696 → 37120</td>
+<td>119 → 188</td>
+<td>412 → 403</td>
+<td>No</td>
+</tr>
+<tr>
+<td>One-shot r6</td>
+<td>17.18 → 20.77</td>
+<td>1.209×</td>
+<td>7424 → 7424</td>
+<td>69 → 193</td>
+<td>363 → 365</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Trace r6</td>
+<td>44.21 → 41.78</td>
+<td>0.945×</td>
+<td>37120 → 37120</td>
+<td>68 → 159</td>
+<td>424 → 430</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+<details>
+<summary>Fresh autonomous agents (separate from replay)</summary>
+<p>The model chooses its source reads and produces its own trajectory. Call count, outputs and reasoning can differ; these are not matched inference work.</p>
+<p class="note">0/3 pairs match per-step input/cache counts; source order also differs. These timings cannot establish a cloud contention benefit.</p>
+<div class="chart-grid">
+<figure>
+<img src="../../images/blog/local-igpu-contention/rerun-20260911/cloud_agent-wall_s.svg" alt="cloud_agent Task latency; exact values available in the measurement table and downloads.">
+<figcaption>Task latency. Bars = median; dots = individual runs; whiskers = observed range. Sample count is shown.</figcaption>
+</figure>
+<figure>
+<img src="../../images/blog/local-igpu-contention/rerun-20260911/cloud_agent-effective_tps.svg" alt="cloud_agent Effective output throughput; exact values available in the measurement table and downloads.">
+<figcaption>Effective output throughput. Bars = median; dots = individual runs; whiskers = observed range. Sample count is shown.</figcaption>
+</figure>
+</div>
+<details>
+<summary>Exact medians &amp; decode throughput</summary>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Load</th>
+<th>Task</th>
+<th>n</th>
+<th>Seconds</th>
+<th>Effective tok/s</th>
+<th>Decode tok/s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>combined</td>
+<td>Agentic</td>
+<td>3</td>
+<td>37.98</td>
+<td>11.01</td>
+<td>Not exposed</td>
+</tr>
+<tr>
+<td>quiet</td>
+<td>Agentic</td>
+<td>3</td>
+<td>41.95</td>
+<td>9.92</td>
+<td>Not exposed</td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+</details>
+</section>
+<section class="model-panel" id="panel-4b" aria-labelledby="title-4b">
+<h2 id="title-4b">Local 4B</h2>
+<p>Holo 3.1 4B, affine 4-bit MLX. Fresh quiet controls for video, eight active browser tabs, synthetic WebGL, their combination, heavy Metal matrix multiplication, and 4 GiB file remapping.</p>
+<p>
+<strong>Median of paired latency ratios:</strong> combined: one-shot 1.204× (n=3), agent 1.189× (n=3); heavy GPU: one-shot 5.799× (n=3), agent 5.061× (n=3).</p>
+<div class="chart-grid">
+<figure>
+<img src="../../images/blog/local-igpu-contention/rerun-20260911/4b-wall_s.svg" alt="4b Task latency; exact values available in the measurement table and downloads.">
+<figcaption>Task latency. Bars = median; dots = individual runs; whiskers = observed range. Sample count is shown.</figcaption>
+</figure>
+<figure>
+<img src="../../images/blog/local-igpu-contention/rerun-20260911/4b-effective_tps.svg" alt="4b Effective output throughput; exact values available in the measurement table and downloads.">
+<figcaption>Effective output throughput. Bars = median; dots = individual runs; whiskers = observed range. Sample count is shown.</figcaption>
+</figure>
+</div>
+<details>
+<summary>Run controls &amp; answer checks</summary>
+<p class="note">36/36 completed pairs match prompts, generated token counts and final answer. Different models can still produce different answers.</p>
+<p class="note">Host swap-outs across completed trial groups: <strong>434.2 MiB (page equivalents)</strong>. This includes loading and warmup; it is not a per-task attribution. Stopped trials are listed separately.</p>
+<p class="note">
+<strong>Answer-length check:</strong> one-shot 174–174 words, agent 88–88 words. 0/42 meet the requested 180–230 words; length alone is not a factual-quality score.</p>
+</details>
+<details>
+<summary>Exact medians &amp; decode throughput</summary>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Load</th>
+<th>Task</th>
+<th>n</th>
+<th>Seconds</th>
+<th>Effective tok/s</th>
+<th>Decode tok/s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>browser</td>
+<td>Agentic</td>
+<td>3</td>
+<td>13.60</td>
+<td>34.64</td>
+<td>67.94</td>
+</tr>
+<tr>
+<td>browser</td>
+<td>One-shot</td>
+<td>3</td>
+<td>4.66</td>
+<td>55.97</td>
+<td>68.33</td>
+</tr>
+<tr>
+<td>combined</td>
+<td>Agentic</td>
+<td>3</td>
+<td>14.92</td>
+<td>31.58</td>
+<td>62.47</td>
+</tr>
+<tr>
+<td>combined</td>
+<td>One-shot</td>
+<td>3</td>
+<td>5.13</td>
+<td>50.86</td>
+<td>61.83</td>
+</tr>
+<tr>
+<td>fault</td>
+<td>Agentic</td>
+<td>3</td>
+<td>13.43</td>
+<td>35.08</td>
+<td>70.26</td>
+</tr>
+<tr>
+<td>fault</td>
+<td>One-shot</td>
+<td>3</td>
+<td>4.97</td>
+<td>52.54</td>
+<td>70.03</td>
+</tr>
+<tr>
+<td>game</td>
+<td>Agentic</td>
+<td>3</td>
+<td>14.53</td>
+<td>32.40</td>
+<td>64.83</td>
+</tr>
+<tr>
+<td>game</td>
+<td>One-shot</td>
+<td>3</td>
+<td>4.96</td>
+<td>52.58</td>
+<td>64.11</td>
+</tr>
+<tr>
+<td>gpu</td>
+<td>Agentic</td>
+<td>3</td>
+<td>63.51</td>
+<td>7.42</td>
+<td>12.38</td>
+</tr>
+<tr>
+<td>gpu</td>
+<td>One-shot</td>
+<td>3</td>
+<td>24.60</td>
+<td>10.61</td>
+<td>12.64</td>
+</tr>
+<tr>
+<td>quiet</td>
+<td>Agentic</td>
+<td>3</td>
+<td>12.55</td>
+<td>37.53</td>
+<td>74.88</td>
+</tr>
+<tr>
+<td>quiet</td>
+<td>One-shot</td>
+<td>3</td>
+<td>4.26</td>
+<td>61.23</td>
+<td>74.37</td>
+</tr>
+<tr>
+<td>video</td>
+<td>Agentic</td>
+<td>3</td>
+<td>12.63</td>
+<td>37.30</td>
+<td>74.30</td>
+</tr>
+<tr>
+<td>video</td>
+<td>One-shot</td>
+<td>3</td>
+<td>4.31</td>
+<td>60.61</td>
+<td>74.06</td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+</section>
+<section class="model-panel" id="panel-9b" aria-labelledby="title-9b">
+<h2 id="title-9b">Local 9B</h2>
+<p>Holo 3.1 9B, affine 4-bit MLX. Quiet and combined desktop load use the same guarded protocol. A stopped setup is not an inference measurement.</p>
+<p>
+<strong>No measured contention ratio:</strong> quiet tasks completed, but combined setup stopped before inference. N/A means unavailable, not zero.</p>
+<p class="warning">
+<strong>Source-use failure:</strong> at least one final answer cited unread source(s) S5. The original bracket-only runtime gate missed alternative citation formatting; a separate format-tolerant audit flags it here.</p>
+<p class="warning">
+<strong>Stopped trial:</strong> r1 combined: per-trial swap limit during setup (655.5 MiB additional host swap-outs). No zero-latency or zero-throughput substitute is plotted.</p>
+<div class="chart-grid">
+<figure>
+<img src="../../images/blog/local-igpu-contention/rerun-20260911/9b-wall_s.svg" alt="9b Task latency; exact values available in the measurement table and downloads.">
+<figcaption>Task latency. Bars = median; dots = individual runs; whiskers = observed range. Sample count is shown.</figcaption>
+</figure>
+<figure>
+<img src="../../images/blog/local-igpu-contention/rerun-20260911/9b-effective_tps.svg" alt="9b Effective output throughput; exact values available in the measurement table and downloads.">
+<figcaption>Effective output throughput. Bars = median; dots = individual runs; whiskers = observed range. Sample count is shown.</figcaption>
+</figure>
+</div>
+<details>
+<summary>Run controls &amp; answer checks</summary>
+<p class="note">Host swap-outs across completed trial groups: <strong>0.0 MiB (page equivalents)</strong>. This includes loading and warmup; it is not a per-task attribution. Stopped trials are listed separately.</p>
+<p class="note">
+<strong>Answer-length check:</strong> one-shot 176–176 words, agent 162–162 words. 0/6 meet the requested 180–230 words; length alone is not a factual-quality score.</p>
+</details>
+<details>
+<summary>Exact medians &amp; decode throughput</summary>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Load</th>
+<th>Task</th>
+<th>n</th>
+<th>Seconds</th>
+<th>Effective tok/s</th>
+<th>Decode tok/s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>quiet</td>
+<td>Agentic</td>
+<td>3</td>
+<td>13.27</td>
+<td>19.83</td>
+<td>41.43</td>
+</tr>
+<tr>
+<td>quiet</td>
+<td>One-shot</td>
+<td>3</td>
+<td>7.82</td>
+<td>33.63</td>
+<td>41.35</td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+</section>
+<section class="model-panel" id="panel-35b" aria-labelledby="title-35b">
+<h2 id="title-35b">Paged 35B-A3B NVFP4</h2>
+<p>Holo 3.1 35B-A3B NVFP4 uses the official checkpoint through a custom Metal adapter: BF16 dense matrices, all experts on disk, a 0.5 GB expert cache. This is paged execution, not native NVIDIA NVFP4.</p>
+<p>
+<strong>No measured contention ratio:</strong> quiet tasks completed, but combined setup stopped before inference. N/A means unavailable, not zero.</p>
+<p class="warning">
+<strong>Completion is not task success:</strong> the first quiet agent answer omitted the requested frontier-policy comparison. Its timing is retained, with the answer-length check below.</p>
+<p class="warning">
+<strong>Stopped trial:</strong> r1 combined: per-trial swap limit during setup (556.5 MiB additional host swap-outs). No zero-latency or zero-throughput substitute is plotted.</p>
+<div class="chart-grid">
+<figure>
+<img src="../../images/blog/local-igpu-contention/rerun-20260911/35b-wall_s.svg" alt="35b Task latency; exact values available in the measurement table and downloads.">
+<figcaption>Task latency. Bars = median; dots = individual runs; whiskers = observed range. Sample count is shown.</figcaption>
+</figure>
+<figure>
+<img src="../../images/blog/local-igpu-contention/rerun-20260911/35b-effective_tps.svg" alt="35b Effective output throughput; exact values available in the measurement table and downloads.">
+<figcaption>Effective output throughput. Bars = median; dots = individual runs; whiskers = observed range. Sample count is shown.</figcaption>
+</figure>
+</div>
+<details>
+<summary>Run controls &amp; answer checks</summary>
+<p class="note">Host swap-outs across completed trial groups: <strong>0.0 MiB (page equivalents)</strong>. This includes loading and warmup; it is not a per-task attribution. Stopped trials are listed separately.</p>
+<p class="note">
+<strong>Answer-length check:</strong> one-shot 211–211 words, agent 127–127 words. 3/6 meet the requested 180–230 words; length alone is not a factual-quality score.</p>
+</details>
+<details>
+<summary>Exact medians &amp; decode throughput</summary>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Load</th>
+<th>Task</th>
+<th>n</th>
+<th>Seconds</th>
+<th>Effective tok/s</th>
+<th>Decode tok/s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>quiet</td>
+<td>Agentic</td>
+<td>3</td>
+<td>419.28</td>
+<td>0.57</td>
+<td>0.88</td>
+</tr>
+<tr>
+<td>quiet</td>
+<td>One-shot</td>
+<td>3</td>
+<td>422.27</td>
+<td>0.77</td>
+<td>0.86</td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+</section>
+<section class="method">
+<h2>Read the rates correctly</h2>
+<p>
+<strong>Effective throughput = generated output tokens ÷ full task seconds.</strong> Cloud excludes hidden reasoning from the numerator; its cost remains in time. Local includes action JSON and recovery output. Tokenizers and answer quality differ, so this is not a hardware speed ranking.</p>
+<p class="note">Local decode throughput is separately available above: total generated tokens divided by the sum of per-call estimated decode durations. Cloud CLI does not expose equivalent streaming decode timing. Loading and warmup are excluded from local task time.</p>
+<details>
+<summary>Quality, controls &amp; reproducibility</summary>
+<p>All local runs use greedy decoding, 128-token prefill, a 128 MiB allocator cache and two identical vision warmups. Fresh processes per condition; three repetitions where admitted. Prior 4B numbers used different prefill settings and are not pooled with this campaign. Sample spread is not a confidence interval or p95.</p>
+<p>Cloud uses the same high reasoning setting throughout. A fresh prefix marker reduces benchmark-prefix reuse but cannot guarantee a cold service cache. Recorded per-step counters decide matching. <a href="https://developers.openai.com/api/docs/models/gpt-6-astra">The model supports reasoning effort levels, not an off setting.</a> The controlled agent trace holds history fixed; fresh autonomous trajectories are reported separately.</p>
+<p>Length checks below are only a mechanical quality check, not proof of factual correctness. The requested final answer is 180–230 words. These are source-card research tasks, not real robot control or unrestricted desktop use.</p>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Series</th>
+<th>Final words, range</th>
+<th>Length passed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cloud</td>
+<td>220–234</td>
+<td>18/24</td>
+</tr>
+<tr>
+<td>cloud_agent</td>
+<td>221–231</td>
+<td>5/6</td>
+</tr>
+<tr>
+<td>4b</td>
+<td>88–174</td>
+<td>0/42</td>
+</tr>
+<tr>
+<td>9b</td>
+<td>162–176</td>
+<td>0/6</td>
+</tr>
+<tr>
+<td>35b</td>
+<td>127–211</td>
+<td>3/6</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Independent guards bound memory, duration, thermal state and additional swap writes. Stopped trials remain in the data. Models: <a href="https://huggingface.co/pipenetwork/Holo-3.1-4B-MLX-4bit">4B MLX</a>, <a href="https://huggingface.co/pipenetwork/Holo-3.1-9B-MLX-4bit">9B MLX</a>, <a href="https://huggingface.co/Hcompany/Holo-3.1-35B-A3B-NVFP4">official 35B NVFP4</a>.</p>
+</details>
+<p class="note">
+<strong>Cleanup complete:</strong> 58.50 GB of new temporary weights and fixtures removed; no owned benchmark workers remained. Final recorded thermal state: nominal. Raw evidence and the reusable 4B environment are retained.</p>
+<div class="downloads">
+<a href="../../data/local-igpu-contention/rerun-20260911/runs.csv">Every run ↗</a>
+<a href="../../data/local-igpu-contention/rerun-20260911/pairs.csv">Paired comparisons ↗</a>
+<a href="../../data/local-igpu-contention/rerun-20260911/steps.csv">Per-call tokens ↗</a>
+<a href="../../data/local-igpu-contention/rerun-20260911/protocol.md">Protocol ↗</a>
+<a href="../../data/local-igpu-contention/rerun-20260911/report.md">Report ↗</a>
+<a href="local-igpu-contention-original.html">First campaign archive ↗</a>
+</div>
 </section>
 </main>
-<footer>Xuming Huang · Exploratory measurements, September 10–11, 2026</footer>
+<footer>Xuming Huang · Raw observations retained; mismatches and resource stops are not erased.</footer>
+<script>
+const buttons=[...document.querySelectorAll('[data-model]')];function selectModel(id){for(const b of buttons)b.setAttribute('aria-pressed',String(b.dataset.model===id));for(const p of document.querySelectorAll('.model-panel'))p.hidden=p.id!=='panel-'+id;}for(const b of buttons)b.addEventListener('click',()=>{selectModel(b.dataset.model);history.replaceState(null,'','#'+b.dataset.model);});const initial=location.hash.slice(1);selectModel(buttons.some(b=>b.dataset.model===initial)?initial:'cloud');
+</script>
 </body>
 </html>

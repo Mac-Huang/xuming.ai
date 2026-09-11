@@ -1,0 +1,68 @@
+{
+  "errors": [],
+  "integrity_pass": true,
+  "fixture_hashes_checked": 13,
+  "cloud_calls_checked": 102,
+  "completed_workloads": 84,
+  "cloud_pairs": 12,
+  "cloud_cache_matched": 10,
+  "cloud_exact_work_matched": 0,
+  "stops": [
+    {
+      "model": "9b",
+      "rep": 0,
+      "condition": "combined",
+      "reason": "trial_swap_budget",
+      "stage": "setup",
+      "swapout_bytes": 687341568,
+      "elapsed_s": 9.255545666906983
+    },
+    {
+      "model": "35b",
+      "rep": 0,
+      "condition": "combined",
+      "reason": "trial_swap_budget",
+      "stage": "setup",
+      "swapout_bytes": 583532544,
+      "elapsed_s": 79.38464966695756
+    }
+  ],
+  "local_quiet_consistency": [
+    {
+      "model": "4b",
+      "mode": "one_shot",
+      "n": 3,
+      "unique_work_signatures": 1
+    },
+    {
+      "model": "4b",
+      "mode": "agentic",
+      "n": 3,
+      "unique_work_signatures": 1
+    },
+    {
+      "model": "9b",
+      "mode": "one_shot",
+      "n": 3,
+      "unique_work_signatures": 1
+    },
+    {
+      "model": "9b",
+      "mode": "agentic",
+      "n": 3,
+      "unique_work_signatures": 1
+    },
+    {
+      "model": "35b",
+      "mode": "one_shot",
+      "n": 3,
+      "unique_work_signatures": 1
+    },
+    {
+      "model": "35b",
+      "mode": "agentic",
+      "n": 3,
+      "unique_work_signatures": 1
+    }
+  ]
+}

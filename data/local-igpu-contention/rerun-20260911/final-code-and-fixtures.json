@@ -1,0 +1,226 @@
+{
+  "time": 1789148521.73015,
+  "scope": "Final source and fixture snapshot. Earlier measurement-code-and-fixtures.json remains the initial snapshot; analysis, cleanup and presentation code were refined later. Guard cleanup improvements preceded measured local trials; the 35B cache decision preceded all 35B trials.",
+  "files": [
+    {
+      "path": "aggressive/scripts/stress.py",
+      "bytes": 3465,
+      "sha256": "95f9a1d01c8e7e1099d7cfbadc9007c882f47ea9edf9c16dc5bf4a9ae95ecb8c"
+    },
+    {
+      "path": "artifacts/S1.png",
+      "bytes": 77548,
+      "sha256": "b1105e0767f9f3c07994a539634c8c5b499e8023ba1cc2f803bbba3578b511ce"
+    },
+    {
+      "path": "artifacts/S2.png",
+      "bytes": 96251,
+      "sha256": "5bd2061bd1b486f33c1304b11d163e4c3e3e073a5f2c37e17c88f41a9ed2cf76"
+    },
+    {
+      "path": "artifacts/S3.png",
+      "bytes": 94663,
+      "sha256": "ddf844969b5530f2f7902f5e8adbeeed2ef474673512ae116b0a6796883c8642"
+    },
+    {
+      "path": "artifacts/S4.png",
+      "bytes": 99920,
+      "sha256": "00565983e1541c03419ad3248a6282ee39cb599730c62ec7f63335369de93072"
+    },
+    {
+      "path": "artifacts/S5.png",
+      "bytes": 93320,
+      "sha256": "9cd6ff0d556d282ccfa7b2abcfebfa24770caefa9fab0d0530057892fc077544"
+    },
+    {
+      "path": "artifacts/S6.png",
+      "bytes": 95673,
+      "sha256": "fa56326efe5661fb155aa37d703ea64d15d50e195d2d2364f64bd15e9163ecb6"
+    },
+    {
+      "path": "artifacts/corpus.json",
+      "bytes": 4059,
+      "sha256": "4a52309d4eb9a52e085662a87764d82dc3205e4b3ce7d8ae2bb1b19940b8e7c9"
+    },
+    {
+      "path": "nvfp4_35b/scripts/exact_scaling.py",
+      "bytes": 2257,
+      "sha256": "bdd2ee2dc2a9e3d11cf94e239340d4f7aa82d15da9c1e0e42f2d43caf80d5120"
+    },
+    {
+      "path": "nvfp4_35b/scripts/telemetry.py",
+      "bytes": 1604,
+      "sha256": "e802e11bd63208ccf0bb9285a06ffe93d6fd36042dd6408d29cd862637ac659e"
+    },
+    {
+      "path": "rerun_20260911/PROTOCOL.md",
+      "bytes": 7919,
+      "sha256": "0d53147e363d198a867a471108369aa0fdacd750f7c43e6bb805084c09dbb3dd"
+    },
+    {
+      "path": "rerun_20260911/fixtures/agentic-step0.prompt.txt",
+      "bytes": 1117,
+      "sha256": "01c45072cc068aa796de17b6ff4ee9614813bce296f2463ccc6e29662fe94cde"
+    },
+    {
+      "path": "rerun_20260911/fixtures/agentic-step1.prompt.txt",
+      "bytes": 1871,
+      "sha256": "59886c622511e433aaee52ba621842fe6e6966ca76c79d02660fdcc7ff996aee"
+    },
+    {
+      "path": "rerun_20260911/fixtures/agentic-step2.prompt.txt",
+      "bytes": 2481,
+      "sha256": "dab9addb7e4becfb2e88312063ad3f737e0944a501d05e5c99c5bf4bb7a2638b"
+    },
+    {
+      "path": "rerun_20260911/fixtures/agentic-step3.prompt.txt",
+      "bytes": 3294,
+      "sha256": "932052f82a6e7bea86f8f056d2f34a5d59cddfb0276b9271fdef62d4b7324b0e"
+    },
+    {
+      "path": "rerun_20260911/fixtures/agentic-step4.prompt.txt",
+      "bytes": 4040,
+      "sha256": "765550c25f3e873012b86eb40fd458aa14da15c3ac1c41e317013f22516312df"
+    },
+    {
+      "path": "rerun_20260911/fixtures/cloud-traces.json",
+      "bytes": 1284,
+      "sha256": "e23dc792ffa97106e99b346e2a1712e77d4ddecb2dc1886b5dff3179155b87e7"
+    },
+    {
+      "path": "rerun_20260911/fixtures/one_shot-step0.prompt.txt",
+      "bytes": 4673,
+      "sha256": "6954c8e9c92218be294851241d271521942bb36658fa12349269bc07b0457782"
+    },
+    {
+      "path": "rerun_20260911/large/scripts/compact_resident.py",
+      "bytes": 1407,
+      "sha256": "0bcec4a30de6e09bafe161f10d5355bdd63669c6cd05938e71aba3e8597991a3"
+    },
+    {
+      "path": "rerun_20260911/large/scripts/prepare_offload.py",
+      "bytes": 8101,
+      "sha256": "1b37af1c087ccd45c6095d1a1b532c0f91e7c86f4a78f2420e90bfad3841aab6"
+    },
+    {
+      "path": "rerun_20260911/scripts/analyze.py",
+      "bytes": 6620,
+      "sha256": "83cea106d2feaef771bf787cef782bbad5ca8eead6ab302547a4efa62d478a3e"
+    },
+    {
+      "path": "rerun_20260911/scripts/build_page.py",
+      "bytes": 18719,
+      "sha256": "f08b3610a39ac8d12516f2083624ff3abbb5bab28feed233c1595832b94c3f3e"
+    },
+    {
+      "path": "rerun_20260911/scripts/check_frames.py",
+      "bytes": 2949,
+      "sha256": "cfe2ff45578cf3f121be13cc99d7410d19c9961c88e48c21acd8e476832f4e65"
+    },
+    {
+      "path": "rerun_20260911/scripts/check_page.py",
+      "bytes": 1408,
+      "sha256": "3427931144173959b4ee9e812d9f29cb7fa31cbb236630be71906a48954c3990"
+    },
+    {
+      "path": "rerun_20260911/scripts/cleanup.py",
+      "bytes": 1308,
+      "sha256": "929e4a179560ec0aa0ae1335c318dd0bdf4b549e95f067684cb653885413df68"
+    },
+    {
+      "path": "rerun_20260911/scripts/cloud.py",
+      "bytes": 2743,
+      "sha256": "471fd33c4f2714d574deb186e53a3cbcbe6f27ce227e0a152343e28e85c6a3ad"
+    },
+    {
+      "path": "rerun_20260911/scripts/cloud_worker.py",
+      "bytes": 2765,
+      "sha256": "33bb883db60e72f2bbd39c0f0f9bb87e019a8181124447a8449c4b1c3078e100"
+    },
+    {
+      "path": "rerun_20260911/scripts/download_35b_parallel.py",
+      "bytes": 1946,
+      "sha256": "cd06f4e792bccbc4a1f810dc1f9b7f695546f2635e9d21587ad813662dbb4db7"
+    },
+    {
+      "path": "rerun_20260911/scripts/download_models.py",
+      "bytes": 2090,
+      "sha256": "6e58d9ec45a15b89f3276a04d88571d0ade6da3ea8246cee3e4040ff4d5a1c32"
+    },
+    {
+      "path": "rerun_20260911/scripts/final_manifest.py",
+      "bytes": 1152,
+      "sha256": "405f4100fc28c4a3620be3bca4f3d49f89a4b803e6509771df5e438bc8423cc8"
+    },
+    {
+      "path": "rerun_20260911/scripts/guard.py",
+      "bytes": 3054,
+      "sha256": "936fb8701e191450fad69472e4981d9293d0520c665e914931008a8dd68e9a1d"
+    },
+    {
+      "path": "rerun_20260911/scripts/local_worker.py",
+      "bytes": 4349,
+      "sha256": "7a3a6958caf39fad0dc2afd0ac17be3dc64125bc0abd8439555f0e9f4ec074f5"
+    },
+    {
+      "path": "rerun_20260911/scripts/old_cloud_audit.py",
+      "bytes": 1142,
+      "sha256": "e33779eda648d60ed039fb9c7974da4cd074e34f3fb2215e0084a7eb2ca25808"
+    },
+    {
+      "path": "rerun_20260911/scripts/pipeline.py",
+      "bytes": 2856,
+      "sha256": "75f6b514d6e9f91d1083e31a4de950157bff88b1c7ea42854496b8fc3fb8333b"
+    },
+    {
+      "path": "rerun_20260911/scripts/pipeline_local.py",
+      "bytes": 1837,
+      "sha256": "9473c408a612afed1cf2adc09ee8e0f532c1d9402744792c9d894aad36bc3b91"
+    },
+    {
+      "path": "rerun_20260911/scripts/plot.py",
+      "bytes": 4249,
+      "sha256": "688a21af3ef5b00b72239f1e2da483675c922642c707a0223cd4b07121761f74"
+    },
+    {
+      "path": "rerun_20260911/scripts/progress.py",
+      "bytes": 1218,
+      "sha256": "9938442d24a0665269492787c2ceade421ba45e16f146adae39b3b84ad11746b"
+    },
+    {
+      "path": "rerun_20260911/scripts/report.py",
+      "bytes": 5800,
+      "sha256": "c4e4c0a021a9cabe1a19031dcd5bfb9b03f1f19987f84f62e8147bc3cb59d6e2"
+    },
+    {
+      "path": "rerun_20260911/scripts/run_cloud.py",
+      "bytes": 762,
+      "sha256": "3a14cd14b1ec4f8653e95bd0d226f01b9d8213be1f39719d0667d68377cfe777"
+    },
+    {
+      "path": "rerun_20260911/scripts/run_cloud_agent.py",
+      "bytes": 534,
+      "sha256": "a8440bca475916794190b95c2eb4e9fef506b782badb8f0fcec0725305b9431b"
+    },
+    {
+      "path": "rerun_20260911/scripts/run_local.py",
+      "bytes": 1633,
+      "sha256": "2e5d34a3f281fc716f935287a2af96038900e2ee8f11c57af3a29313fa3a9dd3"
+    },
+    {
+      "path": "rerun_20260911/scripts/validate.py",
+      "bytes": 2363,
+      "sha256": "0060f3a964b80a009c23d9ba671b3d2c00a32e898e43129d85c5b7b573c0aa2d"
+    },
+    {
+      "path": "scripts/bench.py",
+      "bytes": 11028,
+      "sha256": "14f5bc556cc2ef84f3ea0b9fcea4e251883b959853b599eb2e0c807a238db739"
+    },
+    {
+      "path": "scripts/contend.py",
+      "bytes": 4369,
+      "sha256": "524328c4b9b9102909aa1228ad7ca03f0e4b4977b04418546f79a0d8047c5d4a"
+    }
+  ]
+}
