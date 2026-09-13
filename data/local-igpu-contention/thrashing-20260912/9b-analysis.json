@@ -1,0 +1,1612 @@
+{
+  "model": "Holo 3.1 9B MLX 4-bit",
+  "rows": [
+    {
+      "rep": 0,
+      "condition": "quiet",
+      "mode": "one_shot",
+      "status": "completed",
+      "wall_s": 6.64049904095009,
+      "tokens": 263,
+      "effective_tps": 39.60545711672466,
+      "decode_tps": 49.29798135559816,
+      "ttft_s": 1.2789044580422342,
+      "peak_mlx_gb": 8.270123404,
+      "answer_sha256": "2dbbcc00c9bea47fb2e2862bbbb61b370245464c50375f0bc115c1a164625934",
+      "work_signature": [
+        [
+          "6954c8e9c92218be294851241d271521942bb36658fa12349269bc07b0457782",
+          1126,
+          263
+        ]
+      ],
+      "quality": {
+        "words": 176,
+        "citations": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6"
+        ],
+        "citation_count": 6,
+        "so101": true,
+        "compact_policy": true,
+        "frontier": true,
+        "gui_separation": true,
+        "measurement": true,
+        "opened": 0,
+        "unread_citations": []
+      },
+      "time_start": 1789268665.471719,
+      "time_end": 1789268672.112187,
+      "telemetry_window_s": 6.502648830413818,
+      "telemetry_start_error_s": 0.03406715393066406,
+      "telemetry_end_error_s": -0.10375189781188965,
+      "disk_read_bytes": 178913280,
+      "disk_write_bytes": 1409024,
+      "pagein_bytes": 83853312,
+      "swapin_bytes": 30998528,
+      "swapout_bytes": 0,
+      "compression_bytes": 0,
+      "decompression_bytes": 320782336,
+      "min_available_gib": 3.2513580322265625,
+      "max_thermal_state": 0,
+      "disk_read_mib_s": 26.239307157717402,
+      "secondary_citation_audit": {
+        "cited_ids": [
+          "S1",
+          "S2",
+          "S3",
+          "S4",
+          "S5",
+          "S6"
+        ],
+        "unread": [],
+        "pass": true
+      }
+    },
+    {
+      "rep": 0,
+      "condition": "quiet",
+      "mode": "agentic",
+      "status": "completed",
+      "wall_s": 11.18067508295644,
+      "tokens": 263,
+      "effective_tps": 23.52272989319858,
+      "decode_tps": 49.74744776510685,
+      "ttft_s": 0.3629311249824241,
+      "peak_mlx_gb": 9.393618834,
+      "answer_sha256": "0d4cf6fe7c9587b04192f7edff258fd88b85330f067512c72a25ca96e4efd395",
+      "work_signature": [
+        [
+          "01c45072cc068aa796de17b6ff4ee9614813bce296f2463ccc6e29662fe94cde",
+          281,
+          11
+        ],
+        [
+          "219d730bcc1722f930823104e3ff9a80f8de913a17c3c92642c891e50b176438",
+          1114,
+          11
+        ],
+        [
+          "5eef11b6d2893427b5e7489662d009a2a83a97775704c21cd206c2c21c26351f",
+          1284,
+          11
+        ],
+        [
+          "76742334ce9c2cfb8ff95d8a7e7a79b5c9646446e9ab42bba11454f1d0455908",
+          1466,
+          230
+        ]
+      ],
+      "quality": {
+        "words": 162,
+        "citations": [],
+        "citation_count": 0,
+        "so101": true,
+        "compact_policy": true,
+        "frontier": true,
+        "gui_separation": true,
+        "measurement": true,
+        "opened": 3,
+        "unread_citations": []
+      },
+      "time_start": 1789268672.112563,
+      "time_end": 1789268683.293188,
+      "telemetry_window_s": 11.296688079833984,
+      "telemetry_start_error_s": -0.10412788391113281,
+      "telemetry_end_error_s": 0.011934995651245117,
+      "disk_read_bytes": 212758528,
+      "disk_write_bytes": 2658304,
+      "pagein_bytes": 190480384,
+      "swapin_bytes": 720896,
+      "swapout_bytes": 0,
+      "compression_bytes": 1323663360,
+      "decompression_bytes": 903102464,
+      "min_available_gib": 2.32177734375,
+      "max_thermal_state": 0,
+      "disk_read_mib_s": 17.96122388403432,
+      "secondary_citation_audit": {
+        "cited_ids": [
+          "S1",
+          "S2",
+          "S4",
+          "S5"
+        ],
+        "unread": [
+          "S5"
+        ],
+        "pass": false
+      }
+    },
+    {
+      "rep": 0,
+      "condition": "resident",
+      "mode": "one_shot",
+      "status": "completed",
+      "wall_s": 7.621302708983421,
+      "tokens": 263,
+      "effective_tps": 34.50853614435171,
+      "decode_tps": 44.625926348583654,
+      "ttft_s": 1.7079073750646785,
+      "peak_mlx_gb": 8.270123404,
+      "answer_sha256": "2dbbcc00c9bea47fb2e2862bbbb61b370245464c50375f0bc115c1a164625934",
+      "work_signature": [
+        [
+          "6954c8e9c92218be294851241d271521942bb36658fa12349269bc07b0457782",
+          1126,
+          263
+        ]
+      ],
+      "quality": {
+        "words": 176,
+        "citations": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6"
+        ],
+        "citation_count": 6,
+        "so101": true,
+        "compact_policy": true,
+        "frontier": true,
+        "gui_separation": true,
+        "measurement": true,
+        "opened": 0,
+        "unread_citations": []
+      },
+      "time_start": 1789268711.584268,
+      "time_end": 1789268719.205537,
+      "telemetry_window_s": 7.681438207626343,
+      "telemetry_start_error_s": -0.08399510383605957,
+      "telemetry_end_error_s": -0.023825883865356445,
+      "disk_read_bytes": 233709568,
+      "disk_write_bytes": 3080192,
+      "pagein_bytes": 88276992,
+      "swapin_bytes": 1556480,
+      "swapout_bytes": 0,
+      "compression_bytes": 1928527872,
+      "decompression_bytes": 5213028352,
+      "min_available_gib": 2.711883544921875,
+      "max_thermal_state": 0,
+      "disk_read_mib_s": 29.015765859929175,
+      "stress_pages": 982335488,
+      "stress_full_passes": 7495,
+      "stress_peak_rss_gib": 2.0226593017578125,
+      "stress_majflt": 733,
+      "stress_minflt": 0,
+      "secondary_citation_audit": {
+        "cited_ids": [
+          "S1",
+          "S2",
+          "S3",
+          "S4",
+          "S5",
+          "S6"
+        ],
+        "unread": [],
+        "pass": true
+      }
+    },
+    {
+      "rep": 0,
+      "condition": "resident",
+      "mode": "agentic",
+      "status": "completed",
+      "wall_s": 11.834360042004846,
+      "tokens": 263,
+      "effective_tps": 22.223423917010173,
+      "decode_tps": 45.537772959159,
+      "ttft_s": 0.3868177499389276,
+      "peak_mlx_gb": 9.393618746,
+      "answer_sha256": "0d4cf6fe7c9587b04192f7edff258fd88b85330f067512c72a25ca96e4efd395",
+      "work_signature": [
+        [
+          "01c45072cc068aa796de17b6ff4ee9614813bce296f2463ccc6e29662fe94cde",
+          281,
+          11
+        ],
+        [
+          "219d730bcc1722f930823104e3ff9a80f8de913a17c3c92642c891e50b176438",
+          1114,
+          11
+        ],
+        [
+          "5eef11b6d2893427b5e7489662d009a2a83a97775704c21cd206c2c21c26351f",
+          1284,
+          11
+        ],
+        [
+          "76742334ce9c2cfb8ff95d8a7e7a79b5c9646446e9ab42bba11454f1d0455908",
+          1466,
+          230
+        ]
+      ],
+      "quality": {
+        "words": 162,
+        "citations": [],
+        "citation_count": 0,
+        "so101": true,
+        "compact_policy": true,
+        "frontier": true,
+        "gui_separation": true,
+        "measurement": true,
+        "opened": 3,
+        "unread_citations": []
+      },
+      "time_start": 1789268719.2059672,
+      "time_end": 1789268731.0402749,
+      "telemetry_window_s": 11.890822887420654,
+      "telemetry_start_error_s": -0.024255990982055664,
+      "telemetry_end_error_s": 0.032259225845336914,
+      "disk_read_bytes": 1397563392,
+      "disk_write_bytes": 509108224,
+      "pagein_bytes": 1343045632,
+      "swapin_bytes": 2097152,
+      "swapout_bytes": 499122176,
+      "compression_bytes": 4813373440,
+      "decompression_bytes": 3985571840,
+      "min_available_gib": 2.0791778564453125,
+      "max_thermal_state": 0,
+      "disk_read_mib_s": 112.08814773534266,
+      "stress_pages": 1367801856,
+      "stress_full_passes": 10435,
+      "stress_peak_rss_gib": 2.016448974609375,
+      "stress_majflt": 42549,
+      "stress_minflt": 414,
+      "secondary_citation_audit": {
+        "cited_ids": [
+          "S1",
+          "S2",
+          "S4",
+          "S5"
+        ],
+        "unread": [
+          "S5"
+        ],
+        "pass": false
+      }
+    },
+    {
+      "rep": 0,
+      "condition": "thrash",
+      "mode": "one_shot",
+      "status": "completed",
+      "wall_s": 7.755300666904077,
+      "tokens": 263,
+      "effective_tps": 33.9122893226253,
+      "decode_tps": 48.347540134014324,
+      "ttft_s": 2.289656625012867,
+      "peak_mlx_gb": 8.270123404,
+      "answer_sha256": "2dbbcc00c9bea47fb2e2862bbbb61b370245464c50375f0bc115c1a164625934",
+      "work_signature": [
+        [
+          "6954c8e9c92218be294851241d271521942bb36658fa12349269bc07b0457782",
+          1126,
+          263
+        ]
+      ],
+      "quality": {
+        "words": 176,
+        "citations": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6"
+        ],
+        "citation_count": 6,
+        "so101": true,
+        "compact_policy": true,
+        "frontier": true,
+        "gui_separation": true,
+        "measurement": true,
+        "opened": 0,
+        "unread_citations": []
+      },
+      "time_start": 1789268791.450936,
+      "time_end": 1789268799.206199,
+      "telemetry_window_s": 7.770570993423462,
+      "telemetry_start_error_s": 0.0883488655090332,
+      "telemetry_end_error_s": 0.10365700721740723,
+      "disk_read_bytes": 10032893952,
+      "disk_write_bytes": 6103040,
+      "pagein_bytes": 9876881408,
+      "swapin_bytes": 1064960,
+      "swapout_bytes": 0,
+      "compression_bytes": 1281966080,
+      "decompression_bytes": 7891632128,
+      "min_available_gib": 3.618896484375,
+      "max_thermal_state": 0,
+      "disk_read_mib_s": 1231.3269242823815,
+      "stress_pages": 606208,
+      "stress_full_passes": 0,
+      "stress_peak_rss_gib": 4.3861846923828125,
+      "stress_majflt": 605624,
+      "stress_minflt": 0,
+      "secondary_citation_audit": {
+        "cited_ids": [
+          "S1",
+          "S2",
+          "S3",
+          "S4",
+          "S5",
+          "S6"
+        ],
+        "unread": [],
+        "pass": true
+      }
+    },
+    {
+      "rep": 0,
+      "condition": "thrash",
+      "mode": "agentic",
+      "status": "completed",
+      "wall_s": 11.376559749944136,
+      "tokens": 263,
+      "effective_tps": 23.11770920038384,
+      "decode_tps": 48.73120262291894,
+      "ttft_s": 0.3631156670162454,
+      "peak_mlx_gb": 9.393618778,
+      "answer_sha256": "0d4cf6fe7c9587b04192f7edff258fd88b85330f067512c72a25ca96e4efd395",
+      "work_signature": [
+        [
+          "01c45072cc068aa796de17b6ff4ee9614813bce296f2463ccc6e29662fe94cde",
+          281,
+          11
+        ],
+        [
+          "219d730bcc1722f930823104e3ff9a80f8de913a17c3c92642c891e50b176438",
+          1114,
+          11
+        ],
+        [
+          "5eef11b6d2893427b5e7489662d009a2a83a97775704c21cd206c2c21c26351f",
+          1284,
+          11
+        ],
+        [
+          "76742334ce9c2cfb8ff95d8a7e7a79b5c9646446e9ab42bba11454f1d0455908",
+          1466,
+          230
+        ]
+      ],
+      "quality": {
+        "words": 162,
+        "citations": [],
+        "citation_count": 0,
+        "so101": true,
+        "compact_policy": true,
+        "frontier": true,
+        "gui_separation": true,
+        "measurement": true,
+        "opened": 3,
+        "unread_citations": []
+      },
+      "time_start": 1789268799.206651,
+      "time_end": 1789268810.5831602,
+      "telemetry_window_s": 11.392077207565308,
+      "telemetry_start_error_s": 0.10320496559143066,
+      "telemetry_end_error_s": 0.11877298355102539,
+      "disk_read_bytes": 18458705920,
+      "disk_write_bytes": 12517376,
+      "pagein_bytes": 18203033600,
+      "swapin_bytes": 770048,
+      "swapout_bytes": 0,
+      "compression_bytes": 2591965184,
+      "decompression_bytes": 2443689984,
+      "min_available_gib": 2.930450439453125,
+      "max_thermal_state": 0,
+      "disk_read_mib_s": 1545.2488101388321,
+      "stress_pages": 1126400,
+      "stress_full_passes": 1,
+      "stress_peak_rss_gib": 4.397003173828125,
+      "stress_majflt": 1107673,
+      "stress_minflt": 98,
+      "secondary_citation_audit": {
+        "cited_ids": [
+          "S1",
+          "S2",
+          "S4",
+          "S5"
+        ],
+        "unread": [
+          "S5"
+        ],
+        "pass": false
+      }
+    },
+    {
+      "rep": 1,
+      "condition": "quiet",
+      "mode": "one_shot",
+      "status": "completed",
+      "wall_s": 6.4932745839469135,
+      "tokens": 263,
+      "effective_tps": 40.50344654301318,
+      "decode_tps": 49.394481725169626,
+      "ttft_s": 1.1533143339911476,
+      "peak_mlx_gb": 8.270123404,
+      "answer_sha256": "2dbbcc00c9bea47fb2e2862bbbb61b370245464c50375f0bc115c1a164625934",
+      "work_signature": [
+        [
+          "6954c8e9c92218be294851241d271521942bb36658fa12349269bc07b0457782",
+          1126,
+          263
+        ]
+      ],
+      "quality": {
+        "words": 176,
+        "citations": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6"
+        ],
+        "citation_count": 6,
+        "so101": true,
+        "compact_policy": true,
+        "frontier": true,
+        "gui_separation": true,
+        "measurement": true,
+        "opened": 0,
+        "unread_citations": []
+      },
+      "time_start": 1789268971.3357,
+      "time_end": 1789268977.829663,
+      "telemetry_window_s": 6.530675888061523,
+      "telemetry_start_error_s": 0.012727975845336914,
+      "telemetry_end_error_s": 0.049440860748291016,
+      "disk_read_bytes": 8314880,
+      "disk_write_bytes": 114688,
+      "pagein_bytes": 8945664,
+      "swapin_bytes": 720896,
+      "swapout_bytes": 0,
+      "compression_bytes": 0,
+      "decompression_bytes": 96649216,
+      "min_available_gib": 4.675384521484375,
+      "max_thermal_state": 0,
+      "disk_read_mib_s": 1.2142215654119286,
+      "secondary_citation_audit": {
+        "cited_ids": [
+          "S1",
+          "S2",
+          "S3",
+          "S4",
+          "S5",
+          "S6"
+        ],
+        "unread": [],
+        "pass": true
+      }
+    },
+    {
+      "rep": 1,
+      "condition": "quiet",
+      "mode": "agentic",
+      "status": "completed",
+      "wall_s": 11.29032695805654,
+      "tokens": 263,
+      "effective_tps": 23.294276682778328,
+      "decode_tps": 49.86231973568921,
+      "ttft_s": 0.474987291963771,
+      "peak_mlx_gb": 9.393618834,
+      "answer_sha256": "0d4cf6fe7c9587b04192f7edff258fd88b85330f067512c72a25ca96e4efd395",
+      "work_signature": [
+        [
+          "01c45072cc068aa796de17b6ff4ee9614813bce296f2463ccc6e29662fe94cde",
+          281,
+          11
+        ],
+        [
+          "219d730bcc1722f930823104e3ff9a80f8de913a17c3c92642c891e50b176438",
+          1114,
+          11
+        ],
+        [
+          "5eef11b6d2893427b5e7489662d009a2a83a97775704c21cd206c2c21c26351f",
+          1284,
+          11
+        ],
+        [
+          "76742334ce9c2cfb8ff95d8a7e7a79b5c9646446e9ab42bba11454f1d0455908",
+          1466,
+          230
+        ]
+      ],
+      "quality": {
+        "words": 162,
+        "citations": [],
+        "citation_count": 0,
+        "so101": true,
+        "compact_policy": true,
+        "frontier": true,
+        "gui_separation": true,
+        "measurement": true,
+        "opened": 3,
+        "unread_citations": []
+      },
+      "time_start": 1789268960.042327,
+      "time_end": 1789268971.334791,
+      "telemetry_window_s": 11.332951068878174,
+      "telemetry_start_error_s": -0.026849985122680664,
+      "telemetry_end_error_s": 0.013637065887451172,
+      "disk_read_bytes": 186200064,
+      "disk_write_bytes": 7761920,
+      "pagein_bytes": 58753024,
+      "swapin_bytes": 786432,
+      "swapout_bytes": 0,
+      "compression_bytes": 0,
+      "decompression_bytes": 418037760,
+      "min_available_gib": 3.5421600341796875,
+      "max_thermal_state": 0,
+      "disk_read_mib_s": 15.66884191688103,
+      "secondary_citation_audit": {
+        "cited_ids": [
+          "S1",
+          "S2",
+          "S4",
+          "S5"
+        ],
+        "unread": [
+          "S5"
+        ],
+        "pass": false
+      }
+    },
+    {
+      "rep": 1,
+      "condition": "resident",
+      "mode": "one_shot",
+      "status": "completed",
+      "wall_s": 7.00560920801945,
+      "tokens": 263,
+      "effective_tps": 37.54134611147579,
+      "decode_tps": 45.2498759869562,
+      "ttft_s": 1.1781488329870626,
+      "peak_mlx_gb": 8.270123404,
+      "answer_sha256": "2dbbcc00c9bea47fb2e2862bbbb61b370245464c50375f0bc115c1a164625934",
+      "work_signature": [
+        [
+          "6954c8e9c92218be294851241d271521942bb36658fa12349269bc07b0457782",
+          1126,
+          263
+        ]
+      ],
+      "quality": {
+        "words": 176,
+        "citations": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6"
+        ],
+        "citation_count": 6,
+        "so101": true,
+        "compact_policy": true,
+        "frontier": true,
+        "gui_separation": true,
+        "measurement": true,
+        "opened": 0,
+        "unread_citations": []
+      },
+      "time_start": 1789268850.3624551,
+      "time_end": 1789268857.368033,
+      "telemetry_window_s": 6.9689109325408936,
+      "telemetry_start_error_s": 0.09326386451721191,
+      "telemetry_end_error_s": 0.056596994400024414,
+      "disk_read_bytes": 199081984,
+      "disk_write_bytes": 5017600,
+      "pagein_bytes": 108724224,
+      "swapin_bytes": 589824,
+      "swapout_bytes": 0,
+      "compression_bytes": 45187072,
+      "decompression_bytes": 373145600,
+      "min_available_gib": 3.486846923828125,
+      "max_thermal_state": 0,
+      "disk_read_mib_s": 27.243765466059198,
+      "stress_pages": 885075968,
+      "stress_full_passes": 6753,
+      "stress_peak_rss_gib": 2.0171356201171875,
+      "stress_majflt": 0,
+      "stress_minflt": 4,
+      "secondary_citation_audit": {
+        "cited_ids": [
+          "S1",
+          "S2",
+          "S3",
+          "S4",
+          "S5",
+          "S6"
+        ],
+        "unread": [],
+        "pass": true
+      }
+    },
+    {
+      "rep": 1,
+      "condition": "resident",
+      "mode": "agentic",
+      "status": "completed",
+      "wall_s": 12.171723834006116,
+      "tokens": 263,
+      "effective_tps": 21.60745705264971,
+      "decode_tps": 45.54507935097988,
+      "ttft_s": 0.7260921670822427,
+      "peak_mlx_gb": 9.393618746,
+      "answer_sha256": "0d4cf6fe7c9587b04192f7edff258fd88b85330f067512c72a25ca96e4efd395",
+      "work_signature": [
+        [
+          "01c45072cc068aa796de17b6ff4ee9614813bce296f2463ccc6e29662fe94cde",
+          281,
+          11
+        ],
+        [
+          "219d730bcc1722f930823104e3ff9a80f8de913a17c3c92642c891e50b176438",
+          1114,
+          11
+        ],
+        [
+          "5eef11b6d2893427b5e7489662d009a2a83a97775704c21cd206c2c21c26351f",
+          1284,
+          11
+        ],
+        [
+          "76742334ce9c2cfb8ff95d8a7e7a79b5c9646446e9ab42bba11454f1d0455908",
+          1466,
+          230
+        ]
+      ],
+      "quality": {
+        "words": 162,
+        "citations": [],
+        "citation_count": 0,
+        "so101": true,
+        "compact_policy": true,
+        "frontier": true,
+        "gui_separation": true,
+        "measurement": true,
+        "opened": 3,
+        "unread_citations": []
+      },
+      "time_start": 1789268838.1898801,
+      "time_end": 1789268850.36155,
+      "telemetry_window_s": 12.361696004867554,
+      "telemetry_start_error_s": -0.09585714340209961,
+      "telemetry_end_error_s": 0.09416890144348145,
+      "disk_read_bytes": 772030464,
+      "disk_write_bytes": 16252928,
+      "pagein_bytes": 708214784,
+      "swapin_bytes": 4440064,
+      "swapout_bytes": 0,
+      "compression_bytes": 3893329920,
+      "decompression_bytes": 5220597760,
+      "min_available_gib": 2.9910736083984375,
+      "max_thermal_state": 0,
+      "disk_read_mib_s": 59.560243570953965,
+      "stress_pages": 1501159424,
+      "stress_full_passes": 11453,
+      "stress_peak_rss_gib": 2.02398681640625,
+      "stress_majflt": 16366,
+      "stress_minflt": 318,
+      "secondary_citation_audit": {
+        "cited_ids": [
+          "S1",
+          "S2",
+          "S4",
+          "S5"
+        ],
+        "unread": [
+          "S5"
+        ],
+        "pass": false
+      }
+    },
+    {
+      "rep": 1,
+      "condition": "thrash",
+      "mode": "one_shot",
+      "status": "completed",
+      "wall_s": 6.603354667080566,
+      "tokens": 263,
+      "effective_tps": 39.82824083508995,
+      "decode_tps": 48.39812703593134,
+      "ttft_s": 1.1561947499867529,
+      "peak_mlx_gb": 8.270123404,
+      "answer_sha256": "2dbbcc00c9bea47fb2e2862bbbb61b370245464c50375f0bc115c1a164625934",
+      "work_signature": [
+        [
+          "6954c8e9c92218be294851241d271521942bb36658fa12349269bc07b0457782",
+          1126,
+          263
+        ]
+      ],
+      "quality": {
+        "words": 176,
+        "citations": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6"
+        ],
+        "citation_count": 6,
+        "so101": true,
+        "compact_policy": true,
+        "frontier": true,
+        "gui_separation": true,
+        "measurement": true,
+        "opened": 0,
+        "unread_citations": []
+      },
+      "time_start": 1789268927.026957,
+      "time_end": 1789268933.633889,
+      "telemetry_window_s": 6.467458009719849,
+      "telemetry_start_error_s": 0.057405948638916016,
+      "telemetry_end_error_s": -0.08206796646118164,
+      "disk_read_bytes": 8279986176,
+      "disk_write_bytes": 6033408,
+      "pagein_bytes": 8147419136,
+      "swapin_bytes": 655360,
+      "swapout_bytes": 0,
+      "compression_bytes": 1766129664,
+      "decompression_bytes": 958578688,
+      "min_available_gib": 4.09478759765625,
+      "max_thermal_state": 0,
+      "disk_read_mib_s": 1220.944943806763,
+      "stress_pages": 536576,
+      "stress_full_passes": 1,
+      "stress_peak_rss_gib": 4.9286041259765625,
+      "stress_majflt": 507770,
+      "stress_minflt": 50,
+      "secondary_citation_audit": {
+        "cited_ids": [
+          "S1",
+          "S2",
+          "S3",
+          "S4",
+          "S5",
+          "S6"
+        ],
+        "unread": [],
+        "pass": true
+      }
+    },
+    {
+      "rep": 1,
+      "condition": "thrash",
+      "mode": "agentic",
+      "status": "completed",
+      "wall_s": 12.479695166926831,
+      "tokens": 263,
+      "effective_tps": 21.07423270217302,
+      "decode_tps": 48.666188301918346,
+      "ttft_s": 1.4834203750360757,
+      "peak_mlx_gb": 9.393618786,
+      "answer_sha256": "0d4cf6fe7c9587b04192f7edff258fd88b85330f067512c72a25ca96e4efd395",
+      "work_signature": [
+        [
+          "01c45072cc068aa796de17b6ff4ee9614813bce296f2463ccc6e29662fe94cde",
+          281,
+          11
+        ],
+        [
+          "219d730bcc1722f930823104e3ff9a80f8de913a17c3c92642c891e50b176438",
+          1114,
+          11
+        ],
+        [
+          "5eef11b6d2893427b5e7489662d009a2a83a97775704c21cd206c2c21c26351f",
+          1284,
+          11
+        ],
+        [
+          "76742334ce9c2cfb8ff95d8a7e7a79b5c9646446e9ab42bba11454f1d0455908",
+          1466,
+          230
+        ]
+      ],
+      "quality": {
+        "words": 162,
+        "citations": [],
+        "citation_count": 0,
+        "so101": true,
+        "compact_policy": true,
+        "frontier": true,
+        "gui_separation": true,
+        "measurement": true,
+        "opened": 3,
+        "unread_citations": []
+      },
+      "time_start": 1789268914.546753,
+      "time_end": 1789268927.026391,
+      "telemetry_window_s": 12.526932954788208,
+      "telemetry_start_error_s": 0.010677099227905273,
+      "telemetry_end_error_s": 0.057971954345703125,
+      "disk_read_bytes": 21236174848,
+      "disk_write_bytes": 9392128,
+      "pagein_bytes": 20969947136,
+      "swapin_bytes": 2424832,
+      "swapout_bytes": 0,
+      "compression_bytes": 1699971072,
+      "decompression_bytes": 9817554944,
+      "min_available_gib": 3.2935638427734375,
+      "max_thermal_state": 0,
+      "disk_read_mib_s": 1616.7081443114826,
+      "stress_pages": 1249280,
+      "stress_full_passes": 0,
+      "stress_peak_rss_gib": 5.1964874267578125,
+      "stress_majflt": 1249258,
+      "stress_minflt": 6,
+      "secondary_citation_audit": {
+        "cited_ids": [
+          "S1",
+          "S2",
+          "S4",
+          "S5"
+        ],
+        "unread": [
+          "S5"
+        ],
+        "pass": false
+      }
+    },
+    {
+      "rep": 2,
+      "condition": "quiet",
+      "mode": "one_shot",
+      "status": "completed",
+      "wall_s": 6.615009999950416,
+      "tokens": 263,
+      "effective_tps": 39.75806536981371,
+      "decode_tps": 49.325580527216,
+      "ttft_s": 1.2615637079579756,
+      "peak_mlx_gb": 8.270123404,
+      "answer_sha256": "2dbbcc00c9bea47fb2e2862bbbb61b370245464c50375f0bc115c1a164625934",
+      "work_signature": [
+        [
+          "6954c8e9c92218be294851241d271521942bb36658fa12349269bc07b0457782",
+          1126,
+          263
+        ]
+      ],
+      "quality": {
+        "words": 176,
+        "citations": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6"
+        ],
+        "citation_count": 6,
+        "so101": true,
+        "compact_policy": true,
+        "frontier": true,
+        "gui_separation": true,
+        "measurement": true,
+        "opened": 0,
+        "unread_citations": []
+      },
+      "time_start": 1789269078.7334,
+      "time_end": 1789269085.348428,
+      "telemetry_window_s": 6.565665006637573,
+      "telemetry_start_error_s": 0.05670881271362305,
+      "telemetry_end_error_s": 0.007345914840698242,
+      "disk_read_bytes": 85946368,
+      "disk_write_bytes": 11968512,
+      "pagein_bytes": 14991360,
+      "swapin_bytes": 327680,
+      "swapout_bytes": 0,
+      "compression_bytes": 0,
+      "decompression_bytes": 237355008,
+      "min_available_gib": 4.345855712890625,
+      "max_thermal_state": 0,
+      "disk_read_mib_s": 12.483860152343665,
+      "secondary_citation_audit": {
+        "cited_ids": [
+          "S1",
+          "S2",
+          "S3",
+          "S4",
+          "S5",
+          "S6"
+        ],
+        "unread": [],
+        "pass": true
+      }
+    },
+    {
+      "rep": 2,
+      "condition": "quiet",
+      "mode": "agentic",
+      "status": "completed",
+      "wall_s": 11.167103542014956,
+      "tokens": 263,
+      "effective_tps": 23.55131740388118,
+      "decode_tps": 49.81485675795424,
+      "ttft_s": 0.3678966669831425,
+      "peak_mlx_gb": 9.393618834,
+      "answer_sha256": "0d4cf6fe7c9587b04192f7edff258fd88b85330f067512c72a25ca96e4efd395",
+      "work_signature": [
+        [
+          "01c45072cc068aa796de17b6ff4ee9614813bce296f2463ccc6e29662fe94cde",
+          281,
+          11
+        ],
+        [
+          "219d730bcc1722f930823104e3ff9a80f8de913a17c3c92642c891e50b176438",
+          1114,
+          11
+        ],
+        [
+          "5eef11b6d2893427b5e7489662d009a2a83a97775704c21cd206c2c21c26351f",
+          1284,
+          11
+        ],
+        [
+          "76742334ce9c2cfb8ff95d8a7e7a79b5c9646446e9ab42bba11454f1d0455908",
+          1466,
+          230
+        ]
+      ],
+      "quality": {
+        "words": 162,
+        "citations": [],
+        "citation_count": 0,
+        "so101": true,
+        "compact_policy": true,
+        "frontier": true,
+        "gui_separation": true,
+        "measurement": true,
+        "opened": 3,
+        "unread_citations": []
+      },
+      "time_start": 1789269085.3491101,
+      "time_end": 1789269096.516246,
+      "telemetry_window_s": 11.12135124206543,
+      "telemetry_start_error_s": 0.006663799285888672,
+      "telemetry_end_error_s": -0.03912091255187988,
+      "disk_read_bytes": 126050304,
+      "disk_write_bytes": 3047424,
+      "pagein_bytes": 38076416,
+      "swapin_bytes": 1687552,
+      "swapout_bytes": 0,
+      "compression_bytes": 0,
+      "decompression_bytes": 273039360,
+      "min_available_gib": 3.7793731689453125,
+      "max_thermal_state": 0,
+      "disk_read_mib_s": 10.809022652329675,
+      "secondary_citation_audit": {
+        "cited_ids": [
+          "S1",
+          "S2",
+          "S4",
+          "S5"
+        ],
+        "unread": [
+          "S5"
+        ],
+        "pass": false
+      }
+    },
+    {
+      "rep": 2,
+      "condition": "resident",
+      "mode": "one_shot",
+      "status": "completed",
+      "wall_s": 7.085544292000122,
+      "tokens": 263,
+      "effective_tps": 37.117825979429426,
+      "decode_tps": 45.46764150311947,
+      "ttft_s": 1.2849736670032144,
+      "peak_mlx_gb": 8.270123404,
+      "answer_sha256": "2dbbcc00c9bea47fb2e2862bbbb61b370245464c50375f0bc115c1a164625934",
+      "work_signature": [
+        [
+          "6954c8e9c92218be294851241d271521942bb36658fa12349269bc07b0457782",
+          1126,
+          263
+        ]
+      ],
+      "quality": {
+        "words": 176,
+        "citations": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6"
+        ],
+        "citation_count": 6,
+        "so101": true,
+        "compact_policy": true,
+        "frontier": true,
+        "gui_separation": true,
+        "measurement": true,
+        "opened": 0,
+        "unread_citations": []
+      },
+      "time_start": 1789269123.903386,
+      "time_end": 1789269130.9889522,
+      "telemetry_window_s": 7.146672010421753,
+      "telemetry_start_error_s": -0.08318614959716797,
+      "telemetry_end_error_s": -0.022080183029174805,
+      "disk_read_bytes": 167157760,
+      "disk_write_bytes": 1822720,
+      "pagein_bytes": 21184512,
+      "swapin_bytes": 262144,
+      "swapout_bytes": 0,
+      "compression_bytes": 0,
+      "decompression_bytes": 255787008,
+      "min_available_gib": 4.1773223876953125,
+      "max_thermal_state": 0,
+      "disk_read_mib_s": 22.306055499333368,
+      "stress_pages": 887377920,
+      "stress_full_passes": 6770,
+      "stress_peak_rss_gib": 2.021331787109375,
+      "stress_majflt": 0,
+      "stress_minflt": 0,
+      "secondary_citation_audit": {
+        "cited_ids": [
+          "S1",
+          "S2",
+          "S3",
+          "S4",
+          "S5",
+          "S6"
+        ],
+        "unread": [],
+        "pass": true
+      }
+    },
+    {
+      "rep": 2,
+      "condition": "resident",
+      "mode": "agentic",
+      "status": "completed",
+      "wall_s": 11.759254166972823,
+      "tokens": 263,
+      "effective_tps": 22.365364015913936,
+      "decode_tps": 45.94959289263936,
+      "ttft_s": 0.3731936670374125,
+      "peak_mlx_gb": 9.393618834,
+      "answer_sha256": "0d4cf6fe7c9587b04192f7edff258fd88b85330f067512c72a25ca96e4efd395",
+      "work_signature": [
+        [
+          "01c45072cc068aa796de17b6ff4ee9614813bce296f2463ccc6e29662fe94cde",
+          281,
+          11
+        ],
+        [
+          "219d730bcc1722f930823104e3ff9a80f8de913a17c3c92642c891e50b176438",
+          1114,
+          11
+        ],
+        [
+          "5eef11b6d2893427b5e7489662d009a2a83a97775704c21cd206c2c21c26351f",
+          1284,
+          11
+        ],
+        [
+          "76742334ce9c2cfb8ff95d8a7e7a79b5c9646446e9ab42bba11454f1d0455908",
+          1466,
+          230
+        ]
+      ],
+      "quality": {
+        "words": 162,
+        "citations": [],
+        "citation_count": 0,
+        "so101": true,
+        "compact_policy": true,
+        "frontier": true,
+        "gui_separation": true,
+        "measurement": true,
+        "opened": 3,
+        "unread_citations": []
+      },
+      "time_start": 1789269130.989271,
+      "time_end": 1789269142.74856,
+      "telemetry_window_s": 11.722783088684082,
+      "telemetry_start_error_s": -0.022398948669433594,
+      "telemetry_end_error_s": -0.05890488624572754,
+      "disk_read_bytes": 161304576,
+      "disk_write_bytes": 14508032,
+      "pagein_bytes": 55820288,
+      "swapin_bytes": 1835008,
+      "swapout_bytes": 0,
+      "compression_bytes": 1119535104,
+      "decompression_bytes": 935444480,
+      "min_available_gib": 3.5077667236328125,
+      "max_thermal_state": 0,
+      "disk_read_mib_s": 13.122483806639138,
+      "stress_pages": 1499885568,
+      "stress_full_passes": 11443,
+      "stress_peak_rss_gib": 2.021331787109375,
+      "stress_majflt": 0,
+      "stress_minflt": 0,
+      "secondary_citation_audit": {
+        "cited_ids": [
+          "S1",
+          "S2",
+          "S4",
+          "S5"
+        ],
+        "unread": [
+          "S5"
+        ],
+        "pass": false
+      }
+    },
+    {
+      "rep": 2,
+      "condition": "thrash",
+      "mode": "one_shot",
+      "status": "completed",
+      "wall_s": 7.778426375007257,
+      "tokens": 263,
+      "effective_tps": 33.81146613986619,
+      "decode_tps": 47.82044169919668,
+      "ttft_s": 2.2556137499632314,
+      "peak_mlx_gb": 8.270123404,
+      "answer_sha256": "2dbbcc00c9bea47fb2e2862bbbb61b370245464c50375f0bc115c1a164625934",
+      "work_signature": [
+        [
+          "6954c8e9c92218be294851241d271521942bb36658fa12349269bc07b0457782",
+          1126,
+          263
+        ]
+      ],
+      "quality": {
+        "words": 176,
+        "citations": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6"
+        ],
+        "citation_count": 6,
+        "so101": true,
+        "compact_policy": true,
+        "frontier": true,
+        "gui_separation": true,
+        "measurement": true,
+        "opened": 0,
+        "unread_citations": []
+      },
+      "time_start": 1789269033.109068,
+      "time_end": 1789269040.887532,
+      "telemetry_window_s": 7.644123792648315,
+      "telemetry_start_error_s": 0.08880019187927246,
+      "telemetry_end_error_s": -0.04554009437561035,
+      "disk_read_bytes": 9975336960,
+      "disk_write_bytes": 9392128,
+      "pagein_bytes": 9807446016,
+      "swapin_bytes": 13041664,
+      "swapout_bytes": 0,
+      "compression_bytes": 976027648,
+      "decompression_bytes": 8549154816,
+      "min_available_gib": 3.88165283203125,
+      "max_thermal_state": 0,
+      "disk_read_mib_s": 1244.5144681460126,
+      "stress_pages": 577536,
+      "stress_full_passes": 0,
+      "stress_peak_rss_gib": 5.553070068359375,
+      "stress_majflt": 577189,
+      "stress_minflt": 2,
+      "secondary_citation_audit": {
+        "cited_ids": [
+          "S1",
+          "S2",
+          "S3",
+          "S4",
+          "S5",
+          "S6"
+        ],
+        "unread": [],
+        "pass": true
+      }
+    },
+    {
+      "rep": 2,
+      "condition": "thrash",
+      "mode": "agentic",
+      "status": "completed",
+      "wall_s": 11.436072332900949,
+      "tokens": 263,
+      "effective_tps": 22.99740613246766,
+      "decode_tps": 48.44547511971187,
+      "ttft_s": 0.37264450010843575,
+      "peak_mlx_gb": 9.393618794,
+      "answer_sha256": "0d4cf6fe7c9587b04192f7edff258fd88b85330f067512c72a25ca96e4efd395",
+      "work_signature": [
+        [
+          "01c45072cc068aa796de17b6ff4ee9614813bce296f2463ccc6e29662fe94cde",
+          281,
+          11
+        ],
+        [
+          "219d730bcc1722f930823104e3ff9a80f8de913a17c3c92642c891e50b176438",
+          1114,
+          11
+        ],
+        [
+          "5eef11b6d2893427b5e7489662d009a2a83a97775704c21cd206c2c21c26351f",
+          1284,
+          11
+        ],
+        [
+          "76742334ce9c2cfb8ff95d8a7e7a79b5c9646446e9ab42bba11454f1d0455908",
+          1466,
+          230
+        ]
+      ],
+      "quality": {
+        "words": 162,
+        "citations": [],
+        "citation_count": 0,
+        "so101": true,
+        "compact_policy": true,
+        "frontier": true,
+        "gui_separation": true,
+        "measurement": true,
+        "opened": 3,
+        "unread_citations": []
+      },
+      "time_start": 1789269040.887977,
+      "time_end": 1789269052.324095,
+      "telemetry_window_s": 11.392322063446045,
+      "telemetry_start_error_s": -0.04598498344421387,
+      "telemetry_end_error_s": -0.08978104591369629,
+      "disk_read_bytes": 19115216896,
+      "disk_write_bytes": 9203712,
+      "pagein_bytes": 18810273792,
+      "swapin_bytes": 917504,
+      "swapout_bytes": 0,
+      "compression_bytes": 2877505536,
+      "decompression_bytes": 2181464064,
+      "min_available_gib": 3.272430419921875,
+      "max_thermal_state": 0,
+      "disk_read_mib_s": 1600.1734593461563,
+      "stress_pages": 1183744,
+      "stress_full_passes": 1,
+      "stress_peak_rss_gib": 4.8567962646484375,
+      "stress_majflt": 1151757,
+      "stress_minflt": 109,
+      "secondary_citation_audit": {
+        "cited_ids": [
+          "S1",
+          "S2",
+          "S4",
+          "S5"
+        ],
+        "unread": [
+          "S5"
+        ],
+        "pass": false
+      }
+    }
+  ],
+  "pairs": [
+    {
+      "rep": 0,
+      "condition": "resident",
+      "mode": "one_shot",
+      "matched": true,
+      "latency_ratio": 1.147700295111104,
+      "throughput_ratio": 0.8713076090158138
+    },
+    {
+      "rep": 0,
+      "condition": "resident",
+      "mode": "agentic",
+      "matched": true,
+      "latency_ratio": 1.0584656073267764,
+      "throughput_ratio": 0.9447638100642353
+    },
+    {
+      "rep": 0,
+      "condition": "thrash",
+      "mode": "one_shot",
+      "matched": true,
+      "latency_ratio": 1.167879193879755,
+      "throughput_ratio": 0.8562529457160276
+    },
+    {
+      "rep": 0,
+      "condition": "thrash",
+      "mode": "agentic",
+      "matched": true,
+      "latency_ratio": 1.017519931983919,
+      "throughput_ratio": 0.9827817309192566
+    },
+    {
+      "rep": 1,
+      "condition": "resident",
+      "mode": "one_shot",
+      "matched": true,
+      "latency_ratio": 1.0789023500313946,
+      "throughput_ratio": 0.9268679412653994
+    },
+    {
+      "rep": 1,
+      "condition": "resident",
+      "mode": "agentic",
+      "matched": true,
+      "latency_ratio": 1.0780665501737867,
+      "throughput_ratio": 0.927586520367224
+    },
+    {
+      "rep": 1,
+      "condition": "thrash",
+      "mode": "one_shot",
+      "matched": true,
+      "latency_ratio": 1.0169529382610432,
+      "throughput_ratio": 0.9833296727673239
+    },
+    {
+      "rep": 1,
+      "condition": "thrash",
+      "mode": "agentic",
+      "matched": true,
+      "latency_ratio": 1.1053440005137836,
+      "throughput_ratio": 0.9046957323106493
+    },
+    {
+      "rep": 2,
+      "condition": "resident",
+      "mode": "one_shot",
+      "matched": true,
+      "latency_ratio": 1.0711313047226283,
+      "throughput_ratio": 0.9335923575298288
+    },
+    {
+      "rep": 2,
+      "condition": "resident",
+      "mode": "agentic",
+      "matched": true,
+      "latency_ratio": 1.0530263396170696,
+      "throughput_ratio": 0.9496438620553854
+    },
+    {
+      "rep": 2,
+      "condition": "thrash",
+      "mode": "one_shot",
+      "matched": true,
+      "latency_ratio": 1.1758752254441884,
+      "throughput_ratio": 0.8504303674076036
+    },
+    {
+      "rep": 2,
+      "condition": "thrash",
+      "mode": "agentic",
+      "matched": true,
+      "latency_ratio": 1.0240858150794454,
+      "throughput_ratio": 0.9764806672206695
+    }
+  ],
+  "summary": [
+    {
+      "condition": "quiet",
+      "mode": "one_shot",
+      "n": 3,
+      "wall_s": 6.615009999950416,
+      "effective_tps": 39.75806536981371,
+      "decode_tps": 49.325580527216,
+      "ttft_s": 1.2615637079579756,
+      "peak_mlx_gb": 8.270123404,
+      "disk_read_mib_s": 12.483860152343665,
+      "pagein_bytes": 14991360,
+      "swapin_bytes": 720896,
+      "swapout_bytes": 0,
+      "compression_bytes": 0,
+      "decompression_bytes": 237355008
+    },
+    {
+      "condition": "quiet",
+      "mode": "agentic",
+      "n": 3,
+      "wall_s": 11.18067508295644,
+      "effective_tps": 23.52272989319858,
+      "decode_tps": 49.81485675795424,
+      "ttft_s": 0.3678966669831425,
+      "peak_mlx_gb": 9.393618834,
+      "disk_read_mib_s": 15.66884191688103,
+      "pagein_bytes": 58753024,
+      "swapin_bytes": 786432,
+      "swapout_bytes": 0,
+      "compression_bytes": 0,
+      "decompression_bytes": 418037760
+    },
+    {
+      "condition": "resident",
+      "mode": "one_shot",
+      "n": 3,
+      "wall_s": 7.085544292000122,
+      "effective_tps": 37.117825979429426,
+      "decode_tps": 45.2498759869562,
+      "ttft_s": 1.2849736670032144,
+      "peak_mlx_gb": 8.270123404,
+      "disk_read_mib_s": 27.243765466059198,
+      "pagein_bytes": 88276992,
+      "swapin_bytes": 589824,
+      "swapout_bytes": 0,
+      "compression_bytes": 45187072,
+      "decompression_bytes": 373145600,
+      "paired_latency_ratio": 1.0789023500313946,
+      "matched_pairs": 3
+    },
+    {
+      "condition": "resident",
+      "mode": "agentic",
+      "n": 3,
+      "wall_s": 11.834360042004846,
+      "effective_tps": 22.223423917010173,
+      "decode_tps": 45.54507935097988,
+      "ttft_s": 0.3868177499389276,
+      "peak_mlx_gb": 9.393618746,
+      "disk_read_mib_s": 59.560243570953965,
+      "pagein_bytes": 708214784,
+      "swapin_bytes": 2097152,
+      "swapout_bytes": 0,
+      "compression_bytes": 3893329920,
+      "decompression_bytes": 3985571840,
+      "paired_latency_ratio": 1.0584656073267764,
+      "matched_pairs": 3
+    },
+    {
+      "condition": "thrash",
+      "mode": "one_shot",
+      "n": 3,
+      "wall_s": 7.755300666904077,
+      "effective_tps": 33.9122893226253,
+      "decode_tps": 48.347540134014324,
+      "ttft_s": 2.2556137499632314,
+      "peak_mlx_gb": 8.270123404,
+      "disk_read_mib_s": 1231.3269242823815,
+      "pagein_bytes": 9807446016,
+      "swapin_bytes": 1064960,
+      "swapout_bytes": 0,
+      "compression_bytes": 1281966080,
+      "decompression_bytes": 7891632128,
+      "paired_latency_ratio": 1.167879193879755,
+      "matched_pairs": 3
+    },
+    {
+      "condition": "thrash",
+      "mode": "agentic",
+      "n": 3,
+      "wall_s": 11.436072332900949,
+      "effective_tps": 22.99740613246766,
+      "decode_tps": 48.666188301918346,
+      "ttft_s": 0.37264450010843575,
+      "peak_mlx_gb": 9.393618786,
+      "disk_read_mib_s": 1600.1734593461563,
+      "pagein_bytes": 18810273792,
+      "swapin_bytes": 917504,
+      "swapout_bytes": 0,
+      "compression_bytes": 2591965184,
+      "decompression_bytes": 2443689984,
+      "paired_latency_ratio": 1.0240858150794454,
+      "matched_pairs": 3
+    }
+  ],
+  "trials": [
+    {
+      "trial": "r0_quiet",
+      "launched": true,
+      "exit_code": 0,
+      "stop_reason": null,
+      "elapsed_s": 35.6548673750367,
+      "swapout_delta_bytes": 262668288,
+      "cumulative_swapout_bytes": 262668288
+    },
+    {
+      "trial": "r0_resident",
+      "launched": true,
+      "exit_code": 0,
+      "stop_reason": null,
+      "elapsed_s": 37.70590625004843,
+      "swapout_delta_bytes": 517668864,
+      "cumulative_swapout_bytes": 780337152
+    },
+    {
+      "trial": "r0_thrash",
+      "launched": true,
+      "exit_code": 0,
+      "stop_reason": null,
+      "elapsed_s": 69.58352566696703,
+      "swapout_delta_bytes": 1134690304,
+      "cumulative_swapout_bytes": 1915027456
+    },
+    {
+      "trial": "r1_quiet",
+      "launched": true,
+      "exit_code": 0,
+      "stop_reason": null,
+      "elapsed_s": 34.02872195793316,
+      "swapout_delta_bytes": 0,
+      "cumulative_swapout_bytes": 2735210496
+    },
+    {
+      "trial": "r1_resident",
+      "launched": true,
+      "exit_code": 0,
+      "stop_reason": null,
+      "elapsed_s": 36.66953058401123,
+      "swapout_delta_bytes": 0,
+      "cumulative_swapout_bytes": 1915027456
+    },
+    {
+      "trial": "r1_thrash",
+      "launched": true,
+      "exit_code": 0,
+      "stop_reason": null,
+      "elapsed_s": 66.29018416709732,
+      "swapout_delta_bytes": 820183040,
+      "cumulative_swapout_bytes": 2735210496
+    },
+    {
+      "trial": "r2_quiet",
+      "launched": true,
+      "exit_code": 0,
+      "stop_reason": null,
+      "elapsed_s": 33.94745462492574,
+      "swapout_delta_bytes": 0,
+      "cumulative_swapout_bytes": 2889875456
+    },
+    {
+      "trial": "r2_resident",
+      "launched": true,
+      "exit_code": 0,
+      "stop_reason": null,
+      "elapsed_s": 36.409392208908685,
+      "swapout_delta_bytes": 0,
+      "cumulative_swapout_bytes": 2889875456
+    },
+    {
+      "trial": "r2_thrash",
+      "launched": true,
+      "exit_code": 0,
+      "stop_reason": null,
+      "elapsed_s": 64.52284620795399,
+      "swapout_delta_bytes": 154664960,
+      "cumulative_swapout_bytes": 2889875456
+    }
+  ]
+}

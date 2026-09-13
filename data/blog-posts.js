@@ -3,12 +3,12 @@ const blogPosts = [
   {
     id: 'local-igpu-contention',
     title: 'When Local AI Shares Your GPU',
-    date: 'September 11, 2026',
+    date: 'September 12, 2026',
     category: 'research',
-    excerpt: 'All seven 9B contention cases and completed 35B quiet/combined pairs, with latency, throughput and memory use alongside the cloud and 4B baselines.',
+    excerpt: 'Intentional 32 GiB page thrashing versus quiet and 2 GiB loops on Holo 4B and 9B, with measured disk reads, latency and throughput; earlier model comparisons retained.',
     url: 'blog/posts/local-igpu-contention.html',
     readTime: '4 min',
-    cover: 'images/blog/local-igpu-contention/paging-20260911/9b-wall_s.png'
+    cover: 'images/blog/local-igpu-contention/thrashing-20260912/9b-comparison.png'
   },
   {
     id: 'npu-jit-static-shapes',

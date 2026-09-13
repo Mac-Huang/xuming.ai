@@ -1,0 +1,96 @@
+{
+  "time": 1789269218.897963,
+  "removed_bytes": 41811078067,
+  "removed": [
+    {
+      "name": "thrashing_9b_20260912/tmp/9b",
+      "bytes": 7450758507,
+      "symlink": false
+    },
+    {
+      "name": "thrashing_9b_20260912/tmp/matplotlib",
+      "bytes": 290596,
+      "symlink": false
+    },
+    {
+      "name": "thrashing_9b_20260912/tmp/working-set.bin",
+      "bytes": 0,
+      "symlink": true
+    },
+    {
+      "name": "thrashing_20260912/tmp/matplotlib",
+      "bytes": 290596,
+      "symlink": false
+    },
+    {
+      "name": "thrashing_20260912/tmp/working-set.bin",
+      "bytes": 34359738368,
+      "symlink": false
+    }
+  ],
+  "remaining_owned_workers": [],
+  "after": {
+    "time": 1789269218.901442,
+    "available": 13972733952,
+    "swap_used": 6083969024,
+    "cpu": 9.9,
+    "ac_power": true,
+    "thermal_state": 0,
+    "page_size": 16384,
+    "vm": {
+      "Pages free": 601504,
+      "Pages active": 252502,
+      "Pages inactive": 220283,
+      "Pages speculative": 30983,
+      "Pages throttled": 0,
+      "Pages wired down": 219983,
+      "Pages purgeable": 5013,
+      "Translation faults": 2662452383,
+      "Pages copy-on-write": 87892764,
+      "Pages zero filled": 5375819045,
+      "Pages reactivated": 280688497,
+      "Pages purged": 58816048,
+      "File-backed pages": 162097,
+      "Anonymous pages": 341671,
+      "Pages stored in compressor": 1181021,
+      "Pages occupied by compressor": 184990,
+      "Decompressions": 305847475,
+      "Compressions": 365719161,
+      "Pageins": 309019414,
+      "Pageouts": 800565,
+      "Swapins": 1104694,
+      "Swapouts": 1754604,
+      "Pages tagged": 172498,
+      "Pages tagged resident": 106897,
+      "Pages tagged compressed": 65601,
+      "Pages tag-storage": 49152,
+      "Pages tag-storage holding tags": 5525,
+      "Pages tag-storage free": 3047,
+      "Pages tag-storage non-tag pageable": 40485,
+      "Pages tag-storage non-tag wired": 95,
+      "Bytes of compressed tags": 11406144,
+      "Tagged compressions": 13779577,
+      "Tagged decompressions": 12855888
+    },
+    "swapins_bytes": 18099306496,
+    "swapouts_bytes": 28747431936,
+    "pageins_bytes": 5062974078976,
+    "pageouts_bytes": 13116456960,
+    "compressions_bytes": 5991942733824,
+    "decompressions_bytes": 5011005030400,
+    "gpu": {
+      "Alloc system memory": 5041848320,
+      "Allocated PB Size": 174063616,
+      "Device Utilization %": 15,
+      "In use system memory": 815169536,
+      "In use system memory (driver)": 0,
+      "Renderer Utilization %": 15,
+      "SplitSceneCount": 0,
+      "TiledSceneBytes": 1015808,
+      "Tiler Utilization %": 8,
+      "lastRecoveryTime": 0,
+      "recoveryCount": 0
+    }
+  },
+  "raw_evidence_retained": true
+}

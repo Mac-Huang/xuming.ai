@@ -1,0 +1,23 @@
+{
+  "model": "Holo 3.1 9B MLX 4-bit",
+  "tasks": 18,
+  "matched_pairs": 12,
+  "successful_trials": 9,
+  "measured_sources_unchanged": [
+    "thrash.py",
+    "run.py",
+    "local_worker.py",
+    "guard.py",
+    "bench.py",
+    "S6.png",
+    "S5.png",
+    "S4.png",
+    "S1.png",
+    "S3.png",
+    "S2.png",
+    "corpus.json"
+  ],
+  "all_thrash_windows_over_100_mib_s": true,
+  "citation_checks_passed": 9,
+  "length_checks_passed": 0
+}
