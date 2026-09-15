@@ -1,6 +1,16 @@
 // Blog posts data - simple and clean
 const blogPosts = [
   {
+    id: 'nuc16-godot-igpu-interference',
+    title: 'When a Static Window Slows Local AI',
+    date: 'September 14, 2026',
+    category: 'research',
+    excerpt: 'Godot app properties, per-frame GPU timing and a microsecond kernel probe on NUC16: how redraw behavior changes local inference latency.',
+    url: 'blog/posts/nuc16-godot-igpu-interference.html',
+    readTime: '8 min',
+    cover: 'images/blog/nuc16-godot-interference/latency.png'
+  },
+  {
     id: 'local-igpu-contention',
     title: 'When Local AI Shares Your GPU',
     date: 'September 12, 2026',
