@@ -1,0 +1,245 @@
+{
+  "method": "Intel PTL raw OA INTERNAL_CONTEXT_SWITCH reports; consecutive same-source hardware timestamps",
+  "controlled": {
+    "total_switch_reports": 14129,
+    "intervals_in_stable_phase": 13877,
+    "configured_quantum_ms": 1.0,
+    "contexts": {
+      "compute_A": {
+        "intervals": 6939,
+        "duration_us": {
+          "min": 50.05208333333333,
+          "p50": 1079.0104166666667,
+          "p95": 1084.2708333333333,
+          "p99": 1088.5864583333334,
+          "max": 1126.1979166666665
+        },
+        "total_ms": 7414.946875
+      },
+      "compute_B": {
+        "intervals": 6938,
+        "duration_us": {
+          "min": 49.270833333333336,
+          "p50": 1080.9375,
+          "p95": 1085.78125,
+          "p99": 1089.3036458333331,
+          "max": 1101.5104166666667
+        },
+        "total_ms": 7407.676822916667
+      }
+    }
+  },
+  "limitations": [
+    "One controlled capture and one validated Godot capture; not population-level scheduler estimates.",
+    "Intervals include transition boundaries; pure save/restore overhead is not isolated.",
+    "Three doubled timer gaps were detected; report completeness is not guaranteed.",
+    "Timestamp granularity is 52.08 ns, not an accuracy guarantee."
+  ],
+  "godot": {
+    "switch_reports": 4702,
+    "source_ids": [
+      8,
+      9
+    ],
+    "phase_summaries": {
+      "graphics_only": {
+        "source8:0xd00": {
+          "residency_ms_clipped": 2501.1819254557304,
+          "complete_intervals": 158,
+          "duration_ms": {
+            "min": 15.1196875,
+            "p50": 15.493958333333332,
+            "p95": 16.589098958333334,
+            "max": 16.679427083333334
+          }
+        },
+        "source8:idle": {
+          "residency_ms_clipped": 191.34656249999998,
+          "complete_intervals": 181,
+          "duration_ms": {
+            "min": 0.041666666666666664,
+            "p50": 1.0180208333333332,
+            "p95": 1.6222395833333334,
+            "max": 2.0491666666666664
+          }
+        },
+        "source8:0x480": {
+          "residency_ms_clipped": 107.54302083333334,
+          "complete_intervals": 22,
+          "duration_ms": {
+            "min": 4.69,
+            "p50": 4.8764062500000005,
+            "p95": 5.063125,
+            "max": 5.140729166666667
+          }
+        }
+      },
+      "graphics_and_llm": {
+        "source8:0xd00": {
+          "residency_ms_clipped": 11379.876593424478,
+          "complete_intervals": 894,
+          "duration_ms": {
+            "min": 0.019635416666666666,
+            "p50": 15.326692708333333,
+            "p95": 16.687398437499997,
+            "max": 16.812604166666663
+          }
+        },
+        "source8:idle": {
+          "residency_ms_clipped": 3206.5635937499987,
+          "complete_intervals": 993,
+          "duration_ms": {
+            "min": 0.0153125,
+            "p50": 1.4461979166666665,
+            "p95": 14.949854166666663,
+            "max": 21.463072916666665
+          }
+        },
+        "source8:0x480": {
+          "residency_ms_clipped": 478.22244791666645,
+          "complete_intervals": 104,
+          "duration_ms": {
+            "min": 0.0259375,
+            "p50": 4.853880208333333,
+            "p95": 5.0724973958333335,
+            "max": 5.10359375
+          }
+        },
+        "source9:0x900": {
+          "residency_ms_clipped": 4229.915260416666,
+          "complete_intervals": 994,
+          "duration_ms": {
+            "min": 0.03703125,
+            "p50": 1.415625,
+            "p95": 16.208442708333333,
+            "max": 19.363854166666666
+          }
+        },
+        "source9:idle": {
+          "residency_ms_clipped": 10834.74737467447,
+          "complete_intervals": 993,
+          "duration_ms": {
+            "min": 0.016510416666666666,
+            "p50": 15.28484375,
+            "p95": 16.711624999999998,
+            "max": 21.32510416666667
+          }
+        }
+      },
+      "graphics_after": {
+        "source8:0xd00": {
+          "residency_ms_clipped": 1751.075535481771,
+          "complete_intervals": 116,
+          "duration_ms": {
+            "min": 0.02739583333333333,
+            "p50": 15.319427083333334,
+            "p95": 15.512018229166667,
+            "max": 15.529114583333333
+          }
+        },
+        "source8:idle": {
+          "residency_ms_clipped": 177.4143229166666,
+          "complete_intervals": 133,
+          "duration_ms": {
+            "min": 0.039947916666666666,
+            "p50": 0.96140625,
+            "p95": 1.6014791666666666,
+            "max": 34.62328125
+          }
+        },
+        "source8:0x480": {
+          "residency_ms_clipped": 80.79458333333334,
+          "complete_intervals": 17,
+          "duration_ms": {
+            "min": 2.76234375,
+            "p50": 4.834739583333333,
+            "p95": 5.082322916666667,
+            "max": 5.148697916666667
+          }
+        },
+        "source9:idle": {
+          "residency_ms_clipped": 2430.956774088542,
+          "complete_intervals": 0,
+          "duration_ms": null
+        }
+      },
+      "llm_only": {
+        "source9:0x900": {
+          "residency_ms_clipped": 845.0361930338541,
+          "complete_intervals": 0,
+          "duration_ms": null
+        }
+      }
+    },
+    "clock_quality": [
+      {
+        "file": "clock-before.jsonl",
+        "offset_range_ns": 292,
+        "max_host_raw_distance_ns": 2674.0
+      },
+      {
+        "file": "clock-after.jsonl",
+        "offset_range_ns": 2174,
+        "max_host_raw_distance_ns": 2740.0
+      }
+    ],
+    "note": "Per-source context residency. Different sources can overlap; residency does not establish continuous shader execution or exclusive shared compute ownership.",
+    "timer_gaps_exceeding_1_5_periods": 1
+  },
+  "frame_medians_and_p95_ms": {
+    "static": {
+      "app_only": {
+        "frames": 840,
+        "gpu_elapsed_ms": {
+          "p50": 12.580025,
+          "p95": 19.971587349999997,
+          "p99": 22.04870485
+        }
+      },
+      "inference": {
+        "frames": 1664,
+        "gpu_elapsed_ms": {
+          "p50": 12.507837,
+          "p95": 28.17937255,
+          "p99": 28.57828026
+        }
+      }
+    },
+    "animated": {
+      "app_only": {
+        "frames": 850,
+        "gpu_elapsed_ms": {
+          "p50": 14.6745815,
+          "p95": 15.6444834,
+          "p99": 15.7079509
+        }
+      },
+      "inference": {
+        "frames": 2294,
+        "gpu_elapsed_ms": {
+          "p50": 15.6044775,
+          "p95": 30.7126299,
+          "p99": 31.84962011
+        }
+      }
+    },
+    "low_res": {
+      "app_only": {
+        "frames": 870,
+        "gpu_elapsed_ms": {
+          "p50": 9.983540999999999,
+          "p95": 11.94705395,
+          "p99": 12.15042425
+        }
+      },
+      "inference": {
+        "frames": 870,
+        "gpu_elapsed_ms": {
+          "p50": 4.093593,
+          "p95": 12.18504819999981,
+          "p99": 19.749124389999995
+        }
+      }
+    }
+  }
+}
