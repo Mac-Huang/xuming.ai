@@ -1,0 +1,703 @@
+{
+  "capture_date": "2026-09-15",
+  "new_extraction_date": "2026-09-16",
+  "provenance": "Reused existing Godot OA diagnostic capture; this is not a new hardware capture. New prefill-only latency controls are a separate Sept 16 campaign.",
+  "selection": "First complete combined request, from infer entry to first-token argmax; no decode in plotted interval. Selected before inspecting its context pattern.",
+  "boundary_note": "Request wall clock mapped to CLOCK_MONOTONIC_RAW through bracketing phase clock pairs, then to 19.2 MHz GPU clock through before/after OpenCL timer calibration. End includes logits argmax. This is a host prefill/first-token window, not GPU-active time.",
+  "request_ttft_ms": 418.709652,
+  "duration_ms": 418.70481282552083,
+  "render_source": 8,
+  "compute_source": 9,
+  "intervals": [
+    {
+      "source": 8,
+      "label": "No valid context",
+      "start_ms": 0.0,
+      "end_ms": 0.9421158854166667
+    },
+    {
+      "source": 8,
+      "label": "Godot-associated",
+      "start_ms": 0.9421158854166667,
+      "end_ms": 17.65044921875
+    },
+    {
+      "source": 8,
+      "label": "No valid context",
+      "start_ms": 17.65044921875,
+      "end_ms": 18.180813802083332
+    },
+    {
+      "source": 8,
+      "label": "Other context",
+      "start_ms": 18.180813802083332,
+      "end_ms": 23.174928385416667
+    },
+    {
+      "source": 8,
+      "label": "No valid context",
+      "start_ms": 23.174928385416667,
+      "end_ms": 23.250657552083332
+    },
+    {
+      "source": 8,
+      "label": "Godot-associated",
+      "start_ms": 23.250657552083332,
+      "end_ms": 39.91998046875
+    },
+    {
+      "source": 8,
+      "label": "No valid context",
+      "start_ms": 39.91998046875,
+      "end_ms": 41.70774088541667
+    },
+    {
+      "source": 8,
+      "label": "Godot-associated",
+      "start_ms": 41.70774088541667,
+      "end_ms": 58.45383463541667
+    },
+    {
+      "source": 8,
+      "label": "No valid context",
+      "start_ms": 58.45383463541667,
+      "end_ms": 60.40727213541667
+    },
+    {
+      "source": 8,
+      "label": "Godot-associated",
+      "start_ms": 60.40727213541667,
+      "end_ms": 75.50451171875
+    },
+    {
+      "source": 8,
+      "label": "No valid context",
+      "start_ms": 75.50451171875,
+      "end_ms": 81.42680338541666
+    },
+    {
+      "source": 8,
+      "label": "Godot-associated",
+      "start_ms": 81.42680338541666,
+      "end_ms": 83.03498046875
+    },
+    {
+      "source": 8,
+      "label": "No valid context",
+      "start_ms": 83.03498046875,
+      "end_ms": 84.83242838541666
+    },
+    {
+      "source": 8,
+      "label": "Godot-associated",
+      "start_ms": 84.83242838541666,
+      "end_ms": 101.49998046875
+    },
+    {
+      "source": 8,
+      "label": "No valid context",
+      "start_ms": 101.49998046875,
+      "end_ms": 103.86826171875
+    },
+    {
+      "source": 8,
+      "label": "Godot-associated",
+      "start_ms": 103.86826171875,
+      "end_ms": 120.57018880208334
+    },
+    {
+      "source": 8,
+      "label": "No valid context",
+      "start_ms": 120.57018880208334,
+      "end_ms": 122.62930338541666
+    },
+    {
+      "source": 8,
+      "label": "Godot-associated",
+      "start_ms": 122.62930338541666,
+      "end_ms": 139.36987630208333
+    },
+    {
+      "source": 8,
+      "label": "No valid context",
+      "start_ms": 139.36987630208333,
+      "end_ms": 141.35487630208334
+    },
+    {
+      "source": 8,
+      "label": "Godot-associated",
+      "start_ms": 141.35487630208334,
+      "end_ms": 156.49878255208333
+    },
+    {
+      "source": 8,
+      "label": "No valid context",
+      "start_ms": 156.49878255208333,
+      "end_ms": 161.36211588541667
+    },
+    {
+      "source": 8,
+      "label": "Godot-associated",
+      "start_ms": 161.36211588541667,
+      "end_ms": 162.96992838541667
+    },
+    {
+      "source": 8,
+      "label": "No valid context",
+      "start_ms": 162.96992838541667,
+      "end_ms": 164.79638671875
+    },
+    {
+      "source": 8,
+      "label": "Godot-associated",
+      "start_ms": 164.79638671875,
+      "end_ms": 181.40867838541666
+    },
+    {
+      "source": 8,
+      "label": "No valid context",
+      "start_ms": 181.40867838541666,
+      "end_ms": 181.98862630208333
+    },
+    {
+      "source": 8,
+      "label": "Other context",
+      "start_ms": 181.98862630208333,
+      "end_ms": 186.92701171875
+    },
+    {
+      "source": 8,
+      "label": "No valid context",
+      "start_ms": 186.92701171875,
+      "end_ms": 187.08086588541667
+    },
+    {
+      "source": 8,
+      "label": "Godot-associated",
+      "start_ms": 187.08086588541667,
+      "end_ms": 203.74711588541666
+    },
+    {
+      "source": 8,
+      "label": "No valid context",
+      "start_ms": 203.74711588541666,
+      "end_ms": 205.75800130208333
+    },
+    {
+      "source": 8,
+      "label": "Godot-associated",
+      "start_ms": 205.75800130208333,
+      "end_ms": 222.47399088541667
+    },
+    {
+      "source": 8,
+      "label": "No valid context",
+      "start_ms": 222.47399088541667,
+      "end_ms": 224.35675130208332
+    },
+    {
+      "source": 8,
+      "label": "Godot-associated",
+      "start_ms": 224.35675130208332,
+      "end_ms": 224.98404296875
+    },
+    {
+      "source": 8,
+      "label": "No valid context",
+      "start_ms": 224.98404296875,
+      "end_ms": 241.07617838541665
+    },
+    {
+      "source": 8,
+      "label": "Godot-associated",
+      "start_ms": 241.07617838541665,
+      "end_ms": 257.11966796875
+    },
+    {
+      "source": 8,
+      "label": "No valid context",
+      "start_ms": 257.11966796875,
+      "end_ms": 259.05013671875
+    },
+    {
+      "source": 8,
+      "label": "Godot-associated",
+      "start_ms": 259.05013671875,
+      "end_ms": 275.70987630208333
+    },
+    {
+      "source": 8,
+      "label": "No valid context",
+      "start_ms": 275.70987630208333,
+      "end_ms": 277.42294921875
+    },
+    {
+      "source": 8,
+      "label": "Godot-associated",
+      "start_ms": 277.42294921875,
+      "end_ms": 294.0944596354167
+    },
+    {
+      "source": 8,
+      "label": "No valid context",
+      "start_ms": 294.0944596354167,
+      "end_ms": 295.9889908854167
+    },
+    {
+      "source": 8,
+      "label": "Godot-associated",
+      "start_ms": 295.9889908854167,
+      "end_ms": 311.13399088541667
+    },
+    {
+      "source": 8,
+      "label": "No valid context",
+      "start_ms": 311.13399088541667,
+      "end_ms": 321.42143880208334
+    },
+    {
+      "source": 8,
+      "label": "Godot-associated",
+      "start_ms": 321.42143880208334,
+      "end_ms": 323.0239388020833
+    },
+    {
+      "source": 8,
+      "label": "No valid context",
+      "start_ms": 323.0239388020833,
+      "end_ms": 323.72873046875
+    },
+    {
+      "source": 8,
+      "label": "Other context",
+      "start_ms": 323.72873046875,
+      "end_ms": 328.5503971354167
+    },
+    {
+      "source": 8,
+      "label": "No valid context",
+      "start_ms": 328.5503971354167,
+      "end_ms": 328.70529296875
+    },
+    {
+      "source": 8,
+      "label": "Godot-associated",
+      "start_ms": 328.70529296875,
+      "end_ms": 345.34503255208335
+    },
+    {
+      "source": 8,
+      "label": "No valid context",
+      "start_ms": 345.34503255208335,
+      "end_ms": 347.5839388020833
+    },
+    {
+      "source": 8,
+      "label": "Godot-associated",
+      "start_ms": 347.5839388020833,
+      "end_ms": 364.33461588541667
+    },
+    {
+      "source": 8,
+      "label": "No valid context",
+      "start_ms": 364.33461588541667,
+      "end_ms": 366.07451171875
+    },
+    {
+      "source": 8,
+      "label": "Godot-associated",
+      "start_ms": 366.07451171875,
+      "end_ms": 382.85831380208333
+    },
+    {
+      "source": 8,
+      "label": "No valid context",
+      "start_ms": 382.85831380208333,
+      "end_ms": 384.68065755208335
+    },
+    {
+      "source": 8,
+      "label": "Godot-associated",
+      "start_ms": 384.68065755208335,
+      "end_ms": 385.3082096354167
+    },
+    {
+      "source": 8,
+      "label": "No valid context",
+      "start_ms": 385.3082096354167,
+      "end_ms": 402.2543033854167
+    },
+    {
+      "source": 8,
+      "label": "Godot-associated",
+      "start_ms": 402.2543033854167,
+      "end_ms": 418.37117838541667
+    },
+    {
+      "source": 8,
+      "label": "No valid context",
+      "start_ms": 418.37117838541667,
+      "end_ms": 418.70481282552083
+    },
+    {
+      "source": 9,
+      "label": "Inference-associated",
+      "start_ms": 17.670032552083335,
+      "end_ms": 18.166178385416668
+    },
+    {
+      "source": 9,
+      "label": "No valid context",
+      "start_ms": 18.166178385416668,
+      "end_ms": 23.19060546875
+    },
+    {
+      "source": 9,
+      "label": "Inference-associated",
+      "start_ms": 23.19060546875,
+      "end_ms": 23.233053385416667
+    },
+    {
+      "source": 9,
+      "label": "No valid context",
+      "start_ms": 23.233053385416667,
+      "end_ms": 39.93675130208333
+    },
+    {
+      "source": 9,
+      "label": "Inference-associated",
+      "start_ms": 39.93675130208333,
+      "end_ms": 41.69112630208333
+    },
+    {
+      "source": 9,
+      "label": "No valid context",
+      "start_ms": 41.69112630208333,
+      "end_ms": 58.46982421875
+    },
+    {
+      "source": 9,
+      "label": "Inference-associated",
+      "start_ms": 58.46982421875,
+      "end_ms": 60.39091796875
+    },
+    {
+      "source": 9,
+      "label": "No valid context",
+      "start_ms": 60.39091796875,
+      "end_ms": 64.95690755208334
+    },
+    {
+      "source": 9,
+      "label": "Inference-associated",
+      "start_ms": 64.95690755208334,
+      "end_ms": 81.41065755208334
+    },
+    {
+      "source": 9,
+      "label": "No valid context",
+      "start_ms": 81.41065755208334,
+      "end_ms": 83.05149088541667
+    },
+    {
+      "source": 9,
+      "label": "Inference-associated",
+      "start_ms": 83.05149088541667,
+      "end_ms": 84.81555338541666
+    },
+    {
+      "source": 9,
+      "label": "No valid context",
+      "start_ms": 84.81555338541666,
+      "end_ms": 101.52201171875
+    },
+    {
+      "source": 9,
+      "label": "Inference-associated",
+      "start_ms": 101.52201171875,
+      "end_ms": 103.85180338541667
+    },
+    {
+      "source": 9,
+      "label": "No valid context",
+      "start_ms": 103.85180338541667,
+      "end_ms": 120.58597005208334
+    },
+    {
+      "source": 9,
+      "label": "Inference-associated",
+      "start_ms": 120.58597005208334,
+      "end_ms": 122.61274088541667
+    },
+    {
+      "source": 9,
+      "label": "No valid context",
+      "start_ms": 122.61274088541667,
+      "end_ms": 139.38607421875
+    },
+    {
+      "source": 9,
+      "label": "Inference-associated",
+      "start_ms": 139.38607421875,
+      "end_ms": 141.33815755208335
+    },
+    {
+      "source": 9,
+      "label": "No valid context",
+      "start_ms": 141.33815755208335,
+      "end_ms": 144.96050130208334
+    },
+    {
+      "source": 9,
+      "label": "Inference-associated",
+      "start_ms": 144.96050130208334,
+      "end_ms": 161.34560546875
+    },
+    {
+      "source": 9,
+      "label": "No valid context",
+      "start_ms": 161.34560546875,
+      "end_ms": 162.98576171875
+    },
+    {
+      "source": 9,
+      "label": "Inference-associated",
+      "start_ms": 162.98576171875,
+      "end_ms": 164.78013671875
+    },
+    {
+      "source": 9,
+      "label": "No valid context",
+      "start_ms": 164.78013671875,
+      "end_ms": 181.42430338541666
+    },
+    {
+      "source": 9,
+      "label": "Inference-associated",
+      "start_ms": 181.42430338541666,
+      "end_ms": 181.97211588541666
+    },
+    {
+      "source": 9,
+      "label": "No valid context",
+      "start_ms": 181.97211588541666,
+      "end_ms": 186.94341796875
+    },
+    {
+      "source": 9,
+      "label": "Inference-associated",
+      "start_ms": 186.94341796875,
+      "end_ms": 187.06456380208334
+    },
+    {
+      "source": 9,
+      "label": "No valid context",
+      "start_ms": 187.06456380208334,
+      "end_ms": 203.76362630208334
+    },
+    {
+      "source": 9,
+      "label": "Inference-associated",
+      "start_ms": 203.76362630208334,
+      "end_ms": 205.74112630208333
+    },
+    {
+      "source": 9,
+      "label": "No valid context",
+      "start_ms": 205.74112630208333,
+      "end_ms": 222.48977213541667
+    },
+    {
+      "source": 9,
+      "label": "Inference-associated",
+      "start_ms": 222.48977213541667,
+      "end_ms": 224.34039713541668
+    },
+    {
+      "source": 9,
+      "label": "No valid context",
+      "start_ms": 224.34039713541668,
+      "end_ms": 224.97893880208332
+    },
+    {
+      "source": 9,
+      "label": "Inference-associated",
+      "start_ms": 224.97893880208332,
+      "end_ms": 241.05961588541666
+    },
+    {
+      "source": 9,
+      "label": "No valid context",
+      "start_ms": 241.05961588541666,
+      "end_ms": 257.13529296875
+    },
+    {
+      "source": 9,
+      "label": "Inference-associated",
+      "start_ms": 257.13529296875,
+      "end_ms": 259.03373046875
+    },
+    {
+      "source": 9,
+      "label": "No valid context",
+      "start_ms": 259.03373046875,
+      "end_ms": 275.72576171875
+    },
+    {
+      "source": 9,
+      "label": "Inference-associated",
+      "start_ms": 275.72576171875,
+      "end_ms": 277.40659505208333
+    },
+    {
+      "source": 9,
+      "label": "No valid context",
+      "start_ms": 277.40659505208333,
+      "end_ms": 294.11060546875
+    },
+    {
+      "source": 9,
+      "label": "Inference-associated",
+      "start_ms": 294.11060546875,
+      "end_ms": 295.97232421875
+    },
+    {
+      "source": 9,
+      "label": "No valid context",
+      "start_ms": 295.97232421875,
+      "end_ms": 304.96732421875
+    },
+    {
+      "source": 9,
+      "label": "Inference-associated",
+      "start_ms": 304.96732421875,
+      "end_ms": 321.40492838541667
+    },
+    {
+      "source": 9,
+      "label": "No valid context",
+      "start_ms": 321.40492838541667,
+      "end_ms": 323.03940755208333
+    },
+    {
+      "source": 9,
+      "label": "Inference-associated",
+      "start_ms": 323.03940755208333,
+      "end_ms": 323.71216796875
+    },
+    {
+      "source": 9,
+      "label": "No valid context",
+      "start_ms": 323.71216796875,
+      "end_ms": 328.56597005208334
+    },
+    {
+      "source": 9,
+      "label": "Inference-associated",
+      "start_ms": 328.56597005208334,
+      "end_ms": 328.68888671875
+    },
+    {
+      "source": 9,
+      "label": "No valid context",
+      "start_ms": 328.68888671875,
+      "end_ms": 345.36107421875
+    },
+    {
+      "source": 9,
+      "label": "Inference-associated",
+      "start_ms": 345.36107421875,
+      "end_ms": 347.5671158854167
+    },
+    {
+      "source": 9,
+      "label": "No valid context",
+      "start_ms": 347.5671158854167,
+      "end_ms": 364.35070963541665
+    },
+    {
+      "source": 9,
+      "label": "Inference-associated",
+      "start_ms": 364.35070963541665,
+      "end_ms": 366.05794921875
+    },
+    {
+      "source": 9,
+      "label": "No valid context",
+      "start_ms": 366.05794921875,
+      "end_ms": 382.87466796875
+    },
+    {
+      "source": 9,
+      "label": "Inference-associated",
+      "start_ms": 382.87466796875,
+      "end_ms": 384.66435546875
+    },
+    {
+      "source": 9,
+      "label": "No valid context",
+      "start_ms": 384.66435546875,
+      "end_ms": 384.97044921875
+    },
+    {
+      "source": 9,
+      "label": "Inference-associated",
+      "start_ms": 384.97044921875,
+      "end_ms": 402.23805338541666
+    },
+    {
+      "source": 9,
+      "label": "No valid context",
+      "start_ms": 402.23805338541666,
+      "end_ms": 418.3877408854167
+    },
+    {
+      "source": 9,
+      "label": "Inference-associated",
+      "start_ms": 418.3877408854167,
+      "end_ms": 418.70481282552083
+    },
+    {
+      "source": 9,
+      "label": "Unobserved",
+      "start_ms": 0.0,
+      "end_ms": 17.670032552083335
+    }
+  ],
+  "totals_ms": {
+    "No valid context": 374.1721044921874,
+    "Godot-associated": 317.35364583333336,
+    "Other context": 14.754166666666727,
+    "Inference-associated": 113.45967610677087,
+    "Unobserved": 17.670032552083335
+  },
+  "inference_residency_intervals": 27,
+  "render_callback_count_in_window": 19,
+  "clock_quality": [
+    {
+      "file": "clock-before.jsonl",
+      "offset_range_ns": 292,
+      "max_host_raw_distance_ns": 2674.0
+    },
+    {
+      "file": "clock-after.jsonl",
+      "offset_range_ns": 2174,
+      "max_host_raw_distance_ns": 2740.0
+    }
+  ],
+  "epoch_raw_offset_range_ns": 260926,
+  "meaning": "Per-source context residency; different sources can overlap. Not continuous shader execution, exact preemption cost, or proof that all switches were timer-driven.",
+  "source_hashes": {
+    "intervals.json": "098b6009eb885ff10eeff3e57dffc08f3053b4a63e28e0e0dd0981536223b9b5",
+    "requests.json": "673b06d8ded308f1524d858f65170e829c07e30e6bf7b1aa66cb5c84a30e6ccf",
+    "phases.json": "ec3534f9500a177874451eddb3c8c1cc6b1bfe289743650eb842f2119c3518c1",
+    "clock-before.jsonl": "81f99572e0edce4dcf3ed1d632d310cf64932aa7f0e510bd37a51c2e3a8934f6",
+    "clock-after.jsonl": "d6ecedba4a975cfd992b9fa0cf801b1b205398589ccbc4ee145894e4035a431a"
+  },
+  "whole_capture_quality": {
+    "switch_reports": 4702,
+    "nonmonotonic_reports": 0,
+    "doubled_timer_gaps": 1,
+    "lossless_capture_not_guaranteed": true
+  }
+}
