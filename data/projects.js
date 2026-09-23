@@ -21,7 +21,7 @@ const projects = [
       }
     ],
     "featured": true,
-    "highlighted": false,
+    "highlighted": true,
     "date": "2026-08-27"
   },
   {

@@ -10,7 +10,7 @@ export const normalize = text => text.toLowerCase().normalize('NFKD')
  .replace(/\b([a-z0-9]+)'s\b/g,'$1')
  .replace(/[^a-z0-9]+/g,' ').trim();
 const WORDS = {compilation:'compile',compiling:'compile',compiled:'compile',compiles:'compile',waiting:'wait',waits:'wait',pause:'wait',pauses:'wait',reduced:'reduce',reduces:'reduce',reduction:'reduce',reducing:'reduce',courses:'course',classes:'course',class:'course',advises:'advisor',advised:'advisor',advisors:'advisor',advising:'advisor',supervisor:'advisor',supervisors:'advisor',mentor:'advisor',mentors:'advisor',publications:'publication',papers:'paper',projects:'project',runtimes:'runtime'};
-Object.assign(WORDS,{experiences:'experience',playing:'play',played:'play',plays:'play',working:'work',worked:'work',works:'work'});
+Object.assign(WORDS,{experiences:'experience',playing:'play',played:'play',plays:'play',working:'work',worked:'work',works:'work',interests:'interest',interested:'interest',hobbies:'hobby',sports:'sport'});
 export const tokens = text => [...new Set(normalize(text).split(' ').filter(t=>t.length>1&&!STOP.has(t)).map(t=>WORDS[t]||t))];
 const sameTopic = (query, alias) => {
  const q=tokens(query), a=tokens(alias);
@@ -42,24 +42,22 @@ export function retrieve(query,chunks,{previousQuery='',limit=4}={}) {
   const key=c.url+'|'+(c.authoritative?'primary':'body');if(seen.has(key))return false;seen.add(key);return true;
  }).slice(0,limit);
 }
-export function evidenceAnswer(retrieved) {
- if(!retrieved.length)return {text:'I don’t have that information in Xuming’s published profile or website. You can check the linked pages or contact him for details.',sources:[]};
- const chosen=retrieved.slice(0,2);
- return {text:chosen.map((c,i)=>(c.source==='Blog' ? `Xuming writes: “${c.text}”` : c.text)+` [${i+1}]`).join('\n\n'),sources:chosen.map((c,i)=>({...c,citation:i+1}))};
-}
 export function citedSources(answer,retrieved) {
  const ids=[...answer.matchAll(/\[(\d+)\]/g)].map(m=>Number(m[1]));
  if(!ids.length || ids.some(i=>i<1||i>retrieved.length))return [];
  return [...new Set(ids)].map(i=>({...retrieved[i-1],citation:i}));
 }
-export function groundedResult(answer,retrieved) {
- if (/\bI (?:am|have been|worked|work|studied|developed|built|spent)\b/i.test(answer)) return evidenceAnswer(retrieved);
+export function answerIssues(answer,retrieved) {
+ const issues=[];
+ if(!answer.trim())issues.push('The answer is empty.');
+ if(/\bI (?:am|have been|worked|work|studied|developed|built|spent)\b/i.test(answer))issues.push('Speak about Xuming in the third person.');
+ const ids=[...answer.matchAll(/\[(\d+)\]/g)].map(m=>Number(m[1]));
+ if(ids.some(i=>i<1||i>retrieved.length))issues.push('Use only the supplied source numbers.');
+ if(retrieved.length&&!ids.length)issues.push('Answer from the relevant evidence and cite it with [1] or the matching source number.');
  const sources=citedSources(answer,retrieved);
- if(!sources.length)return evidenceAnswer(retrieved);
- // Refuse numerical claims absent from cited source text. This is an additional
- // check, not a substitute for retrieval or a guarantee about generated prose.
- const facts=normalize(sources.map(c=>c.text).join(' '));
- const numbers=answer.replace(/\[\d+\]/g,'').match(/\d+(?:\.\d+)?/g)||[];
- if(numbers.some(n=>!facts.includes(normalize(n))))return evidenceAnswer(retrieved);
- return {text:answer,sources};
+ // This catches unsupported statistics, not every possible semantic error.
+ const numbers=text=>(text.match(/\d+(?:[,.]\d+)*/g)||[]).map(n=>Number(n.replaceAll(',','')));
+ const facts=new Set(numbers(sources.map(c=>c.text).join(' ')));
+ if(numbers(answer.replace(/\[\d+\]/g,'')).some(n=>!facts.has(n)))issues.push('Remove numerical claims that are absent from the cited evidence.');
+ return issues;
 }

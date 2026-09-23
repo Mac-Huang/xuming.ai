@@ -28,7 +28,7 @@
                     Ask me about my research, publications, projects, or academic experience.
                     This page runs a small language model <strong>entirely in your browser</strong>
                     (no server, no API key) with retrieval over the current résumé, research, publications, projects, courses, and blog posts.
-                    The model is downloaded and cached on first use. WebGPU enables generated answers; verified profile answers also work while it loads.
+                    The selected model generates each answer from relevant profile and website sources. It downloads once and runs locally with WebGPU; wait for it to finish loading before chatting.
                   </p>
                   <div id="bot-status" style="margin-top:10px;padding:10px;background:#f5f5f5;border-radius:4px;font-size:14px;color:#555;">
                     <div id="status-text">Initializing…</div>
@@ -40,6 +40,7 @@
                         <select id="model-select" style="font-family:inherit;font-size:13px;margin-left:4px;max-width:100%;"></select>
                       </label>
                       <button id="reset-btn" style="margin-left:10px;font-size:13px;padding:3px 8px;">Reset chat</button>
+                      <button id="retry-model-btn" hidden style="margin-left:10px;font-size:13px;padding:3px 8px;">Retry model</button>
                     </div>
                   </div>
                 </td>
@@ -198,7 +199,7 @@
                            placeholder="Type your question..." 
                            style="flex:1; min-width:0; padding:10px; font-family:'EB Garamond', Georgia, serif; font-size:16px; border:1px solid #ddd; border-radius:3px;"
                            onkeypress="if(event.key==='Enter') sendMessage()">
-                    <button onclick="sendMessage()" 
+                    <button id="send-btn" onclick="sendMessage()" disabled
                             style="padding:10px 20px; font-family:'EB Garamond', Georgia, serif; font-size:16px;">
                       Send
                     </button>
@@ -252,8 +253,8 @@
     </tbody>
   </table>
   
-  <script src="data/publications.js?v=12b3e285e6"></script>
-  <script src="data/projects.js?v=b68c919958"></script>
+  <script src="data/publications.js?v=e75a6982d9"></script>
+  <script src="data/projects.js?v=fcc04c7139"></script>
   <script src="data/blog-posts.js?v=2d027f429f"></script>
   <script src="js/main.js?v=39e6e1aa8d"></script>
 
@@ -348,12 +349,14 @@
   </script>
 
   <!-- In-browser RAG bot: WebLLM + transformers.js embeddings -->
-  <script type="module" src="js/rag-bot.js?v=20260923-2"></script>
+  <script type="module" src="js/rag-bot.js?v=20260923-3"></script>
   <script type="module">
     const statusText = document.getElementById("status-text");
     const statusBar  = document.getElementById("status-bar");
     const modelSel   = document.getElementById("model-select");
     const resetBtn   = document.getElementById("reset-btn");
+    const retryBtn   = document.getElementById("retry-model-btn");
+    const sendBtn    = document.getElementById("send-btn");
     const input      = document.getElementById("message-input");
     const messagesEl = document.getElementById("messages");
     const container  = document.getElementById("chat-container");
@@ -417,17 +420,26 @@
 
 
       modelSel.disabled = true;
+      sendBtn.disabled = true;
+      resetBtn.disabled = true;
+      retryBtn.hidden = true;
       try {
         await RagBot.init(modelId, ({ text, pct }) => setStatus(text, pct));
 
         if (typeof window.__hideFunFacts === "function") window.__hideFunFacts();
       } catch (e) {
         console.error(e);
-        setStatus("Failed to load profile: " + (e?.message || e), 0);
-      } finally { modelSel.disabled = false; }
+        setStatus("Model unavailable: " + (e?.message || e), 0);
+        retryBtn.hidden = false;
+      } finally {
+        modelSel.disabled = false;
+        resetBtn.disabled = false;
+        sendBtn.disabled = !RagBot.isReady();
+      }
     }
 
     modelSel.addEventListener("change", () => boot(modelSel.value));
+    retryBtn.addEventListener("click", () => boot(modelSel.value));
     resetBtn.addEventListener("click", () => {
       if (RagBot.isBusy()) return;
       RagBot.reset();
@@ -439,29 +451,43 @@
       const message = input.value.trim();
       if (!message || RagBot.isBusy()) return;
       if (!RagBot.isReady()) {
-        appendMessage(escapeHtml(message), "user");
-        appendMessage("<em>Still loading the model — please wait a moment.</em>", "bot");
+        input.focus();
         return;
       }
       appendMessage(escapeHtml(message), "user");
       input.value = "";
 
-      const botDiv = appendMessage('<em style="color:#888;">thinking…</em>', "bot");
+      const botDiv = appendMessage('<em style="color:#888;">Generating answer…</em>', "bot");
       const body = botDiv.querySelector(".bot-body");
-      let first = true;
+      sendBtn.disabled = modelSel.disabled = resetBtn.disabled = true;
+      retryBtn.disabled = true;
+      let failed = false;
 
       try {
-        const { sources } = await RagBot.ask(message, {
+        const result = await RagBot.ask(message, {
+          onPhase: phase => setStatus(`${phase} · ${RagBot.modelName()}`, 100),
           onToken: (_delta, full) => {
-            if (first) { body.innerHTML = ""; first = false; }
             body.textContent = full;
             container.scrollTop = container.scrollHeight;
           },
         });
-        body.innerHTML = escapeHtml(body.textContent) + renderSources(sources);
+        const count = result.usage?.completion_tokens;
+        const stats = `Generated by ${result.model}${Number.isFinite(count) ? ` · ${count} tokens` : ''} · ${(result.elapsedMs / 1000).toFixed(1)} s`;
+        body.innerHTML = escapeHtml(result.text) + renderSources(result.sources) + `<div style="margin-top:6px;font-size:12px;color:#777;">${escapeHtml(stats)}</div>`;
+        botDiv.dataset.model = result.model;
+        botDiv.dataset.generatedTokens = Number.isFinite(count) ? String(count) : '';
+        retryBtn.hidden = true;
       } catch (e) {
+        failed = true;
         console.error(e);
         body.innerHTML = '<span style="color:#b00;">Error: ' + escapeHtml(e.message || String(e)) + '</span>';
+        retryBtn.hidden = false;
+      } finally {
+        sendBtn.disabled = !RagBot.isReady();
+        modelSel.disabled = resetBtn.disabled = false;
+        retryBtn.disabled = false;
+        setStatus(`${failed ? 'Generation failed' : 'Ready'} · ${RagBot.modelName()}`, 100);
+        container.scrollTop = container.scrollHeight;
       }
     };
 

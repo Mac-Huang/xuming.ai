@@ -33,7 +33,7 @@ const publications = [
   {
     "id": "linuxguard-2025",
     "title": "LinuxGuard: AI for System Security",
-    "authors": "<strong>Xuming Huang</strong> · advised by Prof. Remzi Arpaci-Dusseau and Dr. Vinay Banakar · <a href=\"https://research.cs.wisc.edu/adsl/\">The ADvanced Systems Laboratory (ADSL)</a>",
+    "authors": "<strong>Xuming Huang</strong> · advised by Prof. Remzi Arpaci-Dusseau and Dr. Vinay Banakar · The ADvanced Systems Laboratory (ADSL)",
     "venue": "Undergraduate Researcher · UW–Madison · Jan.–Nov. 2025",
     "year": 2025,
     "image": "images/papers/linuxguard_paradigm.jpg",

@@ -1,11 +1,11 @@
 {
-  "version": "2874b5c34a8f3dde",
+  "version": "dc6c6e6893af84b9",
   "updated": "2026-09-23",
   "chunks": [
     {
       "id": "bio",
       "title": "Current role and research interests",
-      "text": "Xuming Huang is a Computer Sciences undergraduate at the University of Wisconsin–Madison, with graduation expected in May 2027. His interests are systems for AI, edge inference, operating systems, and AI compilers. His current research at WukLab, UC San Diego, focuses on NPU compilers and runtimes with Professor Yiying Zhang.",
+      "text": "Xuming Huang is a Computer Sciences undergraduate at the University of Wisconsin–Madison, with graduation expected in May 2027. His interests are systems for AI, edge inference, operating systems, and AI compilers. His current research at WukLab, UC San Diego, focuses on NPU compilers and runtimes with Professor Yiying Zhang and PhD candidate Vikranth Srivatsa.",
       "url": "index.html",
       "source": "Profile",
       "aliases": [
@@ -15,7 +15,9 @@
         "introduce yourself",
         "current research",
         "research focus",
-        "research interests"
+        "research interests",
+        "interests",
+        "interested in"
       ],
       "authoritative": true
     },
@@ -31,6 +33,22 @@
         "research background",
         "research projects",
         "past research"
+      ],
+      "authoritative": true
+    },
+    {
+      "id": "vikranth",
+      "title": "Vikranth Srivatsa collaboration",
+      "text": "Xuming works with Vikranth Srivatsa, a PhD candidate at WukLab, UC San Diego, on NPU compilers and runtimes. Professor Yiying Zhang advises the research.",
+      "url": "index.html",
+      "source": "Profile",
+      "aliases": [
+        "vikranth",
+        "vikranth srivatsa",
+        "srivatsa",
+        "wuklab collaborator",
+        "collaborators",
+        "work with"
       ],
       "authoritative": true
     },
@@ -69,7 +87,7 @@
     {
       "id": "wuklab",
       "title": "Edge AI Systems Optimization",
-      "text": "Xuming is currently an undergraduate researcher at WukLab, UC San Diego, advised by Professor Yiying Zhang, since January 2026. He developed a JIT NPU runtime that overlaps CPU graph compilation with NPU inference and grows the KV cache with context: 91.98% less foreground compilation time and 33.05% lower average KV memory, while preserving model quality and decoding. Cached sorted compiler dependency vectors to reduce CPU sorting time by 94.2%, and built CPU/GPU/NPU benchmarks to guide device placement.",
+      "text": "Xuming is currently an undergraduate researcher at WukLab, UC San Diego, advised by Professor Yiying Zhang, since January 2026. He works with Vikranth Srivatsa, a PhD candidate at WukLab. He developed a JIT NPU runtime that overlaps CPU graph compilation with NPU inference and grows the KV cache with context: 91.98% less foreground compilation time and 33.05% lower average KV memory, while preserving model quality and decoding. Cached sorted compiler dependency vectors to reduce CPU sorting time by 94.2%, and built CPU/GPU/NPU benchmarks to guide device placement.",
       "url": "blog/posts/npu-jit-static-shapes.html",
       "source": "Research",
       "aliases": [
@@ -265,6 +283,8 @@
         "sports",
         "sports experience",
         "hobbies",
+        "free time",
+        "outside research",
         "champion",
         "championship"
       ],
@@ -272,8 +292,8 @@
     },
     {
       "id": "paper-0",
-      "title": "[3] CASH: Confidence-Calibrated Deep Feature Crossing for Classification-Aware Heterogeneous Task Scheduling",
-      "text": "[3] CASH: Confidence-Calibrated Deep Feature Crossing for Classification-Aware Heterogeneous Task Scheduling. Chuanlin Jian, Yuanchen Sun, Xiangcheng Liu, Xuming Huang, Samaneh Beheshti Kashi, and Xing Hu. Computers, Materials & Continua 2026.",
+      "title": "CASH: Confidence-Calibrated Deep Feature Crossing for Classification-Aware Heterogeneous Task Scheduling",
+      "text": "CASH: Confidence-Calibrated Deep Feature Crossing for Classification-Aware Heterogeneous Task Scheduling. Chuanlin Jian, Yuanchen Sun, Xiangcheng Liu, Xuming Huang, Samaneh Beheshti Kashi, and Xing Hu. Computers, Materials & Continua 2026.",
       "url": "https://doi.org/10.32604/cmc.2026.086441",
       "source": "Publication",
       "aliases": [],
@@ -281,8 +301,8 @@
     },
     {
       "id": "paper-1",
-      "title": "[2] A Method for Laryngoscopic Image Classification: Leveraging Self-supervised BEIT-style Pretraining",
-      "text": "[2] A Method for Laryngoscopic Image Classification: Leveraging Self-supervised BEIT-style Pretraining. Jie Kong, Haotian Wu, Xuming Huang, Liangjie Wu, and Xing Hu. ICFTIC 2025.",
+      "title": "A Method for Laryngoscopic Image Classification: Leveraging Self-supervised BEIT-style Pretraining",
+      "text": "A Method for Laryngoscopic Image Classification: Leveraging Self-supervised BEIT-style Pretraining. Jie Kong, Haotian Wu, Xuming Huang, Liangjie Wu, and Xing Hu. ICFTIC 2025.",
       "url": "https://doi.org/10.1109/ICFTIC68075.2025.11324910",
       "source": "Publication",
       "aliases": [],
@@ -290,8 +310,8 @@
     },
     {
       "id": "paper-2",
-      "title": "[1] Near-infrared tuneable filter based on polymer dispersed liquid crystals",
-      "text": "[1] Near-infrared tuneable filter based on polymer dispersed liquid crystals. Ruimei Zeng, Rongbo Bi, Junyang Zhu, Xuming Huang, and Qi Wang. Micro & Nano Letters 2025.",
+      "title": "Near-infrared tuneable filter based on polymer dispersed liquid crystals",
+      "text": "Near-infrared tuneable filter based on polymer dispersed liquid crystals. Ruimei Zeng, Rongbo Bi, Junyang Zhu, Xuming Huang, and Qi Wang. Micro & Nano Letters 2025.",
       "url": "https://doi.org/10.1049/mna2.70007",
       "source": "Publication",
       "aliases": [],
@@ -300,7 +320,7 @@
     {
       "id": "publication-list",
       "title": "Published papers",
-      "text": "Xuming’s publications, newest first: [3] CASH: Confidence-Calibrated Deep Feature Crossing for Classification-Aware Heterogeneous Task Scheduling. Chuanlin Jian, Yuanchen Sun, Xiangcheng Liu, Xuming Huang, Samaneh Beheshti Kashi, and Xing Hu. Computers, Materials & Continua 2026. [2] A Method for Laryngoscopic Image Classification: Leveraging Self-supervised BEIT-style Pretraining. Jie Kong, Haotian Wu, Xuming Huang, Liangjie Wu, and Xing Hu. ICFTIC 2025. [1] Near-infrared tuneable filter based on polymer dispersed liquid crystals. Ruimei Zeng, Rongbo Bi, Junyang Zhu, Xuming Huang, and Qi Wang. Micro & Nano Letters 2025.",
+      "text": "Xuming’s publications, newest first: CASH: Confidence-Calibrated Deep Feature Crossing for Classification-Aware Heterogeneous Task Scheduling. Chuanlin Jian, Yuanchen Sun, Xiangcheng Liu, Xuming Huang, Samaneh Beheshti Kashi, and Xing Hu. Computers, Materials & Continua 2026. A Method for Laryngoscopic Image Classification: Leveraging Self-supervised BEIT-style Pretraining. Jie Kong, Haotian Wu, Xuming Huang, Liangjie Wu, and Xing Hu. ICFTIC 2025. Near-infrared tuneable filter based on polymer dispersed liquid crystals. Ruimei Zeng, Rongbo Bi, Junyang Zhu, Xuming Huang, and Qi Wang. Micro & Nano Letters 2025.",
       "url": "research.html#publications",
       "source": "Publication",
       "aliases": [
@@ -575,7 +595,7 @@
     {
       "id": "blog/posts/npu-jit-static-shapes.html-0",
       "title": "Making NPU Inference Practical: Compiler Optimization and JIT Runtimes",
-      "text": "My current work at WukLab , advised by Professor Yiying Zhang , asks how to make local AI inference practical on NPUs. An accelerator can execute a model efficiently once the program is ready, but getting it ready can require substantial CPU compilation and memory allocation. Those costs matter to an interactive application.",
+      "text": "My current work at WukLab, advised by Professor Yiying Zhang , asks how to make local AI inference practical on NPUs. An accelerator can execute a model efficiently once the program is ready, but getting it ready can require substantial CPU compilation and memory allocation. Those costs matter to an interactive application.",
       "url": "blog/posts/npu-jit-static-shapes.html",
       "source": "Blog",
       "aliases": [],
@@ -710,7 +730,7 @@
     {
       "id": "blog/posts/npu-jit-static-shapes.html-15",
       "title": "Making NPU Inference Practical: Compiler Optimization and JIT Runtimes — Project 2: compile ahead, not up front",
-      "text": "CPU compilation overlaps NPU inference. Original concept drawing by Vikranth Srivatsa.",
+      "text": "CPU compilation overlaps NPU inference. Original concept drawing by Vikranth Srivatsa .",
       "url": "blog/posts/npu-jit-static-shapes.html",
       "source": "Blog",
       "aliases": [],
@@ -746,7 +766,7 @@
     {
       "id": "blog/posts/npu-jit-static-shapes.html-19",
       "title": "Making NPU Inference Practical: Compiler Optimization and JIT Runtimes — Let KV memory grow with the context",
-      "text": "Use the smallest suitable capacity and carry the live state forward. Original concept drawing by Vikranth Srivatsa.",
+      "text": "Use the smallest suitable capacity and carry the live state forward. Original concept drawing by Vikranth Srivatsa .",
       "url": "blog/posts/npu-jit-static-shapes.html",
       "source": "Blog",
       "aliases": [],
@@ -791,7 +811,7 @@
     {
       "id": "blog/posts/npu-jit-static-shapes.html-24",
       "title": "Making NPU Inference Practical: Compiler Optimization and JIT Runtimes — Broader questions for NPU systems",
-      "text": "Research with Vikranth Srivatsa, advised by Professor Yiying Zhang. Updated September 23, 2026.",
+      "text": "Research with Vikranth Srivatsa , advised by Professor Yiying Zhang. Updated September 23, 2026.",
       "url": "blog/posts/npu-jit-static-shapes.html",
       "source": "Blog",
       "aliases": [],
