@@ -7,8 +7,8 @@ const projects = [
     "tech": "C++, MLIR, OpenVINO, Intel NPU Compiler, Performance Profiling",
     "thumbnail": "images/papers/wuklab/edge-ai-processing-array.png",
     "image_fit": "contain",
-    "demo_url": "research/edge-ai.html",
-    "demo_label": "Research overview",
+    "demo_url": "blog/posts/npu-jit-static-shapes.html",
+    "demo_label": "Blog post",
     "code_url": "https://github.com/openvinotoolkit/npu_compiler/pull/348",
     "links": [
       {

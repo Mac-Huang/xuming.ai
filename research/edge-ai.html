@@ -1,51 +1,13 @@
-<!DOCTYPE HTML>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Edge AI Systems Optimization - Xuming Huang</title><link rel="stylesheet" href="../stylesheet.css"><link rel="icon" href="../images/favicon.png"><script src="../js/site-links.js" defer></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Making NPU Inference Practical - Xuming Huang</title>
+<meta http-equiv="refresh" content="0; url=../blog/posts/npu-jit-static-shapes.html">
+<link rel="canonical" href="https://xuming.ai/blog/posts/npu-jit-static-shapes.html">
+<link rel="stylesheet" href="../stylesheet.css">
+<script src="../js/site-links.js" defer></script>
 </head>
-<body><table style="width:100%;max-width:900px;border:0px;border-spacing:0px;border-collapse:separate;margin:auto;"><tbody><tr style="padding:0px"><td style="padding:0px">
-<table><tbody><tr><td style="padding:20px;width:100%;vertical-align:middle"><p style="text-align:center"><name>Edge AI Systems Optimization</name></p></td></tr></tbody></table>
-
-          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
-            <tbody>
-              <tr>
-                <td style="padding:20px;width:100%;vertical-align:middle">
-                  <p style="text-align:center;font-size:18px;">
-                    <a href="../index.html">Home</a> &nbsp;|&nbsp;
-                    <a href="../research.html" style="font-weight:700;">Research</a> &nbsp;|&nbsp;
-                    <a href="../projects.html">Projects</a> &nbsp;|&nbsp;
-                    <a href="../blog.html">Blog</a> &nbsp;|&nbsp;
-                    <a href="../courses.html">Courses</a> &nbsp;|&nbsp;
-                    <a href="../bot.html">Ask Me</a>
-                  </p>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-
-<table><tbody><tr><td style="padding:20px;width:100%;vertical-align:middle">
-
-<p>WUKLAB · UC SAN DIEGO · JAN. 2026–PRESENT</p>
-
-<p>Compile the program as context grows, and use memory when it is needed.</p>
-<p>Undergraduate research with Prof. Yiying Zhang.</p>
-
-<img style="width:100%;max-width:600px;height:auto" src="../images/papers/wuklab/edge-ai-processing-array.png" alt="NPU processing array with weight SRAM, processing elements, and accumulator" width="876" height="466"><section><p><heading>Progressive NPU compilation</heading></p>
-<p><strong>Problem.</strong> Static-shape NPU programs tie compilation and KV-cache capacity to a chosen context size. Preparing the full capacity before inference adds startup work and reserves memory before the context needs it.</p>
-<p><strong>Idea.</strong> I developed a JIT runtime that overlaps progressive graph compilation on the CPU with inference on the NPU. Copy-and-grow KV caching carries model state forward as larger programs become available.</p>
-<p><strong>Result.</strong> The runtime reduced foreground compilation time by <strong>91.98%</strong> and average KV memory by <strong>33.05%</strong>, while preserving model quality and decoding. These metrics describe foreground compilation and average KV allocation, respectively.</p>
-</section>
-<section><p><heading>Removing repeated compiler work</heading></p>
-<p><strong>Problem.</strong> Repeatedly sorting dependency and consumer vectors adds CPU work during NPU compilation.</p>
-<p><strong>Idea.</strong> Cache the sorted vectors and invalidate them when dependencies change.</p>
-<p><strong>Result.</strong> Reduced CPU sorting time by <strong>94.2%</strong> and contributed <a href="https://github.com/openvinotoolkit/npu_compiler/pull/348" target="_blank" rel="noopener noreferrer">PR #348 to the Intel NPU Compiler repository</a> (open draft). The percentage refers to sorting time, not total compilation time.</p>
-</section>
-<section><p><heading>Understanding device affinity</heading></p>
-<p>I developed a CPU/GPU/NPU benchmarking methodology to characterize operator and inference-stage affinity. The measurements identify hardware-dependent placement preferences to guide heterogeneous scheduling.</p>
-<p>Placement needs to account for execution stage, shape, and device boundaries. A local operator win alone does not establish an end-to-end scheduling improvement.</p>
-</section>
-<section><p><heading>Technical overview</heading></p><p><a href="../blog/posts/npu-jit-static-shapes.html">Making NPU Inference Practical: Compiler Optimization and JIT Runtimes</a></p></section>
-
-<p><a href="../research.html">← All research</a> / <a href="../cv/Academic_Resume.pdf">CV</a></p>
-</td></tr></tbody></table>
-</td></tr></tbody></table></body></html>
+<body><p><a href="../blog/posts/npu-jit-static-shapes.html">Continue to Making NPU Inference Practical: Compiler Optimization and JIT Runtimes</a></p></body>
+</html>

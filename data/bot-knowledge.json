@@ -1,5 +1,5 @@
 {
-  "version": "754496ad9e2161a7",
+  "version": "0288f15656dfe522",
   "updated": "2026-09-23",
   "chunks": [
     {
@@ -55,7 +55,7 @@
       "id": "wuklab",
       "title": "Edge AI Systems Optimization",
       "text": "Xuming is currently an undergraduate researcher at WukLab, UC San Diego, advised by Professor Yiying Zhang, since January 2026. He developed a JIT NPU runtime that overlaps CPU graph compilation with NPU inference and grows the KV cache with context: 91.98% less foreground compilation time and 33.05% lower average KV memory, while preserving model quality and decoding. Cached sorted compiler dependency vectors to reduce CPU sorting time by 94.2%, and built CPU/GPU/NPU benchmarks to guide device placement.",
-      "url": "research/edge-ai.html",
+      "url": "blog/posts/npu-jit-static-shapes.html",
       "source": "Research",
       "aliases": [
         "wuklab",
@@ -291,7 +291,7 @@
       "id": "project-openvino-npu-sorting-cache",
       "title": "OpenVINO NPU Compiler — Cached Dependency Sorting",
       "text": "OpenVINO NPU Compiler — Cached Dependency Sorting. Cached sorted dependency and consumer vectors in the OpenVINO NPU compiler, reducing CPU sorting time by 94.2%. Contributed upstream PR #348. This reduction measures sorting work, not total compilation time. Technologies: C++, MLIR, OpenVINO, Intel NPU Compiler, Performance Profiling. First listed on the website: 2026-08-27.",
-      "url": "research/edge-ai.html",
+      "url": "blog/posts/npu-jit-static-shapes.html",
       "source": "Project",
       "aliases": [],
       "authoritative": false
