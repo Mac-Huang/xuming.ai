@@ -15,18 +15,18 @@ The generated knowledge version is a hash of the content. The browser fetches it
 
 Every answer uses actual inference from the selected model, including named-person questions, short profile prompts, and questions without relevant evidence. Alias matching selects evidence; it never supplies a finished answer. Other questions use weighted lexical retrieval with relevance thresholds and source deduplication. No arbitrary top-five sources are added. The model receives recent conversational context and the current question's sources, and streams its answer using [WebLLM's streaming API](https://webllm.mlc.ai/docs/user/basic_usage.html#streaming-chat-completion). The source panel lists only cited records.
 
-Citation errors, unsupported numbers, or first-person impersonation trigger one model-generated revision. A second validation failure reports an error; it does not silently substitute stored prose. Missing WebGPU, model-load failures, and inference errors are explicit. Send stays disabled until a model is actually loaded. Successful replies display the model name, reported output token count, and measured generation duration. These indicators are based on real inference; there is no artificial delay.
+Citation errors, unsupported numbers, unsupported praise, or first-person impersonation trigger one model-generated revision. A second validation failure reports an error; it does not silently substitute stored prose. Missing WebGPU, model-load failures, and inference errors are explicit. Send stays disabled until a model is actually loaded. Successful replies display the model name, reported output token count, and measured generation duration. These indicators are based on real inference; there is no artificial delay.
 
 Generated answers can still be wrong: citation presence and numerical checks are not complete semantic verification. The source links remain available for inspection. Aliases and regression cases should be expanded as new failure examples arise.
 
 ## Two local models
 
-- Fast/default: `Llama-3.2-1B-Instruct-q4f16_1-MLC`.
-- Better: `Llama-3.2-3B-Instruct-q4f16_1-MLC`.
+- Fast: `Qwen2.5-1.5B-Instruct-q4f16_1-MLC`.
+- Better/default: `Llama-3.2-3B-Instruct-q4f16_1-MLC`.
 
-WebLLM is pinned to 0.2.85. The [official WebLLM catalog](https://github.com/mlc-ai/web-llm/blob/main/src/config.ts) lists estimated GPU memory of 879.04 MB and 2263.69 MB for these configurations. These are estimates, not download sizes or guarantees for every browser. The compared Qwen3 0.6B/4B configurations have larger catalog memory estimates (1403.34/3431.59 MB). The existing Llama family provides a smaller default and a more capable alternative without introducing a third option.
+WebLLM is pinned to 0.2.85. The [official WebLLM catalog](https://github.com/mlc-ai/web-llm/blob/v0.2.85/src/config.ts) lists estimated GPU memory of 1629.75 MB and 2263.69 MB for these configurations. These are estimates, not download sizes or guarantees for every browser. Llama 3.2 1B was rejected after browser testing produced unsupported activities and dates in hobby answers. The 3B model is the default for answer quality.
 
-Both Llama configurations loaded and generated streamed answers in browser testing. Model switching unloads the previous engine. Retry model unloads and reloads the selected engine after a failure. A smaller model can still produce weaker phrasing or unsupported details; the checks are limited, and the Better model remains available.
+Model switching unloads the previous engine. Retry model unloads and reloads the selected engine after a failure. A smaller model can still produce weaker phrasing or unsupported details; the checks are limited.
 
 ## Natural-language retrieval regression
 

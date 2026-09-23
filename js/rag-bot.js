@@ -1,6 +1,6 @@
-import {generateReply} from './bot-generation.mjs?v=20260923-3';
+import {generateReply} from './bot-generation.mjs?v=20260923-4';
 const MODEL_OPTIONS=[
- {id:'Llama-3.2-1B-Instruct-q4f16_1-MLC',name:'Llama 3.2 1B',label:'Fast · Llama 3.2 1B (~0.9 GB GPU memory)'},
+ {id:'Qwen2.5-1.5B-Instruct-q4f16_1-MLC',name:'Qwen 2.5 1.5B',label:'Fast · Qwen 2.5 1.5B (~1.6 GB GPU memory)'},
  {id:'Llama-3.2-3B-Instruct-q4f16_1-MLC',name:'Llama 3.2 3B',label:'Better · Llama 3.2 3B (~2.3 GB GPU memory)'}
 ];
 let knowledge=null,engine=null,currentModel=null,busy=false,loading=false,previousQuery='',history=[];
@@ -10,7 +10,7 @@ async function loadKnowledge(){
  if(!response.ok)throw Error('Could not load the current profile. Please refresh.');
  knowledge=await response.json();return knowledge;
 }
-export async function initBot(modelId=MODEL_OPTIONS[0].id,progress){
+export async function initBot(modelId=MODEL_OPTIONS[1].id,progress){
  if(!MODEL_OPTIONS.some(m=>m.id===modelId))throw Error('Unsupported model');
  if(busy||loading)throw Error('Wait for the current operation before changing models.');
  loading=true;
@@ -40,4 +40,4 @@ export async function ask(message,{onToken,onSources,onPhase}={}){
   return {...result,model:modelName(),elapsedMs:performance.now()-started};
  }finally{busy=false;}
 }
-window.RagBot={init:initBot,ask,isReady:()=>Boolean(engine)&&!loading,listModels:()=>MODEL_OPTIONS,reset:()=>{previousQuery='';history=[];},isBusy:()=>busy,modelName};
+window.RagBot={init:initBot,ask,isReady:()=>Boolean(engine)&&!loading,listModels:()=>MODEL_OPTIONS,defaultModel:MODEL_OPTIONS[1].id,reset:()=>{previousQuery='';history=[];},isBusy:()=>busy,modelName};

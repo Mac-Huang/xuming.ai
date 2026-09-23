@@ -46,3 +46,12 @@ test('Vikranth is a collaborator and PhD candidate, not the faculty advisor',()=
  assert.equal(results[0].id,'vikranth');assert.match(results[0].text,/PhD candidate/);
  assert.match(results[0].text,/Yiying Zhang advises/);
 });
+test('observed model embellishments require revision',()=>{
+ const hits=retrieve("what's your hobby",chunks);
+ assert.ok(answerIssues('Xuming is a renowned expert in AI and plays flag football. [1]',hits).length);
+ assert.deepEqual(answerIssues('His hobby is flag football. [1]',hits),[]);
+});
+
+test('first-person hobbies cannot impersonate Xuming',()=>{
+ assert.ok(answerIssues('As Xuming, my hobby is flag football. I captained the team. [1]',retrieve('hobbies',chunks)).some(x=>x.includes('third person')));
+});

@@ -50,11 +50,14 @@ export function citedSources(answer,retrieved) {
 export function answerIssues(answer,retrieved) {
  const issues=[];
  if(!answer.trim())issues.push('The answer is empty.');
- if(/\bI (?:am|have been|worked|work|studied|developed|built|spent)\b/i.test(answer))issues.push('Speak about Xuming in the third person.');
+ if(/\b(?:I (?:am|have been|worked|work|studied|developed|built|spent|captained|played|led)|my|mine|as Xuming)\b/i.test(answer))issues.push('Speak about Xuming in the third person.');
  const ids=[...answer.matchAll(/\[(\d+)\]/g)].map(m=>Number(m[1]));
  if(ids.some(i=>i<1||i>retrieved.length))issues.push('Use only the supplied source numbers.');
  if(retrieved.length&&!ids.length)issues.push('Answer from the relevant evidence and cite it with [1] or the matching source number.');
  const sources=citedSources(answer,retrieved);
+ const evidence=normalize(sources.map(c=>c.text).join(' '));
+ const embellishments=answer.match(/\b(?:renowned|expert|talented|passionate|prestigious|world.class)\b/gi)||[];
+ if(embellishments.some(word=>!evidence.split(' ').includes(normalize(word))))issues.push('Remove unsupported praise or reputation claims; describe only the facts in the sources.');
  // This catches unsupported statistics, not every possible semantic error.
  const numbers=text=>(text.match(/\d+(?:[,.]\d+)*/g)||[]).map(n=>Number(n.replaceAll(',','')));
  const facts=new Set(numbers(sources.map(c=>c.text).join(' ')));

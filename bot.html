@@ -226,7 +226,7 @@
               <tr>
                 <td style="padding:20px;width:100%;vertical-align:middle">
                   <p style="font-size:14px; color:#666; background:#f9f9f9; padding:15px; border-radius:3px;">
-                    Built with Llama · <a href="https://huggingface.co/meta-llama/Llama-3.2-1B-Instruct/blob/main/LICENSE.txt" target="_blank" rel="noopener noreferrer">Model license</a><br><strong>Note:</strong> This is a LLM-enhanced bot that provides information about my academic work. It can make mistakes; source links let you check each answer.
+                    Built with Qwen and Llama · <a href="https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct/blob/main/LICENSE.txt" target="_blank" rel="noopener noreferrer">Llama license</a> · <a href="https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">Qwen license</a><br><strong>Note:</strong> This is a LLM-enhanced bot that provides information about my academic work. It can make mistakes; source links let you check each answer.
                     For detailed discussions or collaborations, please <a href="javascript:;" onclick="showEmail()">email me directly</a>.
                   </p>
                 </td>
@@ -349,7 +349,7 @@
   </script>
 
   <!-- In-browser RAG bot: WebLLM + transformers.js embeddings -->
-  <script type="module" src="js/rag-bot.js?v=20260923-3"></script>
+  <script type="module" src="js/rag-bot.js?v=20260923-4"></script>
   <script type="module">
     const statusText = document.getElementById("status-text");
     const statusBar  = document.getElementById("status-bar");
@@ -412,6 +412,7 @@
       const opt = document.createElement("option");
       opt.value = m.id;
       opt.textContent = m.label;
+      opt.selected = m.id === RagBot.defaultModel;
       modelSel.appendChild(opt);
     }
 
