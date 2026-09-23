@@ -281,6 +281,7 @@ function createProjectRow(project) {
     img.loading = 'lazy';
     img.height = 110;
     img.style.cssText = 'border:1px solid #ddd;border-radius:6px;object-fit:cover;';
+    img.style.objectFit = project.image_fit || 'cover';
 
     if (project.demo_url) {
       const imageLink = document.createElement('a');

@@ -6,6 +6,7 @@ const projects = [
     "description": "Cached sorted dependency and consumer vectors in the OpenVINO NPU compiler, reducing CPU sorting time by 94.2%. Contributed upstream PR #348. This reduction measures sorting work, not total compilation time.",
     "tech": "C++, MLIR, OpenVINO, Intel NPU Compiler, Performance Profiling",
     "thumbnail": "images/papers/wuklab/edge-ai-processing-array.png",
+    "image_fit": "contain",
     "demo_url": "research/edge-ai.html",
     "demo_label": "Research overview",
     "code_url": "https://github.com/openvinotoolkit/npu_compiler/pull/348",
