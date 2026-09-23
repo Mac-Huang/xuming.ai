@@ -19,7 +19,7 @@ const publications = [
   {
     "id": "os-inference",
     "title": "Operating Systems for AI Inference",
-    "authors": "<strong>Xuming Huang</strong> · advised by Prof. <a href=\"https://pages.cs.wisc.edu/~swift/\">Michael Swift</a>",
+    "authors": "<strong>Xuming Huang</strong> · advised by Prof. Michael Swift",
     "venue": "Honors Course Research Project · UW–Madison · Jan.–May 2026",
     "year": 2026,
     "image": "images/papers/os-inference-latency.png",
@@ -33,7 +33,7 @@ const publications = [
   {
     "id": "linuxguard-2025",
     "title": "LinuxGuard: AI for System Security",
-    "authors": "<strong>Xuming Huang</strong> · advised by Prof. Remzi Arpaci-Dusseau and Dr. <a href=\"https://www.vinaybanakar.com/\">Vinay Banakar</a> · <a href=\"https://research.cs.wisc.edu/adsl/\">The ADvanced Systems Laboratory (ADSL)</a>",
+    "authors": "<strong>Xuming Huang</strong> · advised by Prof. Remzi Arpaci-Dusseau and Dr. Vinay Banakar · <a href=\"https://research.cs.wisc.edu/adsl/\">The ADvanced Systems Laboratory (ADSL)</a>",
     "venue": "Undergraduate Researcher · UW–Madison · Jan.–Nov. 2025",
     "year": 2025,
     "image": "images/papers/linuxguard_paradigm.jpg",
