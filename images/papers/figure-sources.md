@@ -8,3 +8,5 @@
 `wuklab/npu-processing-array.png`: architecture illustration supplied by Xuming for the NPU blog on September 23, 2026.
 
 - `wuklab/edge-ai-processing-array.png`: user-supplied processing-array diagram (September 23, 2026), used as the Edge AI research and OpenVINO cached-dependency-sorting project cover.
+
+- `os-inference-latency.png`: user-supplied file_seq inference-latency plot (September 23, 2026), used as the Operating Systems for AI Inference cover.
