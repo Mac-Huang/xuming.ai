@@ -18,3 +18,23 @@ test('removed blog listings are not fed back into retrieval',()=>{assert.ok(!chu
 test('paraphrased technical questions retrieve the current NPU evidence',()=>{const hits=retrieve('How does progressive compilation reduce waiting during NPU inference?',chunks);assert.ok(hits.length);assert.ok(hits.every(c=>/NPU|compil/i.test(c.text)));});
 
 test('generated first-person impersonation falls back to attributed evidence',()=>{const hits=retrieve('Wuklab',chunks);assert.ok(!groundedResult('I spent time at WukLab [1].',hits).text.startsWith('I spent'));});
+
+for(const q of ["what's your football experience",'what’s your football experience',"What's your experience playing football?",'Could you tell me a bit about your football background?','Do you play football?']) {
+ test('natural football question: '+q,()=>{
+  const hits=retrieve(q,chunks,{previousQuery:'research'});
+  assert.deepEqual(hits.map(c=>c.id),['football']);
+  const answer=evidenceAnswer(hits);
+  assert.match(answer.text,/2023 NFL FLAG/);
+  assert.equal(answer.sources[0].url,'blog/posts/nfl-flag-football-championship.html');
+ });
+}
+test('contractions also work for other profile topics',()=>{assert.equal(retrieve("What's your GPA?",chunks)[0]?.id,'education');});
+test('broad research questions return a research overview',()=>{
+ for(const q of ['research','What are your research experiences?',"What's your research background?"]) {
+  const hits=retrieve(q,chunks);assert.deepEqual(hits.map(c=>c.id),['research-overview']);
+  assert.match(hits[0].text,/WukLab/);assert.match(hits[0].text,/LinuxGuard/);
+ }
+});
+test('normalizing questions does not invent unknown personal details',()=>{
+ for(const q of ["What's your football jersey number?","What’s Remzi’s birthday?","What's your favorite pizza topping?"])assert.deepEqual(retrieve(q,chunks),[],q);
+});

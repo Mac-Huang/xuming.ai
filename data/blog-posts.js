@@ -14,7 +14,7 @@ const blogPosts = [
     "id": "linuxguard-journey",
     "title": "My Journey with LinuxGuard",
     "date": "November 19, 2025",
-    "category": "education",
+    "category": "research",
     "excerpt": "Reflecting on 6 months of research: building LLM-driven kernel checkers, learning from Vinay Banakar, and the hard reality of being scooped by SOSP.",
     "url": "blog/posts/linuxguard-journey.html",
     "readTime": "6 min",
@@ -24,7 +24,7 @@ const blogPosts = [
     "id": "stanford-summer",
     "title": "Stanford Summer: Where Systems Meet Algorithms",
     "date": "August 15, 2025",
-    "category": "education",
+    "category": "research",
     "excerpt": "My transformative summer at Stanford taking CS107 (A+, 99/100) and CS161 (A, 93/100). From heap allocators to algorithm analysis, discovering security vulnerabilities, and learning from amazing instructors.",
     "url": "blog/posts/stanford-summer-2025.html",
     "readTime": "10 min",
@@ -90,7 +90,6 @@ function getRecentPosts(limit = 5) {
 const blogCategories = [
   { label: 'All', value: 'all' },
   { label: 'Research', value: 'research' },
-  { label: 'Academic', value: 'education' },
   { label: 'Life', value: 'life' },
   { label: 'Career', value: 'career' }
 ];

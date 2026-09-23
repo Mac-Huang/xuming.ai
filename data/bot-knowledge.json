@@ -1,5 +1,5 @@
 {
-  "version": "92248a778df4ad44",
+  "version": "2874b5c34a8f3dde",
   "updated": "2026-09-23",
   "chunks": [
     {
@@ -16,6 +16,21 @@
         "current research",
         "research focus",
         "research interests"
+      ],
+      "authoritative": true
+    },
+    {
+      "id": "research-overview",
+      "title": "Research experience",
+      "text": "Xuming’s current research at WukLab, UC San Diego, focuses on efficient NPU compilers and inference runtimes. His other research includes LinuxGuard at ADSL, UW–Madison, using LLMs and compiler feedback to build Linux-kernel bug detectors; an honors project with Michael Swift measuring how filesystem activity affects AI inference; and CASH at USST, studying workload-aware CPU/GPU scheduling.",
+      "url": "research.html",
+      "source": "Profile",
+      "aliases": [
+        "research",
+        "research experience",
+        "research background",
+        "research projects",
+        "past research"
       ],
       "authoritative": true
     },
@@ -241,7 +256,14 @@
       "source": "Profile",
       "aliases": [
         "football",
+        "flag football",
+        "football experience",
+        "football background",
+        "experience playing football",
+        "play football",
+        "football team",
         "sports",
+        "sports experience",
         "hobbies",
         "champion",
         "championship"

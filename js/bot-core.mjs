@@ -1,7 +1,16 @@
 // Pure retrieval and citation functions, shared by the browser and regression tests.
-const STOP = new Set('a an the and or of on in at to for from with by as is are was were be been am do does did has have had i me my mine you your yours he his him she her they their them it its this that these those xuming huang tell about what which who how when where can could would please know more some any all only also me during explain describe taking taken tell'.split(' '));
-export const normalize = text => text.toLowerCase().normalize('NFKD').replace(/[’']/g,'').replace(/[^a-z0-9]+/g,' ').trim();
+const STOP = new Set('a an the and or of on in at to for from with by as is are was were be been am do does did has have had i me my mine you your yours he his him she her they their them it its this that these those xuming huang tell about what which who how when where can could would please know more some any all only also me during explain describe taking taken tell little bit briefly share give professor prof doctor dr'.split(' '));
+export const normalize = text => text.toLowerCase().normalize('NFKD')
+ .replace(/[’‘]/g,"'")
+ // Expand conversational contractions before punctuation removal. Otherwise
+ // "what's" becomes an unknown, heavily weighted keyword that hides real matches.
+ .replace(/\b(what|who|where|when|how|why|that|there|it)'s\b/g,'$1 is')
+ .replace(/\b([a-z]+)'re\b/g,'$1 are').replace(/\b([a-z]+)'ve\b/g,'$1 have')
+ .replace(/\bi'm\b/g,'i am').replace(/\b([a-z]+)'ll\b/g,'$1 will')
+ .replace(/\b([a-z0-9]+)'s\b/g,'$1')
+ .replace(/[^a-z0-9]+/g,' ').trim();
 const WORDS = {compilation:'compile',compiling:'compile',compiled:'compile',compiles:'compile',waiting:'wait',waits:'wait',pause:'wait',pauses:'wait',reduced:'reduce',reduces:'reduce',reduction:'reduce',reducing:'reduce',courses:'course',classes:'course',class:'course',advises:'advisor',advised:'advisor',advisors:'advisor',advising:'advisor',supervisor:'advisor',supervisors:'advisor',mentor:'advisor',mentors:'advisor',publications:'publication',papers:'paper',projects:'project',runtimes:'runtime'};
+Object.assign(WORDS,{experiences:'experience',playing:'play',played:'play',plays:'play',working:'work',worked:'work',works:'work'});
 export const tokens = text => [...new Set(normalize(text).split(' ').filter(t=>t.length>1&&!STOP.has(t)).map(t=>WORDS[t]||t))];
 const sameTopic = (query, alias) => {
  const q=tokens(query), a=tokens(alias);

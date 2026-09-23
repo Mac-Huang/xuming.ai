@@ -1,4 +1,4 @@
-import {directMatch,retrieve,evidenceAnswer,groundedResult} from './bot-core.mjs';
+import {directMatch,retrieve,evidenceAnswer,groundedResult} from './bot-core.mjs?v=20260923-2';
 const MODEL_OPTIONS = [
  {id:'Llama-3.2-1B-Instruct-q4f16_1-MLC',label:'Fast · Llama 3.2 1B (~0.9 GB GPU memory)'},
  {id:'Llama-3.2-3B-Instruct-q4f16_1-MLC',label:'Better · Llama 3.2 3B (~2.3 GB GPU memory)'}
