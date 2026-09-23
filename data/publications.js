@@ -6,7 +6,7 @@ const publications = [
     "authors": "<strong>Xuming Huang</strong> · advised by Prof. Yiying Zhang",
     "venue": "Undergraduate Researcher · WukLab, UC San Diego · Jan. 2026–present",
     "year": 2026,
-    "image": "images/papers/wuklab/npu-jit-sketch-one-ahead.png",
+    "image": "images/papers/wuklab/edge-ai-processing-array.png",
     "paper_url": "research/edge-ai.html",
     "paper_label": "research overview",
     "code_url": "https://github.com/openvinotoolkit/npu_compiler/pull/348",

@@ -30,7 +30,7 @@
 <p>Compile the program as context grows, and use memory when it is needed.</p>
 <p>Undergraduate research with Prof. Yiying Zhang.</p>
 
-<img style="width:100%;max-width:600px;height:auto" src="../images/research/edge-ai.svg" alt="CPU compilation overlaps NPU decoding as KV state grows" width="600" height="240"><section><p><heading>Progressive NPU compilation</heading></p>
+<img style="width:100%;max-width:600px;height:auto" src="../images/papers/wuklab/edge-ai-processing-array.png" alt="NPU processing array with weight SRAM, processing elements, and accumulator" width="876" height="466"><section><p><heading>Progressive NPU compilation</heading></p>
 <p><strong>Problem.</strong> Static-shape NPU programs tie compilation and KV-cache capacity to a chosen context size. Preparing the full capacity before inference adds startup work and reserves memory before the context needs it.</p>
 <p><strong>Idea.</strong> I developed a JIT runtime that overlaps progressive graph compilation on the CPU with inference on the NPU. Copy-and-grow KV caching carries model state forward as larger programs become available.</p>
 <p><strong>Result.</strong> The runtime reduced foreground compilation time by <strong>91.98%</strong> and average KV memory by <strong>33.05%</strong>, while preserving model quality and decoding. These metrics describe foreground compilation and average KV allocation, respectively.</p>

@@ -6,3 +6,5 @@
 `beit-figure.png`: the complete pretraining framework figure embedded on page 3 of the author-supplied BEIT paper (DOI 10.1109/ICFTIC68075.2025.11324910). Original pixels extracted; transparency composited onto white for display.
 
 `wuklab/npu-processing-array.png`: architecture illustration supplied by Xuming for the NPU blog on September 23, 2026.
+
+- `wuklab/edge-ai-processing-array.png`: user-supplied processing-array diagram (September 23, 2026), used as the Edge AI research and OpenVINO cached-dependency-sorting project cover.
