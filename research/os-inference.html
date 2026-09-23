@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Operating Systems for AI Inference | Xuming Huang</title><meta name="description" content="A controlled study of filesystem interference with LLM inference, advised by Prof. Michael Swift."><link rel="icon" href="../images/favicon.png"><link rel="stylesheet" href="../stylesheet.css"><link rel="stylesheet" href="../research.css"><meta property="og:title" content="Operating Systems for AI Inference | Xuming Huang"><meta property="og:description" content="A controlled study of filesystem interference with LLM inference, advised by Prof. Michael Swift."><meta property="og:image" content="https://xuming.ai/images/social-preview.png"></head>
+<body><div class="site-shell"><nav class="site-nav" aria-label="Main navigation"><a href="../index.html">Home</a><a href="../research.html">Research</a><a href="../projects.html">Projects</a><a href="../blog.html">Blog</a><a href="../courses.html">Courses</a><a href="../cv/Academic_Resume.pdf">CV ↗</a></nav>
+<main><header class="page-heading"><p class="eyebrow">UW–MADISON · JAN.–MAY 2026</p>
+<h1>Operating Systems for AI Inference</h1>
+<p class="lead">How do background file reads affect an otherwise fixed inference workload?</p>
+<p>Honors course research advised by Prof. Michael Swift.</p>
+</header>
+<img class="overview-cover" src="../images/research/os-inference.svg" alt="File reads and LLM inference share memory and I/O resources" width="600" height="240"><section><h2>Controlled interference</h2>
+<p>I evaluated a fixed LLM inference workload under controlled background filesystem reads. Median inference latency increased <strong>17.1%</strong> relative to the baseline.</p>
+</section>
+<section><h2>Investigating the slowdown</h2>
+<p>Windows PerfMon showed stable working sets and page-fault counts plateauing near <strong>29.5K</strong> even as latency rose. These observations support shared-resource contention over working-set thrashing as the explanation; they do not isolate a single hardware bottleneck.</p>
+</section>
+<section><h2>Research context</h2>
+<p>The study connects operating-system activity to inference performance: controlling the model workload alone is insufficient when it shares resources with other processes.</p>
+<p><a href="../cv/Academic_Resume.pdf">CV</a> · <a href="../research.html">All research</a></p>
+</section>
+</main>
+<footer>© Xuming Huang · <a href="../cv/Academic_Resume.pdf">Curriculum vitae</a> · <a href="https://github.com/Mac-Huang/xuming.ai">Website source</a></footer>
+</div>
+</body>
+</html>

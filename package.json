@@ -5,7 +5,8 @@
   "scripts": {
     "add-publication": "node add-publication.js",
     "serve": "python -m http.server 8000",
-    "update-thumbnails": "node scripts/generate-thumbnails.js"
+    "render-research": "node scripts/render-research.cjs",
+    "audit": "python3 scripts/audit-site.py"
   },
   "keywords": [
     "portfolio",

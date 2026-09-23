@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Edge AI Systems Optimization | Xuming Huang</title><meta name="description" content="Progressive NPU compilation, copy-and-grow KV caching, compiler optimization, and device-affinity measurement."><link rel="icon" href="../images/favicon.png"><link rel="stylesheet" href="../stylesheet.css"><link rel="stylesheet" href="../research.css"><meta property="og:title" content="Edge AI Systems Optimization | Xuming Huang"><meta property="og:description" content="Progressive NPU compilation, copy-and-grow KV caching, compiler optimization, and device-affinity measurement."><meta property="og:image" content="https://xuming.ai/images/social-preview.png"></head>
+<body><div class="site-shell"><nav class="site-nav" aria-label="Main navigation"><a href="../index.html">Home</a><a href="../research.html">Research</a><a href="../projects.html">Projects</a><a href="../blog.html">Blog</a><a href="../courses.html">Courses</a><a href="../cv/Academic_Resume.pdf">CV ↗</a></nav>
+<main><header class="page-heading"><p class="eyebrow">WUKLAB · UC SAN DIEGO · JAN. 2026–PRESENT</p>
+<h1>Edge AI Systems Optimization</h1>
+<p class="lead">Compile the program as context grows, and use memory when it is needed.</p>
+<p>Undergraduate research with Prof. Yiying Zhang.</p>
+</header>
+<img class="overview-cover" src="../images/research/edge-ai.svg" alt="CPU compilation overlaps NPU decoding as KV state grows" width="600" height="240"><section><h2>Progressive NPU compilation</h2>
+<p><strong>Problem.</strong> Static-shape NPU programs tie compilation and KV-cache capacity to a chosen context size. Preparing the full capacity before inference adds startup work and reserves memory before the context needs it.</p>
+<p><strong>Idea.</strong> I developed a JIT runtime that overlaps progressive graph compilation on the CPU with inference on the NPU. Copy-and-grow KV caching carries model state forward as larger programs become available.</p>
+<p><strong>Result.</strong> The runtime reduced foreground compilation time by <strong>91.98%</strong> and average KV memory by <strong>33.05%</strong>, while preserving model quality and decoding. These metrics describe foreground compilation and average KV allocation, respectively.</p>
+</section>
+<section><h2>Removing repeated compiler work</h2>
+<p><strong>Problem.</strong> Repeatedly sorting dependency and consumer vectors adds CPU work during NPU compilation.</p>
+<p><strong>Idea.</strong> Cache the sorted vectors and invalidate them when dependencies change.</p>
+<p><strong>Result.</strong> Reduced CPU sorting time by <strong>94.2%</strong> and contributed <a href="https://github.com/openvinotoolkit/npu_compiler/pull/348">PR #348 to the Intel NPU Compiler repository</a> (open draft). The percentage refers to sorting time, not total compilation time.</p>
+</section>
+<section><h2>Understanding device affinity</h2>
+<p>I developed a CPU/GPU/NPU benchmarking methodology to characterize operator and inference-stage affinity. The measurements identify hardware-dependent placement preferences to guide heterogeneous scheduling.</p>
+<p>Placement needs to account for execution stage, shape, and device boundaries. A local operator win alone does not establish an end-to-end scheduling improvement.</p>
+</section>
+<section><h2>Related technical notes</h2>
+<p><a href="../blog/posts/npu-jit-static-shapes.html">Earlier JIT prototype and experimental history</a> · <a href="../blog/posts/nuc16-godot-igpu-interference.html">iGPU rendering interference</a></p>
+<p class="meta">Earlier experiment reports retain their own configurations and baselines. The summary above reflects the current research résumé.</p>
+</section>
+</main>
+<footer>© Xuming Huang · <a href="../cv/Academic_Resume.pdf">Curriculum vitae</a> · <a href="https://github.com/Mac-Huang/xuming.ai">Website source</a></footer>
+</div>
+</body>
+</html>

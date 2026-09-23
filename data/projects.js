@@ -4,11 +4,12 @@ const projects = [
   {
     id: 'openvino-npu-sorting-cache',
     title: 'OpenVINO NPU Compiler — Cached Dependency Sorting',
-    description: 'Production compiler contribution motivated by a Qwen2.5-7B profile that issued 33.33M dependency-vector requests and spent 53.0 CPU-seconds repeatedly sorting them. I added an invalidation-aware cache for deterministic dependency and consumer vectors. Release A/B tests won 12/12 paired trials across 1K–8K prompt windows, reducing full compile time by 3.34–3.68% (1.0368× geomean).',
+    description: 'Cached sorted dependency and consumer vectors in the OpenVINO NPU compiler, reducing CPU sorting time by 94.2%. Contributed upstream PR #348. This reduction measures sorting work, not total compilation time.',
     tech: 'C++, MLIR, OpenVINO, Intel NPU Compiler, Performance Profiling',
-    thumbnail: 'images/papers/wuklab/edge-ai-research-evidence.png',
-    demo_url: 'demos/npuw-pyramid-jit.html',
-    code_url: 'https://github.com/Mac-Huang/npu_compiler/commit/7883fe9ab694c0ecc99660d9be4817ee814932e1',
+    thumbnail: 'images/research/edge-ai.svg',
+    demo_url: 'research/edge-ai.html',
+    demo_label: 'Research overview',
+    code_url: 'https://github.com/openvinotoolkit/npu_compiler/pull/348',
     links: [
       { label: 'PR Branch', url: 'https://github.com/Mac-Huang/npu_compiler/tree/codex/sorting-cache-pr' },
       { label: 'Upstream Compiler', url: 'https://github.com/openvinotoolkit/npu_compiler' }
@@ -62,7 +63,7 @@ const projects = [
     tech: 'JavaScript, SVG, Git Concepts, Interactive Learning',
     thumbnail: 'images/projects/git-visualizer-thumb.jpg',
     demo_url: 'demos/git-visualizer.html',
-    code_url: 'https://github.com/xuming-huang/git-visualizer',
+    code_url: 'https://github.com/Mac-Huang/xuming.ai/tree/main/git-visualizer',
     featured: true,
     highlighted: false
   },

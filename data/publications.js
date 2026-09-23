@@ -1,110 +1,72 @@
-// Publications data - actual research experience and ongoing work
+// Research experience: factual source is Resume.pages, reviewed September 23, 2026.
 const publications = [
-  // WukLab @ UCSD — Prof. Yiying Zhang (2025–present)
   {
-    id: 'wuklab-llm-codegen-2025',
-    title: 'LLM-driven Low-level Code Optimization',
-    authors: '<strong>Xuming Huang</strong> (advised by Prof. Yiying Zhang, WukLab @ UCSD)',
-    venue: 'WukLab Research Internship — Ongoing',
-    year: 2025,
-    image: 'images/papers/wuklab/openclaw_turn_gantt.png',
-    paper_url: 'research.html#wuklab',
-    code_url: null,
-    project_url: null,
-    bibtex: null,
-    selected: true,
-    category: 'ongoing',
-    abstract: 'Building a closed-loop agent that proposes compiler-grade transformations on low-level numerical and memory-bound kernels, then verifies each candidate through differential testing and on-device profiling. The pipeline pairs an LLM proposer with a sandboxed executor and a benchmarking harness, aiming to close the gap between LLM-suggested edits and the kind of optimizations a production compiler engineer would accept.'
+    "id": "wuklab",
+    "title": "Edge AI Systems Optimization",
+    "authors": "<strong>Xuming Huang</strong> · advised by Prof. Yiying Zhang",
+    "venue": "Undergraduate Researcher · WukLab, UC San Diego · Jan. 2026–present",
+    "year": 2026,
+    "image": "images/research/edge-ai.svg",
+    "paper_url": "research/edge-ai.html",
+    "paper_label": "research overview",
+    "code_url": "https://github.com/openvinotoolkit/npu_compiler/pull/348",
+    "code_label": "compiler PR #348",
+    "selected": true,
+    "category": "ongoing",
+    "abstract": "Developed a JIT NPU runtime that overlaps CPU graph compilation with NPU inference and grows the KV cache with context: 91.98% less foreground compilation time and 33.05% lower average KV memory, while preserving model quality and decoding. Cached sorted compiler dependency vectors to reduce CPU sorting time by 94.2%, and built CPU/GPU/NPU benchmarks to guide device placement."
   },
-
   {
-    id: 'wuklab-edge-inference-2025',
-    title: 'System Optimization for Edge Device Inference',
-    authors: '<strong>Xuming Huang</strong> (advised by Prof. Yiying Zhang, WukLab @ UCSD)',
-    venue: 'WukLab Research Internship — Ongoing',
-    year: 2025,
-    image: 'images/papers/wuklab/mem_budget_summary.png',
-    paper_url: 'research.html#wuklab',
-    code_url: null,
-    project_url: 'demos/openclaw-workflow.html',
-    bibtex: null,
-    selected: true,
-    category: 'ongoing',
-    abstract: 'A measurement-first characterization of agentic LLM serving on a 24 GB M3 MacBook Air via OpenClaw on ollama (qwen2.5 3B/7B/14B q4_K_M). An 11-scenario memory-budget sweep yields a first-order RSS model with 10.2% mean absolute error, exposes a page-compressor cliff at parallel=3 on 14B/32k context, and isolates a 35x prefill spike caused by auto-compaction breaking the prefix cache between consecutive turns.'
+    "id": "os-inference",
+    "title": "Operating Systems for AI Inference",
+    "authors": "<strong>Xuming Huang</strong> · advised by Prof. Michael Swift",
+    "venue": "Honors Course Research Project · UW–Madison · Jan.–May 2026",
+    "year": 2026,
+    "image": "images/research/os-inference.svg",
+    "paper_url": "research/os-inference.html",
+    "paper_label": "project overview",
+    "selected": true,
+    "category": "completed",
+    "abstract": "Measured how background filesystem reads interfere with a fixed LLM inference workload: median latency increased 17.1%. Windows PerfMon showed stable working sets and page-fault counts plateauing near 29.5K, supporting shared-resource contention as the explanation rather than working-set thrashing."
   },
-
-  // Current Research Projects (2025)
   {
-    id: 'linuxguard-2025',
-    title: 'LinuxGuard: Automated Static Analyzer Generation from Kernel Bug Fixes',
-    authors: '<strong>Xuming Huang</strong> (advised by Remzi Arpaci-Dusseau, Vinay Banakar)',
-    venue: 'Ongoing Research Project',
-    year: 2025,
-    image: 'images/papers/linuxguard_paradigm.jpg',
-    paper_url: 'linuxguard.html',
-    code_url: "https://github.com/Mac-Huang/LinuxGuard.git",
-    project_url: null,
-    bibtex: null,
-    selected: true,
-    category: 'ongoing',
-    abstract: 'Developing an LLM-powered system that automatically converts Linux kernel bug fixes into clang-tidy static analyzers. By learning from historical commit patterns, LinuxGuard generates checkers that detect similar vulnerabilities across different kernel versions, effectively transforming every patched bug into a preventive tool. The system leverages RAG-enhanced architectures and program analysis techniques to achieve high-precision vulnerability detection while reducing manual effort in kernel security maintenance.'
+    "id": "linuxguard-2025",
+    "title": "LinuxGuard: AI for System Security",
+    "authors": "<strong>Xuming Huang</strong> · advised by Prof. Remzi Arpaci-Dusseau and Dr. Vinay Banakar",
+    "venue": "Undergraduate Researcher · UW–Madison · Jan.–Nov. 2025",
+    "year": 2025,
+    "image": "images/research/linuxguard.svg",
+    "paper_url": "linuxguard.html",
+    "paper_label": "project",
+    "project_url": "blog/posts/linuxguard-journey.html",
+    "project_label": "retrospective",
+    "code_url": "https://github.com/Mac-Huang/LinuxGuard",
+    "selected": true,
+    "category": "completed",
+    "abstract": "Built an LLM-driven pipeline over 50K+ Linux kernel commits to generate Clang-Tidy analyzers. Clustering and compiler-feedback repair produced 4× more valid checkers at 73% precision. A full-kernel validation harness uncovered 43 long-latent bugs with an average age of 4.7 years."
   },
-
-
   {
-    id: 'cifar10-classification-2024',
-    title: 'Image Classification Algorithm Analysis: A Comparative Study of Traditional ML and Deep Learning Approaches',
-    authors: '<strong>Xuming Huang</strong> (supervised by Prof. Dunlu Peng)',
-    venue: 'Shanghai Research Project',
-    year: 2024,
-    image: 'images/papers/ResMacNet.jpg',
-    paper_url: null,
-    code_url: 'https://github.com/Mac-Huang/CIFAR10-Image-Classification',
-    project_url: null,
-    bibtex: null,
-    selected: false,
-    category: 'research',
-    abstract: 'Comprehensive analysis comparing traditional ML methods with CNN architectures on CIFAR-10 dataset. Implemented custom architectures achieving 81.3% accuracy. Developed 2-stage inference using ResMacNet, achieving 13% improvement over baseline.'
-  },
-
-  {
-    id: 'multispectral-unet-2024',
-    title: 'Multispectral U-Net Segmentation Research',
-    authors: '<strong>Xuming Huang</strong>, Prof. Xin Hu',
-    venue: 'Research Project',
-    year: 2024,
-    image: 'images/papers/unet.jpg',
-    paper_url: 'https://arxiv.org/abs/2506.05972',
-    code_url: null,
-    project_url: null,
-    bibtex: null,
-    selected: false,
-    category: 'ongoing',
-    abstract: 'Developing advanced U-Net architectures for multispectral image segmentation with applications in remote sensing and medical imaging.'
+    "id": "cash",
+    "title": "ML-Guided Scheduling for Heterogeneous Compute Systems",
+    "authors": "<strong>Xuming Huang</strong> · coauthor; advised by Prof. Xing Hu",
+    "venue": "Undergraduate Researcher · USST · Jan. 2024–Sept. 2026",
+    "year": 2026,
+    "image": "images/research/cash.svg",
+    "paper_url": "https://www.techscience.com/cmc/v89n2/68821",
+    "paper_label": "paper",
+    "selected": true,
+    "category": "completed",
+    "abstract": "Contributed to experimental validation and performance analysis of CASH, which predicts workload–hardware affinity for CPU/GPU placement. In 5,000-task simulations using MIT Supercloud traces, the scheduler achieved 97.1% resource-matching accuracy, 46.5% lower response time, and 36.8% lower modeled energy than Meta-RHDC."
   }
 ];
-
-// Helper functions
 function getPublicationsByCategory(category) {
-  if (category === 'all') return publications;
-  if (category === 'selected') return publications.filter(pub => pub.selected === true);
-  return publications.filter(pub => pub.category === category);
+  if (category === 'all') return [...publications];
+  if (category === 'selected') return publications.filter(p => p.selected);
+  return publications.filter(p => p.category === category);
 }
-
-function getSelectedPublications() {
-  return publications.filter(pub => pub.selected === true);
-}
-
-function getPublicationsByYear(year) {
-  return publications.filter(pub => pub.year === year);
-}
-
-// Publication categories for filtering
+function getSelectedPublications() { return publications.filter(p => p.selected); }
+function getPublicationsByYear(year) { return publications.filter(p => p.year === year); }
 const publicationCategories = [
-  { label: 'All', value: 'all' },
-  { label: 'Selected', value: 'selected' },
-  { label: 'Ongoing Research', value: 'ongoing' },
-  { label: 'Conference', value: 'conference' },
-  { label: 'Journal', value: 'journal' },
-  { label: 'Preprint', value: 'preprint' }
+  {label:'All experience',value:'all'},
+  {label:'Ongoing',value:'ongoing'},
+  {label:'Completed',value:'completed'}
 ];

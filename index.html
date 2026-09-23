@@ -1,446 +1,53 @@
-<!DOCTYPE HTML>
-<html lang="en">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>Xuming Huang | AI & Systems Explorer</title>
-  <meta name="author" content="Xuming Huang">
-  <meta name="description" content="Xuming Huang researches AI systems, compilers, edge intelligence, and systems security at UW–Madison and UC San Diego.">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://xuming.ai/">
-  <meta property="og:title" content="Xuming Huang | AI &amp; Systems Explorer">
-  <meta property="og:description" content="Research in AI systems, compilers, edge intelligence, and systems security.">
-  <meta property="og:image" content="https://xuming.ai/images/social-preview.png">
-  <meta property="og:image:width" content="1731">
-  <meta property="og:image:height" content="908">
-  <meta property="og:image:alt" content="Xuming Huang — AI Systems, Compilers, and Edge Intelligence">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Xuming Huang | AI &amp; Systems Explorer">
-  <meta name="twitter:description" content="Research in AI systems, compilers, edge intelligence, and systems security.">
-  <meta name="twitter:image" content="https://xuming.ai/images/social-preview.png">
-  <link rel="stylesheet" type="text/css" href="stylesheet.css">
-  <link rel="icon" type="image/png" href="images/favicon.png">
-  <style>
-    .bio-section {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .profile-photo-frame {
-      width: 100%;
-      max-width: 320px;
-      aspect-ratio: 1;
-      margin: 0 auto;
-      border-radius: 50%;
-      overflow: hidden;
-      background: #dce8f2;
-    }
-
-    .profile-photo-frame img {
-      display: block;
-      width: 270%;
-      max-width: none;
-      transform: translate(-31.5%, -18%);
-    }
-
-    /* Left Navigation Styles */
-    .nav-sidebar {
-      position: fixed;
-      left: 20px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 150px;
-      z-index: 100;
-    }
-
-    .nav-sidebar ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    .nav-sidebar li {
-      margin-bottom: 8px;
-    }
-
-    .nav-sidebar a {
-      color: #999;
-      text-decoration: none;
-      font-size: 13px;
-      display: block;
-      padding: 5px 10px;
-      border-left: 2px solid transparent;
-      transition: all 0.3s ease;
-    }
-
-    .nav-sidebar a:hover {
-      color: #1772d0;
-      border-left-color: #1772d0;
-      padding-left: 15px;
-    }
-
-    .nav-sidebar a.active {
-      color: #1772d0;
-      border-left-color: #1772d0;
-      font-weight: 600;
-    }
-
-    /* Adjust main content for sidebar */
-    @media (min-width: 1200px) {
-      body {
-        padding-left: 180px;
-      }
-    }
-
-    /* Hide sidebar on smaller screens */
-    @media (max-width: 1199px) {
-      .nav-sidebar {
-        display: none;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .bio-section {
-        min-height: auto;
-        padding: 34px 0 18px;
-      }
-
-      .bio-row {
-        display: flex;
-        flex-direction: column;
-      }
-
-      .bio-copy,
-      .bio-photo {
-        display: block;
-        width: 100% !important;
-        max-width: 100% !important;
-      }
-
-      .bio-copy {
-        order: 2;
-      }
-
-      .bio-photo {
-        order: 1;
-      }
-
-      .profile-photo-frame {
-        max-width: 240px;
-      }
-    }
-  </style>
-</head>
-
-<body>
-  <!-- Left Navigation Directory -->
-  <nav class="nav-sidebar">
-    <ul>
-      <li><a href="#bio" class="active">About</a></li>
-      <li><a href="#research">Research</a></li>
-      <li><a href="#projects">Projects</a></li>
-      <li><a href="#teaching">Teaching</a></li>
-      <li><a href="#apps">Apps</a></li>
-      <li><a href="#service">Service</a></li>
-    </ul>
-  </nav>
-
-  <table style="width:100%;max-width:900px;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
-    <tbody>
-      <tr style="padding:0px">
-        <td style="padding:0px">
-          
-          <!-- Bio Section -->
-          <div class="bio-section" id="bio">
-          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
-            <tbody>
-              <tr class="bio-row" style="padding:0px">
-                <td class="bio-copy" style="padding:2.5%;width:63%;vertical-align:middle">
-                  <p style="text-align:center">
-                    <name>Xuming Huang</name>
-                  </p>
-                  <p>
-                    I'm an innovative CS undergrad at University of Wisconsin - Madison, exploring the cutting edge where AI meets systems,
-                    passionate about transforming bold ideas into rigorous research. My research interest sits at the intersection of
-                    <strong>Artificial Intelligence</strong>, <strong>Systems</strong>, and <strong>Security</strong>.
-                  </p>
-                  <p>
-                    With Professor <a href="https://pages.cs.wisc.edu/~remzi/">Remzi Arpaci-Dusseau</a> at ADSL, I build
-                    <a href="linuxguard.html">LinuxGuard</a>, which turns Linux kernel bug-fix commits into clang-tidy checkers that catch
-                    recurring vulnerabilities. With Professor <a href="https://cseweb.ucsd.edu/~yiying/">Yiying Zhang</a> at
-                    <a href="https://wuklab.io/">WukLab</a>, I study practical edge AI systems: measuring CPU/iGPU/NPU tradeoffs,
-                    building copy-on-growth and one-ahead NPU specialization for growing agent contexts, and contributing an
-                    <a href="https://github.com/Mac-Huang/npu_compiler/commit/7883fe9ab694c0ecc99660d9be4817ee814932e1">OpenVINO NPU compiler optimization</a>
-                    that reduced full compile time by about 3.4%.
-                  </p>
-                  <p style="text-align:center">
-                    <a href="javascript:;" onclick="showEmail()" id="email-link">[show email]</a> / 
-                    <a href="cv/Academic_Resume.pdf" target="_blank" rel="noopener noreferrer">CV</a> /
-                    <a href="https://scholar.google.com/citations?user=Wd0QQ7kAAAAJ&hl=en" target="_blank" rel="noopener noreferrer">Google Scholar</a> /
-                    <a href="https://github.com/mac-huang" target="_blank" rel="noopener noreferrer">GitHub</a> /
-                    <a href="https://www.linkedin.com/in/xuminghuang/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-				  </p>
-                </td>
-                <td class="bio-photo" style="padding:2.5%;width:40%;max-width:40%">
-                  <div class="profile-photo-frame">
-                    <img alt="Xuming Huang at the coast" src="images/headshot.jpg">
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          </div>
-          
-          <!-- Navigation -->
-          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
-            <tbody>
-              <tr>
-                <td style="padding:20px;width:100%;vertical-align:middle">
-                  <p style="text-align:center;font-size:18px;">
-                    <a href="index.html" style="font-weight:700;">Home</a> &nbsp;|&nbsp;
-                    <a href="research.html">Research</a> &nbsp;|&nbsp;
-                    <a href="projects.html">Projects</a> &nbsp;|&nbsp;
-                    <a href="blog.html">Blog</a> &nbsp;|&nbsp;
-                    <a href="courses.html">Courses</a> &nbsp;|&nbsp;
-                    <a href="bot.html">Ask Me</a>
-                  </p>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          
-          <!-- Research Section -->
-          <table id="research" style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
-            <tbody>
-              <tr>
-                <td style="padding:20px;width:100%;vertical-align:middle">
-                  <heading>Research</heading>
-                  <p>
-                    My research focuses on the intersection of systems security, program analysis, and machine learning.
-                    I'm particularly interested in automated vulnerability detection, static analysis generation, and
-                    applying ML techniques to enhance system reliability and security.
-                    Representative projects are <span class="highlight">highlighted</span>.
-                  </p>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          
-          <!-- Publications Table -->
-          <table style="width:100%;border:0px;border-spacing:0px 10px;border-collapse:separate;margin-right:auto;margin-left:auto;" id="selected-publications">
-            <tbody>
-              <!-- Publications will be loaded dynamically from publications.js -->
-            </tbody>
-          </table>
-          
-          <!-- View All Publications Link -->
-          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
-            <tbody>
-              <tr>
-                <td style="padding:20px;width:100%;vertical-align:middle;text-align:center">
-                  <a href="research.html">View All Works →</a>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          
-          <!-- Projects Preview -->
-          <table id="projects" style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
-            <tbody>
-              <tr>
-                <td style="padding:20px;width:100%;vertical-align:middle">
-                  <heading>Selected Projects</heading>
-                  <p>
-                    I create interactive visualizations and educational tools for computer science concepts.
-                    <a href="projects.html">See All Projects →</a>
-                  </p>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          
-          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
-            <tbody>
-              <tr>
-                <td style="padding:20px;width:33%;vertical-align:top">
-                  <div style="text-align:center;">
-                    <a href="demos/npuw-pyramid-jit.html">
-                      <img src="images/papers/wuklab/edge-ai-research-evidence.png" alt="OpenVINO NPU compiler optimization evidence" style="width:100%;max-width:200px;height:120px;object-fit:cover;border-radius:5px;border:1px solid #ddd;">
-                    </a>
-                    <p style="margin-top:10px;"><strong>OpenVINO NPU Compiler Optimization</strong></p>
-                    <p style="font-size:13px;color:#666;">Cached 33.33M repeated dependency sorts, cutting production compile time by about 3.4%</p>
-                  </div>
-                </td>
-                <td style="padding:20px;width:33%;vertical-align:top">
-                  <div style="text-align:center;">
-                    <a href="demos/openclaw-workflow.html">
-                      <img src="images/papers/wuklab/mem_budget_summary.png" alt="OpenClaw Workflow" style="width:100%;max-width:200px;height:120px;object-fit:cover;border-radius:5px;border:1px solid #ddd;">
-                    </a>
-                    <p style="margin-top:10px;"><strong>OpenClaw Edge Workflow</strong></p>
-                    <p style="font-size:13px;color:#666;">Inside an agentic LLM turn — prompt cache, KV cache, and the 35× compaction spike</p>
-                  </div>
-                </td>
-                <td style="padding:20px;width:33%;vertical-align:top">
-                  <div style="text-align:center;">
-                    <a href="demos/heap-allocator.html">
-                      <img src="images/projects/heap-allocator-thumb.jpg" alt="Heap Allocator" style="width:100%;max-width:200px;height:120px;object-fit:cover;border-radius:5px;border:1px solid #ddd;">
-                    </a>
-                    <p style="margin-top:10px;"><strong>Heap Allocator Visualization</strong></p>
-                    <p style="font-size:13px;color:#666;">CS107 memory allocation strategies with coalescing and fragmentation analysis</p>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          
-          <!-- Teaching -->
-          <table id="teaching" style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
-            <tbody>
-              <tr>
-                <td style="padding:20px;width:100%;vertical-align:middle">
-                  <heading>Teaching & Tutorials</heading>
-                  <p>
-                    <strong>Deep Learning Architecture Tutorials:</strong><br>
-                    • <a href="https://github.com/Mac-Huang/Transformer">Understanding Transformers</a> - Comprehensive tutorial on Transformer architecture with implementations<br>
-                    • <a href="https://github.com/Mac-Huang/GPT">GPT Implementation Guide</a> - Step-by-step implementation and explanation of GPT models<br>
-                    • <a href="https://github.com/Mac-Huang/algorithms">Algorithms Visualizations</a> - Interactive visualizations and implementations of fundamental algorithms<br>
-                    <br>
-                    <strong>Teaching Assistant Aspirations:</strong><br>
-                    Planning to TA for COMP SCI 252: Introduction to Computer Engineering (Future semesters)
-                  </p>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          
-          <!-- Apps -->
-          <table id="apps" style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
-            <tbody>
-              <tr>
-                <td style="padding:20px;width:100%;vertical-align:middle">
-                  <heading>Apps</heading>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-          <!-- App Projects Table -->
-          <table style="width:100%;border:0px;border-spacing:0px 10px;border-collapse:separate;margin-right:auto;margin-left:auto;">
-            <tbody>
-              <tr>
-                <td style="padding:20px;width:25%;vertical-align:middle">
-                  <img src="images/projects/tenant-sos-thumb.jpg" alt="TenantSOS" style="width:100%;max-width:150px;border-radius:10px;box-shadow:0 4px 8px rgba(0,0,0,0.1);">
-                </td>
-                <td style="padding:20px;width:75%;vertical-align:middle">
-                  <papertitle>TenantSOS - Legal Information iOS App</papertitle>
-                  <br>
-                  <em>Swift 5.9, SwiftUI, Firebase, Core Location</em>
-                  <br>
-                  <p style="margin-top:10px;">
-                    iOS application providing location-based legal information for tenants across all 50 U.S. states.
-                    Features automatic GPS-based state law detection, comprehensive legal database covering tenant rights,
-                    traffic laws, employment regulations, and consumer protections. Includes 10+ legal document templates,
-                    smart notifications for law changes, and offline law access. Implements freemium model with pro subscription
-                    for unlimited features.
-                  </p>
-                  <a href="https://github.com/Mac-Huang/Tenant-SOS">[GitHub]</a>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-          <!-- Service -->
-          <table id="service" style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
-            <tbody>
-              <tr>
-                <td style="padding:20px;width:100%;vertical-align:middle">
-                  <heading>Service & Activities</heading>
-                  <p>
-                    <strong>Leadership:</strong> NFL Flag Football Team Captain - USST "Earthmoving Vehicles" (2023 National Champions)<br>
-                    <strong>Community:</strong> Peer tutor for CS252 Discussion Sections at UW-Madison (coming soon...)<br>
-                    <strong>Open Source:</strong> Contributing to machine learning projects and educational materials
-                  </p>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          
-          <!-- Footer -->
-          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
-            <tbody>
-              <tr>
-                <td style="padding:0px">
-                  <br>
-                  <p style="text-align:center;font-size:14px;color:#999;padding:20px;">
-                    Feel free to clone my templete <a href="https://github.com/Mac-Huang/xuming.ai.git" style="color:#999;">Xuming Huang</a>
-                  </p>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  
-  <script src="data/publications.js"></script>
-  <script src="js/main.js"></script>
-  <script src="js/bot-preload.js"></script>
-
-  <!-- Navigation Active State Script -->
-  <script>
-    // Update active navigation item based on scroll position
-    function updateActiveNav() {
-      const sections = ['bio', 'research', 'projects', 'teaching', 'apps', 'service'];
-      const scrollPosition = window.scrollY + 100;
-
-      for (let section of sections) {
-        const element = document.getElementById(section);
-        if (element) {
-          const top = element.offsetTop;
-          const height = element.offsetHeight;
-
-          if (scrollPosition >= top && scrollPosition < top + height) {
-            // Remove active class from all links
-            document.querySelectorAll('.nav-sidebar a').forEach(link => {
-              link.classList.remove('active');
-            });
-
-            // Add active class to current section link
-            const activeLink = document.querySelector(`.nav-sidebar a[href="#${section}"]`);
-            if (activeLink) {
-              activeLink.classList.add('active');
-            }
-            break;
-          }
-        }
-      }
-    }
-
-    // Smooth scrolling for navigation links
-    document.querySelectorAll('.nav-sidebar a').forEach(anchor => {
-      anchor.addEventListener('click', function(e) {
-        e.preventDefault();
-        const targetId = this.getAttribute('href').substring(1);
-        const targetElement = document.getElementById(targetId);
-
-        if (targetElement) {
-          targetElement.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-          });
-        }
-      });
-    });
-
-    // Update active state on scroll
-    window.addEventListener('scroll', updateActiveNav);
-
-    // Update on page load
-    window.addEventListener('load', updateActiveNav);
-  </script>
-</body>
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Systems for AI | Xuming Huang</title><meta name="description" content="Xuming Huang studies systems for AI, edge inference, operating systems, and AI compilers at UW–Madison and WukLab."><link rel="icon" href="images/favicon.png"><link rel="stylesheet" href="stylesheet.css"><link rel="stylesheet" href="research.css"><meta property="og:title" content="Systems for AI | Xuming Huang"><meta property="og:description" content="Xuming Huang studies systems for AI, edge inference, operating systems, and AI compilers at UW–Madison and WukLab."><meta property="og:image" content="https://xuming.ai/images/social-preview.png"></head>
+<body><div class="site-shell"><nav class="site-nav" aria-label="Main navigation"><a href="index.html">Home</a><a href="research.html">Research</a><a href="projects.html">Projects</a><a href="blog.html">Blog</a><a href="courses.html">Courses</a><a href="cv/Academic_Resume.pdf">CV ↗</a></nav>
+<main><header id="bio" class="profile"><div><p class="eyebrow">SYSTEMS FOR AI · EDGE INFERENCE</p>
+<h1>Xuming Huang</h1>
+<p class="lead">I build and study systems that make AI inference more efficient on constrained hardware.</p>
+<p>I am a Computer Sciences undergraduate at the University of Wisconsin–Madison, graduating in May 2027. At <a href="https://wuklab.io/">WukLab, UC San Diego</a>, I work with <a href="https://cseweb.ucsd.edu/~yiying/">Prof. Yiying Zhang</a> on NPU runtimes, compiler optimization, and CPU/GPU/NPU placement.</p>
+<p>Previously, I studied OS interference with Prof. Michael Swift and built LinuxGuard with Prof. Remzi Arpaci-Dusseau and Dr. Vinay Banakar at UW–Madison.</p>
+<div class="profile-links"><a href="mailto:xuming@cs.wisc.edu">Email</a><a href="cv/Academic_Resume.pdf">CV</a><a href="https://scholar.google.com/citations?user=Wd0QQ7kAAAAJ&amp;hl=en">Scholar</a><a href="https://github.com/Mac-Huang">GitHub</a><a href="https://www.linkedin.com/in/xuminghuang/">LinkedIn</a></div>
+</div>
+<img class="portrait" src="images/headshot.jpg" alt="Xuming Huang at the coast" width="260" height="320"></header>
+<section id="research"><div class="section-head"><h2>Research experience</h2>
+<a href="research.html">All research &amp; publications →</a></div>
+<p class="section-intro">From compiler work and runtime design to resource contention and program analysis.</p>
+<table id="selected-publications" class="research-table"><tbody>
+<tr id="wuklab" class="research-row"><td><img src="images/research/edge-ai.svg" alt="Edge AI Systems Optimization" width="600" height="240" loading="lazy"></td><td><a href="research/edge-ai.html"><papertitle>Edge AI Systems Optimization</papertitle></a><br><div><strong>Xuming Huang</strong> · advised by Prof. Yiying Zhang</div>
+<em>Undergraduate Researcher · WukLab, UC San Diego · Jan. 2026–present</em><br><div><a href="research/edge-ai.html">research overview</a> / <a href="https://github.com/openvinotoolkit/npu_compiler/pull/348">compiler PR #348</a></div>
+<p>Developed a JIT NPU runtime that overlaps CPU graph compilation with NPU inference and grows the KV cache with context: 91.98% less foreground compilation time and 33.05% lower average KV memory, while preserving model quality and decoding. Cached sorted compiler dependency vectors to reduce CPU sorting time by 94.2%, and built CPU/GPU/NPU benchmarks to guide device placement.</p>
+</td></tr>
+<tr id="os-inference" class="research-row"><td><img src="images/research/os-inference.svg" alt="Operating Systems for AI Inference" width="600" height="240" loading="lazy"></td><td><a href="research/os-inference.html"><papertitle>Operating Systems for AI Inference</papertitle></a><br><div><strong>Xuming Huang</strong> · advised by Prof. Michael Swift</div>
+<em>Honors Course Research Project · UW–Madison · Jan.–May 2026</em><br><div><a href="research/os-inference.html">project overview</a></div>
+<p>Measured how background filesystem reads interfere with a fixed LLM inference workload: median latency increased 17.1%. Windows PerfMon showed stable working sets and page-fault counts plateauing near 29.5K, supporting shared-resource contention as the explanation rather than working-set thrashing.</p>
+</td></tr>
+<tr id="linuxguard-2025" class="research-row"><td><img src="images/research/linuxguard.svg" alt="LinuxGuard: AI for System Security" width="600" height="240" loading="lazy"></td><td><a href="linuxguard.html"><papertitle>LinuxGuard: AI for System Security</papertitle></a><br><div><strong>Xuming Huang</strong> · advised by Prof. Remzi Arpaci-Dusseau and Dr. Vinay Banakar</div>
+<em>Undergraduate Researcher · UW–Madison · Jan.–Nov. 2025</em><br><div><a href="linuxguard.html">project</a> / <a href="https://github.com/Mac-Huang/LinuxGuard">code</a> / <a href="blog/posts/linuxguard-journey.html">retrospective</a></div>
+<p>Built an LLM-driven pipeline over 50K+ Linux kernel commits to generate Clang-Tidy analyzers. Clustering and compiler-feedback repair produced 4× more valid checkers at 73% precision. A full-kernel validation harness uncovered 43 long-latent bugs with an average age of 4.7 years.</p>
+</td></tr>
+<tr id="cash" class="research-row"><td><img src="images/research/cash.svg" alt="ML-Guided Scheduling for Heterogeneous Compute Systems" width="600" height="240" loading="lazy"></td><td><a href="https://www.techscience.com/cmc/v89n2/68821"><papertitle>ML-Guided Scheduling for Heterogeneous Compute Systems</papertitle></a><br><div><strong>Xuming Huang</strong> · coauthor; advised by Prof. Xing Hu</div>
+<em>Undergraduate Researcher · USST · Jan. 2024–Sept. 2026</em><br><div><a href="https://www.techscience.com/cmc/v89n2/68821">paper</a></div>
+<p>Contributed to experimental validation and performance analysis of CASH, which predicts workload–hardware affinity for CPU/GPU placement. In 5,000-task simulations using MIT Supercloud traces, the scheduler achieved 97.1% resource-matching accuracy, 46.5% lower response time, and 36.8% lower modeled energy than Meta-RHDC.</p>
+</td></tr>
+</tbody>
+</table>
+</section>
+<section id="projects"><div class="section-head"><h2>Projects &amp; writing</h2>
+<a href="projects.html">All projects →</a></div>
+<div class="feature-grid"><a class="feature" href="research/edge-ai.html"><img src="images/research/edge-ai.svg" alt="CPU compilation, NPU decoding, and KV-cache growth" width="600" height="240" loading="lazy"><h3>Adaptive NPU inference</h3>
+<p>Compile progressively and grow model state as context expands.</p>
+</a><a class="feature" href="blog/posts/nuc16-godot-igpu-interference.html"><img src="images/blog/nuc16-godot-interference/latency.png" alt="Measured inference latency under Godot rendering" width="600" height="240" loading="lazy"><h3>When graphics meets inference</h3>
+<p>A separate study of rendering and inference on a shared iGPU.</p>
+</a><a class="feature" href="demos/heap-allocator.html"><img src="images/projects/heap-allocator-thumb.jpg" alt="Heap allocator visualization" width="600" height="240" loading="lazy"><h3>Inside a heap allocator</h3>
+<p>Explore free lists, coalescing, and fragmentation.</p>
+</a></div>
+</section>
+<section id="teaching"><h2>Teaching &amp; open source</h2>
+<p><strong>ECE 252 In-Class Peer Coach, UW–Madison</strong> · September–December 2026.<br>I support discussion sessions and hold office hours.</p>
+<p>I maintain <a href="https://github.com/Mac-Huang/algorithms">algorithm implementations and visualizations</a>, and learning resources for <a href="https://github.com/Mac-Huang/Transformer">Transformers</a> and <a href="https://github.com/Mac-Huang/GPT">GPT</a>.</p>
+</section>
+</main>
+<footer>© Xuming Huang · <a href="cv/Academic_Resume.pdf">Curriculum vitae</a> · <a href="https://github.com/Mac-Huang/xuming.ai">Website source</a></footer>
+</div>
+<script src="data/publications.js"></script><script src="js/main.js"></script></body>
 </html>

@@ -18,10 +18,12 @@ function showEmail() {
 // Create a publication row following Jon Barron's exact style
 function createPublicationRow(pub) {
   const tr = document.createElement('tr');
+  tr.id = pub.id;
+  tr.className = 'research-row';
   
   // Add background color for selected papers
   if (pub.selected) {
-    tr.style.backgroundColor = '#ffffd0';
+    tr.classList.add('selected-research');
   }
   
   // Image column (25% width, 160px images)
@@ -32,7 +34,9 @@ function createPublicationRow(pub) {
     const img = document.createElement('img');
     img.src = pub.image;
     img.alt = pub.title;
-    img.width = 160;
+    img.width = 600;
+    img.height = 240;
+    img.loading = 'lazy';
     img.style.borderStyle = 'none';
     tdImage.appendChild(img);
   }
@@ -66,7 +70,7 @@ function createPublicationRow(pub) {
   // Venue and year in italics
   const venueEm = document.createElement('em');
   venueEm.textContent = pub.venue;
-  if (pub.year) {
+  if (pub.year && !pub.venue.includes('·')) {
     venueEm.textContent += ', ' + pub.year;
   }
   tdContent.appendChild(venueEm);
@@ -75,13 +79,13 @@ function createPublicationRow(pub) {
   // Links row (paper / code / project / bibtex)
   const links = [];
   if (pub.paper_url) {
-    links.push('<a href="' + pub.paper_url + '">paper</a>');
+    links.push('<a href="' + pub.paper_url + '">' + (pub.paper_label || 'paper') + '</a>');
   }
   if (pub.code_url) {
-    links.push('<a href="' + pub.code_url + '">code</a>');
+    links.push('<a href="' + pub.code_url + '">' + (pub.code_label || 'code') + '</a>');
   }
   if (pub.project_url) {
-    links.push('<a href="' + pub.project_url + '">project</a>');
+    links.push('<a href="' + pub.project_url + '">' + (pub.project_label || 'project') + '</a>');
   }
   if (pub.bibtex) {
     links.push('<a href="javascript:void(0)" onclick="showBibTeX(\'' + pub.id + '\')">bibtex</a>');
@@ -123,13 +127,6 @@ function loadPublications(filter = 'all') {
   // Get filtered publications
   let filteredPubs = getPublicationsByCategory(filter);
   
-  // Sort by year (descending) and then by selected status
-  filteredPubs.sort((a, b) => {
-    if (a.year !== b.year) return b.year - a.year;
-    if (a.selected !== b.selected) return b.selected ? 1 : -1;
-    return 0;
-  });
-  
   // Create and append rows
   filteredPubs.forEach(pub => {
     const row = createPublicationRow(pub);
@@ -148,7 +145,7 @@ function loadSelectedPublications() {
   const selectedPubs = getSelectedPublications();
   
   // Sort by year (descending)
-  selectedPubs.sort((a, b) => b.year - a.year);
+  // Use the same experience order on the homepage and research page.
   
   // Create and append rows
   selectedPubs.forEach(pub => {
@@ -164,6 +161,7 @@ function filterPublications(category) {
   // Update filter button states
   document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.classList.remove('active');
+    btn.setAttribute('aria-pressed', String(btn.dataset.filter === category));
     if (btn.dataset.filter === category) {
       btn.classList.add('active');
     }
@@ -258,31 +256,21 @@ function copyBibTeX() {
 
 // Add filter buttons to page
 function addFilterButtons() {
-  const filterContainer = document.getElementById('publication-filters');
-  if (!filterContainer) return;
-  
-  // No filters needed - commented out for now
-  // const filters = [
-  //   { label: 'All', value: 'all' },
-  //   { label: 'Selected', value: 'selected' },
-  //   { label: 'Conference', value: 'conference' },
-  //   { label: 'Journal', value: 'journal' },
-  //   { label: 'Preprint', value: 'preprint' }
-  // ];
-  
-  // filters.forEach(filter => {
-  //   const btn = document.createElement('button');
-  //   btn.className = 'filter-btn';
-  //   btn.dataset.filter = filter.value;
-  //   btn.textContent = filter.label;
-  //   btn.onclick = () => filterPublications(filter.value);
-  //   
-  //   if (filter.value === currentFilter) {
-  //     btn.classList.add('active');
-  //   }
-  //   
-  //   filterContainer.appendChild(btn);
-  // });
+  const container = document.getElementById('publication-filters');
+  if (!container || typeof publicationCategories === 'undefined') return;
+  container.replaceChildren();
+  container.setAttribute('role', 'group');
+  container.setAttribute('aria-label', 'Filter research experience');
+  publicationCategories.forEach(filter => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'filter-btn' + (filter.value === currentFilter ? ' active' : '');
+    button.dataset.filter = filter.value;
+    button.textContent = filter.label;
+    button.setAttribute('aria-pressed', String(filter.value === currentFilter));
+    button.addEventListener('click', () => filterPublications(filter.value));
+    container.appendChild(button);
+  });
 }
 
 // Create a project row following Jon Barron's style
@@ -291,7 +279,7 @@ function createProjectRow(project) {
   
   // Highlight representative projects with same color as research page
   if (project.featured && project.highlighted) {
-    tr.style.backgroundColor = '#ffffd0';
+    tr.classList.add('selected-research');
   }
   
   // Image column (25% width, 160px images)
@@ -302,7 +290,9 @@ function createProjectRow(project) {
     const img = document.createElement('img');
     img.src = project.thumbnail;
     img.alt = project.title;
-    img.width = 160;
+    img.width = 600;
+    img.height = 240;
+    img.loading = 'lazy';
     img.height = 110;
     img.style.cssText = 'border:1px solid #ddd;border-radius:6px;object-fit:cover;';
 
@@ -348,7 +338,7 @@ function createProjectRow(project) {
   // Links (demo / code / supporting resources)
   const links = [];
   if (project.demo_url) {
-    links.push({ label: 'Live Demo', url: project.demo_url });
+    links.push({ label: project.demo_label || 'Live Demo', url: project.demo_url });
   }
   if (project.code_url) {
     links.push({ label: 'Code', url: project.code_url });

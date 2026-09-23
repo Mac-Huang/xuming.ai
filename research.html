@@ -1,148 +1,54 @@
-<!DOCTYPE HTML>
-<html lang="en">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>Xuming Huang - Research</title>
-  <meta name="author" content="Xuming Huang">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" type="text/css" href="stylesheet.css">
-  <link rel="icon" type="image/png" href="images/favicon.png">
-</head>
-
-<body>
-  <table style="width:100%;max-width:900px;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
-    <tbody>
-      <tr style="padding:0px">
-        <td style="padding:0px">
-          
-          <!-- Header -->
-          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
-            <tbody>
-              <tr>
-                <td style="padding:20px;width:100%;vertical-align:middle">
-                  <p style="text-align:center">
-                    <name>Research</name>
-                  </p>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          
-          <!-- Navigation -->
-          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
-            <tbody>
-              <tr>
-                <td style="padding:20px;width:100%;vertical-align:middle">
-                  <p style="text-align:center;font-size:18px;">
-                    <a href="index.html">Home</a> &nbsp;|&nbsp;
-                    <a href="research.html" style="font-weight:700;">Research</a> &nbsp;|&nbsp;
-                    <a href="projects.html">Projects</a> &nbsp;|&nbsp;
-                    <a href="blog.html">Blog</a> &nbsp;|&nbsp;
-                    <a href="courses.html">Courses</a> &nbsp;|&nbsp;
-                    <a href="bot.html">Ask Me</a>
-                  </p>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          
-          <!-- Research Interests -->
-          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
-            <tbody>
-              <tr>
-                <td style="padding:20px;width:100%;vertical-align:middle">
-                  <heading>Research Interests</heading>
-                  <p>
-                    I work at the boundary between intelligent software and the systems that make it practical, with particular emphasis on:
-                  </p>
-                  <ul>
-                    <li><strong>Systems for AI:</strong> efficient, reliable runtimes for agentic and generative workloads</li>
-                    <li><strong>Heterogeneous Edge AI:</strong> correctness-aware placement across CPUs, iGPUs, and NPUs</li>
-                    <li><strong>Compiler and Runtime Optimization:</strong> reducing compilation, memory, and state-migration costs</li>
-                    <li><strong>Program Analysis and Systems Security:</strong> turning software fixes into reusable bug detectors</li>
-                  </ul>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-          <!-- Research Projects -->
-          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
-            <tbody>
-              <tr>
-                <td style="padding:20px;width:100%;vertical-align:middle">
-                  <heading>Research Projects</heading>
-                  <p>
-                    My current work spans edge AI systems and automated systems-security analysis. Representative projects are
-                    <span class="highlight">highlighted</span>; see also my
-                    <a href="https://scholar.google.com/citations?user=Wd0QQ7kAAAAJ&amp;hl=en" target="_blank" rel="noopener noreferrer">Google Scholar</a> profile.
-                  </p>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-          <!-- WukLab project in the same format as the other research rows; intentionally no attached image. -->
-          <table id="wuklab" style="width:100%;border:0px;border-spacing:0px 10px;border-collapse:separate;margin-right:auto;margin-left:auto;">
-            <tbody>
-              <tr style="background-color:#ffffd0;">
-                <td style="padding:20px;width:25%;vertical-align:middle"></td>
-                <td style="padding:20px;width:75%;vertical-align:middle">
-                  <papertitle>JIT Specialization for Static-Shape NPUs</papertitle>
-                  <br>
-                  Vikranth Srivatsa, <strong>Xuming Huang</strong>, *Prof.
-                  <a href="https://cseweb.ucsd.edu/~yiying/" target="_blank" rel="noopener noreferrer">Yiying Zhang</a>
-                  <br>
-                  <em><a href="https://wuklab.io/" target="_blank" rel="noopener noreferrer">WukLab</a> @ UC San Diego — 2026 · *advising faculty</em>
-                  <br>
-                  <a href="blog/posts/npu-jit-static-shapes.html"><strong>tech blog</strong></a> /
-                  <a href="demos/npuw-pyramid-jit.html">full experiments</a> /
-                  <a href="demos/data/npuw-pyramid-jit-live.json">campaign data</a> /
-                  <a href="https://github.com/Mac-Huang/npu_compiler/commit/7883fe9ab694c0ecc99660d9be4817ee814932e1" target="_blank" rel="noopener noreferrer">compiler patch</a> /
-                  <a href="https://github.com/Mac-Huang/npu_compiler/tree/codex/sorting-cache-pr" target="_blank" rel="noopener noreferrer">PR branch</a> /
-                  <a href="https://github.com/openvinotoolkit/npu_compiler" target="_blank" rel="noopener noreferrer">OpenVINO NPU Compiler</a>
-                  <p>
-                    A correctness-first runtime that grows an LLM through 1K→2K→4K→8K NPU specializations while the CPU
-                    compiles exactly one step ahead. On NUC16, five counterbalanced pairs cut foreground compile wall time by
-                    22.49% and the measured protocol critical path by 8.37%, with 15/15 successor deadlines met and 20/20
-                    boundary outputs matching the eager control. Separately, compiler tracing and memoization reduced full
-                    compile time by 3.34–3.68% in 12/12 A/B trials.
-                  </p>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-          <div id="publication-filters" style="margin-top:15px;"></div>
-          
-          <!-- Publications Table -->
-          <table style="width:100%;border:0px;border-spacing:0px 10px;border-collapse:separate;margin-right:auto;margin-left:auto;" id="publications-table">
-            <tbody>
-              <!-- Publications will be loaded dynamically from publications.js -->
-            </tbody>
-          </table>
-          
-          <!-- Footer -->
-          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
-            <tbody>
-              <tr>
-                <td style="padding:0px">
-                  <br>
-                  <p style="text-align:center;font-size:14px;color:#999;padding:20px;">
-                    Feel free to clone my template <a href="https://github.com/Mac-Huang/xuming.ai.git" style="color:#999;">Xuming Huang</a>
-                  </p>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  
-  <script src="data/publications.js"></script>
-  <script src="js/main.js"></script>
-  <script src="js/bot-preload.js"></script>
-</body>
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Research | Xuming Huang</title><meta name="description" content="Research experience and publications in edge AI, NPU runtimes, operating systems, and systems security."><link rel="icon" href="images/favicon.png"><link rel="stylesheet" href="stylesheet.css"><link rel="stylesheet" href="research.css"><meta property="og:title" content="Research | Xuming Huang"><meta property="og:description" content="Research experience and publications in edge AI, NPU runtimes, operating systems, and systems security."><meta property="og:image" content="https://xuming.ai/images/social-preview.png"></head>
+<body><div class="site-shell"><nav class="site-nav" aria-label="Main navigation"><a href="index.html">Home</a><a href="research.html">Research</a><a href="projects.html">Projects</a><a href="blog.html">Blog</a><a href="courses.html">Courses</a><a href="cv/Academic_Resume.pdf">CV ↗</a></nav>
+<main><header class="page-heading"><p class="eyebrow">RESEARCH</p>
+<h1>Making AI work within<br>real system constraints.</h1>
+<p class="lead">I study how compilation, memory, and shared hardware shape AI inference, and build tools to make systems more efficient and reliable.</p>
+<div class="jump-links"><a href="#experience">Research experience ↓</a><a href="#publications">Publications ↓</a></div>
+</header>
+<section id="experience"><div class="section-head"><h2>Research experience</h2>
+<span class="meta">2024–present</span></div>
+<div id="publication-filters"></div>
+<table id="publications-table" class="research-table"><tbody>
+<tr id="wuklab" class="research-row"><td><img src="images/research/edge-ai.svg" alt="Edge AI Systems Optimization" width="600" height="240" loading="lazy"></td><td><a href="research/edge-ai.html"><papertitle>Edge AI Systems Optimization</papertitle></a><br><div><strong>Xuming Huang</strong> · advised by Prof. Yiying Zhang</div>
+<em>Undergraduate Researcher · WukLab, UC San Diego · Jan. 2026–present</em><br><div><a href="research/edge-ai.html">research overview</a> / <a href="https://github.com/openvinotoolkit/npu_compiler/pull/348">compiler PR #348</a></div>
+<p>Developed a JIT NPU runtime that overlaps CPU graph compilation with NPU inference and grows the KV cache with context: 91.98% less foreground compilation time and 33.05% lower average KV memory, while preserving model quality and decoding. Cached sorted compiler dependency vectors to reduce CPU sorting time by 94.2%, and built CPU/GPU/NPU benchmarks to guide device placement.</p>
+</td></tr>
+<tr id="os-inference" class="research-row"><td><img src="images/research/os-inference.svg" alt="Operating Systems for AI Inference" width="600" height="240" loading="lazy"></td><td><a href="research/os-inference.html"><papertitle>Operating Systems for AI Inference</papertitle></a><br><div><strong>Xuming Huang</strong> · advised by Prof. Michael Swift</div>
+<em>Honors Course Research Project · UW–Madison · Jan.–May 2026</em><br><div><a href="research/os-inference.html">project overview</a></div>
+<p>Measured how background filesystem reads interfere with a fixed LLM inference workload: median latency increased 17.1%. Windows PerfMon showed stable working sets and page-fault counts plateauing near 29.5K, supporting shared-resource contention as the explanation rather than working-set thrashing.</p>
+</td></tr>
+<tr id="linuxguard-2025" class="research-row"><td><img src="images/research/linuxguard.svg" alt="LinuxGuard: AI for System Security" width="600" height="240" loading="lazy"></td><td><a href="linuxguard.html"><papertitle>LinuxGuard: AI for System Security</papertitle></a><br><div><strong>Xuming Huang</strong> · advised by Prof. Remzi Arpaci-Dusseau and Dr. Vinay Banakar</div>
+<em>Undergraduate Researcher · UW–Madison · Jan.–Nov. 2025</em><br><div><a href="linuxguard.html">project</a> / <a href="https://github.com/Mac-Huang/LinuxGuard">code</a> / <a href="blog/posts/linuxguard-journey.html">retrospective</a></div>
+<p>Built an LLM-driven pipeline over 50K+ Linux kernel commits to generate Clang-Tidy analyzers. Clustering and compiler-feedback repair produced 4× more valid checkers at 73% precision. A full-kernel validation harness uncovered 43 long-latent bugs with an average age of 4.7 years.</p>
+</td></tr>
+<tr id="cash" class="research-row"><td><img src="images/research/cash.svg" alt="ML-Guided Scheduling for Heterogeneous Compute Systems" width="600" height="240" loading="lazy"></td><td><a href="https://www.techscience.com/cmc/v89n2/68821"><papertitle>ML-Guided Scheduling for Heterogeneous Compute Systems</papertitle></a><br><div><strong>Xuming Huang</strong> · coauthor; advised by Prof. Xing Hu</div>
+<em>Undergraduate Researcher · USST · Jan. 2024–Sept. 2026</em><br><div><a href="https://www.techscience.com/cmc/v89n2/68821">paper</a></div>
+<p>Contributed to experimental validation and performance analysis of CASH, which predicts workload–hardware affinity for CPU/GPU placement. In 5,000-task simulations using MIT Supercloud traces, the scheduler achieved 97.1% resource-matching accuracy, 46.5% lower response time, and 36.8% lower modeled energy than Meta-RHDC.</p>
+</td></tr>
+</tbody>
+</table>
+</section>
+<section id="publications"><div class="section-head"><h2>Publications</h2>
+<a href="https://scholar.google.com/citations?user=Wd0QQ7kAAAAJ&amp;hl=en">Google Scholar ↗</a></div>
+<article class="paper-entry"><img src="images/research/cash.svg" alt="CASH: Confidence-Calibrated Deep Feature Crossing for Classification-Aware Heterogeneous Task Scheduling: conceptual cover" width="600" height="240" loading="lazy"><div><h3><span class="paper-number">[3]</span> <a href="https://doi.org/10.32604/cmc.2026.086441">CASH: Confidence-Calibrated Deep Feature Crossing for Classification-Aware Heterogeneous Task Scheduling</a></h3>
+<p>Chuanlin Jian, Yuanchen Sun, Xiangcheng Liu, <strong>Xuming Huang</strong>, Samaneh Beheshti Kashi, and Xing Hu</p>
+<p class="meta">Computers, Materials &amp; Continua, 89(2), Article 29 · 2026</p>
+<a href="https://doi.org/10.32604/cmc.2026.086441">DOI ↗</a></div>
+</article>
+<article class="paper-entry"><img src="images/research/beit.svg" alt="A Method for Laryngoscopic Image Classification: Leveraging Self-supervised BEIT-style Pretraining: conceptual cover" width="600" height="240" loading="lazy"><div><h3><span class="paper-number">[2]</span> <a href="https://doi.org/10.1109/ICFTIC68075.2025.11324910">A Method for Laryngoscopic Image Classification: Leveraging Self-supervised BEIT-style Pretraining</a></h3>
+<p>Jie Kong, Haotian Wu, <strong>Xuming Huang</strong>, Liangjie Wu, and Xing Hu</p>
+<p class="meta">ICFTIC, pp. 701–706 · 2025</p>
+<a href="https://doi.org/10.1109/ICFTIC68075.2025.11324910">DOI ↗</a></div>
+</article>
+<article class="paper-entry"><img src="images/research/filter.svg" alt="Near-infrared tuneable filter based on polymer dispersed liquid crystals: conceptual cover" width="600" height="240" loading="lazy"><div><h3><span class="paper-number">[1]</span> <a href="https://doi.org/10.1049/mna2.70007">Near-infrared tuneable filter based on polymer dispersed liquid crystals</a></h3>
+<p>Ruimei Zeng, Rongbo Bi, Junyang Zhu, <strong>Xuming Huang</strong>, and Qi Wang</p>
+<p class="meta">Micro &amp; Nano Letters, 20(1), e70007 · 2025</p>
+<a href="https://doi.org/10.1049/mna2.70007">DOI ↗</a></div>
+</article>
+</section>
+</main>
+<footer>© Xuming Huang · <a href="cv/Academic_Resume.pdf">Curriculum vitae</a> · <a href="https://github.com/Mac-Huang/xuming.ai">Website source</a></footer>
+</div>
+<script src="data/publications.js"></script><script src="js/main.js"></script></body>
 </html>
