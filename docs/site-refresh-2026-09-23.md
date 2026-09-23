@@ -47,3 +47,13 @@ Validation after restoring the style: 83 pages and 686 local references pass. Ho
 - Courses: 14 compact course blocks, seven lecture PDFs from CS577/CS540. Materials expand on demand. Excluded homework, answer keys, passwords, and private teaching files. ESL118 has no asserted term because the local document does not establish one.
 - Validation: local audit across 83 HTML files found no missing files or anchors. External audit: 113/118 returned 200; LinkedIn (two URLs) blocks automated requests, and IEEE/Wiley publication endpoints require normal-browser checks. IEEE and Wiley article pages were confirmed in browser. No claim that subscription content is freely accessible.
 - Browser QA: home, research, projects, blog, courses, and NPU article have no horizontal overflow at 390px; desktop layouts checked at 1280px. Publication BibTeX toggles and course disclosure controls work. Exactly two research rows and five resume-related project rows are highlighted; removed blog titles are absent.
+
+## Follow-up: supplied figures, navigation, and bot
+
+- Resolved the pending BEIT cover using the original architecture figure extracted from page 3 of the user-supplied paper. The full licensed PDF was not republished.
+- Added the supplied processing-array diagram and a short architecture explanation to the NPU blog, retaining the original article style. The diagram is labeled as generic, not an Intel implementation.
+- All 83 HTML pages now apply new-tab behavior to external HTTP(S) links. Static anchors are updated in the HTML; the shared script also covers dynamically rendered lists and bot citations.
+- Research, Projects, Blog, Courses, and Ask Me share the same sticky navigation and bold active-page state.
+- All 24 projects are newest-first by their first appearance in the site's Git history. Dates are explicitly labeled “First listed,” since publication dates do not establish when a project began. Five résumé-related projects remain highlighted.
+- Rebuilt the personal bot around 169 current knowledge records and two local model options. See `bot-knowledge.md` for maintenance, selection evidence, and limitations.
+- Validation: 16 bot regression tests pass; 83 HTML files and 754 local references have no missing assets or static anchors. Desktop/mobile browser checks pass; both model options load. WukLab and Remzi return current advisor facts with relevant sources. Technical-answer fallback was verified in the browser.

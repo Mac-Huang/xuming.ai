@@ -429,7 +429,7 @@ The Motivation tab argues the NPU is worth compiling for because it is the
 energy-cheaper engine. That was an argument from the literature. This tab
 <b>measures it</b> &mdash; three granularities, prefill and decode separated, energy
 attributed per power domain &mdash; and checks the operator&ndash;accelerator affinity
-claims of Agent.xpu (<a href="https://arxiv.org/abs/2506.24045">arXiv:2506.24045</a>)
+claims of Agent.xpu (<a href="https://arxiv.org/abs/2506.24045" target="_blank" rel="noopener noreferrer">arXiv:2506.24045</a>)
 against what this silicon does. The first thing it found was that the standard way
 of building such a measurement <b>does not work on this NPU at all</b>.
 </div>
@@ -487,15 +487,15 @@ operations, assign affinity to block-sized subgraphs, and profile those subgraph
 situ. Keep residual/norm/attention dependencies together and keep one KV-cache owner
 unless state is made explicit. A future cross-device implementation should expose KV
 as input/output tensors, back them with the
-<a href="https://docs.openvino.ai/2026/openvino-workflow/running-inference/inference-devices-and-modes/npu-device/remote-tensor-api-npu-plugin.html">NPU Remote Tensor / DMA-BUF API</a>,
+<a href="https://docs.openvino.ai/2026/openvino-workflow/running-inference/inference-devices-and-modes/npu-device/remote-tensor-api-npu-plugin.html" target="_blank" rel="noopener noreferrer">NPU Remote Tensor / DMA-BUF API</a>,
 add explicit fences and layout/version checks, then require token-equivalence before
 accepting any timing result.</div>
 <p class="src">Method basis:
-<a href="https://docs.openvino.ai/2024/openvino-workflow/running-inference/inference-devices-and-modes/hetero-execution.html">OpenVINO HETERO affinity and query_model</a>;
-<a href="https://docs.openvino.ai/2026/openvino-workflow-generative/inference-with-genai/inference-with-genai-on-npu.html">NPU static-shape LLM execution</a>;
-<a href="https://docs.openvino.ai/2026/openvino-workflow/running-inference/optimize-inference/precision-control.html">precision control</a>;
-<a href="https://docs.openvino.ai/2026/about-openvino/performance-benchmarks/getting-performance-numbers.html">performance-counter interpretation</a>;
-and <a href="https://arxiv.org/abs/2506.24045">Agent.xpu</a>.</p>
+<a href="https://docs.openvino.ai/2024/openvino-workflow/running-inference/inference-devices-and-modes/hetero-execution.html" target="_blank" rel="noopener noreferrer">OpenVINO HETERO affinity and query_model</a>;
+<a href="https://docs.openvino.ai/2026/openvino-workflow-generative/inference-with-genai/inference-with-genai-on-npu.html" target="_blank" rel="noopener noreferrer">NPU static-shape LLM execution</a>;
+<a href="https://docs.openvino.ai/2026/openvino-workflow/running-inference/optimize-inference/precision-control.html" target="_blank" rel="noopener noreferrer">precision control</a>;
+<a href="https://docs.openvino.ai/2026/about-openvino/performance-benchmarks/getting-performance-numbers.html" target="_blank" rel="noopener noreferrer">performance-counter interpretation</a>;
+and <a href="https://arxiv.org/abs/2506.24045" target="_blank" rel="noopener noreferrer">Agent.xpu</a>.</p>
 
 <div class="kpis"><div class="kpi"><div class="n">7&ndash;121&times;</div><div class="l">how much an isolated single-operator kernel understates this NPU</div></div><div class="kpi"><div class="n">1.14&times;</div><div class="l">whole-model PREFILL energy, NPU &divide; iGPU</div></div><div class="kpi"><div class="n">5.28&times;</div><div class="l">whole-model DECODE energy, NPU &divide; iGPU</div></div><div class="kpi"><div class="n">13.5 : 12.3</div><div class="l">INT8 compute roof measured on real graphs, iGPU : NPU (TFLOP/s)</div></div></div>
 
@@ -602,7 +602,7 @@ accounting and W8A16 convention are the paper's.
 <div class="thesis">
 The previous tab measures what the two engines cost. This one runs
 <b>the published system that bets on the NPU</b> &mdash;
-<a href="https://github.com/xinming-wei/LLM.xpu">LLM.xpu</a>, the engine behind
+<a href="https://github.com/xinming-wei/LLM.xpu" target="_blank" rel="noopener noreferrer">LLM.xpu</a>, the engine behind
 Agent.xpu &mdash; on a Core Ultra 7 356H, two SoC generations newer than the paper's
 Core Ultra 5 125H, and asks whether its headline results survive. Getting that far
 first required fixing three defects that made <b>every generated token wrong on every

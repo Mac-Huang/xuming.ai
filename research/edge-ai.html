@@ -1,6 +1,7 @@
 <!DOCTYPE HTML>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Edge AI Systems Optimization - Xuming Huang</title><link rel="stylesheet" href="../stylesheet.css"><link rel="icon" href="../images/favicon.png"></head>
+<title>Edge AI Systems Optimization - Xuming Huang</title><link rel="stylesheet" href="../stylesheet.css"><link rel="icon" href="../images/favicon.png"><script src="../js/site-links.js" defer></script>
+</head>
 <body><table style="width:100%;max-width:900px;border:0px;border-spacing:0px;border-collapse:separate;margin:auto;"><tbody><tr style="padding:0px"><td style="padding:0px">
 <table><tbody><tr><td style="padding:20px;width:100%;vertical-align:middle"><p style="text-align:center"><name>Edge AI Systems Optimization</name></p></td></tr></tbody></table>
 
@@ -37,7 +38,7 @@
 <section><p><heading>Removing repeated compiler work</heading></p>
 <p><strong>Problem.</strong> Repeatedly sorting dependency and consumer vectors adds CPU work during NPU compilation.</p>
 <p><strong>Idea.</strong> Cache the sorted vectors and invalidate them when dependencies change.</p>
-<p><strong>Result.</strong> Reduced CPU sorting time by <strong>94.2%</strong> and contributed <a href="https://github.com/openvinotoolkit/npu_compiler/pull/348">PR #348 to the Intel NPU Compiler repository</a> (open draft). The percentage refers to sorting time, not total compilation time.</p>
+<p><strong>Result.</strong> Reduced CPU sorting time by <strong>94.2%</strong> and contributed <a href="https://github.com/openvinotoolkit/npu_compiler/pull/348" target="_blank" rel="noopener noreferrer">PR #348 to the Intel NPU Compiler repository</a> (open draft). The percentage refers to sorting time, not total compilation time.</p>
 </section>
 <section><p><heading>Understanding device affinity</heading></p>
 <p>I developed a CPU/GPU/NPU benchmarking methodology to characterize operator and inference-stage affinity. The measurements identify hardware-dependent placement preferences to guide heterogeneous scheduling.</p>

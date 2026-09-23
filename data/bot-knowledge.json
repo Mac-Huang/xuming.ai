@@ -1,0 +1,1637 @@
+{
+  "version": "f40f500fd2e697be",
+  "updated": "2026-09-23",
+  "chunks": [
+    {
+      "id": "bio",
+      "title": "Current role and research interests",
+      "text": "Xuming Huang is a Computer Sciences undergraduate at the University of Wisconsin–Madison, with graduation expected in May 2027. His interests are systems for AI, edge inference, operating systems, and AI compilers. His current research at WukLab, UC San Diego, focuses on NPU compilers and runtimes with Professor Yiying Zhang.",
+      "url": "index.html",
+      "source": "Profile",
+      "aliases": [
+        "who are you",
+        "who is xuming",
+        "about you",
+        "introduce yourself",
+        "current research",
+        "research focus",
+        "research interests"
+      ],
+      "authoritative": true
+    },
+    {
+      "id": "advisors",
+      "title": "Research advisors",
+      "text": "Xuming’s current advisor at WukLab, UC San Diego, is Professor Yiying Zhang. His LinuxGuard advisors at ADSL, UW–Madison, were Professor Remzi Arpaci-Dusseau and Dr. Vinay Banakar. Professor Michael Swift advised his honors operating-systems project. Professor Xing Hu advised his USST scheduling research.",
+      "url": "research.html",
+      "source": "Profile",
+      "aliases": [
+        "advisors",
+        "research advisors",
+        "supervisors",
+        "mentors"
+      ],
+      "authoritative": true
+    },
+    {
+      "id": "education",
+      "title": "Education",
+      "text": "Xuming studies for a B.S. in Computer Sciences at UW–Madison (January 2025–May 2027 expected), GPA 3.96/4.00. He attended Stanford as a visiting undergraduate in Summer 2025 (June–August), GPA 4.00/4.00. He previously studied Computer Science and Technology at the University of Shanghai for Science and Technology (September 2021–July 2024), GPA 3.82/4.50.",
+      "url": "cv/Academic_Resume.pdf",
+      "source": "Profile",
+      "aliases": [
+        "education",
+        "gpa",
+        "university",
+        "universities",
+        "graduation",
+        "graduate",
+        "degree",
+        "academic background"
+      ],
+      "authoritative": true
+    },
+    {
+      "id": "wuklab",
+      "title": "Edge AI Systems Optimization",
+      "text": "Xuming is currently an undergraduate researcher at WukLab, UC San Diego, advised by Professor Yiying Zhang, since January 2026. He developed a JIT NPU runtime that overlaps CPU graph compilation with NPU inference and grows the KV cache with context: 91.98% less foreground compilation time and 33.05% lower average KV memory, while preserving model quality and decoding. Cached sorted compiler dependency vectors to reduce CPU sorting time by 94.2%, and built CPU/GPU/NPU benchmarks to guide device placement.",
+      "url": "research/edge-ai.html",
+      "source": "Research",
+      "aliases": [
+        "wuklab",
+        "yiying",
+        "zhang",
+        "ucsd",
+        "uc san diego",
+        "edge ai",
+        "npu"
+      ],
+      "authoritative": true
+    },
+    {
+      "id": "os-inference",
+      "title": "Operating Systems for AI Inference",
+      "text": "Xuming completed an honors course research project with Professor Michael Swift at UW–Madison from January to May 2026. He measured how background filesystem reads interfere with a fixed LLM inference workload: median latency increased 17.1%. Windows PerfMon showed stable working sets and page-fault counts plateauing near 29.5K, supporting shared-resource contention as the explanation rather than working-set thrashing.",
+      "url": "research/os-inference.html",
+      "source": "Research",
+      "aliases": [
+        "michael swift",
+        "swift",
+        "filesystem",
+        "honors project"
+      ],
+      "authoritative": true
+    },
+    {
+      "id": "linuxguard-2025",
+      "title": "LinuxGuard: AI for System Security",
+      "text": "Xuming worked on LinuxGuard at The ADvanced Systems Laboratory (ADSL), UW–Madison, from January to November 2025, advised by Professor Remzi Arpaci-Dusseau and Dr. Vinay Banakar. Remzi was his research advisor. He built an LLM-driven pipeline over 50K+ Linux kernel commits to generate Clang-Tidy analyzers. Clustering and compiler-feedback repair produced 4× more valid checkers at 73% precision. A full-kernel validation harness uncovered 43 long-latent bugs with an average age of 4.7 years.",
+      "url": "linuxguard.html",
+      "source": "Research",
+      "aliases": [
+        "linuxguard",
+        "remzi",
+        "arpaci",
+        "dusseau",
+        "vinay",
+        "banakar",
+        "adsl",
+        "security"
+      ],
+      "authoritative": true
+    },
+    {
+      "id": "cash",
+      "title": "ML-Guided Scheduling for Heterogeneous Compute Systems",
+      "text": "Xuming contributed as a coauthor and undergraduate researcher advised by Professor Xing Hu at USST, January 2024–September 2026. He contributed to experimental validation and performance analysis of CASH, which predicts workload–hardware affinity for CPU/GPU placement. In 5,000-task simulations using MIT Supercloud traces, the scheduler achieved 97.1% resource-matching accuracy, 46.5% lower response time, and 36.8% lower modeled energy than Meta-RHDC.",
+      "url": "https://www.techscience.com/cmc/v89n2/68821",
+      "source": "Research",
+      "aliases": [
+        "cash",
+        "xing hu",
+        "scheduling",
+        "usst research"
+      ],
+      "authoritative": true
+    },
+    {
+      "id": "teaching",
+      "title": "Teaching and service",
+      "text": "Xuming is an In-Class Peer Coach (ICPC) for ECE 252 at UW–Madison, September–December 2026. He supports discussion sessions and holds office hours.",
+      "url": "index.html#teaching",
+      "source": "Profile",
+      "aliases": [
+        "teaching",
+        "peer coach",
+        "icpc",
+        "ece 252",
+        "service"
+      ],
+      "authoritative": true
+    },
+    {
+      "id": "skills",
+      "title": "Technical skills",
+      "text": "Languages: Python, C/C++, Java, JavaScript, Verilog, assembly, and Swift. Systems and tools: Linux, OpenVINO, LLVM/Clang, Git, Docker, GDB, and Valgrind. Methods: performance measurement, compiler/runtime experiments, model fine-tuning, and correctness evaluation.",
+      "url": "cv/Academic_Resume.pdf",
+      "source": "Profile",
+      "aliases": [
+        "skills",
+        "programming languages",
+        "tools"
+      ],
+      "authoritative": true
+    },
+    {
+      "id": "work",
+      "title": "Cool AI internship",
+      "text": "Xuming was a Technical R&D and Product Development Intern at Cool AI Technology in Shanghai, July–September 2024. He redesigned the web interface with Next.js and Tailwind CSS, improving page load time by 45% and user engagement by 30% across 5,000+ daily active users. He built a FastAPI backend for LLM integration, handling 1,000+ concurrent requests and reducing API response time from 3 seconds to 800 milliseconds. He deployed prompted agents for AI-Hub, serving 20+ enterprise clients and generating $10K in new revenue in the first month.",
+      "url": "cv/Academic_Resume.pdf",
+      "source": "Profile",
+      "aliases": [
+        "coolai",
+        "cool ai",
+        "internship",
+        "work experience"
+      ],
+      "authoritative": true
+    },
+    {
+      "id": "awards",
+      "title": "Honors and awards",
+      "text": "Xuming received the Dean’s List honor at UW–Madison and the Presidential Scholarship at USST (Top 1%).",
+      "url": "cv/Academic_Resume.pdf",
+      "source": "Profile",
+      "aliases": [
+        "honors",
+        "awards",
+        "scholarship",
+        "deans list"
+      ],
+      "authoritative": true
+    },
+    {
+      "id": "learning-resources",
+      "title": "Algorithms and AI Systems Learning Resources",
+      "text": "Since January 2024, Xuming has maintained open-source algorithms and AI systems learning resources: 20+ algorithm and data-structure implementations across 6+ topics, with visualizations and practice templates, reaching 100+ GitHub stars. He implemented Transformer and GPT-2 from scratch in PyTorch, including multi-head attention, encoder-decoder architecture, optimization, and training.",
+      "url": "projects.html",
+      "source": "Profile",
+      "aliases": [
+        "algorithms",
+        "learning resources",
+        "transformer",
+        "gpt",
+        "gpt2",
+        "gpt 2",
+        "github stars"
+      ],
+      "authoritative": true
+    },
+    {
+      "id": "heap",
+      "title": "Heap Allocator",
+      "text": "Xuming built a heap allocator during Stanford Summer Session, June–August 2025. He implemented free-block management, coalescing, and boundary tags, and explored fragmentation and allocator behavior through randomized stress tests and memory-debugging tools.",
+      "url": "demos/heap-allocator.html",
+      "source": "Profile",
+      "aliases": [
+        "heap",
+        "allocator",
+        "heap allocator"
+      ],
+      "authoritative": true
+    },
+    {
+      "id": "stanford",
+      "title": "Stanford Summer 2025",
+      "text": "At Stanford in Summer 2025, Xuming took CS107 Computer Organization & Systems (A+, 99/100) and CS161 Design and Analysis of Algorithms (A, 93/100). His CS107 work included a heap allocator and responsible disclosure of AFS security issues, working with Alex Keller.",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Profile",
+      "aliases": [
+        "stanford",
+        "cs107",
+        "cs 107",
+        "cs161",
+        "cs 161",
+        "afs",
+        "alex keller"
+      ],
+      "authoritative": true
+    },
+    {
+      "id": "contact",
+      "title": "Contact",
+      "text": "Xuming’s public academic email is xuming@cs.wisc.edu. His GitHub account is Mac-Huang and his website is xuming.ai.",
+      "url": "index.html",
+      "source": "Profile",
+      "aliases": [
+        "contact",
+        "email",
+        "github",
+        "reach you"
+      ],
+      "authoritative": true
+    },
+    {
+      "id": "football",
+      "title": "Flag football",
+      "text": "Xuming captained the USST Earthmoving Vehicles flag football team, which won the 2023 NFL FLAG national championship.",
+      "url": "blog/posts/nfl-flag-football-championship.html",
+      "source": "Profile",
+      "aliases": [
+        "football",
+        "sports",
+        "hobbies",
+        "champion",
+        "championship"
+      ],
+      "authoritative": true
+    },
+    {
+      "id": "paper-0",
+      "title": "[3] CASH: Confidence-Calibrated Deep Feature Crossing for Classification-Aware Heterogeneous Task Scheduling",
+      "text": "[3] CASH: Confidence-Calibrated Deep Feature Crossing for Classification-Aware Heterogeneous Task Scheduling. Chuanlin Jian, Yuanchen Sun, Xiangcheng Liu, Xuming Huang, Samaneh Beheshti Kashi, and Xing Hu. Computers, Materials & Continua 2026.",
+      "url": "https://doi.org/10.32604/cmc.2026.086441",
+      "source": "Publication",
+      "aliases": [],
+      "authoritative": true
+    },
+    {
+      "id": "paper-1",
+      "title": "[2] A Method for Laryngoscopic Image Classification: Leveraging Self-supervised BEIT-style Pretraining",
+      "text": "[2] A Method for Laryngoscopic Image Classification: Leveraging Self-supervised BEIT-style Pretraining. Jie Kong, Haotian Wu, Xuming Huang, Liangjie Wu, and Xing Hu. ICFTIC 2025.",
+      "url": "https://doi.org/10.1109/ICFTIC68075.2025.11324910",
+      "source": "Publication",
+      "aliases": [],
+      "authoritative": true
+    },
+    {
+      "id": "paper-2",
+      "title": "[1] Near-infrared tuneable filter based on polymer dispersed liquid crystals",
+      "text": "[1] Near-infrared tuneable filter based on polymer dispersed liquid crystals. Ruimei Zeng, Rongbo Bi, Junyang Zhu, Xuming Huang, and Qi Wang. Micro & Nano Letters 2025.",
+      "url": "https://doi.org/10.1049/mna2.70007",
+      "source": "Publication",
+      "aliases": [],
+      "authoritative": true
+    },
+    {
+      "id": "publication-list",
+      "title": "Published papers",
+      "text": "Xuming’s publications, newest first: [3] CASH: Confidence-Calibrated Deep Feature Crossing for Classification-Aware Heterogeneous Task Scheduling. Chuanlin Jian, Yuanchen Sun, Xiangcheng Liu, Xuming Huang, Samaneh Beheshti Kashi, and Xing Hu. Computers, Materials & Continua 2026. [2] A Method for Laryngoscopic Image Classification: Leveraging Self-supervised BEIT-style Pretraining. Jie Kong, Haotian Wu, Xuming Huang, Liangjie Wu, and Xing Hu. ICFTIC 2025. [1] Near-infrared tuneable filter based on polymer dispersed liquid crystals. Ruimei Zeng, Rongbo Bi, Junyang Zhu, Xuming Huang, and Qi Wang. Micro & Nano Letters 2025.",
+      "url": "research.html#publications",
+      "source": "Publication",
+      "aliases": [
+        "publications",
+        "papers",
+        "published papers",
+        "publication"
+      ],
+      "authoritative": true
+    },
+    {
+      "id": "project-openvino-npu-sorting-cache",
+      "title": "OpenVINO NPU Compiler — Cached Dependency Sorting",
+      "text": "OpenVINO NPU Compiler — Cached Dependency Sorting. Cached sorted dependency and consumer vectors in the OpenVINO NPU compiler, reducing CPU sorting time by 94.2%. Contributed upstream PR #348. This reduction measures sorting work, not total compilation time. Technologies: C++, MLIR, OpenVINO, Intel NPU Compiler, Performance Profiling. First listed on the website: 2026-08-27.",
+      "url": "research/edge-ai.html",
+      "source": "Project",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "project-memory-hierarchy-vivt-pipt-vipt",
+      "title": "Memory Hierarchy & Cache Indexing — VIVT / PIPT / VIPT",
+      "text": "Memory Hierarchy & Cache Indexing — VIVT / PIPT / VIPT. End-to-end visualization of a 32-bit virtual address travelling through the TLB, three flavors of L1 cache (VIVT, PIPT, VIPT), L2/L3, DRAM, and disk. Animates the address-bit layout for each scheme, walks scenarios from L1 hit to full page fault, and shows where the TLB sits on the critical path. Built around the cache-indexing intuition behind why most modern L1s are VIPT. Technologies: JavaScript, SVG, Computer Architecture, Virtual Memory, Caches. First listed on the website: 2026-05-12.",
+      "url": "demos/memory-hierarchy.html",
+      "source": "Project",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "project-openclaw-edge-workflow",
+      "title": "OpenClaw Edge Workflow — Prompt Cache, KV Cache, and a Turn End-to-End",
+      "text": "OpenClaw Edge Workflow — Prompt Cache, KV Cache, and a Turn End-to-End. Interactive walkthrough of an agentic LLM turn running on a 24 GB M3 MacBook Air: the five phases of a turn (Node boot → plugin load → lane admission → prompt setup → LLM), what the prefix cache and KV cache each store, and the eight measured workload scenarios that exercise them. Includes the 35x prefill spike caused by auto-compaction breaking the prefix cache between consecutive turns. Numbers come from the WukLab edge-inference suite. Technologies: JavaScript, SVG, LLM Serving, KV Cache, Edge Inference. First listed on the website: 2026-05-12.",
+      "url": "demos/openclaw-workflow.html",
+      "source": "Project",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "project-git-visualizer",
+      "title": "Git Visualizer - Interactive Git Learning Tool",
+      "text": "Git Visualizer - Interactive Git Learning Tool. Learn Git commands interactively through visualization. Type real git commands and watch how they affect the repository structure in real-time. Features tutorial mode with step-by-step scenarios, sandbox mode for free exploration, and support for all major git operations including commit, branch, merge, rebase, cherry-pick, and more. Perfect for understanding version control concepts visually. Technologies: JavaScript, SVG, Git Concepts, Interactive Learning. First listed on the website: 2025-09-30.",
+      "url": "demos/git-visualizer.html",
+      "source": "Project",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "project-tenant-sos",
+      "title": "TenantSOS - Legal Information iOS App",
+      "text": "TenantSOS - Legal Information iOS App. iOS application providing location-based legal information for tenants across U.S. states. Features automatic GPS-based state law detection, comprehensive legal database covering tenant rights, traffic laws, employment regulations, and consumer protections. Includes 10+ legal document templates, smart notifications for law changes, and offline law access. Built with Swift 5.9 and SwiftUI, powered by Firebase backend with Core Location for state detection. Implements freemium model with basic free tier and pro subscription for unlimited features across all 50 states. Technologies: Swift 5.9, SwiftUI, Firebase, Core Location, Core Data, CloudKit. First listed on the website: 2025-09-30.",
+      "url": "https://github.com/Mac-Huang/Tenant-SOS",
+      "source": "Project",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "project-tree-visualizer",
+      "title": "BST & Red-Black Tree Visualizer",
+      "text": "BST & Red-Black Tree Visualizer. Interactive visualization of Binary Search Tree and Red-Black Tree operations. Features animated insertion, deletion, search, and rotation operations. Visualize self-balancing behavior, color changes in Red-Black trees, and compare performance between BST and Red-Black implementations. Perfect for learning tree data structures. Technologies: JavaScript, D3.js, Data Structures, Algorithms. First listed on the website: 2025-09-17.",
+      "url": "demos/bst-tree.html",
+      "source": "Project",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "project-gpt-implementation",
+      "title": "GPT Implementation Guide",
+      "text": "GPT Implementation Guide. Step-by-step implementation and explanation of GPT models. From tokenization to training loop, understand how autoregressive language models work with practical code examples. Technologies: Python, PyTorch, Transformers, NLP. First listed on the website: 2025-09-04.",
+      "url": "https://github.com/Mac-Huang/GPT",
+      "source": "Project",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "project-understanding-transformers",
+      "title": "Understanding Transformers",
+      "text": "Understanding Transformers. Comprehensive tutorial on Transformer architecture with implementations. Covers self-attention, positional encoding, multi-head attention, and complete implementation walkthrough with visualizations. Technologies: Python, PyTorch, NumPy, Visualization. First listed on the website: 2025-09-04.",
+      "url": "https://github.com/Mac-Huang/Transformer",
+      "source": "Project",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "project-bplus-tree",
+      "title": "B+ Tree Database Index Simulator",
+      "text": "B+ Tree Database Index Simulator. Interactive visualization of B+ tree operations showing how database indexes work internally. Features insertion with node splitting, deletion with merging, range queries, and performance metrics comparison with binary search trees. Technologies: JavaScript, D3.js, Database Systems, Data Structures. First listed on the website: 2025-09-02.",
+      "url": "demos/bplus-tree.html",
+      "source": "Project",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "project-cpu-cache-simulator",
+      "title": "CPU Cache Hierarchy Simulator",
+      "text": "CPU Cache Hierarchy Simulator. Comprehensive CPU cache simulator with L1/L2/L3 cache levels, various replacement policies (LRU, FIFO, Random), write policies, and memory access pattern analysis. Visualize cache hits/misses and performance metrics. Technologies: JavaScript, Computer Architecture, Cache Memory. First listed on the website: 2025-09-02.",
+      "url": "demos/cpu-cache-simulator.html",
+      "source": "Project",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "project-consensus-algorithms",
+      "title": "Distributed Systems Consensus Visualizer",
+      "text": "Distributed Systems Consensus Visualizer. Interactive visualization of consensus algorithms including Raft, Paxos, PBFT, and Gossip protocols. Simulate network partitions, node failures, leader elections, and Byzantine faults in distributed systems. Technologies: JavaScript, D3.js, Distributed Systems, Consensus. First listed on the website: 2025-09-02.",
+      "url": "demos/consensus-algorithms.html",
+      "source": "Project",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "project-garbage-collection",
+      "title": "Garbage Collection Algorithm Visualizer",
+      "text": "Garbage Collection Algorithm Visualizer. Comprehensive visualization of memory management and GC algorithms including Mark & Sweep, Reference Counting, Generational GC, and Copying Collector. Shows heap regions, reference graphs, and real-time performance metrics. Technologies: JavaScript, D3.js, Memory Management, JVM. First listed on the website: 2025-09-02.",
+      "url": "demos/garbage-collection.html",
+      "source": "Project",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "project-compiler-pipeline",
+      "title": "Interactive Compiler Pipeline Visualization",
+      "text": "Interactive Compiler Pipeline Visualization. Step-by-step visualization of compilation phases from source code to assembly. Includes lexical analysis, parsing, AST generation, semantic analysis, IR generation, optimization passes, and code generation with register allocation. Technologies: JavaScript, CodeMirror, D3.js, Compilers. First listed on the website: 2025-09-02.",
+      "url": "demos/compiler-pipeline.html",
+      "source": "Project",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "project-transformer-architecture",
+      "title": "Interactive Transformer Architecture Visualization",
+      "text": "Interactive Transformer Architecture Visualization. Deep dive into transformer models with step-by-step visualization of attention mechanisms, positional encoding, and layer operations. Supports encoder-only (BERT), decoder-only (GPT), and encoder-decoder architectures. Technologies: JavaScript, D3.js, TensorFlow.js, Deep Learning. First listed on the website: 2025-09-02.",
+      "url": "demos/transformer-architecture.html",
+      "source": "Project",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "project-wasm-performance",
+      "title": "WebAssembly Performance Analyzer",
+      "text": "WebAssembly Performance Analyzer. Compare JavaScript vs WebAssembly performance across computational tasks including matrix operations, prime generation, and image processing. Real-time benchmarking with detailed performance metrics. Technologies: WebAssembly, JavaScript, Performance Analysis. First listed on the website: 2025-09-02.",
+      "url": "demos/wasm-performance.html",
+      "source": "Project",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "project-graph-algorithms",
+      "title": "Graph Algorithms Playground",
+      "text": "Graph Algorithms Playground. Visualize graph traversal algorithms including BFS, DFS, Dijkstra's shortest path, and A* pathfinding. Create custom graphs and watch algorithms explore them step by step. Technologies: JavaScript, D3.js, SVG. First listed on the website: 2025-08-28.",
+      "url": "demos/graphs.html",
+      "source": "Project",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "project-hash-collision-analysis",
+      "title": "Hash Function & Collision Analysis",
+      "text": "Hash Function & Collision Analysis. Interactive visualization of hash functions, collision resolution strategies, and advanced applications like Bloom filters and consistent hashing. Explore distribution patterns, analyze collision rates, and understand how different hash functions perform. Technologies: JavaScript, D3.js, Canvas, Algorithms. First listed on the website: 2025-08-28.",
+      "url": "demos/hashing.html",
+      "source": "Project",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "project-heap-allocator",
+      "title": "Heap Allocator Visualization",
+      "text": "Heap Allocator Visualization. Interactive visualization of heap memory allocation strategies. Compare implicit and explicit free-list implementations, observe block splitting and coalescing, understand fragmentation patterns, and explore memory management algorithms. Technologies: JavaScript, D3.js, Systems Programming, Memory Management. First listed on the website: 2025-08-28.",
+      "url": "demos/heap-allocator.html",
+      "source": "Project",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "project-tensor-operations",
+      "title": "Interactive Tensor Operations Visualizer",
+      "text": "Interactive Tensor Operations Visualizer. Understand fundamental tensor operations in neural networks through interactive visualizations. Features matrix multiplication animation, 2D convolution demonstrations, tensor reshaping, broadcasting rules, and backpropagation visualization. Perfect for learning deep learning mathematics. Technologies: JavaScript, D3.js, Deep Learning, Linear Algebra. First listed on the website: 2025-08-28.",
+      "url": "demos/tensor-ops.html",
+      "source": "Project",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "project-lstm-tasks",
+      "title": "LSTM Tasks Suite",
+      "text": "LSTM Tasks Suite. Collection of LSTM-based deep learning projects including sequence prediction, text generation, and time series forecasting. Demonstrates various applications of recurrent neural networks. Technologies: TensorFlow/PyTorch, LSTM, RNNs, Sequence Modeling. First listed on the website: 2025-08-28.",
+      "url": "https://github.com/Mac-Huang/LSTM_Tasks",
+      "source": "Project",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "project-neural-translator",
+      "title": "Neural Machine Translator",
+      "text": "Neural Machine Translator. Sequence-to-sequence neural machine translation system implementing attention mechanisms. Supports multiple language pairs with encoder-decoder architecture and beam search decoding. Technologies: PyTorch, Transformers, NMT, Attention. First listed on the website: 2025-08-28.",
+      "url": "https://github.com/Mac-Huang/Translator",
+      "source": "Project",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "project-neural-network",
+      "title": "Neural Network Playground",
+      "text": "Neural Network Playground. Train simple neural networks in your browser. Experiment with network architecture, activation functions, and learning rates while visualizing decision boundaries in real-time. Technologies: JavaScript, TensorFlow.js, Canvas. First listed on the website: 2025-08-28.",
+      "url": "demos/neural.html",
+      "source": "Project",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "project-sorting-visualizer",
+      "title": "Sorting Algorithm Visualizer",
+      "text": "Sorting Algorithm Visualizer. Interactive visualization of common sorting algorithms including quicksort, mergesort, heapsort, and more. Watch how different algorithms approach the sorting problem with visual feedback for comparisons and swaps. Technologies: Vanilla JavaScript, HTML5 Canvas. First listed on the website: 2025-08-28.",
+      "url": "demos/sorting.html",
+      "source": "Project",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "project-word2vec",
+      "title": "Word2Vec Implementation",
+      "text": "Word2Vec Implementation. Implementation of Word2Vec models including Skip-gram and CBOW architectures for word embeddings. Includes training on custom corpora and visualization of learned embeddings. Technologies: Python, NumPy, NLP, Word Embeddings. First listed on the website: 2025-08-28.",
+      "url": "https://github.com/Mac-Huang/Word2Vec",
+      "source": "Project",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "courses.html-0",
+      "title": "Coursework — Courses",
+      "text": "Coursework, learning materials, and related projects from UW–Madison and Stanford. Open a course’s materials to explore the available notes and writeups.",
+      "url": "courses.html",
+      "source": "Courses",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "courses.html-1",
+      "title": "Coursework — CS 540: Introduction to Artificial Intelligence",
+      "text": "Linear algebra, principal component analysis, natural language processing, and machine learning.",
+      "url": "courses.html",
+      "source": "Courses",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "courses.html-2",
+      "title": "Coursework — CS 537: Introduction to Operating Systems",
+      "text": "Operating systems and an honors research project on filesystem interference with AI inference.",
+      "url": "courses.html",
+      "source": "Courses",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "courses.html-3",
+      "title": "Coursework — CS 400: Programming III",
+      "text": "Data structures, software development, and collaborative programming.",
+      "url": "courses.html",
+      "source": "Courses",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "courses.html-4",
+      "title": "Coursework — ESL 118: Academic Writing",
+      "text": "Lecture materials are credited to their original instructors and courses.",
+      "url": "courses.html",
+      "source": "Courses",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/npu-jit-static-shapes.html-0",
+      "title": "Making NPU Inference Practical: Compiler Optimization and JIT Runtimes",
+      "text": "My current work at WukLab , advised by Professor Yiying Zhang , asks how to make local AI inference practical on NPUs. An accelerator can execute a model efficiently once the program is ready, but getting it ready can require substantial CPU compilation and memory allocation. Those costs matter to an interactive application.",
+      "url": "blog/posts/npu-jit-static-shapes.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/npu-jit-static-shapes.html-1",
+      "title": "Making NPU Inference Practical: Compiler Optimization and JIT Runtimes",
+      "text": "I have been working on two connected projects: reducing repeated work inside the NPU compiler, and building a runtime that prepares larger programs while inference is already running. Together, they address both how much compilation costs and when the application has to wait for it.",
+      "url": "blog/posts/npu-jit-static-shapes.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/npu-jit-static-shapes.html-2",
+      "title": "Making NPU Inference Practical: Compiler Optimization and JIT Runtimes",
+      "text": "In this post: Compiler optimization | Compile ahead | Grow memory with context | Next questions",
+      "url": "blog/posts/npu-jit-static-shapes.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/npu-jit-static-shapes.html-3",
+      "title": "Making NPU Inference Practical: Compiler Optimization and JIT Runtimes — Inside an NPU",
+      "text": "NPUs organize many processing elements (PEs) to perform repeated multiply-and-accumulate operations. In the weight-stationary arrangement below, weights are preloaded from SRAM into the array. Activations move through the processing elements, while partial sums accumulate toward the output. Keeping data close to the arithmetic reduces the need to repeatedly fetch it from farther away.",
+      "url": "blog/posts/npu-jit-static-shapes.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/npu-jit-static-shapes.html-4",
+      "title": "Making NPU Inference Practical: Compiler Optimization and JIT Runtimes — Inside an NPU",
+      "text": "A weight-stationary processing-element array. This is a conceptual architecture illustration, not a diagram of a specific Intel NPU implementation.",
+      "url": "blog/posts/npu-jit-static-shapes.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/npu-jit-static-shapes.html-5",
+      "title": "Making NPU Inference Practical: Compiler Optimization and JIT Runtimes — Inside an NPU",
+      "text": "The compiler maps a model's operations and tensor shapes onto this execution structure. The runtime then manages when compiled programs run and where their inputs, outputs, and persistent state live. That division explains why compiler preparation and memory management matter alongside the arithmetic itself.",
+      "url": "blog/posts/npu-jit-static-shapes.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/npu-jit-static-shapes.html-6",
+      "title": "Making NPU Inference Practical: Compiler Optimization and JIT Runtimes — Why the runtime matters",
+      "text": "Autoregressive inference changes as it runs: every generated token extends the context and adds key and value state to the KV cache. In the static-shape NPU path studied here, compiled programs require concrete tensor dimensions. The runtime must decide which shapes to compile, how much memory to reserve, and when to move to a larger program.",
+      "url": "blog/posts/npu-jit-static-shapes.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/npu-jit-static-shapes.html-7",
+      "title": "Making NPU Inference Practical: Compiler Optimization and JIT Runtimes — Why the runtime matters",
+      "text": "A straightforward design prepares a large context window before the first token. This makes execution simple, but a short request pays for capacity it may never use. Preparing several sizes in advance improves shape selection while retaining the cost of compiling them all before serving the request. These are systems decisions around the model, and they can dominate the experience even when the NPU executes individual operators quickly.",
+      "url": "blog/posts/npu-jit-static-shapes.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/npu-jit-static-shapes.html-8",
+      "title": "Making NPU Inference Practical: Compiler Optimization and JIT Runtimes — Project 1: remove repeated compiler work",
+      "text": "Problem. The compiler repeatedly needs dependency and consumer lists in a deterministic order. Sorting those lists on every lookup repeats CPU work when the underlying dependency graph has not changed. A hot helper can accumulate significant work even when each individual sort is small.",
+      "url": "blog/posts/npu-jit-static-shapes.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/npu-jit-static-shapes.html-9",
+      "title": "Making NPU Inference Practical: Compiler Optimization and JIT Runtimes — Project 1: remove repeated compiler work",
+      "text": "Idea. Cache the sorted dependency and consumer vectors. On an unchanged graph, a later lookup can reuse the ordered result. When a mutation changes the relevant relationships, invalidate the affected cache so the next lookup rebuilds it.",
+      "url": "blog/posts/npu-jit-static-shapes.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/npu-jit-static-shapes.html-10",
+      "title": "Making NPU Inference Practical: Compiler Optimization and JIT Runtimes — Project 1: remove repeated compiler work",
+      "text": "The difficult part is maintaining the contract around graph updates. A stale list can silently change scheduling behavior. The optimization therefore has to account for mutation paths and preserve the ordering expected by callers; simply storing the first answer is not sufficient.",
+      "url": "blog/posts/npu-jit-static-shapes.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/npu-jit-static-shapes.html-11",
+      "title": "Making NPU Inference Practical: Compiler Optimization and JIT Runtimes — Project 1: remove repeated compiler work",
+      "text": "This project reduces the amount of compilation work. The runtime project addresses a different question: how much of the remaining work must sit on the application's critical path?",
+      "url": "blog/posts/npu-jit-static-shapes.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/npu-jit-static-shapes.html-12",
+      "title": "Making NPU Inference Practical: Compiler Optimization and JIT Runtimes — Project 2: compile ahead, not up front",
+      "text": "Problem. Waiting until a request reaches the end of its compiled context window causes a pause while the next program is prepared. Compiling every future window at startup avoids that boundary pause, but delays the first useful inference and may prepare programs that the request never reaches.",
+      "url": "blog/posts/npu-jit-static-shapes.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/npu-jit-static-shapes.html-13",
+      "title": "Making NPU Inference Practical: Compiler Optimization and JIT Runtimes — Project 2: compile ahead, not up front",
+      "text": "Idea. Start with a small program and compile a larger one on the CPU while the NPU continues inference. Keep preparation ahead of context growth. Before switching, ensure that the next program is ready and that the live KV state can be carried forward correctly.",
+      "url": "blog/posts/npu-jit-static-shapes.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/npu-jit-static-shapes.html-14",
+      "title": "Making NPU Inference Practical: Compiler Optimization and JIT Runtimes — Project 2: compile ahead, not up front",
+      "text": "In the one-ahead design, the current program executes while the next size is being prepared. It bounds speculative work compared with compiling every size immediately. It also gives the compiler more time than a design that starts compilation only at the boundary.",
+      "url": "blog/posts/npu-jit-static-shapes.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/npu-jit-static-shapes.html-15",
+      "title": "Making NPU Inference Practical: Compiler Optimization and JIT Runtimes — Project 2: compile ahead, not up front",
+      "text": "CPU compilation overlaps NPU inference. Original concept drawing by Vikranth Srivatsa.",
+      "url": "blog/posts/npu-jit-static-shapes.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/npu-jit-static-shapes.html-16",
+      "title": "Making NPU Inference Practical: Compiler Optimization and JIT Runtimes — Project 2: compile ahead, not up front",
+      "text": "The overlap is useful only if preparation finishes before it is needed. A fast decoder, a large compilation step, or contention for shared resources can consume that margin. Foreground waiting and total CPU work must therefore be measured separately: moving work into the background does not make it free.",
+      "url": "blog/posts/npu-jit-static-shapes.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/npu-jit-static-shapes.html-17",
+      "title": "Making NPU Inference Practical: Compiler Optimization and JIT Runtimes — Let KV memory grow with the context",
+      "text": "Progressive compilation alone does not make memory use proportional to the request. A runtime can select a small graph while still reserving the largest KV buffer. To address that, the runtime starts with capacity suited to the current context and grows it when needed.",
+      "url": "blog/posts/npu-jit-static-shapes.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/npu-jit-static-shapes.html-18",
+      "title": "Making NPU Inference Practical: Compiler Optimization and JIT Runtimes — Let KV memory grow with the context",
+      "text": "At a growth boundary, it allocates the next capacity, copies the live KV state, binds the new program, and continues decoding. The sequence length, positions, and cached state must remain consistent across the switch. The copy itself also has a cost, and the old and new allocations may temporarily coexist.",
+      "url": "blog/posts/npu-jit-static-shapes.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/npu-jit-static-shapes.html-19",
+      "title": "Making NPU Inference Practical: Compiler Optimization and JIT Runtimes — Let KV memory grow with the context",
+      "text": "Use the smallest suitable capacity and carry the live state forward. Original concept drawing by Vikranth Srivatsa.",
+      "url": "blog/posts/npu-jit-static-shapes.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/npu-jit-static-shapes.html-20",
+      "title": "Making NPU Inference Practical: Compiler Optimization and JIT Runtimes — What I measure",
+      "text": "I separate startup compilation, background compilation, waiting at a boundary, state transfer, and steady-state decoding. I also track memory as context grows and check output correctness across program switches. This makes it possible to tell whether an improvement removes work, overlaps it, or merely shifts it elsewhere.",
+      "url": "blog/posts/npu-jit-static-shapes.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/npu-jit-static-shapes.html-21",
+      "title": "Making NPU Inference Practical: Compiler Optimization and JIT Runtimes — What I measure",
+      "text": "The two projects complement each other. Caching compiler results can shorten preparation, while progressive compilation gives the CPU a window in which to perform that preparation. Copy-and-grow addresses the allocation side. Their percentages measure different quantities and cannot be added into one speedup.",
+      "url": "blog/posts/npu-jit-static-shapes.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/npu-jit-static-shapes.html-22",
+      "title": "Making NPU Inference Practical: Compiler Optimization and JIT Runtimes — Broader questions for NPU systems",
+      "text": "I am also measuring CPU, GPU, and NPU placement preferences at the operator and inference-stage levels. The best device depends on the operation, shape, and cost of crossing device boundaries. An operator-level win is useful evidence, but it does not by itself establish an end-to-end scheduling improvement.",
+      "url": "blog/posts/npu-jit-static-shapes.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/npu-jit-static-shapes.html-23",
+      "title": "Making NPU Inference Practical: Compiler Optimization and JIT Runtimes — Broader questions for NPU systems",
+      "text": "The next questions are how to adapt compilation lead time to the request, reduce state-transfer costs, and account for shared-resource contention. These are ongoing directions. The broader goal is to make compilation, memory, and device placement respond to the workload as it unfolds.",
+      "url": "blog/posts/npu-jit-static-shapes.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/npu-jit-static-shapes.html-24",
+      "title": "Making NPU Inference Practical: Compiler Optimization and JIT Runtimes — Broader questions for NPU systems",
+      "text": "Research with Vikranth Srivatsa, advised by Professor Yiying Zhang. Updated September 23, 2026.",
+      "url": "blog/posts/npu-jit-static-shapes.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/linuxguard-journey.html-0",
+      "title": "My Journey with LinuxGuard — My Journey with LinuxGuard",
+      "text": "Over the past six months (since May 2025), I have been working with Vinay Banakar on the LinuxGuard project. It was a journey that took me deep into the intersection of Large Language Models and Systems security, taught me the rigors of academic research, and ultimately ended with a valuable lesson on the fast-paced nature of computer science.",
+      "url": "blog/posts/linuxguard-journey.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/linuxguard-journey.html-1",
+      "title": "My Journey with LinuxGuard — The Spark",
+      "text": "LinuxGuard started from a simple observation about the Linux kernel: today, the kernel suffers from many performance anti‑patterns and logical bugs. There are entire releases that focus almost entirely on bug fixes—missing defaults in switch cases, failure to return 0 on success, and so on.",
+      "url": "blog/posts/linuxguard-journey.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/linuxguard-journey.html-2",
+      "title": "My Journey with LinuxGuard — The Spark",
+      "text": "Our core idea was: Can an LLM learn the kernel‑specific \"DOs and DON’Ts\" from commit history, and then help us create a set of checkers to automatically detect them?",
+      "url": "blog/posts/linuxguard-journey.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/linuxguard-journey.html-3",
+      "title": "My Journey with LinuxGuard — The Spark",
+      "text": "Because the kernel uses its own C coding style that does not fully conform to typical C anti‑pattern definitions, standard tools often miss these nuances. We wanted to build a system that could \"read\" a fix and \"write\" a tool to prevent that bug forever.",
+      "url": "blog/posts/linuxguard-journey.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/linuxguard-journey.html-4",
+      "title": "My Journey with LinuxGuard — Building the Pipeline",
+      "text": "To make this concrete, I began by diving into LLVM and compilers. I discovered we could generate checkers as plug‑ins, compiled directly into the Linux module of clang‑tidy . This became our vehicle for turning LinuxGuard into a practical tool.",
+      "url": "blog/posts/linuxguard-journey.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/linuxguard-journey.html-5",
+      "title": "My Journey with LinuxGuard — Building the Pipeline",
+      "text": "However, it wasn't as simple as asking ChatGPT to \"write a checker.\"",
+      "url": "blog/posts/linuxguard-journey.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/linuxguard-journey.html-6",
+      "title": "My Journey with LinuxGuard — Building the Pipeline",
+      "text": "Chain-of-Thought Prompting: I realized that a single API call couldn't reliably synthesize correct checkers. I built a pipeline that first analyzes the anti‑pattern and then generates the checker, using a one‑shot example for guidance.",
+      "url": "blog/posts/linuxguard-journey.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/linuxguard-journey.html-7",
+      "title": "My Journey with LinuxGuard — Building the Pipeline",
+      "text": "Self-Correction: Generated checkers often failed to compile. We introduced a self‑check, repair, and reset mechanism to handle this automatically.",
+      "url": "blog/posts/linuxguard-journey.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/linuxguard-journey.html-8",
+      "title": "My Journey with LinuxGuard — Building the Pipeline",
+      "text": "Agentic Validation: The trickiest part was precision. To fight false positives, we experimented with calling a second agent—an advanced, web‑based LLM—to act as a \"reviewer\" for the issues found by our checkers.",
+      "url": "blog/posts/linuxguard-journey.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/linuxguard-journey.html-9",
+      "title": "My Journey with LinuxGuard — The \"KNighter\" Discovery",
+      "text": "Research is a race. Ultimately and unfortunately, in early November we discovered a paper published at SOSP called KNighter . They proposed almost exactly the same idea and had already implemented it effectively.",
+      "url": "blog/posts/linuxguard-journey.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/linuxguard-journey.html-10",
+      "title": "My Journey with LinuxGuard — The \"KNighter\" Discovery",
+      "text": "I tried to identify critical improvements or new angles we could bring to build on KNighter, but given the uncertainty and the strength of their implementation, we eventually chose to stop the project. It was frustrating to stop a project we had invested so much time in, but it is part of the game.",
+      "url": "blog/posts/linuxguard-journey.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/linuxguard-journey.html-11",
+      "title": "My Journey with LinuxGuard — Lessons Learned",
+      "text": "Despite the outcome, I learned a great deal from Vinay throughout this process. We met weekly without interruption, using a shared doc and slide deck to stay aligned.",
+      "url": "blog/posts/linuxguard-journey.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/linuxguard-journey.html-12",
+      "title": "My Journey with LinuxGuard — Lessons Learned",
+      "text": "Vinay shared one piece of advice that really shaped how I view research:",
+      "url": "blog/posts/linuxguard-journey.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/linuxguard-journey.html-13",
+      "title": "My Journey with LinuxGuard — Lessons Learned",
+      "text": "This helped me understand the difference between industry and academia. We scaled up from highly specific pattern‑matching to general checkers, and discovered that simply merging commits doesn't work—you need clustering and selection.",
+      "url": "blog/posts/linuxguard-journey.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/linuxguard-journey.html-14",
+      "title": "My Journey with LinuxGuard — Lessons Learned",
+      "text": "Throughout all of this, Vinay has been both a mentor and a friend, always finding time for our meetings voluntarily, even when his schedule was already full. LinuxGuard may be over, but the skills I gained—in LLMs, compilers, and research methodology—are just beginning to pay off.",
+      "url": "blog/posts/linuxguard-journey.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-0",
+      "title": "Stanford Summer: Where Systems Meet Algorithms",
+      "text": "Spending my summer at Stanford was an incredible academic journey. I took two challenging courses that fundamentally changed how I think about computer science: CS107 Computer Organization & Systems and CS161 Design and Analysis of Algorithms . Both courses pushed me to my limits and helped me grow as a computer scientist.",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-1",
+      "title": "Stanford Summer: Where Systems Meet Algorithms",
+      "text": "Quick Links: Courses: CS107 | CS161 People: Adam Keppler | Ola Adekola | Ben Yan | Alex Keller | Matthew Sotoudeh",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-2",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — CS107: Deep Dive into Systems",
+      "text": "CS107 is my favorite course this summer, and I'm proud to say I earned an A+ (99/100) . The homework was exceptionally well designed and perfectly solidified the knowledge we learned in lectures—it was my favorite part, super interesting, and I learned tremendously from each assignment.",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-3",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — Assignment 7: Heap Allocator",
+      "text": "This was my absolute favorite assignment. Not only did I complete all the required functions, but I also finished all the challenge functions that weren't required. I wanted to see how far I could push myself, and I made it! I created a new structure that adds a footer at the end of free blocks to find the previous block, implementing a bidirectional free list that significantly improved allocation efficiency.",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-4",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — Assignment 7: Heap Allocator",
+      "text": "→ View my interactive Heap Allocator Visualization An educational visualization demonstrating the concepts from this assignment",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-5",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — Assignment 6: Banking on Security",
+      "text": "The Security Bomb assignment was one of the most intriguing challenges I've ever encountered. I successfully found vulnerabilities in the virtual bank and \"stole the money\"—all in a controlled, educational environment, of course! This assignment inspired me to explore real-life vulnerabilities.",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-6",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — Assignment 6: Banking on Security",
+      "text": "Security Contribution to Stanford: Going beyond the assignment, I discovered critical vulnerabilities in Stanford's AFS (Andrew File System). Following responsible disclosure practices learned in the course, I:",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-7",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — Assignment 6: Banking on Security",
+      "text": "Submitted a detailed report following Stanford's disclosure protocols",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-8",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — Assignment 6: Banking on Security",
+      "text": "Huge thanks to Adam Keppler for helping me connect with the corresponding engineer, and to Alex Keller from the engineering team—we had a very productive conversation about system security and implementing the solutions I proposed.",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-9",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — Adam Keppler - The Inspiring Instructor",
+      "text": "Adam 's teaching is simply amazing. He showed up to every single lecture with no exceptions, even though we had two instructors. His dedication was inspiring. We had wonderful conversations about computer systems concepts, my discovery of vulnerabilities, life, and everything in between.",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-10",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — Adam Keppler - The Inspiring Instructor",
+      "text": "I had never used GDB before this course, and I excitedly told him that I found a way to bypass the \"bank protection alert\" in our security assignment. He appreciated that I was a quick learner and encouraged me to explore further.",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-11",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — Adam Keppler - The Inspiring Instructor",
+      "text": "\"I always asked tons of questions in lectures (that's pretty much why I sat in the first row!). Even when some questions were basic, Adam patiently answered my confusion and followed my thanks with a big smile and 'Absolutely!' His positive responses always inspired and encouraged students to think deeply.\"",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-12",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — Adam Keppler - The Inspiring Instructor",
+      "text": "I genuinely believe Adam's teaching style and encouragement were key factors in my success in this course.",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-13",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — Ola Adekola - Making Complex Topics Accessible",
+      "text": "Big thanks to Ola! Ola's humorous tone and teaching style made dense or potentially boring content feel interesting and relaxing. The analogies and live demos helped me connect the dots between lecture material and assignments in ways I hadn't expected.",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-14",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — Ola Adekola - Making Complex Topics Accessible",
+      "text": "After class, Ola was always friendly and open to questions, offering clear explanations of complex concepts that really helped solidify my understanding. Whether it was pointer arithmetic or assembly language intricacies, Ola had a way of making everything click.",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-15",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — Ben Yan - The Best TA I've Ever Met",
+      "text": "Ben Yan (he/they) is, without a doubt, the best TA I have ever met. Their slides weren't just informative—they were engaging and sometimes even entertaining. Ben's teaching was super fluent, like that of a seasoned lecturer, and the meticulous, rigorous comments on our homework were incredibly helpful.",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-16",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — Ben Yan - The Best TA I've Ever Met",
+      "text": "Ben's discussion section was the highlight of my week. They had this remarkable ability to break down complex topics into digestible pieces while maintaining technical rigor. Their feedback on assignments went above and beyond, often including additional resources and suggestions for further exploration. Ben's dedication to student success and their passion for systems programming made every session invaluable.",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-17",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — Alex Keller - Security Expert and Mentor",
+      "text": "A huge thanks to Alex Keller , Stanford's Senior Systems Security Engineer, who took time from his busy schedule to discuss the AFS vulnerabilities I discovered. Our productive conversation covered not just the technical aspects of the security issues, but also broader topics about systems security and career paths in the field.",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-18",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — Alex Keller - Security Expert and Mentor",
+      "text": "What struck me most was Alex's philosophy: \"If you do good work at Stanford, you will be rewarded with opportunities to do more good work.\" This perspective helped me understand that contributing to Stanford's security through responsible disclosure was valuable experience in itself—and motivation to continue learning and contributing wherever possible.",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-19",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — Alex Keller - Security Expert and Mentor",
+      "text": "Alex brings unique expertise to Stanford, having coached Stanford Applied Cyber for 10 years. During our meeting, he showed me the team's training facilities and shared insights about competitive cybersecurity. His dedication recently paid off with Applied Cyber winning 1st place in both the ICS (Industrial Control Systems) and Goldbug CTFs in Las Vegas—an impressive achievement for the team.",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-20",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — Alex Keller - Security Expert and Mentor",
+      "text": "Our discussion ranged from technical details of AFS architecture to life experiences and personal journeys. Alex's willingness to mentor students and dedication to helping students with passion to chase their dream made our conversation particularly valuable. It's a shame that we didn't take a pic together but I believe we will see soon!",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-21",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — Key Takeaways",
+      "text": "CS 107 wasn't just about learning C programming or understanding computer architecture—it was about developing a systems mindset. Through this course, I:",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-22",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — Key Takeaways",
+      "text": "Gained practical experience with debugging tools like GDB and Valgrind",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-23",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — Key Takeaways",
+      "text": "Made real-world security contributions to Stanford's infrastructure",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-24",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — Key Takeaways",
+      "text": "Built lasting connections with amazing instructors and engineering team",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-25",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — CS161: The Art of Algorithm Analysis",
+      "text": "CS161 Design and Analysis of Algorithms was equally transformative, earning me an A (93/100) . Before this course, I was lost in the maze of algorithmic complexity. How do you compare quicksort to mergesort? Why does one hash table outperform another? The sheer variety of algorithms and performance metrics seemed overwhelming.",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-26",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — CS161: The Art of Algorithm Analysis",
+      "text": "CS161 taught me the fundamental philosophy that changed everything: evaluate algorithms analytically, not just empirically. Instead of just running code and timing it, we learned to ask deeper questions:",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-27",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — CS161: The Art of Algorithm Analysis",
+      "text": "Input Analysis: What happens in the best, worst, and average cases?",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-28",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — CS161: The Art of Algorithm Analysis",
+      "text": "Algorithm Decisions: How do pivot choices in quicksort or hash functions affect performance?",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-29",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — CS161: The Art of Algorithm Analysis",
+      "text": "Amortized Analysis: What's the cost over a sequence of operations, not just one?",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-30",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — CS161: The Art of Algorithm Analysis",
+      "text": "This systematic approach transformed abstract concepts into concrete tools. Whether analyzing AVL tree rotations, understanding why hash tables achieve O(1) average time, or proving lower bounds for comparison sorting, the course provided a rigorous framework for thinking about efficiency.",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-31",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — Matthew Sotoudeh - The Algorithm Master",
+      "text": "Huge thanks to Matthew Sotoudeh ! I'm also hugely impressed by his written materials ( CS161 Notes ). Matthew considered everything comprehensively—the thinking behind lectures (I mean the pace and step-by-step depth) and even the snacks for asking questions were awesome!",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-32",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — Matthew Sotoudeh - The Algorithm Master",
+      "text": "He always repeats and interprets the questions asked by other students, which is so helpful because I sometimes couldn't hear or didn't understand what they said. This thoughtful approach made complex algorithm analysis accessible to everyone.",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-33",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — Projects Inspired by CS161",
+      "text": "The algorithm concepts from CS161 directly inspired several of my visualization projects:",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-34",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — Projects Inspired by CS161",
+      "text": "Sorting Algorithm Visualizer - Interactive visualization of quicksort, mergesort, heapsort showing O(n log n) complexity",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-35",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — Projects Inspired by CS161",
+      "text": "Graph Algorithms Playground - BFS, DFS, Dijkstra's shortest path, and A* pathfinding with complexity analysis",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-36",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — Projects Inspired by CS161",
+      "text": "Hash Function & Collision Analysis - Demonstrating hash tables, collision resolution, and amortized O(1) operations",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-37",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — Looking Forward",
+      "text": "My summer at Stanford fundamentally changed how I think about computer science. CS107 gave me deep systems knowledge while CS161 provided the analytical tools to evaluate and design efficient algorithms. The combination of theoretical knowledge and hands-on implementation has given me confidence to tackle complex problems.",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-38",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — Looking Forward",
+      "text": "To anyone considering Stanford's summer session: these courses are challenging but incredibly rewarding. With passionate instructors and a supportive community, you're not just learning material—you're developing a new way of thinking about computation.",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/stanford-summer-2025.html-39",
+      "title": "Stanford Summer: Where Systems Meet Algorithms — Looking Forward",
+      "text": "Courses Taken: • CS 107 - Computer Organization and Systems (A+, 99/100) • CS 161 - Design and Analysis of Algorithms (A, 93/100) Term: Summer 2025 Institution: Stanford University",
+      "url": "blog/posts/stanford-summer-2025.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/new-chapter-madison.html-0",
+      "title": "A New Chapter in Madison — First Time in the U.S.",
+      "text": "I felt like a newborn baby facing a new climate, new traffic, new people, and a whole new culture.",
+      "url": "blog/posts/new-chapter-madison.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/new-chapter-madison.html-1",
+      "title": "A New Chapter in Madison — The Weather and People",
+      "text": "Not gonna lie, the weather in Madison is cold asf, but the people here are warm-hearted.",
+      "url": "blog/posts/new-chapter-madison.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/new-chapter-madison.html-2",
+      "title": "A New Chapter in Madison — New Friends and Experiences",
+      "text": "I hit up Lily's and Mifflin with my homies. Shoutout to RJ and Zane—my first friends in Madison. Y'all are some cool cats .",
+      "url": "blog/posts/new-chapter-madison.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/new-chapter-madison.html-3",
+      "title": "A New Chapter in Madison — New Friends and Experiences",
+      "text": "There's also a group of dudes always up to some tomfoolery —like UFC, KFC ice bucket challenge.",
+      "url": "blog/posts/new-chapter-madison.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/new-chapter-madison.html-4",
+      "title": "A New Chapter in Madison — New Friends and Experiences",
+      "text": "Big shoutout to my boys Big Sami, Rhett, and Abdul—we're a colorful crew.",
+      "url": "blog/posts/new-chapter-madison.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/new-chapter-madison.html-5",
+      "title": "A New Chapter in Madison — New Friends and Experiences",
+      "text": "We vibe out to music I'd never heard before—Marvin Gaye, Lil Yachty, 21 Savage, and more. We talk a lot about culture, language, milktea , and send each other with the dumbest, brain-melting reels ever.",
+      "url": "blog/posts/new-chapter-madison.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/new-chapter-madison.html-6",
+      "title": "A New Chapter in Madison — Learning and Growing",
+      "text": "After every MATH240 class, we're both parched and can eat a horse, so we grab some grub and get stuffed.",
+      "url": "blog/posts/new-chapter-madison.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/new-chapter-madison.html-7",
+      "title": "A New Chapter in Madison — Learning and Growing",
+      "text": "Lowkey, sometimes I feel stuck between a rock and a hard place 'cause my English still holds me back in convos—but I know I'm improving.",
+      "url": "blog/posts/new-chapter-madison.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/first-internship.html-0",
+      "title": "Diving into AI: My Transformative First Week at CoolAI",
+      "text": "Last week, I had the incredible opportunity to intern at CoolAI , where I was tasked with developing AI products.",
+      "url": "blog/posts/first-internship.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/first-internship.html-1",
+      "title": "Diving into AI: My Transformative First Week at CoolAI",
+      "text": "My main responsibilities included preparing a demo and materials for an interview with China Business Network (CBN) and representing CoolAI at the World Artificial Intelligence Conference (WAIC).",
+      "url": "blog/posts/first-internship.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/first-internship.html-2",
+      "title": "Diving into AI: My Transformative First Week at CoolAI",
+      "text": "During the conference, I introduced our company's core business and provided detailed explanations of our products.",
+      "url": "blog/posts/first-internship.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/first-internship.html-3",
+      "title": "Diving into AI: My Transformative First Week at CoolAI — CBN Interview",
+      "text": "In preparing for the interview with CBN , I meticulously worked on creating a comprehensive demo showcasing our latest AI innovations.",
+      "url": "blog/posts/first-internship.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/first-internship.html-4",
+      "title": "Diving into AI: My Transformative First Week at CoolAI — CBN Interview",
+      "text": "This task required not only technical proficiency but also the ability to communicate complex ideas clearly and engagingly. The process was both challenging and rewarding, as it allowed me to refine my workflow skills and deepen my understanding of our AI solutions.",
+      "url": "blog/posts/first-internship.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/first-internship.html-5",
+      "title": "Diving into AI: My Transformative First Week at CoolAI — WAIC",
+      "text": "At WAIC, I took on the role of a promoter, presenting CoolAI's cutting-edge technologies to a diverse audience. This experience was truly eye-opening.",
+      "url": "blog/posts/first-internship.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/first-internship.html-6",
+      "title": "Diving into AI: My Transformative First Week at CoolAI — WAIC",
+      "text": "I was struck by the level of interest and enthusiasm from attendees, which included professionals from hundreds of internet corporations and numerous AI enthusiasts. Engaging with such a vibrant community reinforced my passion for AI and highlighted the immense potential and rapid growth of the field.",
+      "url": "blog/posts/first-internship.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/first-internship.html-7",
+      "title": "Diving into AI: My Transformative First Week at CoolAI — WAIC",
+      "text": "The scale of the conference and the breadth of innovations on display were overwhelming. Witnessing firsthand the thriving nature of the AI industry and its promising future was inspiring.",
+      "url": "blog/posts/first-internship.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/first-internship.html-8",
+      "title": "Diving into AI: My Transformative First Week at CoolAI — WAIC",
+      "text": "The conference underscored the rapid advancements being made and the potential for AI to transform various sectors. This realization has only solidified my ambition and dedication to pursue a career in AI.",
+      "url": "blog/posts/first-internship.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/first-internship.html-9",
+      "title": "Diving into AI: My Transformative First Week at CoolAI — Reflection",
+      "text": "Reflecting on my week-long internship, I realized there is a significant difference between academic learning and professional work.",
+      "url": "blog/posts/first-internship.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/first-internship.html-10",
+      "title": "Diving into AI: My Transformative First Week at CoolAI — Reflection",
+      "text": "While my studies have provided a solid theoretical foundation, the hands-on experience of working on a real-world project brought a new sense of accomplishment. The project was demanding and exhausting, yet incredibly fulfilling.",
+      "url": "blog/posts/first-internship.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/first-internship.html-11",
+      "title": "Diving into AI: My Transformative First Week at CoolAI — Reflection",
+      "text": "It offered a taste of the challenges and rewards that come with working in the tech industry.",
+      "url": "blog/posts/first-internship.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/first-internship.html-12",
+      "title": "Diving into AI: My Transformative First Week at CoolAI — Conclusion",
+      "text": "It not only enhanced my technical skills but also provided invaluable insights into the dynamic world of AI. The experience has strengthened my resolve to continue my journey in this exciting field, and I am more motivated than ever to contribute to its development.",
+      "url": "blog/posts/first-internship.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/first-internship.html-13",
+      "title": "Diving into AI: My Transformative First Week at CoolAI — Conclusion",
+      "text": "I look forward to leveraging the knowledge and skills gained during this internship as I advance in my career.",
+      "url": "blog/posts/first-internship.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/first-internship.html-14",
+      "title": "Diving into AI: My Transformative First Week at CoolAI — Conclusion",
+      "text": "This internship was a pivotal moment in my academic and professional journey, providing a bridge between the theoretical knowledge gained in the classroom and the practical skills required in the workforce.",
+      "url": "blog/posts/first-internship.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/first-internship.html-15",
+      "title": "Diving into AI: My Transformative First Week at CoolAI — Conclusion",
+      "text": "I am grateful for the opportunity and excited about the future possibilities in the field of AI！",
+      "url": "blog/posts/first-internship.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/hello-world.html-0",
+      "title": "Hello World — Welcome to My Blog!",
+      "text": "Right here, I'm gonna jot down significant milestones in my life, though I'm still figuring out what those might be.",
+      "url": "blog/posts/hello-world.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/hello-world.html-1",
+      "title": "Hello World — Welcome to My Blog!",
+      "text": "I've been itching to kick off this blog cuz it's pretty cool, especially for a CS student like me hhh.",
+      "url": "blog/posts/hello-world.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/hello-world.html-2",
+      "title": "Hello World — Welcome to My Blog!",
+      "text": "However, I've been swamped with all the transfer stuff recently, which kinda put this blog on the back burner.",
+      "url": "blog/posts/hello-world.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/hello-world.html-3",
+      "title": "Hello World — Milestones to be achieved...",
+      "text": "Begin my blog journey : Sharing my thoughts, ideas, and maybe a few surprises along the way.",
+      "url": "blog/posts/hello-world.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/hello-world.html-4",
+      "title": "Hello World — Milestones to be achieved...",
+      "text": "Achieve new goals : Preparing for the upcoming final exams and later, the transfer application. Hoping to bring my A-game and receive some dream offers.",
+      "url": "blog/posts/hello-world.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/nfl-flag-football-championship.html-0",
+      "title": "Champions Unleashed: USST Earthmoving Vehicles Triumph! — The Road to Glory",
+      "text": "From the dust of the field to the roar of the crowd, the USST \"Earthmoving Vehicle\" Flag Football Team has clinched the 2023 NFL FLAG 'Star of Shine' National Championship , marking a pinnacle in our 14-year saga of sheer grit and dominance.",
+      "url": "blog/posts/nfl-flag-football-championship.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/nfl-flag-football-championship.html-1",
+      "title": "Champions Unleashed: USST Earthmoving Vehicles Triumph! — The Road to Glory",
+      "text": "Starting from humble beginnings in 2009, the team's journey has been a thrilling sprint, powered by unwavering determination and a passion that transformed them from contenders to unstoppable champions.",
+      "url": "blog/posts/nfl-flag-football-championship.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/nfl-flag-football-championship.html-2",
+      "title": "Champions Unleashed: USST Earthmoving Vehicles Triumph! — A Historic Year",
+      "text": "Celebrating a decade of consecutive victories at the NFL \"University Bowl\" Shanghai regionals, 2023 was the year we made history.",
+      "url": "blog/posts/nfl-flag-football-championship.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/nfl-flag-football-championship.html-3",
+      "title": "Champions Unleashed: USST Earthmoving Vehicles Triumph! — A Historic Year",
+      "text": "Each strategic play and tactical maneuver brought us closer to our dream, culminating in a national victory that was both earned and destined.",
+      "url": "blog/posts/nfl-flag-football-championship.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/nfl-flag-football-championship.html-4",
+      "title": "Champions Unleashed: USST Earthmoving Vehicles Triumph! — A Historic Year",
+      "text": "This win isn't just about the glory of the moment; it's about every player, coach, and supporter who turned this dream into a resounding reality.",
+      "url": "blog/posts/nfl-flag-football-championship.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/nfl-flag-football-championship.html-5",
+      "title": "Champions Unleashed: USST Earthmoving Vehicles Triumph! — Looking Forward",
+      "text": "As we revel in this monumental achievement, we look ahead with fierce optimism.",
+      "url": "blog/posts/nfl-flag-football-championship.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/nfl-flag-football-championship.html-6",
+      "title": "Champions Unleashed: USST Earthmoving Vehicles Triumph! — Looking Forward",
+      "text": "The Earthmoving Vehicles are more than just a team—they are a legacy in motion, setting their sights on new challenges and ever-greater horizons.",
+      "url": "blog/posts/nfl-flag-football-championship.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/nfl-flag-football-championship.html-7",
+      "title": "Champions Unleashed: USST Earthmoving Vehicles Triumph! — Looking Forward",
+      "text": "Join us as we continue to push limits and redefine greatness in the exciting world of flag football.",
+      "url": "blog/posts/nfl-flag-football-championship.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/nfl-flag-football-championship.html-8",
+      "title": "Champions Unleashed: USST Earthmoving Vehicles Triumph! — Looking Forward",
+      "text": "Join us on this exhilarating journey as we continue to chase greatness.",
+      "url": "blog/posts/nfl-flag-football-championship.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "blog/posts/nfl-flag-football-championship.html-9",
+      "title": "Champions Unleashed: USST Earthmoving Vehicles Triumph! — Looking Forward",
+      "text": "Here's to the sweat, the tears, and the sweet taste of victory—here's to being unstoppable!",
+      "url": "blog/posts/nfl-flag-football-championship.html",
+      "source": "Blog",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "courses",
+      "title": "Coursework",
+      "text": "Fall 2026 · UW–Madison: CS 577: Introduction to Algorithms, CS 540: Introduction to Artificial Intelligence. Spring 2026 · UW–Madison: CS 537: Introduction to Operating Systems, LIS 500: Code and Power. Fall 2025 · UW–Madison: CS 352: Digital System Fundamentals, CS 354: Machine Organization and Programming, CS 400: Programming III. Summer 2025 · Stanford: CS 107: Computer Organization & Systems, CS 161: Design and Analysis of Algorithms. Spring 2025 · UW–Madison: CS 200: Programming I, ECE 252: Introduction to Computer Engineering, MATH 340: Elementary Matrix and Linear Algebra, CS 240: Introduction to Discrete Mathematics. Additional coursework · UW–Madison: ESL 118: Academic Writing. The site lists no confirmed future course plan beyond these courses.",
+      "url": "courses.html",
+      "source": "Courses",
+      "aliases": [
+        "courses",
+        "coursework",
+        "classes",
+        "course plans"
+      ],
+      "authoritative": true
+    }
+  ]
+}

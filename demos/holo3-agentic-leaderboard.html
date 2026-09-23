@@ -57,6 +57,7 @@
   .pill{display:inline-block;padding:1px 7px;border-radius:9px;font-size:10.5px;border:1px solid var(--bd);color:var(--mut)}
   .hit{color:var(--grn)} .miss{color:var(--red)}
 </style>
+<script src="../js/site-links.js" defer></script>
 </head>
 <body>
 <header>
@@ -286,7 +287,7 @@ function render(d){
   const srcs=new Set();
   (d.benchmarks||[]).forEach(b=>(b.leaderboard&&b.leaderboard.sources||[]).forEach(s=>srcs.add(s)));
   document.getElementById('foot').innerHTML =
-    `Holo3 = <a href="https://huggingface.co/Hcompany/Holo3-35B-A3B">Hcompany/Holo3-35B-A3B</a> · `
+    `Holo3 = <a href="https://huggingface.co/Hcompany/Holo3-35B-A3B" target="_blank" rel="noopener noreferrer">Hcompany/Holo3-35B-A3B</a> · `
     +`served via llama.cpp on an Intel Core Ultra 7 356H (Panther Lake, 16C) · part of the WukLab edge-inference study. `
     +`<br>Sources: `+[...srcs].map(s=>`<a href="${s}">${s.replace(/^https?:\/\//,'').slice(0,42)}</a>`).join(' · ');
 }

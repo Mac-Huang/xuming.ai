@@ -51,6 +51,7 @@
   .pill{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:5px;margin:0 2px}
   .pill.no{background:#2a1212;color:var(--red)} .pill.yes{background:#0f240f;color:var(--grn)} .pill.maybe{background:#241d0c;color:var(--yel)}
 </style>
+<script src="../js/site-links.js" defer></script>
 </head>
 <body>
 <header>
@@ -127,7 +128,7 @@
   <!-- per-task timeline -->
   <div class="panel full">
     <h2>1b · Where a task's wall-clock actually goes (per-step timeline)</h2>
-    <p>In the timeline style of <a href="https://arxiv.org/abs/2506.16042">OSWorld-Human</a> (Abhyankar, Qi &amp; Zhang),
+    <p>In the timeline style of <a href="https://arxiv.org/abs/2506.16042" target="_blank" rel="noopener noreferrer">OSWorld-Human</a> (Abhyankar, Qi &amp; Zhang),
        here is one real <b>successful</b> OSWorld task (<code>chrome</code>, 8 steps, score 1.0) decomposed per step into
        <b class="r">prefill</b>, <b class="k">decode</b>, and <b class="g">action</b>. OSWorld-Human reports that "each
        successive step can take 3&times; longer than steps at the beginning of a task" — that is exactly what the top track
@@ -233,9 +234,9 @@
        reusing the rest of the KV. On a <b>standard</b> transformer this is a real, published technique — at a measured cost:</p>
     <div class="scroll"><table>
       <tr><th>method</th><th>mechanism</th><th class="num">recompute</th><th>quality cost</th></tr>
-      <tr><td><a href="https://arxiv.org/abs/2311.04934">Prompt Cache</a> (MLSys'24)</td><td>position-anchored modules; mask cross-attention</td><td class="num">0%</td><td>&lt;1 pt (if self-contained)</td></tr>
-      <tr><td><a href="https://arxiv.org/abs/2405.16444">CacheBlend</a> (EuroSys'25)</td><td>recompute high-deviation tokens</td><td class="num">5–18%</td><td>~0.01 F1</td></tr>
-      <tr><td><a href="https://arxiv.org/abs/2410.15332">EPIC</a></td><td>recompute chunk-boundary tokens (LegoLink)</td><td class="num">~16–20 tok</td><td>0–7%</td></tr>
+      <tr><td><a href="https://arxiv.org/abs/2311.04934" target="_blank" rel="noopener noreferrer">Prompt Cache</a> (MLSys'24)</td><td>position-anchored modules; mask cross-attention</td><td class="num">0%</td><td>&lt;1 pt (if self-contained)</td></tr>
+      <tr><td><a href="https://arxiv.org/abs/2405.16444" target="_blank" rel="noopener noreferrer">CacheBlend</a> (EuroSys'25)</td><td>recompute high-deviation tokens</td><td class="num">5–18%</td><td>~0.01 F1</td></tr>
+      <tr><td><a href="https://arxiv.org/abs/2410.15332" target="_blank" rel="noopener noreferrer">EPIC</a></td><td>recompute chunk-boundary tokens (LegoLink)</td><td class="num">~16–20 tok</td><td>0–7%</td></tr>
     </table></div>
     <div class="call bad">
       <p style="margin:0"><b class="r">But the literal "swap a middle slot" version is blocked on this model.</b> Holo3 is

@@ -7,44 +7,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" type="text/css" href="stylesheet.css">
   <link rel="icon" type="image/png" href="images/favicon.png">
+<script src="js/site-links.js" defer></script>
 </head>
 
 <body>
+<header class="page-header"><name>Xuming Bot</name></header><nav class="site-tabs" aria-label="Main navigation"><a href="index.html">Home</a> <span aria-hidden="true">|</span> <a href="research.html">Research</a> <span aria-hidden="true">|</span> <a href="projects.html">Projects</a> <span aria-hidden="true">|</span> <a href="blog.html">Blog</a> <span aria-hidden="true">|</span> <a href="courses.html">Courses</a> <span aria-hidden="true">|</span> <a href="bot.html" aria-current="page">Ask Me</a></nav>
   <table style="width:100%;max-width:900px;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
     <tbody>
       <tr style="padding:0px">
         <td style="padding:0px">
           
-          <!-- Header -->
-          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
-            <tbody>
-              <tr>
-                <td style="padding:20px;width:100%;vertical-align:middle">
-                  <p style="text-align:center">
-                    <name>Xuming Bot</name>
-                  </p>
-                </td>
-              </tr>
-            </tbody>
-          </table>
           
-          <!-- Navigation -->
-          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
-            <tbody>
-              <tr>
-                <td style="padding:20px;width:100%;vertical-align:middle">
-                  <p style="text-align:center;font-size:18px;">
-                    <a href="index.html">Home</a> &nbsp;|&nbsp;
-                    <a href="research.html">Research</a> &nbsp;|&nbsp;
-                    <a href="projects.html">Projects</a> &nbsp;|&nbsp;
-                    <a href="blog.html">Blog</a> &nbsp;|&nbsp;
-                    <a href="courses.html">Courses</a> &nbsp;|&nbsp;
-                    <a href="bot.html" style="font-weight:700;">Ask Me</a>
-                  </p>
-                </td>
-              </tr>
-            </tbody>
-          </table>
           
           <!-- Introduction -->
           <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
@@ -54,8 +27,8 @@
                   <p>
                     Ask me about my research, publications, projects, or academic experience.
                     This page runs a small language model <strong>entirely in your browser</strong>
-                    (no server, no API key) with retrieval over the content of this site.
-                    First visit downloads the model once (cached afterwards). WebGPU required.
+                    (no server, no API key) with retrieval over the current résumé, research, publications, projects, courses, and blog posts.
+                    The model is downloaded and cached on first use. WebGPU enables generated answers; verified profile answers also work while it loads.
                   </p>
                   <div id="bot-status" style="margin-top:10px;padding:10px;background:#f5f5f5;border-radius:4px;font-size:14px;color:#555;">
                     <div id="status-text">Initializing…</div>
@@ -64,7 +37,7 @@
                     </div>
                     <div style="margin-top:8px;">
                       <label style="font-size:13px;color:#666;">Model:
-                        <select id="model-select" style="font-family:inherit;font-size:13px;margin-left:4px;"></select>
+                        <select id="model-select" style="font-family:inherit;font-size:13px;margin-left:4px;max-width:100%;"></select>
                       </label>
                       <button id="reset-btn" style="margin-left:10px;font-size:13px;padding:3px 8px;">Reset chat</button>
                     </div>
@@ -223,7 +196,7 @@
                   <div style="display:flex; gap:10px;">
                     <input type="text" id="message-input" 
                            placeholder="Type your question..." 
-                           style="flex:1; padding:10px; font-family:'EB Garamond', Georgia, serif; font-size:16px; border:1px solid #ddd; border-radius:3px;"
+                           style="flex:1; min-width:0; padding:10px; font-family:'EB Garamond', Georgia, serif; font-size:16px; border:1px solid #ddd; border-radius:3px;"
                            onkeypress="if(event.key==='Enter') sendMessage()">
                     <button onclick="sendMessage()" 
                             style="padding:10px 20px; font-family:'EB Garamond', Georgia, serif; font-size:16px;">
@@ -240,33 +213,7 @@
             <tbody>
               <tr>
                 <td style="padding:20px;width:100%;vertical-align:middle">
-                  <heading>Suggested Questions</heading>
-                  <p style="line-height:1.8;">
-                    <strong>About Me:</strong><br>
-                    • <a href="javascript:;" onclick="askQuestion('What is your current research focus?')">What is your current research focus?</a><br>
-                    • <a href="javascript:;" onclick="askQuestion('What are your career goals?')">What are your career goals?</a><br>
-                    • <a href="javascript:;" onclick="askQuestion('What programming languages and skills do you have?')">What programming languages and skills do you have?</a><br>
-                    • <a href="javascript:;" onclick="askQuestion('Tell me about your hobbies and interests')">Tell me about your hobbies and interests</a><br>
-                    <br>
-                    <strong>Academic:</strong><br>
-                    • <a href="javascript:;" onclick="askQuestion('What was your experience at Stanford?')">What was your experience at Stanford?</a><br>
-                    • <a href="javascript:;" onclick="askQuestion('What courses have you taken at UW-Madison?')">What courses have you taken at UW-Madison?</a><br>
-                    • <a href="javascript:;" onclick="askQuestion('What courses are you planning to take next?')">What courses are you planning to take next?</a><br>
-                    • <a href="javascript:;" onclick="askQuestion('Tell me about your publications')">Tell me about your publications</a><br>
-                    <br>
-                    <strong>Technical Topics:</strong><br>
-                    • <a href="javascript:;" onclick="askQuestion('What is gradient checkpointing?')">What is gradient checkpointing?</a><br>
-                    • <a href="javascript:;" onclick="askQuestion('Explain distributed training')">Explain distributed training</a><br>
-                    • <a href="javascript:;" onclick="askQuestion('What is model quantization?')">What is model quantization?</a><br>
-                    • <a href="javascript:;" onclick="askQuestion('How does FlashAttention work?')">How does FlashAttention work?</a><br>
-                    • <a href="javascript:;" onclick="askQuestion('Explain CUDA programming')">Explain CUDA programming</a><br>
-                    • <a href="javascript:;" onclick="askQuestion('What is automatic differentiation?')">What is automatic differentiation?</a><br>
-                    <br>
-                    <strong>Advice & Collaboration:</strong><br>
-                    • <a href="javascript:;" onclick="askQuestion('What advice do you have for learning ML systems?')">What advice do you have for learning ML systems?</a><br>
-                    • <a href="javascript:;" onclick="askQuestion('How can I contribute to your projects?')">How can I contribute to your projects?</a><br>
-                    • <a href="javascript:;" onclick="askQuestion('Why are you interested in ML systems?')">Why are you interested in ML systems?</a><br>
-                  </p>
+                  <heading>Suggested Questions</heading><p style="line-height:1.9"><a href="javascript:;" onclick="askQuestion('What is your current research focus?')">What is your current research focus?</a><br><a href="javascript:;" onclick="askQuestion('WukLab')">WukLab</a><br><a href="javascript:;" onclick="askQuestion('Remzi')">Remzi</a><br><a href="javascript:;" onclick="askQuestion('Tell me about your publications')">Tell me about your publications</a><br><a href="javascript:;" onclick="askQuestion('What is your education?')">What is your education?</a><br><a href="javascript:;" onclick="askQuestion('What courses are you taking in Fall 2026?')">What courses are you taking in Fall 2026?</a><br><a href="javascript:;" onclick="askQuestion('Tell me about the heap allocator')">Tell me about the heap allocator</a><br><a href="javascript:;" onclick="askQuestion('What did you do at Cool AI?')">What did you do at Cool AI?</a><br></p>
                 </td>
               </tr>
             </tbody>
@@ -278,7 +225,7 @@
               <tr>
                 <td style="padding:20px;width:100%;vertical-align:middle">
                   <p style="font-size:14px; color:#666; background:#f9f9f9; padding:15px; border-radius:3px;">
-                    <strong>Note:</strong> This is a LLM-enhanced bot that provides information about my academic work. It makes mistakes. 
+                    Built with Llama · <a href="https://huggingface.co/meta-llama/Llama-3.2-1B-Instruct/blob/main/LICENSE.txt" target="_blank" rel="noopener noreferrer">Model license</a><br><strong>Note:</strong> This is a LLM-enhanced bot that provides information about my academic work. It can make mistakes; source links let you check each answer.
                     For detailed discussions or collaborations, please <a href="javascript:;" onclick="showEmail()">email me directly</a>.
                   </p>
                 </td>
@@ -293,7 +240,7 @@
                 <td style="padding:0px">
                   <br>
                   <p style="text-align:center;font-size:14px;color:#999;padding:20px;">
-                    Feel free to clone my template <a href="https://github.com/Mac-Huang/xuming.ai.git" style="color:#999;">Xuming Huang</a>
+                    Feel free to clone my template <a href="https://github.com/Mac-Huang/xuming.ai.git" style="color:#999;" target="_blank" rel="noopener noreferrer">Xuming Huang</a>
                   </p>
                 </td>
               </tr>
@@ -310,37 +257,19 @@
   <script src="data/blog-posts.js"></script>
   <script src="js/main.js"></script>
 
-  <!-- Background preloader (also runs on every other page) -->
-  <script src="js/bot-preload.js"></script>
+  <!-- Model loading is owned by rag-bot.js, preventing duplicate downloads. -->
+
 
   <!-- Flash-card carousel for fun facts about Xuming while the model loads -->
   <script>
   (function () {
     const FACTS = [
-      { emoji: "🏈", front: "I'm a 2023 NFL FLAG Football National Champion.",
-        back: "Played for the USST Earthmoving Vehicles team — proof that systems people can move fast off-screen too." },
-      { emoji: "🔓", front: "I discovered security holes in Stanford's Andrew File System.",
-        back: "Found and responsibly disclosed them during CS107 in Summer 2025, then worked with Alex Keller on the fixes." },
-      { emoji: "📚", front: "Stanford Summer 2025: A+ in CS107 (99/100), A in CS161 (93/100).",
-        back: "CS107 Computer Organization & Systems and CS161 Design and Analysis of Algorithms." },
-      { emoji: "🤖", front: "This very chatbot runs entirely in your browser.",
-        back: "WebLLM + transformers.js over WebGPU. No server, no API key — your messages never leave your machine." },
-      { emoji: "🎓", front: "Junior CS @ UW–Madison, focused on ML systems and OS.",
-        back: "Currently planning CS 352, CS 552, CS 537, and CS 744 — the systems track." },
-      { emoji: "🌏", front: "I represented CoolAI at the World AI Conference (WAIC).",
-        back: "Internship work on AI products; ended up demoing on the show floor." },
-      { emoji: "🛠️", front: "I write C, C++, Python, Java, x86 assembly, and CUDA.",
-        back: "Plus PyTorch for ML work and a lot of systems-programming time spent in gdb." },
-      { emoji: "🎯", front: "Career goal: advance ML infrastructure — or a PhD in ML systems.",
-        back: "I want to make large-scale training and inference faster, cheaper, and easier to reason about." },
-      { emoji: "🎨", front: "I build CS educational visualizations used by students.",
-        back: "Cache simulators, k-maps, B+ trees, transformer architectures — see the Demos directory on this site." },
-      { emoji: "🧠", front: "Quiz me about FlashAttention, ZeRO, gradient checkpointing, or CUDA.",
-        back: "I've collected notes on these and more — the bot answers from that knowledge base." },
-      { emoji: "📖", front: "Off-keyboard: reading, mentoring, hackathons, open source.",
-        back: "I help newer students get started in CS and follow the systems & ML research community closely." },
-      { emoji: "💬", front: "Want a real conversation? Email me directly.",
-        back: "Click 'email me directly' in the note below this chat — I'm open to research collaborations and ML-infra internships." },
+      { emoji: "🤖", front: "I work on NPU compilers and runtimes at WukLab.", back: "Ongoing research with Professor Yiying Zhang at UC San Diego, since January 2026." },
+      { emoji: "🔍", front: "LinuxGuard turns past kernel fixes into new bug detectors.", back: "Research with Professor Remzi Arpaci-Dusseau and Dr. Vinay Banakar at ADSL, UW–Madison." },
+      { emoji: "📚", front: "I studied systems and algorithms at Stanford in Summer 2025.", back: "CS107 Computer Organization & Systems and CS161 Design and Analysis of Algorithms." },
+      { emoji: "🎓", front: "I'm studying Computer Sciences at UW–Madison.", back: "Expected graduation: May 2027. Research interests: systems for AI, edge inference, operating systems, and AI compilers." },
+      { emoji: "🏈", front: "My USST team won the 2023 NFL FLAG national championship.", back: "I captained the USST Earthmoving Vehicles team." },
+      { emoji: "🛠️", front: "I build algorithms and AI learning resources.", back: "Algorithm visualizations and Transformer/GPT implementations from scratch — see Projects." }
     ];
 
     // Shuffle so repeat visits feel fresh, but stable per pageload.
@@ -464,8 +393,8 @@
 
     function renderSources(sources) {
       if (!sources?.length) return "";
-      const items = sources.slice(0, 4).map(s => {
-        const label = escapeHtml(`${s.source}: ${s.title || ""}`.trim());
+      const items = sources.map(s => {
+        const label = escapeHtml(`[${s.citation}] ${s.source}: ${s.title || ""}`.trim());
         return s.url
           ? `<a href="${escapeHtml(s.url)}" style="color:#777;">${label}</a>`
           : label;
@@ -485,25 +414,22 @@
 
     async function boot(modelId) {
       setStatus("Starting up…", 0);
-      if (!navigator.gpu) {
-        setStatus("WebGPU is not available in this browser. Try Chrome/Edge on desktop.", 0);
-        return;
-      }
-      // On this page we want to start downloading immediately; don't wait
-      // for requestIdleCallback in the preloader.
-      try { window.BotPreload?.start?.(); } catch (_) {}
+
+
+      modelSel.disabled = true;
       try {
         await RagBot.init(modelId, ({ text, pct }) => setStatus(text, pct));
-        setStatus("Ready. Ask me anything.", 100);
+
         if (typeof window.__hideFunFacts === "function") window.__hideFunFacts();
       } catch (e) {
         console.error(e);
-        setStatus("Failed to load model: " + (e?.message || e), 0);
-      }
+        setStatus("Failed to load profile: " + (e?.message || e), 0);
+      } finally { modelSel.disabled = false; }
     }
 
     modelSel.addEventListener("change", () => boot(modelSel.value));
     resetBtn.addEventListener("click", () => {
+      if (RagBot.isBusy()) return;
       RagBot.reset();
       messagesEl.innerHTML = '<div class="bot-message"><strong>Xuming Bot:</strong> Chat reset. What would you like to know?</div>';
     });
@@ -511,7 +437,7 @@
     // Override global sendMessage / askQuestion used by existing UI hooks.
     window.sendMessage = async function () {
       const message = input.value.trim();
-      if (!message) return;
+      if (!message || RagBot.isBusy()) return;
       if (!RagBot.isReady()) {
         appendMessage(escapeHtml(message), "user");
         appendMessage("<em>Still loading the model — please wait a moment.</em>", "bot");

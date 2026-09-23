@@ -552,3 +552,14 @@ button:hover {
 @media(max-width:650px){.publication-entry{grid-template-columns:1fr;gap:18px}.publication-cover{max-width:360px}.publication-cover-pending{display:none}}
 .publication-copy h3 a{font-size:21px;font-weight:700;line-height:1.35}
 .publication-cover{align-self:start;margin-top:6px}
+
+/* Keep navigation in one position and preserve the established serif style. */
+.page-header{max-width:900px;margin:auto;padding:20px;box-sizing:border-box;text-align:center}
+.page-header name{margin:16px 0}
+.site-tabs{position:sticky;top:0;z-index:100;background:#fff;max-width:900px;margin:0 auto;padding:16px 12px;box-sizing:border-box;text-align:center;line-height:1.6;border-bottom:1px solid #eee}
+.site-tabs a{margin:0 5px;font-size:18px;white-space:nowrap}
+.site-tabs a[aria-current="page"]{font-weight:700}
+.site-tabs span{color:#777}
+html{scroll-padding-top:72px}
+@media(max-width:600px){.site-tabs{padding:10px 4px}.site-tabs a{font-size:15px;margin:0 3px}.page-header{padding:10px}}
+@media print{.site-tabs{position:static}}

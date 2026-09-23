@@ -42,6 +42,7 @@
   .k{color:var(--blu)} .g{color:var(--grn)} .y{color:var(--yel)} .r{color:var(--red)} .p{color:var(--pur)}
   .win{font-size:14px;color:var(--grn);font-weight:600}
 </style>
+<script src="../js/site-links.js" defer></script>
 </head>
 <body>
 <header>
@@ -160,7 +161,7 @@
               shape-derived <code>NonZero</code> gather changed nothing; no compiler toggle helps (<code>optimization-level=0</code> ⇒
               the bug is in <b>mandatory</b> DPU lowering, not fusion); it <b>survives the latest driver</b> (1.32.1 → 1.33.0). So the
               NPU's lowering of the deep repeated 32-layer GDN graph is wrong — a fileable compiler defect (matches open
-              <code><a href="https://github.com/openvinotoolkit/openvino/issues/35222">openvino#35222</a></code>; Intel lists Qwen3-Next/3.5
+              <code><a href="https://github.com/openvinotoolkit/openvino/issues/35222" target="_blank" rel="noopener noreferrer">openvino#35222</a></code>; Intel lists Qwen3-Next/3.5
               GDN as CPU+GPU-only, NPU unvalidated).</td></tr>
       <tr><td class="run"><b>NPU decode — the fix: NPUW hybrid</b></td>
           <td class="run">◑ <b class="g">Coherence solved on the NPU.</b> Since the miscompute is confined to the GDN recurrence, I use

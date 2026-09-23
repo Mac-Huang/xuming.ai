@@ -304,6 +304,13 @@ function createProjectRow(project) {
   tdContent.appendChild(titleSpan);
   tdContent.appendChild(document.createElement('br'));
   
+  if (project.date) {
+    const date = document.createElement('div');
+    date.className = 'project-date';
+    date.style.cssText = 'color:#777;font-size:14px;margin:4px 0';
+    date.textContent = 'First listed ' + new Date(project.date + 'T12:00:00Z').toLocaleDateString('en-US', {year:'numeric', month:'long', day:'numeric', timeZone:'UTC'});
+    tdContent.appendChild(date);
+  }
   // Technologies
   if (project.tech) {
     const techEm = document.createElement('em');
@@ -368,7 +375,7 @@ function loadProjects() {
   tbody.innerHTML = '';
   
   // Create and append rows for all projects
-  projects.forEach(project => {
+  [...projects].sort((a, b) => b.date.localeCompare(a.date) || a.title.localeCompare(b.title)).forEach(project => {
     const row = createProjectRow(project);
     tbody.appendChild(row);
   });

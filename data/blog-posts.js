@@ -8,7 +8,7 @@ const blogPosts = [
     "excerpt": "Two projects at WukLab: removing repeated compiler work and compiling ahead while KV memory grows with the context.",
     "url": "blog/posts/npu-jit-static-shapes.html",
     "readTime": "7 min",
-    "cover": "images/papers/wuklab/npu-jit-sketch-one-ahead.png"
+    "cover": "images/papers/wuklab/npu-processing-array.png"
   },
   {
     "id": "linuxguard-journey",
