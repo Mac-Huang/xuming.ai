@@ -141,9 +141,9 @@
       <li><a href="#bio" class="active">About</a></li>
       <li><a href="#research">Research</a></li>
       <li><a href="#projects">Projects</a></li>
-      <li><a href="#teaching">Teaching</a></li>
+      <li><a href="#teaching">Teaching &amp; Service</a></li>
       <li><a href="#apps">Apps</a></li>
-      <li><a href="#service">Service</a></li>
+
     </ul>
   </nav>
 
@@ -168,16 +168,14 @@
                   </p>
                   <p>
                     With Professor <a href="https://cseweb.ucsd.edu/~yiying/">Yiying Zhang</a> at
-                    <a href="https://wuklab.io/">WukLab, UC San Diego</a>, I develop NPU runtimes that overlap
-                    progressive compilation with inference, grow KV state as context expands, and measure CPU/GPU/NPU
-                    placement preferences. I also contributed an
-                    <a href="https://github.com/openvinotoolkit/npu_compiler/pull/348">OpenVINO NPU compiler optimization</a>
-                    that reduced CPU sorting time by 94.2%.
+                    <a href="https://wuklab.io/">WukLab, UC San Diego</a>, I work on efficient AI inference
+                    on edge devices, with a current focus on NPU compilers and runtimes.
                   </p>
                   <p>
-                    Previously, I studied filesystem interference with Professor Michael Swift and built
+                    Previously, I studied filesystem interference with Professor <a href="https://pages.cs.wisc.edu/~swift/">Michael Swift</a> and built
                     <a href="linuxguard.html">LinuxGuard</a> with Professor
-                    <a href="https://pages.cs.wisc.edu/~remzi/">Remzi Arpaci-Dusseau</a> and Dr. Vinay Banakar at UW–Madison.
+                    <a href="https://pages.cs.wisc.edu/~remzi/">Remzi Arpaci-Dusseau</a> and Dr. <a href="https://www.vinaybanakar.com/">Vinay Banakar</a>
+                    at <a href="https://research.cs.wisc.edu/adsl/">The ADvanced Systems Laboratory (ADSL)</a>, UW–Madison.
                   </p>
                   <p style="text-align:center">
                     <a href="javascript:;" onclick="showEmail()" id="email-link">[show email]</a> /
@@ -220,7 +218,7 @@
             <tbody>
               <tr>
                 <td style="padding:20px;width:100%;vertical-align:middle">
-                  <heading>Research</heading>
+                  <heading>Research Experience</heading>
                   <p>
                     My research connects accelerator compilation, memory management, device placement, and systems security.
                     I build runtimes and analysis tools, then evaluate their behavior under controlled workloads.
@@ -235,9 +233,9 @@
           <table style="width:100%;border:0px;border-spacing:0px 10px;border-collapse:separate;margin-right:auto;margin-left:auto;" id="selected-publications">
             <tbody>
 <tr id="wuklab" class="research-row" style="background-color:#ffffd0"><td style="padding:20px;width:25%;vertical-align:middle"><img src="images/papers/wuklab/npu-jit-sketch-one-ahead.png" alt="Edge AI Systems Optimization" width="160" style="border-style:none;height:auto" loading="lazy"></td><td style="padding:20px;width:75%;vertical-align:middle"><a href="research/edge-ai.html"><papertitle>Edge AI Systems Optimization</papertitle></a><br><div><strong>Xuming Huang</strong> · advised by Prof. Yiying Zhang</div><em>Undergraduate Researcher · WukLab, UC San Diego · Jan. 2026–present</em><br><div><a href="research/edge-ai.html">research overview</a> / <a href="https://github.com/openvinotoolkit/npu_compiler/pull/348">compiler PR #348</a></div><p>Developed a JIT NPU runtime that overlaps CPU graph compilation with NPU inference and grows the KV cache with context: 91.98% less foreground compilation time and 33.05% lower average KV memory, while preserving model quality and decoding. Cached sorted compiler dependency vectors to reduce CPU sorting time by 94.2%, and built CPU/GPU/NPU benchmarks to guide device placement.</p></td></tr>
-<tr id="os-inference" class="research-row" style="background-color:#ffffd0"><td style="padding:20px;width:25%;vertical-align:middle"><img src="images/research/os-inference.svg" alt="Operating Systems for AI Inference" width="160" style="border-style:none;height:auto" loading="lazy"></td><td style="padding:20px;width:75%;vertical-align:middle"><a href="research/os-inference.html"><papertitle>Operating Systems for AI Inference</papertitle></a><br><div><strong>Xuming Huang</strong> · advised by Prof. Michael Swift</div><em>Honors Course Research Project · UW–Madison · Jan.–May 2026</em><br><div><a href="research/os-inference.html">project overview</a></div><p>Measured how background filesystem reads interfere with a fixed LLM inference workload: median latency increased 17.1%. Windows PerfMon showed stable working sets and page-fault counts plateauing near 29.5K, supporting shared-resource contention as the explanation rather than working-set thrashing.</p></td></tr>
-<tr id="linuxguard-2025" class="research-row" style="background-color:#ffffd0"><td style="padding:20px;width:25%;vertical-align:middle"><img src="images/papers/linuxguard_paradigm.jpg" alt="LinuxGuard: AI for System Security" width="160" style="border-style:none;height:auto" loading="lazy"></td><td style="padding:20px;width:75%;vertical-align:middle"><a href="linuxguard.html"><papertitle>LinuxGuard: AI for System Security</papertitle></a><br><div><strong>Xuming Huang</strong> · advised by Prof. Remzi Arpaci-Dusseau and Dr. Vinay Banakar</div><em>Undergraduate Researcher · UW–Madison · Jan.–Nov. 2025</em><br><div><a href="linuxguard.html">project</a> / <a href="https://github.com/Mac-Huang/LinuxGuard">code</a> / <a href="blog/posts/linuxguard-journey.html">retrospective</a></div><p>Built an LLM-driven pipeline over 50K+ Linux kernel commits to generate Clang-Tidy analyzers. Clustering and compiler-feedback repair produced 4× more valid checkers at 73% precision. A full-kernel validation harness uncovered 43 long-latent bugs with an average age of 4.7 years.</p></td></tr>
-<tr id="cash" class="research-row" style="background-color:#ffffd0"><td style="padding:20px;width:25%;vertical-align:middle"><img src="images/research/cash.svg" alt="ML-Guided Scheduling for Heterogeneous Compute Systems" width="160" style="border-style:none;height:auto" loading="lazy"></td><td style="padding:20px;width:75%;vertical-align:middle"><a href="https://www.techscience.com/cmc/v89n2/68821"><papertitle>ML-Guided Scheduling for Heterogeneous Compute Systems</papertitle></a><br><div><strong>Xuming Huang</strong> · coauthor; advised by Prof. Xing Hu</div><em>Undergraduate Researcher · USST · Jan. 2024–Sept. 2026</em><br><div><a href="https://www.techscience.com/cmc/v89n2/68821">paper</a></div><p>Contributed to experimental validation and performance analysis of CASH, which predicts workload–hardware affinity for CPU/GPU placement. In 5,000-task simulations using MIT Supercloud traces, the scheduler achieved 97.1% resource-matching accuracy, 46.5% lower response time, and 36.8% lower modeled energy than Meta-RHDC.</p></td></tr>
+<tr id="os-inference" class="research-row"><td style="padding:20px;width:25%;vertical-align:middle"><img src="images/research/os-inference.svg" alt="Operating Systems for AI Inference" width="160" style="border-style:none;height:auto" loading="lazy"></td><td style="padding:20px;width:75%;vertical-align:middle"><a href="research/os-inference.html"><papertitle>Operating Systems for AI Inference</papertitle></a><br><div><strong>Xuming Huang</strong> · advised by Prof. <a href="https://pages.cs.wisc.edu/~swift/">Michael Swift</a></div><em>Honors Course Research Project · UW–Madison · Jan.–May 2026</em><br><div><a href="research/os-inference.html">project overview</a></div><p>Measured how background filesystem reads interfere with a fixed LLM inference workload: median latency increased 17.1%. Windows PerfMon showed stable working sets and page-fault counts plateauing near 29.5K, supporting shared-resource contention as the explanation rather than working-set thrashing.</p></td></tr>
+<tr id="linuxguard-2025" class="research-row" style="background-color:#ffffd0"><td style="padding:20px;width:25%;vertical-align:middle"><img src="images/papers/linuxguard_paradigm.jpg" alt="LinuxGuard: AI for System Security" width="160" style="border-style:none;height:auto" loading="lazy"></td><td style="padding:20px;width:75%;vertical-align:middle"><a href="linuxguard.html"><papertitle>LinuxGuard: AI for System Security</papertitle></a><br><div><strong>Xuming Huang</strong> · advised by Prof. Remzi Arpaci-Dusseau and Dr. <a href="https://www.vinaybanakar.com/">Vinay Banakar</a> · <a href="https://research.cs.wisc.edu/adsl/">The ADvanced Systems Laboratory (ADSL)</a></div><em>Undergraduate Researcher · UW–Madison · Jan.–Nov. 2025</em><br><div><a href="linuxguard.html">project</a> / <a href="https://github.com/Mac-Huang/LinuxGuard">code</a> / <a href="blog/posts/linuxguard-journey.html">retrospective</a></div><p>Built an LLM-driven pipeline over 50K+ Linux kernel commits to generate Clang-Tidy analyzers. Clustering and compiler-feedback repair produced 4× more valid checkers at 73% precision. A full-kernel validation harness uncovered 43 long-latent bugs with an average age of 4.7 years.</p></td></tr>
+<tr id="cash" class="research-row"><td style="padding:20px;width:25%;vertical-align:middle"><img src="images/papers/cash-figure.png" alt="ML-Guided Scheduling for Heterogeneous Compute Systems" width="160" style="border-style:none;height:auto" loading="lazy"></td><td style="padding:20px;width:75%;vertical-align:middle"><a href="https://www.techscience.com/cmc/v89n2/68821"><papertitle>ML-Guided Scheduling for Heterogeneous Compute Systems</papertitle></a><br><div><strong>Xuming Huang</strong> · coauthor; advised by Prof. Xing Hu</div><em>Undergraduate Researcher · USST · Jan. 2024–Sept. 2026</em><br><div><a href="https://www.techscience.com/cmc/v89n2/68821">paper</a></div><p>Contributed to experimental validation and performance analysis of CASH, which predicts workload–hardware affinity for CPU/GPU placement. In 5,000-task simulations using MIT Supercloud traces, the scheduler achieved 97.1% resource-matching accuracy, 46.5% lower response time, and 36.8% lower modeled energy than Meta-RHDC.</p></td></tr>
 </tbody>
           </table>
 
@@ -267,46 +265,13 @@
             </tbody>
           </table>
 
-          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
-            <tbody>
-              <tr>
-                <td style="padding:20px;width:33%;vertical-align:top">
-                  <div style="text-align:center;">
-                    <a href="research/edge-ai.html">
-                      <img src="images/papers/wuklab/edge-ai-research-evidence.png" alt="OpenVINO NPU compiler optimization evidence" style="width:100%;max-width:200px;height:120px;object-fit:cover;border-radius:5px;border:1px solid #ddd;">
-                    </a>
-                    <p style="margin-top:10px;"><strong>OpenVINO NPU Compiler Optimization</strong></p>
-                    <p style="font-size:13px;color:#666;">Cached sorted dependency and consumer vectors, reducing CPU sorting time by 94.2%</p>
-                  </div>
-                </td>
-                <td style="padding:20px;width:33%;vertical-align:top">
-                  <div style="text-align:center;">
-                    <a href="demos/openclaw-workflow.html">
-                      <img src="images/papers/wuklab/mem_budget_summary.png" alt="OpenClaw Workflow" style="width:100%;max-width:200px;height:120px;object-fit:cover;border-radius:5px;border:1px solid #ddd;">
-                    </a>
-                    <p style="margin-top:10px;"><strong>OpenClaw Edge Workflow</strong></p>
-                    <p style="font-size:13px;color:#666;">Inside an agentic LLM turn — prompt cache, KV cache, and the 35× compaction spike</p>
-                  </div>
-                </td>
-                <td style="padding:20px;width:33%;vertical-align:top">
-                  <div style="text-align:center;">
-                    <a href="demos/heap-allocator.html">
-                      <img src="images/projects/heap-allocator-thumb.jpg" alt="Heap Allocator" style="width:100%;max-width:200px;height:120px;object-fit:cover;border-radius:5px;border:1px solid #ddd;">
-                    </a>
-                    <p style="margin-top:10px;"><strong>Heap Allocator Visualization</strong></p>
-                    <p style="font-size:13px;color:#666;">CS107 memory allocation strategies with coalescing and fragmentation analysis</p>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
+<table style="width:100%;border-spacing:0"><tbody><tr><td style="padding:20px;width:33%;vertical-align:top;text-align:center"><a href="https://github.com/Mac-Huang/algorithms"><img src="images/projects/graph-thumb.jpg" alt="Algorithms Learning Resources" style="width:100%;max-width:200px;height:120px;object-fit:contain"><p><strong>Algorithms Learning Resources</strong></p></a><p style="font-size:13px;color:#666">Implementations and visualizations across six algorithm topics.</p></td><td style="padding:20px;width:33%;vertical-align:top;text-align:center"><a href="https://github.com/Mac-Huang/Transformer"><img src="images/projects/transformer-tutorial-thumb.jpg" alt="AI Systems Learning Resources" style="width:100%;max-width:200px;height:120px;object-fit:contain"><p><strong>AI Systems Learning Resources</strong></p></a><p style="font-size:13px;color:#666">Transformer and GPT implementations from scratch in PyTorch.</p></td><td style="padding:20px;width:33%;vertical-align:top;text-align:center"><a href="demos/heap-allocator.html"><img src="images/projects/heap-allocator-thumb.jpg" alt="Heap Allocator" style="width:100%;max-width:200px;height:120px;object-fit:contain"><p><strong>Heap Allocator</strong></p></a><p style="font-size:13px;color:#666">Memory allocation, block coalescing, and fragmentation analysis.</p></td></tr></tbody></table>
           <!-- Teaching -->
           <table id="teaching" style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
             <tbody>
               <tr>
                 <td style="padding:20px;width:100%;vertical-align:middle">
-                  <heading>Teaching & Tutorials</heading>
+                  <span id="service"></span><heading>Teaching &amp; Service</heading>
                   <p>
                     <strong>Deep Learning Architecture Tutorials:</strong><br>
                     • <a href="https://github.com/Mac-Huang/Transformer">Understanding Transformers</a> - Comprehensive tutorial on Transformer architecture with implementations<br>
@@ -314,7 +279,8 @@
                     • <a href="https://github.com/Mac-Huang/algorithms">Algorithms Visualizations</a> - Interactive visualizations and implementations of fundamental algorithms<br>
                     <br>
                     <strong>ECE 252 In-Class Peer Coach, UW–Madison:</strong><br>
-                    September–December 2026: support discussion sessions and hold office hours
+                    September–December 2026: support discussion sessions and hold office hours.<br><br>
+                    <strong>Leadership:</strong> NFL Flag Football Team Captain — USST “Earthmoving Vehicles” (2023 National Champions).
                   </p>
                 </td>
               </tr>
@@ -357,22 +323,6 @@
             </tbody>
           </table>
 
-          <!-- Service -->
-          <table id="service" style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
-            <tbody>
-              <tr>
-                <td style="padding:20px;width:100%;vertical-align:middle">
-                  <heading>Service & Activities</heading>
-                  <p>
-                    <strong>Leadership:</strong> NFL Flag Football Team Captain - USST "Earthmoving Vehicles" (2023 National Champions)<br>
-                    <strong>Community:</strong> ECE 252 In-Class Peer Coach at UW–Madison (Fall 2026)<br>
-                    <strong>Open Source:</strong> Contributing to machine learning projects and educational materials
-                  </p>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
           <!-- Footer -->
           <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">
             <tbody>
@@ -399,7 +349,7 @@
   <script>
     // Update active navigation item based on scroll position
     function updateActiveNav() {
-      const sections = ['bio', 'research', 'projects', 'teaching', 'apps', 'service'];
+      const sections = ['bio', 'research', 'projects', 'teaching', 'apps'];
       const scrollPosition = window.scrollY + 100;
 
       for (let section of sections) {

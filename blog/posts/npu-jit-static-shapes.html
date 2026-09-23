@@ -1,629 +1,99 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Compile Ahead, Not Up Front — WukLab</title>
-  <meta name="author" content="Vikranth Srivatsa, Xuming Huang, Yiying Zhang">
-  <meta name="description" content="A one-ahead JIT runtime hides NPU specialization behind LLM decoding, cutting the measured critical path by 8.37% with zero boundary wait.">
-  <meta property="og:title" content="Compile Ahead, Not Up Front">
-  <meta property="og:description" content="JIT specialization for long-context LLM inference on static-shape NPUs.">
-  <meta property="og:image" content="../../images/papers/wuklab/npu-jit-sketch-one-ahead.png">
-  <link rel="icon" type="image/png" href="../../images/favicon.png">
-  <style>
-    :root {
-      --ink: #16212b;
-      --muted: #5d6972;
-      --paper: #f7f5ef;
-      --card: #fffdf8;
-      --line: #d9d6cc;
-      --blue: #1667d9;
-      --blue-soft: #eaf2ff;
-      --red: #d83b45;
-      --gold: #d88b00;
-      --green: #18794e;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    }
-
-    * { box-sizing: border-box; }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      margin: 0;
-      color: var(--ink);
-      background:
-        radial-gradient(circle at 8% 0%, rgba(22, 103, 217, .08), transparent 28rem),
-        var(--paper);
-      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      line-height: 1.68;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    a { color: var(--blue); text-underline-offset: 3px; }
-    a:hover { text-decoration-thickness: 2px; }
-
-    .site-nav {
-      width: min(1120px, calc(100% - 40px));
+<!DOCTYPE HTML>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="author" content="Xuming Huang"><meta name="description" content="NPU compiler optimization, progressive compilation, and growing KV memory for local AI inference."><title>Making NPU Inference Practical: Compiler Optimization and JIT Runtimes - Xuming Huang</title><link rel="stylesheet" href="../../stylesheet.css"><link rel="icon" href="../../images/favicon.png"><style>
+    .blog-content {
+      max-width: 800px;
       margin: 0 auto;
-      padding: 22px 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid rgba(22, 33, 43, .12);
-      font-size: .92rem;
-    }
-
-    .site-nav .mark {
-      color: var(--ink);
-      font-weight: 800;
-      letter-spacing: -.02em;
-      text-decoration: none;
-    }
-
-    .site-nav .links { display: flex; gap: 22px; }
-    .site-nav .links a { color: var(--muted); text-decoration: none; }
-    .site-nav .links a:hover { color: var(--blue); }
-
-    .hero {
-      width: min(1120px, calc(100% - 40px));
-      margin: 0 auto;
-      padding: 88px 0 54px;
-    }
-
-    .eyebrow {
-      margin: 0 0 18px;
-      color: var(--blue);
-      font-family: var(--mono);
-      font-size: .77rem;
-      font-weight: 800;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-    }
-
-    h1 {
-      max-width: 920px;
-      margin: 0;
-      font-size: clamp(3rem, 8vw, 6.7rem);
-      line-height: .94;
-      letter-spacing: -.066em;
-    }
-
-    h1 span { color: var(--blue); }
-
-    .deck {
-      max-width: 760px;
-      margin: 30px 0 24px;
-      color: #33414b;
-      font-size: clamp(1.16rem, 2.3vw, 1.55rem);
-      line-height: 1.45;
-    }
-
-    .byline { margin: 0; font-weight: 720; }
-    .byline-note, .post-meta { color: var(--muted); font-size: .88rem; }
-    .post-meta { margin-top: 8px; font-family: var(--mono); }
-
-    .metrics {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin-top: 52px;
-    }
-
-    .metric {
-      min-height: 126px;
-      padding: 22px;
-      background: rgba(255, 253, 248, .82);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-    }
-
-    .metric strong {
-      display: block;
-      color: var(--blue);
-      font-size: 2rem;
-      line-height: 1;
-      letter-spacing: -.04em;
-    }
-
-    .metric span { display: block; margin-top: 12px; color: var(--muted); font-size: .86rem; line-height: 1.35; }
-
-    article {
-      width: min(760px, calc(100% - 40px));
-      margin: 0 auto;
-      padding: 28px 0 100px;
-    }
-
-    article p, article li { font-size: 1.06rem; }
-    article p { margin: 0 0 1.35rem; }
-    article ul { padding-left: 1.25rem; }
-    article li + li { margin-top: .55rem; }
-
-    h2 {
-      margin: 4.5rem 0 1.15rem;
-      font-size: clamp(1.8rem, 4vw, 2.55rem);
-      line-height: 1.1;
-      letter-spacing: -.045em;
-    }
-
-    h3 { margin: 2rem 0 .7rem; font-size: 1.2rem; letter-spacing: -.015em; }
-
-    .lede {
-      margin-bottom: 4rem;
-      padding: 30px 32px;
-      background: var(--ink);
-      color: white;
-      border-radius: 18px;
-      font-size: 1.22rem;
-      line-height: 1.55;
-    }
-
-    .lede b { color: #8ec5ff; }
-
-    .figure-wide {
-      width: min(1120px, calc(100vw - 40px));
-      margin: 3rem 0 3.5rem;
-      position: relative;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
-    figure { margin: 0; }
-    figure a { display: block; }
-    figure img {
-      display: block;
-      width: 100%;
-      height: auto;
-      background: white;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      box-shadow: 0 18px 50px rgba(28, 37, 44, .09);
-    }
-
-    figcaption {
-      max-width: 760px;
-      margin: 13px auto 0;
-      color: var(--muted);
-      font-size: .86rem;
-      line-height: 1.5;
-    }
-
-    .choice-grid, .lesson-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      margin: 2rem 0;
-    }
-
-    .choice, .lesson {
-      padding: 23px;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      background: var(--card);
-    }
-
-    .choice b, .lesson b { display: block; margin-bottom: 7px; }
-    .choice span, .lesson span { color: var(--muted); font-size: .92rem; line-height: 1.48; }
-
-    .equation {
-      margin: 2.2rem 0;
-      padding: 24px;
-      border-left: 5px solid var(--blue);
-      background: var(--blue-soft);
-      border-radius: 0 14px 14px 0;
-    }
-
-    .equation code { display: block; margin-top: 7px; font-family: var(--mono); font-size: .98rem; }
-
-    .pipeline {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      width: min(1000px, calc(100vw - 40px));
-      margin: 2.4rem 0 3rem;
-      position: relative;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
-    .stage {
-      position: relative;
-      min-height: 168px;
       padding: 20px;
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 14px;
+      line-height: 1.8;
     }
 
-    .stage:not(:last-child)::after {
-      content: "→";
-      position: absolute;
-      z-index: 2;
-      top: 50%;
-      right: -19px;
-      width: 28px;
-      color: var(--blue);
-      background: var(--paper);
+    .blog-header {
       text-align: center;
-      font-weight: 900;
+      margin-bottom: 40px;
     }
 
-    .stage .number { color: var(--blue); font-family: var(--mono); font-size: .76rem; font-weight: 800; }
-    .stage b { display: block; margin: 11px 0 7px; line-height: 1.25; }
-    .stage span { display: block; color: var(--muted); font-size: .84rem; line-height: 1.4; }
-
-    .method-strip {
-      margin: 2rem 0 2.4rem;
-      padding: 22px 24px;
-      background: #eeeae0;
-      border-radius: 14px;
-      font-family: var(--mono);
-      font-size: .86rem;
-      line-height: 1.65;
+    .blog-meta {
+      color: #666;
+      font-size: 16px;
+      margin-top: 10px;
     }
 
-    .result-table-wrap { overflow-x: auto; margin: 1.5rem 0 1rem; }
-    .result-table { width: 100%; border-collapse: collapse; font-size: .92rem; }
-    .result-table th, .result-table td { padding: 14px 12px; border-bottom: 1px solid var(--line); text-align: right; }
-    .result-table th:first-child, .result-table td:first-child { padding-left: 0; text-align: left; }
-    .result-table th { color: var(--muted); font-family: var(--mono); font-size: .72rem; letter-spacing: .04em; text-transform: uppercase; }
-    .result-table .win { color: var(--green); font-weight: 800; }
-    .baseline-table th, .baseline-table td { text-align: left; vertical-align: top; }
-
-    .result-note { color: var(--muted); font-size: .83rem; }
-
-    .compiler-note {
-      width: min(920px, calc(100vw - 40px));
-      margin: 3.2rem 0;
-      padding: 32px;
-      position: relative;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #fff6df;
-      border: 1px solid #e8d8aa;
-      border-radius: 18px;
+    .blog-image {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin: 20px 0;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
-    .compiler-note h3 { margin-top: 0; }
-    .compiler-note p:last-child { margin-bottom: 0; }
-
-    .caveat {
-      margin: 2rem 0;
-      padding: 24px 26px;
-      border: 1px solid #ead2d4;
-      border-radius: 14px;
-      background: #fff5f5;
+    .image-caption {
+      text-align: center;
+      font-style: italic;
+      color: #666;
+      margin-top: -10px;
+      margin-bottom: 20px;
+      font-size: 14px;
     }
 
-    .caveat b { color: var(--red); }
-
-    .story-map {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 8px;
-      width: min(1000px, calc(100vw - 40px));
-      margin: 2.4rem 0 4rem;
-      position: relative;
-      left: 50%;
-      transform: translateX(-50%);
+    .highlight {
+      background: #fffde7;
+      padding: 2px 4px;
+      border-radius: 3px;
     }
 
-    .story-step {
-      padding: 17px 15px;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      background: var(--card);
-    }
-
-    .story-step span {
-      display: block;
-      margin-bottom: 7px;
-      color: var(--blue);
-      font-family: var(--mono);
-      font-size: .68rem;
-      font-weight: 800;
-      letter-spacing: .05em;
-      text-transform: uppercase;
-    }
-
-    .story-step b { display: block; font-size: .88rem; line-height: 1.3; }
-    .story-step.active { color: white; background: var(--blue); border-color: var(--blue); }
-    .story-step.active span { color: #cfe3ff; }
-
-    .section-kicker {
-      display: block;
-      margin-bottom: 11px;
-      color: var(--blue);
-      font-family: var(--mono);
-      font-size: .73rem;
-      font-weight: 800;
-      letter-spacing: .09em;
-      text-transform: uppercase;
-    }
-
-    .stage-verdict {
-      margin: 1.6rem 0 2.2rem;
-      padding: 20px 23px;
-      border: 1px solid #cbd7e7;
-      border-radius: 13px;
-      background: #f1f6fd;
-    }
-
-    .stage-verdict strong { color: var(--blue); }
-
-    .mini-metrics {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin: 1.7rem 0 2.2rem;
-    }
-
-    .mini-metric {
+    .assignment-box {
+      background: #f5f5f5;
       padding: 20px;
-      border: 1px solid var(--line);
-      border-radius: 13px;
-      background: var(--card);
+      border-left: 4px solid #1772d0;
+      margin: 20px 0;
+      border-radius: 4px;
     }
 
-    .mini-metric strong { display: block; color: var(--green); font-size: 1.55rem; letter-spacing: -.035em; }
-    .mini-metric span { display: block; margin-top: 6px; color: var(--muted); font-size: .82rem; line-height: 1.4; }
-
-    .bottlenecks {
-      margin: 2rem 0 3rem;
-      padding: 28px;
-      border: 1px solid #ead2d4;
-      border-radius: 16px;
-      background: #fff7f7;
+    .instructor-section {
+      background: #fafafa;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 30px 0;
     }
 
-    .bottlenecks h3 { margin-top: 0; color: var(--red); }
-    .bottlenecks ol { margin-bottom: 0; padding-left: 1.25rem; }
-    .bottlenecks li + li { margin-top: .8rem; }
-
-    .todo-list { list-style: none; padding: 0; }
-    .todo-list li { position: relative; padding: 14px 0 14px 34px; border-bottom: 1px solid var(--line); }
-    .todo-list li::before { content: "○"; position: absolute; left: 4px; color: var(--gold); font-weight: 900; }
-
-    .resources {
-      margin-top: 4rem;
-      padding: 28px;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      background: var(--card);
+    blockquote {
+      font-style: italic;
+      border-left: 3px solid #1772d0;
+      padding-left: 20px;
+      margin: 20px 0;
+      color: #555;
     }
-
-    .resources h2 { margin-top: 0; font-size: 1.55rem; }
-    .resources ul { margin-bottom: 0; }
-
-    .article-footer {
-      margin-top: 4rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid var(--line);
-      color: var(--muted);
-      font-size: .86rem;
-    }
-
-    @media (max-width: 820px) {
-      .metrics { grid-template-columns: 1fr 1fr; }
-      .pipeline { grid-template-columns: 1fr 1fr; }
-      .story-map { grid-template-columns: 1fr 1fr; }
-      .stage:not(:last-child)::after { display: none; }
-    }
-
-    @media (max-width: 560px) {
-      .site-nav { width: min(100% - 28px, 1120px); }
-      .site-nav .links { gap: 13px; }
-      .hero { width: min(100% - 28px, 1120px); padding-top: 58px; }
-      article { width: min(100% - 28px, 760px); }
-      h1 { font-size: clamp(2.75rem, 16vw, 4.2rem); }
-      .metrics, .choice-grid, .lesson-grid, .pipeline, .story-map, .mini-metrics { grid-template-columns: 1fr; }
-      .metric { min-height: 0; }
-      .lede, .compiler-note { padding: 24px; }
-      .figure-wide, .pipeline, .compiler-note, .story-map { width: calc(100vw - 28px); }
-    }
-  </style>
-</head>
-<body>
-  <nav class="site-nav" aria-label="Site navigation">
-    <a class="mark" href="../../index.html">Xuming Huang</a>
-    <div class="links">
-      <a href="../../research.html#wuklab">Research</a>
-      <a href="../../blog.html">Blog</a>
-    </div>
-  </nav>
-
-  <header class="hero">
-    <p style="font-size:14px;border-left:3px solid #1772d0;padding-left:14px;"><strong>Earlier experiment report.</strong> This article preserves the September 5 prototype, configurations, and baselines. See the <a href="../../research/edge-ai.html">current research overview</a> for the updated project summary.</p>
-    <p class="eyebrow">WukLab systems note · Edge AI</p>
-    <h1>Compile ahead,<br><span>not up front.</span></h1>
-    <p class="deck">From OpenVINO’s fixed 8K baseline to copy-and-grow KV and one-ahead JIT: the path to growing an NPU context window without paying every cost up front.</p>
-    <p class="byline">Vikranth Srivatsa, Xuming Huang, *Prof. Yiying Zhang</p>
-    <p class="byline-note">* advising faculty · WukLab, UC San Diego</p>
-    <p class="post-meta">September 5, 2026 · 11 min read</p>
-
-    <div class="metrics" aria-label="Key experiment results">
-      <div class="metric"><strong>22.49%</strong><span>less foreground compilation wall time</span></div>
-      <div class="metric"><strong>8.37%</strong><span>shorter measured protocol critical path</span></div>
-      <div class="metric"><strong>15 / 15</strong><span>successor artifacts ready before their boundary</span></div>
-      <div class="metric"><strong>20 / 20</strong><span>boundary top-1 outputs matched the eager control</span></div>
-    </div>
-  </header>
-
-  <article>
-    <div class="lede"><b>The result is the end of a progression.</b> OpenVINO begins with static 8K allocation. A pyramid adds smaller graphs but still reserves the maximum KV. Copy-and-grow fixes average KV reservation but keeps every graph’s compile cost up front. One-ahead JIT finally overlaps those future compiles with useful NPU decoding.</div>
-
-    <div class="story-map" aria-label="Project progression">
-      <div class="story-step"><span>Baseline 0</span><b>Direct 8K graph</b></div>
-      <div class="story-step"><span>Baseline 1</span><b>Shared-max pyramid</b></div>
-      <div class="story-step"><span>Improvement 1</span><b>Copy-and-grow KV</b></div>
-      <div class="story-step"><span>Bottleneck</span><b>All compiles up front</b></div>
-      <div class="story-step active"><span>Improvement 2</span><b>One-ahead JIT</b></div>
-    </div>
-
-    <span class="section-kicker">Baseline · OpenVINO implementation</span>
-    <h2>Two ways to run an 8K request</h2>
-    <p>Long-context generation is dynamic: each token makes the KV cache a little larger. The NPU compiler, however, wants concrete tensor shapes. OpenVINO therefore has to choose what to compile and reserve before inference begins.</p>
-
-    <div class="result-table-wrap">
-      <table class="result-table baseline-table">
-        <thead><tr><th>Design</th><th>Compiled graphs</th><th>KV allocation</th><th>Tradeoff</th></tr></thead>
-        <tbody>
-          <tr><td><b>B0 · Direct</b></td><td>one 8K graph</td><td>8K from startup</td><td>simple, but small contexts run through a padded 8K shape</td></tr>
-          <tr><td><b>B1 · Upstream pyramid</b></td><td>1K / 2K / 4K / 8K</td><td>shared 8K maximum</td><td>better-sized graphs for short contexts, but every graph and the maximum KV are prepared up front</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <p>B1 solves the graph-shape problem: the runtime can select the smallest compiled graph that fits the current context. It does <em>not</em> solve proportional memory growth. Both baselines reserve an 8K KV allocation for the entire request.</p>
-
-    <span class="section-kicker">Improvement 1 · Memory grows with context</span>
-    <h2>Keep the pyramid, copy-and-grow the KV</h2>
-    <p>Our first change keeps B1’s 1K/2K/4K/8K graph pyramid but replaces the shared-max KV with capacity-sized allocations. The request starts with 1K. When it crosses a boundary, the runtime allocates the next buffer, copies live KV state forward, binds the next graph, and continues.</p>
-
-    <figure class="figure-wide">
-      <a href="../../images/papers/wuklab/npu-jit-sketch-copy-grow.png" target="_blank" rel="noopener noreferrer">
-        <img src="../../images/papers/wuklab/npu-jit-sketch-copy-grow.png" alt="Hand-drawn context-window ladder comparing preallocation and incremental KV growth" loading="lazy">
-      </a>
-      <figcaption><b>Sketch 1 · Copy-and-grow.</b> Select the smallest graph that fits, allocate KV for that capacity, and move the live cache when the request crosses a boundary. Drawing by Vikranth Srivatsa.</figcaption>
-    </figure>
-
-    <h3>Qwen2.5-7B prototype: crossing all three boundaries</h3>
-    <p>The first full prototype successfully grew from 1K to 8K. Copy cost increased with the amount of live state, but remained small when amortized across the 8,064 decoded tokens.</p>
-
-    <div class="result-table-wrap">
-      <table class="result-table">
-        <thead><tr><th>Boundary</th><th>New KV bytes</th><th>Migration time</th><th>Top-1</th><th>Logit cosine</th></tr></thead>
-        <tbody>
-          <tr><td>1K → 2K</td><td>+56 MiB</td><td>277.7 ms</td><td>7 / 7</td><td>0.9999944</td></tr>
-          <tr><td>2K → 4K</td><td>+112 MiB</td><td>317.0 ms</td><td>7 / 7</td><td>0.9999960</td></tr>
-          <tr><td>4K → 8K</td><td>+224 MiB</td><td>449.8 ms</td><td>7 / 7</td><td>0.9999976</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="mini-metrics">
-      <div class="mini-metric"><strong>31.9%</strong><span>lower average reserved KV: 319.7 MiB vs 469.7 MiB for B0</span></div>
-      <div class="mini-metric"><strong>1.045 s</strong><span>total migration time across 392 MiB of KV growth</span></div>
-      <div class="mini-metric"><strong>0.1295 ms</strong><span>migration cost amortized per decoded token</span></div>
-    </div>
-
-    <p>Steady-state throughput remained close to the direct 8K baseline rather than collapsing under the extra handoffs:</p>
-
-    <div class="result-table-wrap">
-      <table class="result-table">
-        <thead><tr><th>Context</th><th>Copy-and-grow</th><th>Direct 8K</th><th>Δ vs direct</th></tr></thead>
-        <tbody>
-          <tr><td>0–1K</td><td>0.32259 tok/s</td><td>0.32066 tok/s</td><td class="win">+0.599%</td></tr>
-          <tr><td>1K–2K</td><td>0.32217 tok/s</td><td>0.32063 tok/s</td><td class="win">+0.479%</td></tr>
-          <tr><td>2K–4K</td><td>0.32203 tok/s</td><td>0.32033 tok/s</td><td class="win">+0.529%</td></tr>
-          <tr><td>4K–8K</td><td>0.32103 tok/s</td><td>0.32041 tok/s</td><td class="win">+0.190%</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <p class="result-note">This was the initial Qwen2.5-7B feasibility run. It establishes mechanism and boundary quality; the replicated N=5 experiment below evaluates the later JIT scheduling change.</p>
-
-    <span class="section-kicker">What remained after Improvement 1</span>
-    <h2>The KV is smaller, but startup is still eager</h2>
-
-    <div class="bottlenecks">
-      <h3>Three remaining bottlenecks</h3>
-      <ol>
-        <li><b>Compiled-capacity footprint.</b> The runtime still materializes every 1K/2K/4K/8K artifact before decoding, so unified memory must hold work for capacities the request may never reach.</li>
-        <li><b>Transient peak memory.</b> Copying needs the old and new KV buffers to coexist; the final boundary can temporarily approach two allocations.</li>
-        <li><b>Foreground compilation.</b> Even though only the 1K graph is needed at token one, eager copy-and-grow waits for all four shapes before starting useful NPU work.</li>
-      </ol>
-    </div>
-
-    <div class="compiler-note">
-      <h3>A second bottleneck was inside the compiler</h3>
-      <p>Tracing the OpenVINO NPU compiler exposed 33.33 million repeated dependency-vector sorts in the scheduling path; 94.2% became cache hits under memoization. The patch reduced full compile time by 3.34–3.68% in 12/12 production A/B trials.</p>
-      <p>That optimization makes each specialization cheaper. The runtime change below attacks the orthogonal question: where should the remaining compile time occur?</p>
-    </div>
-
-    <span class="section-kicker">Improvement 2 · JIT scheduling</span>
-    <h2>Compile the next graph while the NPU decodes</h2>
-    <p>One-ahead JIT changes only the schedule. Compile 1K before decode, then launch 2K on the CPU while 1K runs on the NPU. After switching, compile 4K while 2K runs, then repeat for 8K. The tokens remaining before each boundary become a natural latency-hiding window.</p>
-
-    <div class="equation">The switch is stall-free when the next artifact beats its boundary:<code>T_compile(next) &lt; T_decode(tokens remaining)</code></div>
-
-    <div class="pipeline" aria-label="One-ahead JIT pipeline">
-      <div class="stage"><span class="number">01</span><b>Boot the 1K artifact</b><span>Pay only for the first usable specialization.</span></div>
-      <div class="stage"><span class="number">02</span><b>Decode on the NPU</b><span>The active artifact keeps producing tokens.</span></div>
-      <div class="stage"><span class="number">03</span><b>Compile 2K on the CPU</b><span>Prepare exactly one successor in the background.</span></div>
-      <div class="stage"><span class="number">04</span><b>Copy state and switch</b><span>Consume the ready artifact at 1K; repeat for 4K and 8K.</span></div>
-    </div>
-
-    <p>One-ahead is the balance point. Compiling every future size in parallel recreates the up-front capacity problem. Waiting until the boundary creates a stall. Staying one step ahead bounds speculative work while giving compilation the longest useful runway.</p>
-
-    <figure class="figure-wide">
-      <a href="../../images/papers/wuklab/npu-jit-sketch-one-ahead.png" target="_blank" rel="noopener noreferrer">
-        <img src="../../images/papers/wuklab/npu-jit-sketch-one-ahead.png" alt="Hand-drawn one-ahead JIT timeline with LLM inference and background compilation" loading="lazy">
-      </a>
-      <figcaption><b>Sketch 2 · Overlap the timelines.</b> Red is useful LLM inference; blue is the next compiled shape. The growth rate of compilation has to fit inside the decode time available before each boundary. Drawing by Vikranth Srivatsa.</figcaption>
-    </figure>
-
-    <h2>Replicated JIT result on NUC16</h2>
-    <p>We tested Improvement 2 on NUC16 with Intel NPU 5 and OpenVINO 2026.3. The workload used Qwen2.5-0.5B FP16, a 128-token prompt, and 8,064 teacher-forced decoded tokens across the 1K → 2K → 4K → 8K ladder.</p>
-
-    <div class="method-strip">I1 control = precompile all four copy-and-grow variants before decode<br>I2 treatment = compile 1K first, then compile 2K / 4K / 8K one step ahead<br>Design = N=5 paired, Williams-order counterbalanced runs</div>
-
-    <p>I1 and I2 use the same graphs and the same copy-and-grow KV path. Only compile scheduling changes, isolating how much foreground latency can be hidden behind decoding.</p>
-
-    <div class="result-table-wrap">
-      <table class="result-table">
-        <thead><tr><th>Endpoint</th><th>I1 eager</th><th>I2 one-ahead</th><th>Paired effect</th></tr></thead>
-        <tbody>
-          <tr><td>Foreground compile wall</td><td>84.29 s</td><td>65.33 s</td><td class="win">−18.96 s · 22.49%</td></tr>
-          <tr><td>Protocol critical path</td><td>232.43 s</td><td>212.98 s</td><td class="win">−19.46 s · 8.37%</td></tr>
-          <tr><td>Decode inference</td><td>143.32 s</td><td>142.94 s</td><td>−0.38 s · 0.26%</td></tr>
-          <tr><td>Boundary wait</td><td>—</td><td>0.00 s</td><td class="win">15 / 15 ready</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="stage-verdict"><strong>What moved off the path:</strong> I2 performed 20.65 seconds of successor compilation during useful decoding. All 15 successor deadlines were met with zero wait, and all 20 boundary comparisons preserved the eager control’s top-1 output.</div>
-
-    <p class="result-note">Paired-t 95% CI: compile savings 17.95–19.96 s; critical-path savings 18.71–20.21 s; decode change −1.05–0.29 s. With five pairs, the minimum exact two-sided sign-flip p-value is 0.0625, so we emphasize effect size, interval, replication, and boundary evidence—not a p&lt;.05 claim.</p>
-
-    <h3>Correctness is a transition property</h3>
-    <p>A model that survives startup can still fail when live state crosses a compiled-shape boundary. Device checks confirmed every successor stayed on the NPU. Boundary logits matched the eager control in all 20 comparisons, with minimum cosine similarity reported as 1.0.</p>
-
-    <div class="caveat"><b>Do not combine the two memory claims.</b> Improvement 1’s initial 7B experiment reduced average reserved KV relative to direct 8K. In the later I2-vs-I1 JIT campaign, scheduling alone did not improve memory: time-weighted NPU allocation was 8.2% higher and peak process RSS about 5.6% higher for I2. The replicated result is a latency win, not yet a memory win.</div>
-
-    <span class="section-kicker">Next bottleneck · Remove the copy</span>
-    <h2>Virtual remapping and broader evaluation</h2>
-    <p>The next systems step is to decouple logical KV addresses from physical storage. A larger specialization could inherit existing pages instead of recopying all prior state, reducing the transient peak at each boundary.</p>
-
-    <figure class="figure-wide">
-      <a href="../../images/papers/wuklab/npu-jit-sketch-remap.png" target="_blank" rel="noopener noreferrer">
-        <img src="../../images/papers/wuklab/npu-jit-sketch-remap.png" alt="Hand-drawn future design for virtual allocation and fast switching between context capacities" loading="lazy">
-      </a>
-      <figcaption><b>Sketch 3 · Beyond copying.</b> A virtual allocation table could turn context growth into a mapping operation and reduce switch cost independently of batch size. This is a design direction, not a measured result in the campaign above. Drawing by Vikranth Srivatsa.</figcaption>
-    </figure>
-
-    <h3>What remains to validate</h3>
-    <ul class="todo-list">
-      <li><b>Batching:</b> the current end-to-end JIT campaign uses batch size 1.</li>
-      <li><b>Compile decomposition:</b> separately profile and schedule prefill and decode compilation.</li>
-      <li><b>Generality:</b> extend the replicated JIT study across model sizes, context ladders, and precisions.</li>
-      <li><b>Memory lifetime:</b> replace full KV copies with page-aware remapping and measure both average and peak memory.</li>
-    </ul>
-
-    <h2>The idea in one sentence</h2>
-    <p>Start with the smallest useful NPU program, grow its live KV only when needed, and treat each future specialization as a CPU deadline that can be hidden behind the current NPU decode window.</p>
-
-    <section class="resources">
-      <h2>Evidence and implementation</h2>
-      <ul>
-        <li><a href="../../demos/npuw-pyramid-jit.html">Open the full interactive experiment dashboard</a></li>
-        <li><a href="../../demos/data/npuw-pyramid-jit-live.json">Inspect the complete N=5 campaign data</a></li>
-        <li><a href="https://github.com/Mac-Huang/npu_compiler/commit/7883fe9ab694c0ecc99660d9be4817ee814932e1" target="_blank" rel="noopener noreferrer">View the dependency-sort cache patch</a></li>
-        <li><a href="https://github.com/Mac-Huang/npu_compiler/tree/codex/sorting-cache-pr" target="_blank" rel="noopener noreferrer">Browse the compiler experiment branch</a></li>
-      </ul>
-    </section>
-
-    <footer class="article-footer">Research and experiments by Vikranth Srivatsa and Xuming Huang, advised by Prof. Yiying Zhang. Original concept drawings by Vikranth Srivatsa.</footer>
-  </article>
-</body>
-</html>
+  </style><style>.blog-content{box-sizing:border-box} .blog-content h2{margin-top:36px} .blog-content img{display:block;width:100%;} @media(max-width:768px){.blog-content{padding:0}}</style></head>
+<body><table style="width:100%;max-width:900px;border:0;border-spacing:0;margin:auto"><tbody><tr><td style="padding:20px"><p><a href="../../blog.html">← Back to Blog</a></p><div class="blog-header"><heading>Making NPU Inference Practical: Compiler Optimization and JIT Runtimes</heading><div class="blog-meta"><em>September 23, 2026 · Research · 7 min read</em></div></div><div class="blog-content"><p>My current work at <a href="https://wuklab.io/">WukLab</a>, advised by <a href="https://cseweb.ucsd.edu/~yiying/">Professor Yiying Zhang</a>, asks how to make local AI inference practical on NPUs. An accelerator can execute a model efficiently once the program is ready, but getting it ready can require substantial CPU compilation and memory allocation. Those costs matter to an interactive application.</p>
+<p>I have been working on two connected projects: reducing repeated work inside the NPU compiler, and building a runtime that prepares larger programs while inference is already running. Together, they address both how much compilation costs and when the application has to wait for it.</p>
+<p><strong>In this post:</strong> <a href="#compiler">Compiler optimization</a> | <a href="#jit">Compile ahead</a> | <a href="#memory">Grow memory with context</a> | <a href="#next">Next questions</a></p>
+<h2>Why the runtime matters</h2>
+<p>Autoregressive inference changes as it runs: every generated token extends the context and adds key and value state to the KV cache. In the static-shape NPU path studied here, compiled programs require concrete tensor dimensions. The runtime must decide which shapes to compile, how much memory to reserve, and when to move to a larger program.</p>
+<p>A straightforward design prepares a large context window before the first token. This makes execution simple, but a short request pays for capacity it may never use. Preparing several sizes in advance improves shape selection while retaining the cost of compiling them all before serving the request. These are systems decisions around the model, and they can dominate the experience even when the NPU executes individual operators quickly.</p>
+<h2 id="compiler">Project 1: remove repeated compiler work</h2>
+<p><strong>Problem.</strong> The compiler repeatedly needs dependency and consumer lists in a deterministic order. Sorting those lists on every lookup repeats CPU work when the underlying dependency graph has not changed. A hot helper can accumulate significant work even when each individual sort is small.</p>
+<p><strong>Idea.</strong> Cache the sorted dependency and consumer vectors. On an unchanged graph, a later lookup can reuse the ordered result. When a mutation changes the relevant relationships, invalidate the affected cache so the next lookup rebuilds it.</p>
+<p>The difficult part is maintaining the contract around graph updates. A stale list can silently change scheduling behavior. The optimization therefore has to account for mutation paths and preserve the ordering expected by callers; simply storing the first answer is not sufficient.</p>
+<div class="assignment-box"><strong>Result:</strong> the optimization reduced CPU sorting time by <strong>94.2%</strong>. This is a reduction in sorting time, not a 94.2% reduction in total compilation time or inference latency. The upstream contribution is available in <a href="https://github.com/openvinotoolkit/npu_compiler/pull/348">OpenVINO NPU compiler PR #348</a>.</div>
+<p>This project reduces the amount of compilation work. The runtime project addresses a different question: how much of the remaining work must sit on the application's critical path?</p>
+<h2 id="jit">Project 2: compile ahead, not up front</h2>
+<p><strong>Problem.</strong> Waiting until a request reaches the end of its compiled context window causes a pause while the next program is prepared. Compiling every future window at startup avoids that boundary pause, but delays the first useful inference and may prepare programs that the request never reaches.</p>
+<p><strong>Idea.</strong> Start with a small program and compile a larger one on the CPU while the NPU continues inference. Keep preparation ahead of context growth. Before switching, ensure that the next program is ready and that the live KV state can be carried forward correctly.</p>
+<p>In the one-ahead design, the current program executes while the next size is being prepared. It bounds speculative work compared with compiling every size immediately. It also gives the compiler more time than a design that starts compilation only at the boundary.</p>
+<img class="blog-image" src="../../images/papers/wuklab/npu-jit-sketch-one-ahead.png" alt="One-ahead JIT timeline overlapping CPU compilation with NPU inference">
+<p class="image-caption">CPU compilation overlaps NPU inference. Original concept drawing by Vikranth Srivatsa.</p>
+<p>The overlap is useful only if preparation finishes before it is needed. A fast decoder, a large compilation step, or contention for shared resources can consume that margin. Foreground waiting and total CPU work must therefore be measured separately: moving work into the background does not make it free.</p>
+<h2 id="memory">Let KV memory grow with the context</h2>
+<p>Progressive compilation alone does not make memory use proportional to the request. A runtime can select a small graph while still reserving the largest KV buffer. To address that, the runtime starts with capacity suited to the current context and grows it when needed.</p>
+<p>At a growth boundary, it allocates the next capacity, copies the live KV state, binds the new program, and continues decoding. The sequence length, positions, and cached state must remain consistent across the switch. The copy itself also has a cost, and the old and new allocations may temporarily coexist.</p>
+<img class="blog-image" src="../../images/papers/wuklab/npu-jit-sketch-copy-grow.png" alt="Copy-and-grow KV cache across increasing context capacities" loading="lazy">
+<p class="image-caption">Use the smallest suitable capacity and carry the live state forward. Original concept drawing by Vikranth Srivatsa.</p>
+<div class="assignment-box"><strong>Result:</strong> the JIT runtime reduced foreground compilation time by <strong>91.98%</strong> and average KV memory by <strong>33.05%</strong>, while preserving model quality and decoding. These describe foreground compilation and average KV memory in the evaluated setup; they are not claims of the same reduction in total latency or peak process memory.</div>
+<h2>What I measure</h2>
+<p>I separate startup compilation, background compilation, waiting at a boundary, state transfer, and steady-state decoding. I also track memory as context grows and check output correctness across program switches. This makes it possible to tell whether an improvement removes work, overlaps it, or merely shifts it elsewhere.</p>
+<p>The two projects complement each other. Caching compiler results can shorten preparation, while progressive compilation gives the CPU a window in which to perform that preparation. Copy-and-grow addresses the allocation side. Their percentages measure different quantities and cannot be added into one speedup.</p>
+<h2 id="next">Broader questions for NPU systems</h2>
+<p>I am also measuring CPU, GPU, and NPU placement preferences at the operator and inference-stage levels. The best device depends on the operation, shape, and cost of crossing device boundaries. An operator-level win is useful evidence, but it does not by itself establish an end-to-end scheduling improvement.</p>
+<p>The next questions are how to adapt compilation lead time to the request, reduce state-transfer costs, and account for shared-resource contention. These are ongoing directions. The broader goal is to make compilation, memory, and device placement respond to the workload as it unfolds.</p>
+<p><a href="../../research/edge-ai.html">Research overview</a> | <a href="https://github.com/openvinotoolkit/npu_compiler/pull/348">Compiler contribution</a></p>
+<p class="image-caption">Research with Vikranth Srivatsa, advised by Professor Yiying Zhang. Updated September 23, 2026.</p></div></td></tr></tbody></table></body></html>

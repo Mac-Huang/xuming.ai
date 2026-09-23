@@ -1,100 +1,74 @@
-// Blog posts data - simple and clean
+// Website data; factual research and project claims follow Resume.pages.
 const blogPosts = [
   {
-    id: 'nuc16-godot-igpu-interference',
-    title: 'When a Static Window Slows Local AI',
-    date: 'September 14, 2026',
-    category: 'research',
-    excerpt: 'Godot app properties, per-frame GPU timing and a microsecond kernel probe on NUC16: how redraw behavior changes local inference latency.',
-    url: 'blog/posts/nuc16-godot-igpu-interference.html',
-    readTime: '8 min',
-    cover: 'images/blog/nuc16-godot-interference/latency.png'
+    "id": "npu-jit-static-shapes",
+    "title": "Making NPU Inference Practical: Compiler Optimization and JIT Runtimes",
+    "date": "September 5, 2026",
+    "category": "research",
+    "excerpt": "Two projects at WukLab: removing repeated compiler work and compiling ahead while KV memory grows with the context.",
+    "url": "blog/posts/npu-jit-static-shapes.html",
+    "readTime": "7 min",
+    "cover": "images/papers/wuklab/npu-jit-sketch-one-ahead.png"
   },
   {
-    id: 'local-igpu-contention',
-    title: 'When Local AI Shares Your GPU',
-    date: 'September 12, 2026',
-    category: 'research',
-    excerpt: 'Intentional 32 GiB page thrashing versus quiet and 2 GiB loops on Holo 4B and 9B, with measured disk reads, latency and throughput; earlier model comparisons retained.',
-    url: 'blog/posts/local-igpu-contention.html',
-    readTime: '4 min',
-    cover: 'images/blog/local-igpu-contention/thrashing-20260912/9b-comparison.png'
+    "id": "linuxguard-journey",
+    "title": "My Journey with LinuxGuard",
+    "date": "November 19, 2025",
+    "category": "education",
+    "excerpt": "Reflecting on 6 months of research: building LLM-driven kernel checkers, learning from Vinay Banakar, and the hard reality of being scooped by SOSP.",
+    "url": "blog/posts/linuxguard-journey.html",
+    "readTime": "6 min",
+    "cover": "images/papers/LinuxGuard_Cover.jpg"
   },
   {
-    id: 'npu-jit-static-shapes',
-    title: 'Compile Ahead, Not Up Front: JIT Specialization for Static-Shape NPUs',
-    date: 'September 5, 2026',
-    category: 'research',
-    excerpt: 'From direct 8K allocation to copy-and-grow KV and one-ahead JIT: how the design evolved, what each stage fixed, and what still remains.',
-    url: 'blog/posts/npu-jit-static-shapes.html',
-    readTime: '11 min',
-    cover: 'images/papers/wuklab/npu-jit-sketch-one-ahead.png'
+    "id": "stanford-summer",
+    "title": "Stanford Summer: Where Systems Meet Algorithms",
+    "date": "August 15, 2025",
+    "category": "education",
+    "excerpt": "My transformative summer at Stanford taking CS107 (A+, 99/100) and CS161 (A, 93/100). From heap allocators to algorithm analysis, discovering security vulnerabilities, and learning from amazing instructors.",
+    "url": "blog/posts/stanford-summer-2025.html",
+    "readTime": "10 min",
+    "cover": "images/blog/Stanford-Cover.jpg"
   },
-
   {
-    id: 'linuxguard-journey',
-    title: 'My Journey with LinuxGuard',
-    date: 'November 19, 2025',
-    category: 'education',
-    excerpt: 'Reflecting on 6 months of research: building LLM-driven kernel checkers, learning from Vinay Banakar, and the hard reality of being scooped by SOSP.',
-    url: 'blog/posts/linuxguard-journey.html',
-    readTime: '6 min',
-    cover: 'images/papers/LinuxGuard_Cover.jpg'
+    "id": "new-chapter-madison",
+    "title": "A New Chapter in Madison",
+    "date": "January 16, 2025",
+    "category": "life",
+    "excerpt": "My first experiences in the United States, specifically in Madison, Wisconsin. It's a mix of culture shock, new friendships, and personal growth.",
+    "url": "blog/posts/new-chapter-madison.html",
+    "readTime": "4 min",
+    "cover": "images/blog/Madison_Cover.jpg"
   },
-
   {
-    id: 'stanford-summer',
-    title: 'Stanford Summer: Where Systems Meet Algorithms',
-    date: 'August 15, 2025',
-    category: 'education',
-    excerpt: 'My transformative summer at Stanford taking CS107 (A+, 99/100) and CS161 (A, 93/100). From heap allocators to algorithm analysis, discovering security vulnerabilities, and learning from amazing instructors.',
-    url: 'blog/posts/stanford-summer-2025.html',
-    readTime: '10 min',
-    cover: 'images/blog/Stanford-Cover.jpg'
+    "id": "first-internship",
+    "title": "Diving into AI: My Transformative First Week at CoolAI",
+    "date": "July 9, 2024",
+    "category": "career",
+    "excerpt": "My internship experience at CoolAI, developing AI products and representing the company at the World Artificial Intelligence Conference (WAIC).",
+    "url": "blog/posts/first-internship.html",
+    "readTime": "5 min",
+    "cover": "images/blog/CoolAI.jpg"
   },
-
   {
-    id: 'new-chapter-madison',
-    title: 'A New Chapter in Madison',
-    date: 'January 16, 2025',
-    category: 'life',
-    excerpt: "My first experiences in the United States, specifically in Madison, Wisconsin. It's a mix of culture shock, new friendships, and personal growth.",
-    url: 'blog/posts/new-chapter-madison.html',
-    readTime: '4 min',
-    cover: 'images/blog/Madison_Cover.jpg'
+    "id": "hello-world",
+    "title": "Hello World",
+    "date": "June 5, 2024",
+    "category": "life",
+    "excerpt": "Welcome to my first-ever website and blog post! Right here, I'm gonna jot down significant milestones in my life.",
+    "url": "blog/posts/hello-world.html",
+    "readTime": "2 min",
+    "cover": "images/blog/HelloWorld-Cover.jpg"
   },
-
   {
-    id: 'first-internship',
-    title: 'Diving into AI: My Transformative First Week at CoolAI',
-    date: 'July 9, 2024',
-    category: 'career',
-    excerpt: 'My internship experience at CoolAI, developing AI products and representing the company at the World Artificial Intelligence Conference (WAIC).',
-    url: 'blog/posts/first-internship.html',
-    readTime: '5 min',
-    cover: 'images/blog/CoolAI.jpg'
-  },
-
-  {
-    id: 'hello-world',
-    title: 'Hello World',
-    date: 'June 5, 2024',
-    category: 'life',
-    excerpt: "Welcome to my first-ever website and blog post! Right here, I'm gonna jot down significant milestones in my life.",
-    url: 'blog/posts/hello-world.html',
-    readTime: '2 min',
-    cover: 'images/blog/HelloWorld-Cover.jpg'
-  },
-
-  {
-    id: 'nfl-flag-football',
-    title: 'Champions Unleashed: USST Earthmoving Vehicles Triumph!',
-    date: 'December 8, 2023',
-    category: 'sports',
-    excerpt: 'Celebrating our 2023 NFL FLAG "Star of Shine" National Championship victory - a pinnacle in our 14-year saga of sheer grit and dominance.',
-    url: 'blog/posts/nfl-flag-football-championship.html',
-    readTime: '3 min',
-    cover: 'images/blog/Football-Cover.jpg'
+    "id": "nfl-flag-football",
+    "title": "Champions Unleashed: USST Earthmoving Vehicles Triumph!",
+    "date": "December 8, 2023",
+    "category": "sports",
+    "excerpt": "Celebrating our 2023 NFL FLAG \"Star of Shine\" National Championship victory - a pinnacle in our 14-year saga of sheer grit and dominance.",
+    "url": "blog/posts/nfl-flag-football-championship.html",
+    "readTime": "3 min",
+    "cover": "images/blog/Football-Cover.jpg"
   }
 ];
 

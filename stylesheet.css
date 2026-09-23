@@ -537,3 +537,18 @@ button:hover {
     width: 100% !important;
   }
 }
+
+/* Publication rows retain the site's typography; figures come from the papers. */
+.publication-section{padding:20px}
+.publication-entry{display:grid;grid-template-columns:34% minmax(0,1fr);gap:30px;align-items:start;margin:38px 0 48px}
+.publication-cover{display:block;align-self:center}
+.publication-cover img{display:block;width:100%;height:auto;object-fit:contain}
+.publication-copy h3{font-size:21px;line-height:1.35;margin:0 0 12px}
+.publication-copy p{font-size:18px;line-height:1.5;margin:8px 0}
+.publication-copy .publication-links{margin-top:20px}
+.bibtex-toggle{font:inherit;color:#1772d0;background:none;border:0;padding:0;cursor:pointer}
+.bibtex-toggle:hover{color:#f09228}
+.publication-copy pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f5f5f5;padding:14px;font-size:12px}
+@media(max-width:650px){.publication-entry{grid-template-columns:1fr;gap:18px}.publication-cover{max-width:360px}.publication-cover-pending{display:none}}
+.publication-copy h3 a{font-size:21px;font-weight:700;line-height:1.35}
+.publication-cover{align-self:start;margin-top:6px}

@@ -22,7 +22,7 @@ function createPublicationRow(pub) {
   tr.className = 'research-row';
   
   // Add background color for selected papers
-  if (pub.selected) {
+  if (pub.highlighted) {
     tr.style.backgroundColor = '#ffffd0';
   }
   

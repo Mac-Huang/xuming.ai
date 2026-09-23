@@ -34,3 +34,16 @@ Edit `data/publications.js`, then run `npm run render-research` to refresh initi
 At the user's request, restored the pre-refresh homepage and research-page format: the original stylesheet, serif typography, blue links, yellow selected rows, circular portrait, left sidebar, table layout, and section navigation. Publications and the two new overviews use the same original table format. Removed the new design stylesheet and filters. Résumé corrections, link repairs, covers, static research HTML, and the current CV remain.
 
 Validation after restoring the style: 83 pages and 686 local references pass. Homepage, research, and both new overviews pass browser checks at 1280px and 390px with no broken images, JavaScript errors, or horizontal overflow. The only addition to the original shared stylesheet is a mobile table-cell sizing fix.
+
+
+## Follow-up: preserve style and refine content
+
+- Simplified homepage bio to interests and current work; added Michael Swift, Vinay Banakar, and ADSL links.
+- Merged Teaching and Service; retained the service anchor for existing bookmarks.
+- Limited yellow research highlighting to Edge AI and LinuxGuard; projects highlight the resume's heap allocator, algorithms, Transformer, and GPT work.
+- Publication rows use paper figures, full authors, bold venue/year, and expandable BibTeX. CASH Figure 1 was cropped from the supplied published PDF (page 2); the full PDF is in papers/cash-2026.pdf. Filter Figure 1 was retrieved from the publisher's article, DOI 10.1049/mna2.70007, without modifying the image.
+- BEIT: publisher abstract verified in browser; figures and PDF require subscription. The invented cover was removed and the image column is intentionally empty pending an original figure. This request remains incomplete for that one cover.
+- Removed the two GPU interference posts from the blog listing; their existing URLs remain reachable. Expanded the NPU post to cover compiler sorting caches and the progressive-compilation/copy-and-grow runtime using resume metrics, in the traditional blog layout.
+- Courses: 14 compact course blocks, seven lecture PDFs from CS577/CS540. Materials expand on demand. Excluded homework, answer keys, passwords, and private teaching files. ESL118 has no asserted term because the local document does not establish one.
+- Validation: local audit across 83 HTML files found no missing files or anchors. External audit: 113/118 returned 200; LinkedIn (two URLs) blocks automated requests, and IEEE/Wiley publication endpoints require normal-browser checks. IEEE and Wiley article pages were confirmed in browser. No claim that subscription content is freely accessible.
+- Browser QA: home, research, projects, blog, courses, and NPU article have no horizontal overflow at 390px; desktop layouts checked at 1280px. Publication BibTeX toggles and course disclosure controls work. Exactly two research rows and five resume-related project rows are highlighted; removed blog titles are absent.
