@@ -28,3 +28,9 @@ The downloadable CV uses the existing two-page PDF matching the current résumé
 ## Maintenance
 
 Edit `data/publications.js`, then run `npm run render-research` to refresh initial HTML in the homepage and research page. The browser uses the same data for filters. Run `npm run audit` for local references or `python3 scripts/audit-site.py --external` for bounded external checks. The JSON report is written to the system temporary directory.
+
+## Style correction
+
+At the user's request, restored the pre-refresh homepage and research-page format: the original stylesheet, serif typography, blue links, yellow selected rows, circular portrait, left sidebar, table layout, and section navigation. Publications and the two new overviews use the same original table format. Removed the new design stylesheet and filters. Résumé corrections, link repairs, covers, static research HTML, and the current CV remain.
+
+Validation after restoring the style: 83 pages and 686 local references pass. Homepage, research, and both new overviews pass browser checks at 1280px and 390px with no broken images, JavaScript errors, or horizontal overflow. The only addition to the original shared stylesheet is a mobile table-cell sizing fix.

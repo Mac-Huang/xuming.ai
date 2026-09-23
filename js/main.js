@@ -23,7 +23,7 @@ function createPublicationRow(pub) {
   
   // Add background color for selected papers
   if (pub.selected) {
-    tr.classList.add('selected-research');
+    tr.style.backgroundColor = '#ffffd0';
   }
   
   // Image column (25% width, 160px images)
@@ -34,8 +34,8 @@ function createPublicationRow(pub) {
     const img = document.createElement('img');
     img.src = pub.image;
     img.alt = pub.title;
-    img.width = 600;
-    img.height = 240;
+    img.width = 160;
+    img.style.height = 'auto';
     img.loading = 'lazy';
     img.style.borderStyle = 'none';
     tdImage.appendChild(img);
@@ -256,21 +256,7 @@ function copyBibTeX() {
 
 // Add filter buttons to page
 function addFilterButtons() {
-  const container = document.getElementById('publication-filters');
-  if (!container || typeof publicationCategories === 'undefined') return;
-  container.replaceChildren();
-  container.setAttribute('role', 'group');
-  container.setAttribute('aria-label', 'Filter research experience');
-  publicationCategories.forEach(filter => {
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'filter-btn' + (filter.value === currentFilter ? ' active' : '');
-    button.dataset.filter = filter.value;
-    button.textContent = filter.label;
-    button.setAttribute('aria-pressed', String(filter.value === currentFilter));
-    button.addEventListener('click', () => filterPublications(filter.value));
-    container.appendChild(button);
-  });
+  // Preserve the original unfiltered research list and layout.
 }
 
 // Create a project row following Jon Barron's style
@@ -279,7 +265,7 @@ function createProjectRow(project) {
   
   // Highlight representative projects with same color as research page
   if (project.featured && project.highlighted) {
-    tr.classList.add('selected-research');
+    tr.style.backgroundColor = '#ffffd0';
   }
   
   // Image column (25% width, 160px images)
@@ -290,8 +276,8 @@ function createProjectRow(project) {
     const img = document.createElement('img');
     img.src = project.thumbnail;
     img.alt = project.title;
-    img.width = 600;
-    img.height = 240;
+    img.width = 160;
+    img.style.height = 'auto';
     img.loading = 'lazy';
     img.height = 110;
     img.style.cssText = 'border:1px solid #ddd;border-radius:6px;object-fit:cover;';

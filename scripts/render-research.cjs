@@ -1,4 +1,4 @@
-// Keep research readable without JavaScript; main.js enhances filters in the browser.
+// Keep research readable without JavaScript; main.js uses the same data in the browser.
 const fs = require('node:fs');
 const vm = require('node:vm');
 const path = require('node:path');
@@ -9,7 +9,7 @@ const escape = value => String(value).replaceAll('&', '&amp;').replaceAll('<', '
 function row(p) {
   const links = [['paper_url','paper_label','paper'],['code_url','code_label','code'],['project_url','project_label','project']]
     .filter(([key]) => p[key]).map(([key,label,fallback]) => `<a href="${escape(p[key])}">${escape(p[label] || fallback)}</a>`).join(' / ');
-  return `<tr id="${escape(p.id)}" class="research-row"><td><img src="${escape(p.image)}" alt="${escape(p.title)}" width="600" height="240" loading="lazy"></td><td><a href="${escape(p.paper_url)}"><papertitle>${escape(p.title)}</papertitle></a><br><div>${p.authors}</div><em>${escape(p.venue)}</em><br><div>${links}</div><p>${escape(p.abstract)}</p></td></tr>`;
+  return `<tr id="${escape(p.id)}" class="research-row"${p.selected ? ' style="background-color:#ffffd0"' : ''}><td style="padding:20px;width:25%;vertical-align:middle"><img src="${escape(p.image)}" alt="${escape(p.title)}" width="160" style="border-style:none;height:auto" loading="lazy"></td><td style="padding:20px;width:75%;vertical-align:middle"><a href="${escape(p.paper_url)}"><papertitle>${escape(p.title)}</papertitle></a><br><div>${p.authors}</div><em>${escape(p.venue)}</em><br><div>${links}</div><p>${escape(p.abstract)}</p></td></tr>`;
 }
 for (const [file,id,entries] of [['index.html','selected-publications',context.entries.filter(p=>p.selected)],['research.html','publications-table',context.entries]]) {
   const target=path.join(root,file);const content=fs.readFileSync(target,'utf8');

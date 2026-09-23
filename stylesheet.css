@@ -528,3 +528,12 @@ button:hover {
   outline: none;
   border-color: #1772d0;
 }
+
+/* Keep the original stacked mobile layout within the viewport. */
+@media screen and (max-width: 768px) {
+  td { box-sizing: border-box; }
+  .research-row td {
+    display: block;
+    width: 100% !important;
+  }
+}
