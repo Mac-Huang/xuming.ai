@@ -47,3 +47,10 @@ test('a second invalid answer reports failure without an extractive fallback',as
  await assert.rejects(generateReply({engine,message:'football',chunks}),/could not produce/);
  assert.equal(requests.length,2);
 });
+
+test('prior generated claims cannot contaminate a new topic',async()=>{
+ const {engine,requests}=mockModel(['His research interests include systems for AI. [1]']);
+ await generateReply({engine,message:"what's your interest",chunks,previousQuery:"what's your hobby",history:[{role:'assistant',content:'His hobby is flag football.'}]});
+ assert.ok(!JSON.stringify(requests[0].messages).includes('flag football'));
+ assert.ok(requests[0].messages.some(m=>m.content.includes('systems for AI')));
+});

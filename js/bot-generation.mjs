@@ -6,11 +6,11 @@ Give a short, direct answer to the question. One sentence is enough for a simple
 
 // Every answer goes through the selected model, including named-person FAQs and
 // unknown questions. Retrieval selects evidence; it never supplies the response.
-export async function generateReply({engine,message,chunks,previousQuery='',history=[],onToken,onPhase}) {
+export async function generateReply({engine,message,chunks,previousQuery='',onToken,onPhase}) {
  if(!engine)throw Error('The language model is not ready. Wait for it to load, or retry loading it.');
  const selected=retrieve(message,chunks,{previousQuery});
  const context=selected.map((c,i)=>`[${i+1}] ${c.source}: ${c.title}\n${c.text}`).join('\n\n').slice(0,10000);
- const messages=[{role:'system',content:SYSTEM},...history.slice(-4),{role:'user',content:`Question: ${message}\n\nSources for this question:\n${context||'No relevant source was found. Do not invent facts about Xuming.'}\n\n${selected.length?'Answer the question using these facts and include source citations like [1].':'If the requested fact is unknown, say so briefly.'}`}];
+ const messages=[{role:'system',content:SYSTEM},{role:'user',content:`Question: ${message}\n\nSources for this question:\n${context||'No relevant source was found. Do not invent facts about Xuming.'}\n\n${selected.length?'Answer the question using these facts and include source citations like [1].':'If the requested fact is unknown, say so briefly.'}`}];
  let usage=null;
  for(let attempt=0;attempt<2;attempt++) {
   onPhase?.(attempt?'Checking sources and revising…':'Generating answer…');

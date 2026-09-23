@@ -3,7 +3,7 @@ const MODEL_OPTIONS=[
  {id:'Qwen2.5-1.5B-Instruct-q4f16_1-MLC',name:'Qwen 2.5 1.5B',label:'Fast · Qwen 2.5 1.5B (~1.6 GB GPU memory)'},
  {id:'Llama-3.2-3B-Instruct-q4f16_1-MLC',name:'Llama 3.2 3B',label:'Better · Llama 3.2 3B (~2.3 GB GPU memory)'}
 ];
-let knowledge=null,engine=null,currentModel=null,busy=false,loading=false,previousQuery='',history=[];
+let knowledge=null,engine=null,currentModel=null,busy=false,loading=false,previousQuery='';
 async function loadKnowledge(){
  if(knowledge)return knowledge;
  const response=await fetch(new URL('../data/bot-knowledge.json',import.meta.url),{cache:'no-cache'});
@@ -33,11 +33,10 @@ export async function ask(message,{onToken,onSources,onPhase}={}){
  busy=true;
  const started=performance.now();
  try{
-  const result=await generateReply({engine,message,chunks:knowledge.chunks,previousQuery,history,onToken,onPhase});
+  const result=await generateReply({engine,message,chunks:knowledge.chunks,previousQuery,onToken,onPhase});
   previousQuery=message;
-  history=[...history,{role:'user',content:message},{role:'assistant',content:result.text}].slice(-4);
   onSources?.(result.sources);
   return {...result,model:modelName(),elapsedMs:performance.now()-started};
  }finally{busy=false;}
 }
-window.RagBot={init:initBot,ask,isReady:()=>Boolean(engine)&&!loading,listModels:()=>MODEL_OPTIONS,defaultModel:MODEL_OPTIONS[1].id,reset:()=>{previousQuery='';history=[];},isBusy:()=>busy,modelName};
+window.RagBot={init:initBot,ask,isReady:()=>Boolean(engine)&&!loading,listModels:()=>MODEL_OPTIONS,defaultModel:MODEL_OPTIONS[1].id,reset:()=>{previousQuery='';},isBusy:()=>busy,modelName};

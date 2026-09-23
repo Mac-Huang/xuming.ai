@@ -17,6 +17,8 @@ Every answer uses actual inference from the selected model, including named-pers
 
 Citation errors, unsupported numbers, unsupported praise, or first-person impersonation trigger one model-generated revision. A second validation failure reports an error; it does not silently substitute stored prose. Missing WebGPU, model-load failures, and inference errors are explicit. Send stays disabled until a model is actually loaded. Successful replies display the model name, reported output token count, and measured generation duration. These indicators are based on real inference; there is no artificial delay.
 
+Each request supplies fresh evidence; prior generated answers are not replayed into the prompt, so a hobby answer cannot contaminate a later research-interest answer. Short follow-up retrieval retains the previous user topic.
+
 Generated answers can still be wrong: citation presence and numerical checks are not complete semantic verification. The source links remain available for inspection. Aliases and regression cases should be expanded as new failure examples arise.
 
 ## Two local models
