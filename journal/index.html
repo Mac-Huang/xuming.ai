@@ -9,8 +9,8 @@
   <title>Journal · Xuming</title>
   <link rel="icon" href="../images/favicon.png">
   <link rel="stylesheet" href="../stylesheet.css?v=76dafacaf9">
-  <link rel="stylesheet" href="journal.css">
-  <script type="module" src="app.mjs"></script>
+  <link rel="stylesheet" href="journal.css?v=20260924-remember">
+  <script type="module" src="app.mjs?v=20260924-remember"></script>
 </head>
 <body>
   <header class="page-header"><name>Journal</name></header>
@@ -37,6 +37,6 @@
       <footer class="entry-footer"><span id="word-count">0 words</span><div class="actions"><a id="history" target="_blank" rel="noopener noreferrer">History</a><button id="export" class="text-button">Export</button><button id="reload" class="text-button">Refresh</button><button id="save" class="primary" disabled>Save now</button></div></footer>
     </section>
   </main>
-  <dialog id="connection-dialog"><form id="connection-form"><h2>Connect to GitHub</h2><p>Use a fine-grained token for <strong>Mac-Huang/xuming.ai</strong>, with <strong>Contents: Read and write</strong>. Only a token with write access can save entries.</p><p><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">Create a token on GitHub ↗</a></p><label>Access token<input id="token" type="password" autocomplete="off" spellcheck="false" required></label><p class="muted">The token stays in memory in this tab. It is sent only to GitHub and forgotten when you disconnect or close/reload the page. Drafts stay on this device until synced.</p><p id="connection-error" role="alert"></p><div class="actions"><button id="cancel-connect" type="button">Cancel</button><button type="submit" class="primary">Connect</button></div></form></dialog>
+  <dialog id="connection-dialog"><form id="connection-form"><h2>Connect to GitHub</h2><p>Use a fine-grained token for <strong>Mac-Huang/xuming.ai</strong>, with <strong>Contents: Read and write</strong>. Only a token with write access can save entries.</p><p><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">Create a token on GitHub ↗</a></p><label>Access token<input id="token" type="password" autocomplete="off" spellcheck="false" required></label><label class="remember-option"><input id="remember-token" type="checkbox" checked>Remember on this device</label><p class="muted">Reconnect automatically after refresh or reopening. This saves the token in this browser, so use it only on your own trusted device. Disconnect removes it. Leave unchecked to keep the token only in this tab.</p><p id="connection-error" role="alert"></p><div class="actions"><button id="cancel-connect" type="button">Cancel</button><button type="submit" class="primary">Connect</button></div></form></dialog>
 </body>
 </html>

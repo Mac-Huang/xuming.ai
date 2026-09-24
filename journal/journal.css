@@ -42,5 +42,6 @@ dialog{border:1px solid #ddd;border-radius:3px;max-width:500px;width:calc(100% -
 dialog::backdrop{background:#0005}dialog h2{margin:0 0 12px;font-size:24px;font-weight:400}
 dialog label{display:block}dialog input{display:block;width:100%;border:1px solid #ddd;border-radius:3px;padding:8px;margin:6px 0}
 dialog .actions{justify-content:flex-end}#connection-error:empty{display:none}
+.remember-option{display:flex;align-items:center;gap:8px;margin-top:14px}.remember-option input{display:inline;width:auto;margin:0}
 @media(max-width:650px){.layout{grid-template-columns:1fr}aside{border-right:0;border-bottom:1px solid var(--line);padding:20px;display:grid;grid-template-columns:minmax(200px,280px) 1fr;gap:0 20px}.month-nav,.weekdays,.calendar,.legend{grid-column:1}.aside-bottom{grid-column:2;grid-row:2/5;margin:0;align-self:center}#today,#calendar-status{grid-column:1}.calendar button{max-height:36px}.writing{padding:24px 20px}.entry-footer{align-items:flex-start}.entry-footer .actions{gap:12px}#editor{min-height:300px}}
 @media(max-width:420px){aside{display:block;max-width:310px;margin:auto;width:100%}.aside-bottom{display:none}.entry-footer{flex-direction:column}.entry-top{align-items:flex-start}#status{max-width:160px}}

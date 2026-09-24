@@ -2,6 +2,12 @@ import { GitHub, RAW, REPO, BRANCH, cleanHTML, validDate, entryPath } from './co
 
 const $ = id => document.getElementById(id);
 const github = new GitHub();
+const TOKEN_KEY = 'xuming-journal-github-token';
+function storedToken() { try { return localStorage.getItem(TOKEN_KEY) || ''; } catch { return ''; } }
+function persistToken(token) {
+  try { if(token) localStorage.setItem(TOKEN_KEY,token); else localStorage.removeItem(TOKEN_KEY); return true; }
+  catch { return false; }
+}
 const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
 const drafts = new Map();
 let database, date = today(), month = date.slice(0,7), sha = null, remote = null;
@@ -180,14 +186,19 @@ $('reload').onclick=()=>openDate(date,true);
 $('keep-draft').onclick=()=>{sha=remote.sha;known=true;conflict=false;$('conflict').hidden=true;changed();};
 $('use-remote').onclick=async()=>{if(!confirm('Replace this local draft with the GitHub version? Export first if you want a separate copy.'))return;dirty=false;await storeDraft(null);await openDate(date,true);};
 $('connect').onclick=()=>{
-  if(github.token){github.token='';clearTimeout(timer);$('connect').textContent='Connect GitHub';status('Disconnected · drafts stay on this device');controls();return;}
+  if(github.token){github.token='';clearTimeout(timer);$('connect').textContent='Connect GitHub';const removed=persistToken('');status(removed?'Disconnected · saved token removed; drafts stay on this device':'Disconnected in this tab. Clear this site’s browser data to remove the saved connection.',!removed);controls();return;}
   $('connection-dialog').showModal();$('token').focus();
 };
 $('cancel-connect').onclick=()=>$('connection-dialog').close();
-$('connection-dialog').addEventListener('close',()=>{$('token').value='';$('connection-error').textContent='';});
+$('connection-dialog').addEventListener('close',()=>{$('token').value='';$('remember-token').checked=true;$('connection-error').textContent='';});
 $('connection-form').onsubmit=async event=>{
   event.preventDefault();const submit=event.submitter;submit.disabled=true;$('connection-error').textContent='Checking access…';
-  try{await github.connect($('token').value.trim());$('connect').textContent='Disconnect GitHub';$('connection-dialog').close();await openDate(date,true);loadMonth();}
+  try{
+    await github.connect($('token').value.trim());
+    const persisted=persistToken($('remember-token').checked?github.token:'');
+    $('connect').textContent='Disconnect GitHub';$('connection-dialog').close();await openDate(date,true);loadMonth();
+    if(!persisted)status('Connected for this tab. Browser storage is unavailable; the connection preference could not be saved.',true);
+  }
   catch(error){$('connection-error').textContent=error.message;}
   finally{submit.disabled=false;controls();}
 };
@@ -198,12 +209,24 @@ $('export').onclick=()=>{
 };
 window.addEventListener('beforeunload',event=>{if(dirty||busy||mediaBusy){event.preventDefault();event.returnValue='';}});
 document.addEventListener('keydown',event=>{if((event.metaKey||event.ctrlKey)&&event.key==='s'){event.preventDefault();save();}});
+window.addEventListener('storage',event=>{
+  if(event.key===TOKEN_KEY && !event.newValue){github.token='';clearTimeout(timer);$('connect').textContent='Connect GitHub';status('Disconnected in another tab · drafts stay on this device');controls();}
+});
 async function start(){
   try{
     database=await new Promise((resolve,reject)=>{const request=indexedDB.open('xuming-journal',1);request.onupgradeneeded=()=>request.result.createObjectStore('drafts');request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error);});
     await new Promise((resolve,reject)=>{const tx=database.transaction('drafts');const request=tx.objectStore('drafts').openCursor();request.onsuccess=()=>{const cursor=request.result;if(cursor){drafts.set(cursor.key,cursor.value);cursor.continue();}else resolve();};request.onerror=()=>reject(request.error);});
   }catch{draftFailure=true;}
+  let connectionError='';
+  const token=storedToken();
+  if(token){
+    $('connect').disabled=true;status('Reconnecting to GitHub…');
+    try{await github.connect(token);$('connect').textContent='Disconnect GitHub';}
+    catch(error){if(error.status===401)persistToken('');connectionError=`Could not reconnect. ${error.message}`;}
+    finally{$('connect').disabled=false;}
+  }
   await openDate(date,true);loadMonth();
+  if(connectionError)status(connectionError,true);
   if(draftFailure)status('Local draft storage unavailable. Keep this tab open and export or sync your entry.',true);
 }
 start();

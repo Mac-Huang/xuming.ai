@@ -6,7 +6,7 @@ The page uses the portfolio's shared stylesheet. A calendar opens one entry per 
 
 ## Saving
 
-Click **Connect GitHub**, then supply a GitHub fine-grained personal access token with this repository selected and **Contents: Read and write**. A public visitor can read and keep local drafts, but cannot change the repository without write access. The token remains in JavaScript memory only; refresh, disconnect, or closing the tab clears it. Never put a token into source, a URL, or an entry.
+Click **Connect GitHub**, then supply a GitHub fine-grained personal access token with this repository selected and **Contents: Read and write**. A public visitor can read and keep local drafts, but cannot change the repository without write access. **Remember on this device** is selected by default. It stores the token in this browser's localStorage and reconnects automatically after refresh or reopening. Uncheck it for a connection held only in the current tab. Use this only on a trusted device: scripts on the same website origin can access browser storage. **Disconnect GitHub** removes the stored token and disconnects other open journal tabs. Never put a token into source, a URL, or an entry.
 
 - Entries: `journal/entries/YYYY/MM/DD.json` (title, sanitized HTML, date, update time).
 - Images: `journal/media/YYYY/MM/<uuid>.webp`.
@@ -15,6 +15,6 @@ Click **Connect GitHub**, then supply a GitHub fine-grained personal access toke
 - Conflicts: the original file SHA is supplied on update. Changes from another device require explicit comparison/selection; no automatic overwrite.
 - History: links to GitHub's per-file commit history. **Export** downloads the current entry as HTML; synced image URLs remain remote.
 
-External GitHub requests have a 30-second timeout. Failed saves stay local and can be retried. GitHub permission/rate-limit errors are shown in the page. Empty new entries are not uploaded automatically. A token is needed again in each new/reloaded tab.
+External GitHub requests have a 30-second timeout. Failed saves stay local and can be retried. GitHub permission/rate-limit errors are shown in the page. Empty new entries are not uploaded automatically. Remembered tokens are validated on startup; expired/revoked tokens that return 401 are removed. Transient network errors keep the saved token for a later visit.
 
 Do not add this directory to discovery feeds or bot knowledge. No journal content should be extracted into `data/bot-knowledge.json`.
