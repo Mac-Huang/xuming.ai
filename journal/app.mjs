@@ -16,8 +16,11 @@ function controls() {
   $('date').disabled = busy || mediaBusy || loading;
   for (const id of ['previous','next','today','reload']) $(id).disabled = busy || mediaBusy || loading;
   $('title').disabled = loading;
+  $('export').disabled = loading;
+  $('history').hidden = !sha;
   $('editor').contentEditable = String(!loading);
   for (const button of $('toolbar').querySelectorAll('button')) button.disabled = loading || mediaBusy;
+  $('image').disabled = loading || mediaBusy || busy;
 }
 async function storeDraft(value, key = date) {
   if (value) drafts.set(key, value); else drafts.delete(key);
@@ -139,7 +142,7 @@ async function save() {
   if (revision !== version && !conflict) schedule();
 }
 async function addImages(files) {
-  if(loading || busy || mediaBusy) return;
+  if(loading || busy || mediaBusy) { status('Wait for the current operation to finish, then insert the image again.'); return; }
   mediaBusy = true; clearTimeout(timer); controls();
   const selection = window.getSelection();
   const range = selection.rangeCount && $('editor').contains(selection.anchorNode) ? selection.getRangeAt(0).cloneRange() : null;
