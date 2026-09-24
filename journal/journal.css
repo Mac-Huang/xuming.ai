@@ -37,7 +37,8 @@ aside{position:sticky;top:76px;align-self:start;max-height:calc(100dvh - 88px);o
 .markdown-preview{min-height:max(520px,65dvh);padding:20px 0;overflow-wrap:anywhere}
 .markdown-preview:empty:before{content:'Your preview will appear here.';color:#999}
 .markdown-preview p{margin:0 0 1em}.markdown-preview h1{font-size:26px}.markdown-preview h2{font-size:22px}.markdown-preview h3{font-size:19px}
-.markdown-preview img,#remote-version img{display:block;max-width:100%;height:auto;margin:16px 0}
+.markdown-preview img,.markdown-preview video,#remote-version img,#remote-version video{display:block;max-width:100%;margin:16px 0}
+.markdown-preview img:not([height]),.markdown-preview video:not([height]),#remote-version img:not([height]),#remote-version video:not([height]){height:auto}
 .markdown-preview blockquote{border-left:3px solid var(--line);margin-left:0;padding-left:16px;color:var(--muted)}
 .markdown-preview pre,#remote-version pre{max-width:100%;overflow:auto;padding:14px;background:#f5f5f5}
 .markdown-preview code,#remote-version code{font:13px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
@@ -57,3 +58,5 @@ dialog .actions{justify-content:flex-end}#connection-error:empty{display:none}
 .remember-option{display:flex;align-items:center;gap:8px;margin-top:14px}.remember-option input{display:inline;width:auto;margin:0}
 @media(max-width:800px){.page-header,.site-tabs{width:100%}.connection-bar,.layout{width:calc(100% - 24px)}.connection-bar{padding-right:20px}.layout{grid-template-columns:1fr}aside{position:static;max-height:none;overflow:visible;border-right:0;border-bottom:1px solid var(--line);padding:20px;display:grid;grid-template-columns:minmax(200px,280px) 1fr;gap:0 20px}.month-nav,.weekdays,.calendar,.legend{grid-column:1}.aside-bottom{grid-column:2;grid-row:2/5;margin:0;align-self:center}#today,#calendar-status{grid-column:1}.calendar button{max-height:36px}.writing{padding:24px 20px}.entry-footer{align-items:flex-start}.entry-footer .actions{gap:12px}#editor,.markdown-preview{min-height:max(340px,50dvh)}}
 @media(max-width:420px){aside{display:block;max-width:310px;margin:auto;width:100%}.aside-bottom{display:none}.entry-footer{flex-direction:column}.entry-top{align-items:flex-start}#status{max-width:160px}}
+
+.media-help{margin:10px 0;color:#777;font-size:14px}.media-help p{font-size:14px}.media-help code{font:12px monospace}.media-help summary{cursor:pointer;color:#1772d0}.entry-top:has(#status.error){flex-wrap:wrap}#status.error{max-width:none;text-align:left;flex-basis:100%}#update-token{margin-right:14px}

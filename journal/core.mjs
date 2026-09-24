@@ -22,9 +22,25 @@ export function decode(content) {
   return new TextDecoder().decode(Uint8Array.from(atob(content.replace(/\s/g, '')), c => c.charCodeAt(0)));
 }
 export class GitHubError extends Error {
-  constructor(status) {
-    super(status === 409 || status === 422 ? 'GitHub changed since this draft was opened. Refresh to compare versions.' : status === 401 ? 'Your GitHub token expired or is invalid. Reconnect to save.' : status === 403 ? 'GitHub denied this request. Check token permissions or try again after the API limit resets.' : `GitHub request failed (${status}). Your draft is still on this device.`);
+  constructor(status, details = {}) {
+    const reason=details.message || '';
+    const limited=status===429 || ((status===403) && (details.remaining==='0' || details.retryAfter || /rate limit|abuse/i.test(reason)));
+    const conflict=status===409 || (status===422 && /sha|already exists|does not match/i.test(reason));
+    const delay=Number(details.retryAfter),reset=Number(details.reset);
+    const retryAt=limited ? Math.max(Date.now()+1000, Number.isFinite(delay)&&delay>0 ? Date.now()+delay*1000 : details.remaining==='0' && Number.isFinite(reset)&&reset>0 ? reset*1000+1000 : Date.now()+60000) : 0;
+    let message=conflict?'GitHub changed since this draft was opened. Refresh to compare versions.':`GitHub request failed (${status}).`;
+    if(limited)message=`GitHub rate limit reached. Sync will retry after ${new Date(retryAt).toLocaleTimeString()}.`;
+    else if(status===401)message='Your GitHub token expired or was revoked. Update the connection token.';
+    else if(status===403 && /resource not accessible|permission/i.test(reason))message='This token cannot write to the journal. In GitHub token settings, select Mac-Huang/xuming.ai and set Contents to Read and write, then retry. If you created a new token, update the connection.';
+    else if(status===403)message='GitHub denied this request.';
+    else if(status===413 || /too large|larger than|exceeds.*size/i.test(reason))message='This file is too large for GitHub. Choose a smaller file.';
+    else if(status===422 && !conflict)message='GitHub could not accept this upload.';
+    else if(status===404 && details.method==='PUT')message='GitHub cannot access this repository or branch with the current token. Check the selected repository and Contents write permission.';
+    if(reason && !limited)message+=` GitHub: ${reason.slice(0,350)}`;
+    super(message+' Your draft stays on this device.');
     this.status = status;
+    this.kind=limited?'rate-limit':conflict?'conflict':status===401?'authentication':status===403?'permission':'request';
+    this.retryAt=retryAt;
   }
 }
 export class GitHub {
@@ -33,10 +49,14 @@ export class GitHub {
     const headers = { Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2026-03-10', ...options.headers };
     if (this.token) headers.Authorization = `Bearer ${this.token}`;
     let result;
-    try { result = await this.fetcher(`${API}${path}`, { ...options, headers, cache: 'no-store', signal: AbortSignal.timeout(30000) }); }
+    try { result = await this.fetcher(`${API}${path}`, { ...options, headers, cache: 'no-store', signal: AbortSignal.timeout(options.method==='PUT'?180000:30000) }); }
     catch { throw new Error('Cannot reach GitHub. Your draft stays on this device; use Save now to retry.'); }
     if (result.status === 404 && options.allowMissing) return null;
-    if (!result.ok) throw new GitHubError(result.status);
+    if (!result.ok) {
+      const payload=await result.json().catch(()=>({}));
+      const reason=typeof payload.message==='string'?payload.message:'';
+      throw new GitHubError(result.status,{message:this.token?reason.replaceAll(this.token,'[redacted]'):reason,remaining:result.headers.get('x-ratelimit-remaining'),reset:result.headers.get('x-ratelimit-reset'),retryAfter:result.headers.get('retry-after'),method:options.method||'GET'});
+    }
     return result.json();
   }
   async connect(token) {
@@ -73,7 +93,7 @@ export class GitHub {
 export function cleanHTML(html, doc = document) {
   const template = doc.createElement('template');
   template.innerHTML = html;
-  const allowed = new Set(['P','DIV','BR','HR','B','STRONG','I','EM','U','S','DEL','H1','H2','H3','H4','H5','H6','UL','OL','LI','BLOCKQUOTE','PRE','CODE','IMG','A','TABLE','THEAD','TBODY','TR','TH','TD','INPUT']);
+  const allowed = new Set(['P','DIV','BR','HR','B','STRONG','I','EM','U','S','DEL','H1','H2','H3','H4','H5','H6','UL','OL','LI','BLOCKQUOTE','PRE','CODE','IMG','VIDEO','SOURCE','A','TABLE','THEAD','TBODY','TR','TH','TD','INPUT']);
   const remove = new Set(['SCRIPT','STYLE','IFRAME','OBJECT','SVG','MATH','FORM','BUTTON','TEMPLATE','LINK','META']);
   for (const node of [...template.content.querySelectorAll('*')]) {
     if (remove.has(node.tagName)) { node.remove(); continue; }
@@ -84,10 +104,27 @@ export function cleanHTML(html, doc = document) {
     const checkbox = node.getAttribute('type') === 'checkbox';
     const checked = node.hasAttribute('checked');
     const start = node.getAttribute('start');
+    // Read only dimension declarations as text: CSP intentionally blocks inline CSS.
+    const styles=Object.fromEntries((node.getAttribute('style')||'').split(';').map(part=>part.split(':').map(value=>value.trim().toLowerCase())).filter(part=>part.length===2));
+    const width=node.getAttribute('width') || styles.width;
+    const height=node.getAttribute('height') || styles.height;
+    const type=node.getAttribute('type');
     for (const attr of [...node.attributes]) node.removeAttribute(attr.name);
     if (node.tagName === 'IMG') {
-      if (!/^data:image\/(png|jpeg|webp|gif);base64,[a-zA-Z0-9+/=]+$/.test(src) && !src.startsWith(`${RAW}journal/media/`)) { node.remove(); continue; }
+      if (!/^data:image\/(png|jpeg|webp|gif);base64,[a-zA-Z0-9+/=]+$/.test(src) && !/^https:\/\//i.test(src) && !/^\/(?!\/)/.test(src)) { node.remove(); continue; }
       node.setAttribute('src', src); node.setAttribute('alt', alt); node.setAttribute('loading','lazy');
+    }
+    if(['IMG','VIDEO'].includes(node.tagName)) {
+      for(const [name,value] of [['width',width],['height',height]]) {
+        if(!value)continue;
+        if(/^\d+(?:px)?$/.test(value) && parseInt(value)>0 && parseInt(value)<=4096)node.setAttribute(name,String(parseInt(value)));
+        else if(name==='width' && /^\d+(?:\.\d+)?%$/.test(value) && parseFloat(value)>0 && parseFloat(value)<=100)node.setAttribute(name,value);
+      }
+    }
+    if(['VIDEO','SOURCE'].includes(node.tagName)) {
+      if(src && /^https:\/\//i.test(src))node.setAttribute('src',src);
+      if(type && ['video/mp4','video/quicktime','video/webm'].includes(type))node.setAttribute('type',type);
+      if(node.tagName==='VIDEO'){node.setAttribute('controls','');node.setAttribute('playsinline','');node.setAttribute('preload','metadata');}
     }
     if(node.tagName === 'A' && /^(https?:\/\/|mailto:)/i.test(href)) { node.setAttribute('href',href); node.setAttribute('target','_blank'); node.setAttribute('rel','noopener noreferrer'); }
     if(node.tagName === 'INPUT') {

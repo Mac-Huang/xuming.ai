@@ -52,3 +52,27 @@ test('reads both Markdown entries and existing HTML entries without rewriting',a
     assert.deepEqual(await github.get(entry.date),{sha:'existing',entry});assert.equal(calls,1);
   }
 });
+
+test('GitHub distinguishes permission, validation, and rate-limit failures',async()=>{
+  const permission=new GitHubError(403,{message:'Resource not accessible by personal access token'});
+  assert.equal(permission.kind,'permission');assert.match(permission.message,/Contents to Read and write/);assert.equal(permission.retryAt,0);
+  const validation=new GitHubError(422,{message:'Invalid content'});assert.equal(validation.kind,'request');
+  const limited=new GitHubError(403,{message:'API rate limit exceeded',remaining:'0',reset:String(Math.ceil(Date.now()/1000)+90)});
+  assert.equal(limited.kind,'rate-limit');assert.ok(limited.retryAt>Date.now()+89000);
+  const secondary=new GitHubError(429,{retryAfter:'2'});assert.ok(secondary.retryAt>=Date.now()+1900);
+  assert.ok(Number.isFinite(new GitHubError(429,{retryAfter:'invalid'}).retryAt));
+  const github=new GitHub(async()=>Response.json({message:'Resource not accessible by personal access token test-only'},{status:403}));github.token='test-only';
+  await assert.rejects(github.save({date:'2026-09-24'},null),error=>error.kind==='permission'&&!error.message.includes('test-only')&&error.message.includes('[redacted]'));
+});
+
+test('request preserves retry headers and video types accept uppercase MOV filenames',async()=>{
+  const github=new GitHub(async()=>Response.json({message:'Secondary rate limit'},{status:403,headers:{'Retry-After':'2'}}));github.token='test-only';
+  await assert.rejects(github.save({date:'2026-09-24'},null),error=>error.kind==='rate-limit'&&error.retryAt>Date.now()+1900);
+  const {videoType,validMediaData,videoMarkup}=await import('../journal/media.mjs');
+  assert.equal(videoType({name:'clip.MOV',type:''}).mime,'video/quicktime');
+  assert.equal(videoType({name:'clip.mp4',type:''}).mime,'video/mp4');
+  assert.equal(videoType({name:'file.pdf',type:'application/pdf'}),null);
+  assert.equal(validMediaData('data:video/mp4;base64,YQ=='),true);
+  assert.equal(validMediaData('data:text/html;base64,YQ=='),false);
+  assert.match(videoMarkup('clip.MOV','https://example.com/clip.mov'),/Open \/ download clip.MOV/);
+});

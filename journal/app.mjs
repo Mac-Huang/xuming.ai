@@ -1,5 +1,7 @@
-import { GitHub, RAW, REPO, BRANCH, validDate, entryPath } from './core.mjs?v=20260924-markdown';
-import { toMarkdownEntry, renderMarkdown, mediaPath, markdownImage } from './markdown.mjs?v=20260924-markdown';
+import { GitHub, RAW, REPO, BRANCH, validDate, entryPath } from './core.mjs?v=20260924-media';
+import { toMarkdownEntry, renderMarkdown, mediaPath, markdownImage } from './markdown.mjs?v=20260924-media';
+
+import { MAX_VIDEO_BYTES, videoType, fileDataURL, videoMarkup, validMediaData } from './media.mjs';
 
 const $ = id => document.getElementById(id);
 const github = new GitHub();
@@ -16,6 +18,7 @@ let known = false, dirty = false, busy = false, mediaBusy = false, loading = fal
 let savedDays = new Set();
 let pendingImages = {}, view = 'write';
 let draftFailure = false;
+let retryAt=0,rateRetries=0,autoSyncPaused=false,syncError='',retryTimer;
 function status(text, error = false) { $('status').textContent = text; $('status').classList.toggle('error', error); }
 function snapshot() { return { date, title: $('title').value.trim(), markdown: $('editor').value, pendingImages: {...pendingImages}, updated: new Date().toISOString(), version: 2 }; }
 function hasContent(entry) { return Boolean(entry.title || entry.markdown.trim()); }
@@ -30,7 +33,7 @@ function insertText(text) {
 }
 $('write-view').onclick=()=>setView('write');$('preview-view').onclick=()=>setView('preview');
 function controls() {
-  $('save').disabled = !known || !dirty || busy || mediaBusy || conflict || !github.token;
+  $('save').disabled = !known || !dirty || busy || mediaBusy || conflict || !github.token || Date.now()<retryAt;
   $('date').disabled = busy || mediaBusy || loading;
   for (const id of ['previous','next','today','reload']) $(id).disabled = busy || mediaBusy || loading;
   $('title').disabled = loading;
@@ -39,6 +42,7 @@ function controls() {
   $('editor').disabled = loading;
   for (const button of $('toolbar').querySelectorAll('button')) button.disabled = loading || mediaBusy;
   $('image').disabled = loading || mediaBusy || busy;
+  $('update-token').hidden = !github.token;
 }
 async function storeDraft(value, key = date) {
   if (value) drafts.set(key, value); else drafts.delete(key);
@@ -57,12 +61,12 @@ function remember() { return storeDraft({ entry: snapshot(), baseSha: sha, known
 function wordCount() { const text = $('editor').value.replace(/!\[[^\]]*\]\([^)]*\)/g,'').trim(); $('word-count').textContent = `${text ? text.split(/\s+/u).length : 0} words`; }
 function changed() {
   dirty = true; revision++; wordCount(); updatePreview();
-  remember().then(() => { if (!draftFailure && !busy && !conflict) status(github.token ? 'Draft saved on this device · waiting to sync…' : 'Draft saved on this device · connect GitHub to sync'); });
+  remember().then(() => { if (!draftFailure && !busy && !conflict && !syncError) status(github.token ? 'Draft saved on this device · waiting to sync…' : 'Draft saved on this device · connect GitHub to sync'); });
   renderCalendar(); schedule(); controls();
 }
 function schedule() {
   clearTimeout(timer);
-  if (dirty && github.token && known && !conflict && !busy && !mediaBusy) timer = setTimeout(() => save(), 5000);
+  if (dirty && github.token && known && !conflict && !busy && !mediaBusy && !autoSyncPaused) timer = setTimeout(() => save(), Math.max(5000,retryAt-Date.now()));
 }
 function renderCalendar() {
   const [year, m] = month.split('-').map(Number);
@@ -99,7 +103,7 @@ async function openDate(nextDate, force = false) {
   clearTimeout(timer);
   loading = true; controls();
   // Finish a pending save before leaving a date. Failed saves remain local.
-  if (dirty && known && github.token && !conflict && hasContent(snapshot()) && !force) await save();
+  if (dirty && known && github.token && !conflict && !autoSyncPaused && hasContent(snapshot()) && !force) await save();
   if (dirty) await remember();
   date = nextDate; loading = true; known = false; dirty = false; conflict = false; sha = null; revision = 0;
   $('date').value = date; $('conflict').hidden = true; $('title').value = ''; $('editor').value = ''; pendingImages = {}; updatePreview();
@@ -114,8 +118,10 @@ async function openDate(nextDate, force = false) {
     if(local) {
       dirty = true;
       if(local.baseSha!==sha) { sha=local.baseSha; showConflict(); }
+      else if(syncError)status(syncError,true);
       else status(github.token?'Restored local draft · waiting to sync…':'Restored local draft · connect GitHub to sync');
-    } else status(remote.entry ? 'Saved on GitHub' : 'A fresh page for this day');
+    } else if(syncError)status(syncError,true);
+    else status(remote.entry ? 'Saved on GitHub' : 'A fresh page for this day');
   } catch(error) {
     remote = null;
     const entry=toMarkdownEntry(local?.entry,date);pendingImages=entry.pendingImages;
@@ -127,41 +133,58 @@ async function openDate(nextDate, force = false) {
 async function save() {
   clearTimeout(timer);
   if (busy || mediaBusy || !dirty || !known || conflict || !github.token) return;
+  if(Date.now()<retryAt){schedule();return;}
   const entry = snapshot();
   if (!hasContent(entry) && !sha) { status('Write something before saving.'); return; }
   const version = revision; busy = true; controls(); status('Saving to GitHub…');
   try {
     for(const [path,source] of Object.entries(entry.pendingImages)) {
       if(!entry.markdown.includes(RAW+path))continue;
-      if(!/^data:image\/(png|jpeg|webp|gif);base64,[a-zA-Z0-9+/=]+$/.test(source))throw new Error('An image draft could not be read. Remove it and insert it again.');
-      const result = await github.put(path, source.split(',')[1], null, `Journal image: ${date}`);
-      if(!result.content?.sha) throw new Error('GitHub did not confirm the image save.');
+      if(!validMediaData(source))throw new Error('A media draft could not be read. Remove it and insert it again.');
+      status(`Uploading media ${Object.keys(entry.pendingImages).indexOf(path)+1} of ${Object.keys(entry.pendingImages).length}…`);
+      const result = await github.put(path, source.split(',')[1], null, `Journal media: ${date}`);
+      if(!result.content?.sha) throw new Error('GitHub did not confirm the media save.');
       delete pendingImages[path];
       await remember();
     }
+    status('Saving entry to GitHub…');
     const {pendingImages: localImages, ...savedEntry}=entry;
     const result = await github.save(savedEntry, sha);
     if(!result.content?.sha) throw new Error('GitHub did not confirm the entry save.');
+    retryAt=0;rateRetries=0;autoSyncPaused=false;syncError='';
     sha = result.content.sha; remote = {sha,entry:savedEntry}; savedDays.add(date);
     dirty = revision !== version;
     if(dirty) await remember(); else await storeDraft(null);
     if(!draftFailure) status(dirty?'Saved · newer changes waiting to sync…':'Saved on GitHub');
   } catch(error) {
-    if(error.status===409 || error.status===422) {
+    syncError=error.message;
+    if(error.kind==='rate-limit'){retryAt=error.retryAt;rateRetries++;autoSyncPaused=rateRetries>=3;if(autoSyncPaused)syncError+=' Automatic retries paused; use Save now after the wait.';}
+    else if(error.kind==='permission'||error.kind==='authentication'){autoSyncPaused=true;}
+    if(error.kind==='conflict') {
       try { remote=await github.get(date); showConflict(); } catch { known=false; status(error.message,true); }
-    } else status(error.message,true);
+    } else status(syncError,true);
     await remember();
   } finally { busy = false; controls(); renderCalendar(); }
-  // Only follow new edits, never loop automatically after a failed request.
-  if (revision !== version && !conflict) schedule();
+  // Rate limits get bounded delayed retries; other failures require a new edit or explicit retry.
+  if(retryAt>Date.now()){clearTimeout(retryTimer);retryTimer=setTimeout(()=>{controls();if(!autoSyncPaused)save();},Math.min(2147483647,retryAt-Date.now()+100));}
+  else if (revision !== version && !conflict) schedule();
 }
-async function addImages(files) {
-  if(loading || busy || mediaBusy) { status('Wait for the current operation to finish, then insert the image again.'); return; }
+async function addMedia(files) {
+  if(loading || busy || mediaBusy) { status('Wait for the current operation to finish, then insert the media again.'); return; }
   mediaBusy = true; clearTimeout(timer); controls();
   setView('write');
   try {
     for(const file of files) {
-      if(!['image/png','image/jpeg','image/webp','image/gif'].includes(file.type)) throw new Error('Choose a PNG, JPG, WebP, or GIF image.');
+      const video=videoType(file);
+      if(video){
+        if(file.size>MAX_VIDEO_BYTES)throw new Error('Videos must be 50 MB or smaller. Export a smaller clip or insert a link to the video.');
+        status('Preparing video draft…');
+        const data=await fileDataURL(file,video.mime);
+        const path=mediaPath(date).replace(/\.webp$/,'.'+video.extension);pendingImages[path]=data;
+        insertText(`\n\n${videoMarkup(file.name,RAW+path)}\n\n`);
+        continue;
+      }
+      if(!['image/png','image/jpeg','image/webp','image/gif'].includes(file.type)) throw new Error('Choose a PNG, JPG, WebP, GIF, MP4, or MOV file.');
       if(file.size>20*1024*1024) throw new Error('Choose an image smaller than 20 MB.');
       const bitmap = await createImageBitmap(file);
       const scale = Math.min(1,2048/Math.max(bitmap.width,bitmap.height));
@@ -189,27 +212,29 @@ $('toolbar').addEventListener('click',event=>{
   }
   insertText(text);
 });
-$('editor').addEventListener('paste',event=>{const files=[...event.clipboardData.files];if(files.length){event.preventDefault();addImages(files);}});
+$('editor').addEventListener('paste',event=>{const files=[...event.clipboardData.files];if(files.length){event.preventDefault();addMedia(files);}});
 $('editor').addEventListener('dragover',event=>event.preventDefault());
-$('editor').addEventListener('drop',event=>{event.preventDefault();if(event.dataTransfer.files.length)addImages([...event.dataTransfer.files]);});
-$('image').onclick=()=>$('image-file').click(); $('image-file').onchange=event=>{addImages([...event.target.files]);event.target.value='';};
+$('editor').addEventListener('drop',event=>{event.preventDefault();if(event.dataTransfer.files.length)addMedia([...event.dataTransfer.files]);});
+$('image').onclick=()=>$('image-file').click(); $('image-file').onchange=event=>{addMedia([...event.target.files]);event.target.value='';};
 $('date').onchange=event=>{if(validDate(event.target.value))openDate(event.target.value);else event.target.value=date;};
 for(const [id,delta] of [['previous',-1],['next',1]]) $(id).onclick=()=>{const [y,m]=month.split('-').map(Number);const d=new Date(y,m-1+delta,1);month=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;loadMonth();};
 $('today').onclick=()=>{if(date===today()){month=date.slice(0,7);loadMonth();}else openDate(today());};
-$('save').onclick=save;
+$('save').onclick=()=>{rateRetries=0;autoSyncPaused=false;syncError='';save();};
 $('reload').onclick=()=>openDate(date,true);
 $('keep-draft').onclick=()=>{sha=remote.sha;known=true;conflict=false;$('conflict').hidden=true;changed();};
 $('use-remote').onclick=async()=>{if(!confirm('Replace this local draft with the GitHub version? Export first if you want a separate copy.'))return;dirty=false;await storeDraft(null);await openDate(date,true);};
 $('connect').onclick=()=>{
-  if(github.token){github.token='';clearTimeout(timer);$('connect').textContent='Connect GitHub';const removed=persistToken('');status(removed?'Disconnected · saved token removed; drafts stay on this device':'Disconnected in this tab. Clear this site’s browser data to remove the saved connection.',!removed);controls();return;}
+  if(github.token){github.token='';clearTimeout(timer);clearTimeout(retryTimer);$('connect').textContent='Connect GitHub';const removed=persistToken('');status(removed?'Disconnected · saved token removed; drafts stay on this device':'Disconnected in this tab. Clear this site’s browser data to remove the saved connection.',!removed);controls();return;}
   $('connection-dialog').showModal();$('token').focus();
 };
+$('update-token').onclick=()=>{$('connection-dialog').showModal();$('token').focus();};
 $('cancel-connect').onclick=()=>$('connection-dialog').close();
 $('connection-dialog').addEventListener('close',()=>{$('token').value='';$('remember-token').checked=true;$('connection-error').textContent='';});
 $('connection-form').onsubmit=async event=>{
   event.preventDefault();const submit=event.submitter;submit.disabled=true;$('connection-error').textContent='Checking access…';
   try{
     await github.connect($('token').value.trim());
+    clearTimeout(retryTimer);autoSyncPaused=false;syncError='';rateRetries=0;retryAt=0;
     const persisted=persistToken($('remember-token').checked?github.token:'');
     $('connect').textContent='Disconnect GitHub';$('connection-dialog').close();await openDate(date,true);loadMonth();
     if(!persisted)status('Connected for this tab. Browser storage is unavailable; the connection preference could not be saved.',true);
@@ -226,7 +251,7 @@ $('export').onclick=()=>{
 window.addEventListener('beforeunload',event=>{if(dirty||busy||mediaBusy){event.preventDefault();event.returnValue='';}});
 document.addEventListener('keydown',event=>{if((event.metaKey||event.ctrlKey)&&event.key==='s'){event.preventDefault();save();}});
 window.addEventListener('storage',event=>{
-  if(event.key===TOKEN_KEY && !event.newValue){github.token='';clearTimeout(timer);$('connect').textContent='Connect GitHub';status('Disconnected in another tab · drafts stay on this device');controls();}
+  if(event.key===TOKEN_KEY && !event.newValue){github.token='';clearTimeout(timer);clearTimeout(retryTimer);$('connect').textContent='Connect GitHub';status('Disconnected in another tab · drafts stay on this device');controls();}
 });
 async function start(){
   try{

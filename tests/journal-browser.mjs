@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 const {chromium}=await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const browser=await chromium.launch({headless:true,executablePath:process.env.BROWSER_EXECUTABLE || undefined});
 const page=await browser.newPage({viewport:{width:1280,height:960}});
-const files=new Map(), writes=[], errors=[];let counter=0,deny=false,revoked=false;
+const files=new Map(), writes=[], errors=[];let counter=0,deny=false,revoked=false,limited=false,putAttempts=0;
 let png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jD1sAAAAASUVORK5CYII=','base64');
 page.on('pageerror',error=>errors.push(error.message));
 page.on('requestfailed',request=>console.log('Request failed:',request.url(),request.failure()?.errorText));
@@ -12,11 +12,13 @@ await page.route('https://raw.githubusercontent.com/**',route=>route.fulfill({st
 await page.route('https://api.github.com/**',async route=>{
   const request=route.request(),url=new URL(request.url());
   const path=url.pathname.split('/contents/')[1];
-  const respond=(status,json)=>route.fulfill({status,headers:{'Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'*','Access-Control-Allow-Methods':'GET, PUT, OPTIONS'},contentType:'application/json',body:JSON.stringify(json)});
+  const respond=(status,json,extra={})=>route.fulfill({status,headers:{...extra,'Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'*','Access-Control-Allow-Methods':'GET, PUT, OPTIONS'},contentType:'application/json',body:JSON.stringify(json)});
   if(request.method()==='OPTIONS')return respond(200,{});
   if(!path)return respond(revoked?401:200,{permissions:{push:true}});
   if(request.method()==='PUT'){
-    if(deny)return respond(403,{});
+    putAttempts++;
+    if(limited){limited=false;return respond(403,{message:'Secondary rate limit'},{'Retry-After':'2','Access-Control-Expose-Headers':'Retry-After'});}
+    if(deny)return respond(403,{message:'Resource not accessible by personal access token'});
     assert.equal(request.headers().authorization,'Bearer test-only');
     const body=request.postDataJSON(),current=files.get(path);
     if((current?.sha||null)!==(body.sha||null))return respond(409,{});
@@ -64,6 +66,44 @@ try{
  assert.match(writes.at(-2).path,/journal\/media\//);assert.equal(writes.at(-1).path,path);
  assert.match(Buffer.from(writes.at(-1).body.content,'base64').toString(),/raw.githubusercontent.com/);
  assert.ok(!Buffer.from(writes.at(-1).body.content,'base64').toString().includes('data:image'));
+ // HTML image sizing survives sanitization and retains the requested rendered width.
+ const imageURL=/!\[memory.png\]\(([^)]+)\)/.exec(await page.locator('#editor').inputValue())[1];
+ await page.locator('#editor').fill(`<img src="${imageURL}" width="400" onerror="alert(1)">\n\n<img src="${imageURL}" style="width:50%;position:fixed">`);
+ await page.locator('#preview-view').click();
+ assert.equal(await page.locator('#preview img').nth(0).getAttribute('width'),'400');
+ assert.equal(await page.locator('#preview img').nth(1).getAttribute('width'),'50%');
+ assert.equal(await page.locator('#preview img').nth(1).getAttribute('style'),null);
+ assert.equal(Math.round((await page.locator('#preview img').nth(0).boundingBox()).width),400);
+ await page.locator('#write-view').click();
+ // Both formats keep a local preview and upload media before saving the entry.
+ for(const [name,mimeType] of [['clip.mp4','video/mp4'],['clip.MOV','video/quicktime']]) {
+  let buffer=Buffer.from('mock video bytes');
+  if(process.env.JOURNAL_VIDEO_FIXTURES){const {readFile}=await import('node:fs/promises');buffer=await readFile(`${process.env.JOURNAL_VIDEO_FIXTURES}/journal-test.${name.split('.').at(-1)}`);}
+  await page.locator('#image-file').setInputFiles({name,mimeType,buffer});
+  await page.waitForFunction(name=>document.querySelector('#editor').value.includes(`Open / download ${name}`),name);
+  await page.locator('#preview-view').click();
+  const video=page.locator('#preview video').last();assert.match(await video.getAttribute('src'),/^blob:/);
+  assert.match(await page.locator('#preview a').last().getAttribute('href'),/^blob:/);
+  if(process.env.JOURNAL_VIDEO_FIXTURES)await video.evaluate(el=>new Promise((resolve,reject)=>{if(el.readyState>=1)return resolve();el.onloadedmetadata=resolve;el.onerror=()=>reject(new Error('Video fixture failed to play'));}));
+  await page.locator('#write-view').click();
+  deny=true;await page.locator('#save').click();
+  await page.waitForFunction(()=>document.querySelector('#status').textContent.includes('Contents to Read and write'));
+  assert.ok((await page.locator('#editor').inputValue()).includes(name));
+  const attempts=putAttempts;
+  await page.waitForTimeout(5500);assert.equal(putAttempts,attempts,'Permission failures must not retry automatically');
+  deny=false;await page.locator('#save').click();
+  await page.waitForFunction(()=>document.querySelector('#status').textContent==='Saved on GitHub');
+  assert.ok(writes.at(-2).path.endsWith(name.toLowerCase().slice(-4)));assert.equal(writes.at(-1).path,path);
+ }
+ // Retry-After delays a rate-limited save, then retries without losing the entry.
+ limited=true;await page.locator('#editor').fill((await page.locator('#editor').inputValue())+'\nRate-limit recovery.');await page.locator('#save').click();
+ await page.waitForFunction(()=>document.querySelector('#status').textContent.includes('rate limit reached'));
+ assert.equal(await page.locator('#save').isDisabled(),true);
+ const attempts=putAttempts;await page.waitForTimeout(800);assert.equal(putAttempts,attempts);
+ await page.waitForFunction(()=>document.querySelector('#status').textContent==='Saved on GitHub',null,{timeout:10000});
+ assert.match(Buffer.from(writes.at(-1).body.content,'base64').toString(),/Rate-limit recovery/);
+ assert.equal(await page.locator('#update-token').isVisible(),true);
+ await page.locator('#update-token').click();assert.equal(await page.locator('#connection-dialog').isVisible(),true);await page.locator('#cancel-connect').click();
  // Saved entry opens again after selecting a different calendar day.
  const other=await page.locator('#calendar button:not(.selected)').first().getAttribute('data-date');
  await page.locator(`#calendar button[data-date="${other}"]`).click();
@@ -85,7 +125,7 @@ try{
  assert.equal(writes.at(-1).body.sha,'other-device');
  // A rejected write retains a recoverable draft, and retry succeeds.
  deny=true;await page.locator('#editor').fill('Kept through a failed sync');await page.locator('#save').click();
- await page.waitForFunction(()=>document.querySelector('#status').textContent.includes('denied'));
+ await page.waitForFunction(()=>document.querySelector('#status').textContent.includes('Contents to Read and write'));
  assert.equal(await page.locator('#editor').inputValue(),'Kept through a failed sync');
  deny=false;await page.locator('#save').click();await page.waitForFunction(()=>document.querySelector('#status').textContent==='Saved on GitHub');
  // Default connection survives refresh, continues autosaving, and disconnect removes it.
@@ -122,7 +162,7 @@ try{
  const downloadPromise=page.waitForEvent('download');await page.locator('#export').click();const download=await downloadPromise;assert.equal(download.suggestedFilename(),`journal-${date}.md`);
  // Legacy HTML, including Unicode and data images in local drafts, remains editable.
  const migration=await page.evaluate(async()=>{
-  const {toMarkdownEntry,renderMarkdown}=await import('/journal/markdown.mjs?v=20260924-markdown');
+  const {toMarkdownEntry,renderMarkdown}=await import('/journal/markdown.mjs?v=20260924-media');
   const canvas=document.createElement('canvas');canvas.width=2;canvas.height=2;
   const result=toMarkdownEntry({title:'Old entry',html:'<h2>Earlier</h2><p>Today <b>worked</b>. 今天</p><ul><li>One</li><li>Two</li></ul><img src="'+canvas.toDataURL()+'" alt="Old image">'},'2026-09-20');
   return {markdown:result.markdown,pending:Object.keys(result.pendingImages).length,preview:renderMarkdown(result.markdown,result.pendingImages),unsafe:renderMarkdown('[Bad](javascript:alert(1))<script>alert(1)</script><img src="x" onerror="alert(1)">')};
@@ -137,12 +177,12 @@ try{
  await page.locator('#connect').click();await page.locator('#token').fill('test-only');await page.locator('#connection-form button[type=submit]').click();
  await page.waitForFunction(()=>document.querySelector('#status').textContent==='Saved on GitHub',null,{timeout:15000});
  assert.equal(writes.at(-1).body.sha,'legacy-sha');assert.equal(JSON.parse(Buffer.from(writes.at(-1).body.content,'base64')).markdown,'Hello **old journal**\n\nUpdated as Markdown.');
- // Unsafe stored HTML cannot execute or insert third-party images.
+ // HTTPS images remain usable, but executable attributes and arbitrary CSS are stripped.
  const cleaned=await page.evaluate(async()=>{const {cleanHTML}=await import('/journal/core.mjs');return cleanHTML('<script>alert(1)</script><img src="https://evil.invalid/a" onerror="alert(1)"><p style="color:red" onclick="alert(2)">Safe</p><svg onload="alert(3)"></svg>');});
- assert.equal(cleaned,'<p>Safe</p>');
+ assert.match(cleaned,/<img src="https:\/\/evil.invalid\/a"/);assert.ok(!/onerror|onclick|onload|<script|<svg|style=/.test(cleaned));assert.match(cleaned,/<p>Safe<\/p>/);
  await page.setViewportSize({width:390,height:844});
  await page.screenshot({path:'/private/tmp/journal-mobile.png',fullPage:true});
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
  assert.deepEqual(errors,[]);
- console.log('PASS: shared style, calendar navigation, Unicode draft recovery, token lifecycle, remembered reconnection, post-refresh autosave, disconnect, expiration, autosave, image ordering, conflict/reload/resolve, rejected-save retry, HTML sanitization, mobile layout, Markdown preview/toolbar/export, legacy-entry conversion.');
+ console.log('PASS: shared style, calendar navigation, Unicode draft recovery, token lifecycle, remembered reconnection, post-refresh autosave, disconnect, expiration, autosave, image/video ordering and playback, HTML sizing, permission pause, rate-limit retry, conflict/reload/resolve, rejected-save retry, HTML sanitization, mobile layout, Markdown preview/toolbar/export, legacy-entry conversion.');
 }catch(error){console.error('UI status:',await page.locator('#status').textContent());await page.screenshot({path:'/private/tmp/journal-failure.png',fullPage:true});throw error;}finally{await browser.close();}
