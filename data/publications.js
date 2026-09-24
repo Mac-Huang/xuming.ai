@@ -3,7 +3,7 @@ const publications = [
   {
     "id": "wuklab",
     "title": "Edge AI Systems Optimization",
-    "authors": "<strong>Xuming Huang</strong> · advised by Prof. Yiying Zhang",
+    "authors": "Advised by Prof. Yiying Zhang",
     "venue": "Undergraduate Researcher · WukLab, UC San Diego · Jan. 2026–present",
     "year": 2026,
     "image": "images/papers/wuklab/edge-ai-processing-array.png",
@@ -19,7 +19,7 @@ const publications = [
   {
     "id": "os-inference",
     "title": "Operating Systems for AI Inference",
-    "authors": "<strong>Xuming Huang</strong> · advised by Prof. Michael Swift",
+    "authors": "Advised by Prof. Michael Swift",
     "venue": "Honors Course Research Project · UW–Madison · Jan.–May 2026",
     "year": 2026,
     "image": "images/papers/os-inference-latency.png",
@@ -33,7 +33,7 @@ const publications = [
   {
     "id": "linuxguard-2025",
     "title": "LinuxGuard: AI for System Security",
-    "authors": "<strong>Xuming Huang</strong> · advised by Prof. Remzi Arpaci-Dusseau and Dr. Vinay Banakar · The ADvanced Systems Laboratory (ADSL)",
+    "authors": "Advised by Prof. Remzi Arpaci-Dusseau and Dr. Vinay Banakar · The ADvanced Systems Laboratory (ADSL)",
     "venue": "Undergraduate Researcher · UW–Madison · Jan.–Nov. 2025",
     "year": 2025,
     "image": "images/papers/linuxguard_paradigm.jpg",
@@ -50,7 +50,7 @@ const publications = [
   {
     "id": "cash",
     "title": "ML-Guided Scheduling for Heterogeneous Compute Systems",
-    "authors": "<strong>Xuming Huang</strong> · coauthor; advised by Prof. Xing Hu",
+    "authors": "Coauthor; advised by Prof. Xing Hu",
     "venue": "Undergraduate Researcher · USST · Jan. 2024–Sept. 2026",
     "year": 2026,
     "image": "images/papers/cash-figure.png",
@@ -59,6 +59,34 @@ const publications = [
     "selected": true,
     "category": "completed",
     "abstract": "Contributed to experimental validation and performance analysis of CASH, which predicts workload–hardware affinity for CPU/GPU placement. In 5,000-task simulations using MIT Supercloud traces, the scheduler achieved 97.1% resource-matching accuracy, 46.5% lower response time, and 36.8% lower modeled energy than Meta-RHDC.",
+    "highlighted": false
+  },
+  {
+    "id": "beit-laryngoscopy",
+    "title": "Self-Supervised Learning for Laryngoscopic Image Classification",
+    "authors": "Coauthor",
+    "venue": "ICFTIC · Published 2025",
+    "year": 2025,
+    "image": "images/papers/beit-figure.png",
+    "paper_url": "https://doi.org/10.1109/ICFTIC68075.2025.11324910",
+    "paper_label": "paper",
+    "selected": false,
+    "category": "completed",
+    "abstract": "Coauthored a study using BEIT-style masked image pretraining to learn from unlabeled laryngoscopic images before fine-tuning for disease classification. The paper reports 93.33% accuracy on a three-class task using a ViT-Tiny backbone with 5.06 million parameters.",
+    "highlighted": false
+  },
+  {
+    "id": "near-infrared-filter",
+    "title": "Near-Infrared Tunable Filters",
+    "authors": "Coauthor",
+    "venue": "Micro & Nano Letters · Published 2025",
+    "year": 2025,
+    "image": "images/papers/filter-figure.png",
+    "paper_url": "https://doi.org/10.1049/mna2.70007",
+    "paper_label": "paper",
+    "selected": false,
+    "category": "completed",
+    "abstract": "Coauthored a study of a voltage-tunable near-infrared filter combining polymer-dispersed liquid crystals with a Fabry–Perot cavity. The paper reports a tuning range of 913–969 nm and 99% transmittance at 927 nm, with a 24 nm full width at half maximum.",
     "highlighted": false
   }
 ];

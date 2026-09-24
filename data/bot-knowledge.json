@@ -1,5 +1,5 @@
 {
-  "version": "dc6c6e6893af84b9",
+  "version": "a441ae190a371db1",
   "updated": "2026-09-23",
   "chunks": [
     {
@@ -24,7 +24,7 @@
     {
       "id": "research-overview",
       "title": "Research experience",
-      "text": "Xuming’s current research at WukLab, UC San Diego, focuses on efficient NPU compilers and inference runtimes. His other research includes LinuxGuard at ADSL, UW–Madison, using LLMs and compiler feedback to build Linux-kernel bug detectors; an honors project with Michael Swift measuring how filesystem activity affects AI inference; and CASH at USST, studying workload-aware CPU/GPU scheduling.",
+      "text": "Xuming’s current research at WukLab, UC San Diego, focuses on efficient NPU compilers and inference runtimes. His other research includes LinuxGuard at ADSL, UW–Madison, using LLMs and compiler feedback to build Linux-kernel bug detectors; an honors project with Michael Swift measuring how filesystem activity affects AI inference; and CASH at USST, studying workload-aware CPU/GPU scheduling. He also coauthored studies of self-supervised laryngoscopic image classification and near-infrared tunable filters.",
       "url": "research.html",
       "source": "Profile",
       "aliases": [
@@ -146,6 +146,34 @@
         "xing hu",
         "scheduling",
         "usst research"
+      ],
+      "authoritative": true
+    },
+    {
+      "id": "beit-laryngoscopy",
+      "title": "Self-Supervised Learning for Laryngoscopic Image Classification",
+      "text": "Xuming is a coauthor of the BEIT-style laryngoscopic image classification paper published at ICFTIC in 2025. He coauthored a study using BEIT-style masked image pretraining to learn from unlabeled laryngoscopic images before fine-tuning for disease classification. The paper reports 93.33% accuracy on a three-class task using a ViT-Tiny backbone with 5.06 million parameters.",
+      "url": "https://doi.org/10.1109/ICFTIC68075.2025.11324910",
+      "source": "Research",
+      "aliases": [
+        "beit",
+        "laryngoscopy",
+        "laryngoscopic",
+        "medical imaging"
+      ],
+      "authoritative": true
+    },
+    {
+      "id": "near-infrared-filter",
+      "title": "Near-Infrared Tunable Filters",
+      "text": "Xuming is a coauthor of the near-infrared tunable filter paper published in Micro & Nano Letters in 2025. He coauthored a study of a voltage-tunable near-infrared filter combining polymer-dispersed liquid crystals with a Fabry–Perot cavity. The paper reports a tuning range of 913–969 nm and 99% transmittance at 927 nm, with a 24 nm full width at half maximum.",
+      "url": "https://doi.org/10.1049/mna2.70007",
+      "source": "Research",
+      "aliases": [
+        "near infrared",
+        "optical filter",
+        "liquid crystals",
+        "tunable filter"
       ],
       "authoritative": true
     },
