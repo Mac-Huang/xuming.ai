@@ -1,5 +1,5 @@
 {
-  "version": "a441ae190a371db1",
+  "version": "b5acc7160504fcb7",
   "updated": "2026-09-23",
   "chunks": [
     {
@@ -578,7 +578,7 @@
     {
       "id": "courses.html-0",
       "title": "Coursework — Courses",
-      "text": "Coursework, learning materials, and related projects from UW–Madison and Stanford. Open a course’s materials to explore the available notes and writeups.",
+      "text": "Coursework, learning materials, and related projects from UW–Madison and Stanford. Open a course’s materials for notes, assignments, source code, and reports. Browse the coursework repository .",
       "url": "courses.html",
       "source": "Courses",
       "aliases": [],
@@ -604,6 +604,15 @@
     },
     {
       "id": "courses.html-3",
+      "title": "Coursework — CS/ECE 552: Introduction to Computer Architecture",
+      "text": "RISC-V, Verilog components, processor datapaths, and cache experiments.",
+      "url": "courses.html",
+      "source": "Courses",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "courses.html-4",
       "title": "Coursework — CS 400: Programming III",
       "text": "Data structures, software development, and collaborative programming.",
       "url": "courses.html",
@@ -612,7 +621,16 @@
       "authoritative": false
     },
     {
-      "id": "courses.html-4",
+      "id": "courses.html-5",
+      "title": "Coursework — CS 300: Programming II",
+      "text": "Object-oriented Java, recursion, linked structures, trees, and priority queues.",
+      "url": "courses.html",
+      "source": "Courses",
+      "aliases": [],
+      "authoritative": false
+    },
+    {
+      "id": "courses.html-6",
       "title": "Coursework — ESL 118: Academic Writing",
       "text": "Lecture materials are credited to their original instructors and courses.",
       "url": "courses.html",
@@ -1694,7 +1712,7 @@
     {
       "id": "courses",
       "title": "Coursework",
-      "text": "Fall 2026 · UW–Madison: CS 577: Introduction to Algorithms, CS 540: Introduction to Artificial Intelligence. Spring 2026 · UW–Madison: CS 537: Introduction to Operating Systems, LIS 500: Code and Power. Fall 2025 · UW–Madison: CS 352: Digital System Fundamentals, CS 354: Machine Organization and Programming, CS 400: Programming III. Summer 2025 · Stanford: CS 107: Computer Organization & Systems, CS 161: Design and Analysis of Algorithms. Spring 2025 · UW–Madison: CS 200: Programming I, ECE 252: Introduction to Computer Engineering, MATH 340: Elementary Matrix and Linear Algebra, CS 240: Introduction to Discrete Mathematics. Additional coursework · UW–Madison: ESL 118: Academic Writing. The site lists no confirmed future course plan beyond these courses.",
+      "text": "Fall 2026 · UW–Madison: CS 577: Introduction to Algorithms, CS 540: Introduction to Artificial Intelligence. Spring 2026 · UW–Madison: CS 537: Introduction to Operating Systems, LIS 500: Code and Power, CS/ECE 552: Introduction to Computer Architecture. Fall 2025 · UW–Madison: CS 352: Digital System Fundamentals, CS 354: Machine Organization and Programming, CS 400: Programming III. Summer 2025 · UW–Madison: CS 300: Programming II. Summer 2025 · Stanford: CS 107: Computer Organization & Systems, CS 161: Design and Analysis of Algorithms. Spring 2025 · UW–Madison: CS 200: Programming I, ECE 252: Introduction to Computer Engineering, MATH 340: Elementary Matrix and Linear Algebra, CS 240: Introduction to Discrete Mathematics. Additional coursework · UW–Madison: ESL 118: Academic Writing. The site lists no confirmed future course plan beyond these courses.",
       "url": "courses.html",
       "source": "Courses",
       "aliases": [
@@ -1702,6 +1720,118 @@
         "coursework",
         "classes",
         "course plans"
+      ],
+      "authoritative": true
+    },
+    {
+      "id": "course-cs300",
+      "title": "CS 300: Programming II",
+      "text": "Java coursework covering object-oriented design, recursion, linked structures, trees, queues, and priority-based scheduling. Available materials: Java projects: P01 · Event Manager, P02 · Party Hopper, P03 · Exceptional Library, P04 · Monthly Calendar, P05 · Team Manager, P06 · Playlist Generator, P07 · Freeze Tracker, P08 · Print Manager: stacks and queues, P09 · Hobbemoun tree and iterator, P10 · Priority Events. Assignment material: Monthly Calendar assignment (PDF).",
+      "url": "courses/cs300/index.html",
+      "source": "Courses",
+      "aliases": [
+        "cs300",
+        "cs 300",
+        "cs300 coursework",
+        "cs 300 materials"
+      ],
+      "authoritative": true
+    },
+    {
+      "id": "course-cs354",
+      "title": "CS 354: Machine Organization and Programming",
+      "text": "C programming exercises in decoding, two-dimensional arrays, Sudoku validation, and magic squares. Available materials: C projects: P1 · Decoder, P2A · Sudoku board checker, P2B · Magic square. Notes and diagrams: Exam 1 study sheet (PDF), Memory diagram exercise (PDF).",
+      "url": "courses/cs354/index.html",
+      "source": "Courses",
+      "aliases": [
+        "cs354",
+        "cs 354",
+        "cs354 coursework",
+        "cs 354 materials"
+      ],
+      "authoritative": true
+    },
+    {
+      "id": "course-cs537",
+      "title": "CS 537: Introduction to Operating Systems",
+      "text": "Operating-systems projects in C and xv6, reading notes, and an honors study of filesystem interference with AI inference. Available materials: Systems projects: P1 · C programming practice, P2 · An xv6 system call, P3 · wsh shell and pipelines, P4 · xv6 memory mapping, P5 · Thread pool and concurrent BST, P6 · xv6 extended file attributes, P7 · Mini container library, Docker environment and alternate working copies. Honors research: From Working Sets to AI Inference — final report (DOCX), Measurement code, results, and plots, Measurement writeup, Filesystem-interference observations. Paper reading notes: The Working Set Model for Program Behavior, Virtual Memory Management in VAX/VMS, Tidying Up the Address Space, Efficient Virtual Memory for Big Memory Servers, FlexGen, μAgent: System-Level Orchestration of LLM Inference. Reference materials: Research papers, Practice exams.",
+      "url": "courses/cs537/index.html",
+      "source": "Courses",
+      "aliases": [
+        "cs537",
+        "cs 537",
+        "cs537 coursework",
+        "cs 537 materials"
+      ],
+      "authoritative": true
+    },
+    {
+      "id": "course-cs540",
+      "title": "CS 540: Introduction to Artificial Intelligence",
+      "text": "Lecture notes and a probabilistic English–Spanish language classifier, with sample inputs and comparison checks. Available materials: Lecture materials: Linear algebra and PCA (PDF), Introduction to NLP (PDF), Machine learning overview (PDF). Homework and code: Homework 2 · Language identification, Homework 2 assignment (PDF), Prior sensitivity analysis.",
+      "url": "courses/cs540/index.html",
+      "source": "Courses",
+      "aliases": [
+        "cs540",
+        "cs 540",
+        "cs540 coursework",
+        "cs 540 materials"
+      ],
+      "authoritative": true
+    },
+    {
+      "id": "course-cs552",
+      "title": "CS/ECE 552: Introduction to Computer Architecture",
+      "text": "RISC-V instruction-set work, Verilog components, and an RV32I processor with testbenches and cache experiments. Available materials: Architecture projects: Project 1 · Arithmetic and instruction exercises, Project 2 · ALU, register file, and immediates, Project 3 · Processor implementation, RV32I processor · RTL and testbenches, Alternate processor and cache working copy. Datapath and references: Single-cycle processor datapath (PNG), Editable datapath diagram (draw.io), RV32I reference card (PDF), RV32I specification (PDF), Architecture quick-reference card (PDF), Spring 2026 weekly outline (PDF).",
+      "url": "courses/cs552/index.html",
+      "source": "Courses",
+      "aliases": [
+        "cs552",
+        "cs 552",
+        "cs552 coursework",
+        "cs 552 materials"
+      ],
+      "authoritative": true
+    },
+    {
+      "id": "course-cs577",
+      "title": "CS 577: Introduction to Algorithms",
+      "text": "Lecture notes, problem sets, and C++ practice covering algorithm analysis, graphs, and greedy methods. Available materials: Lecture notes: Introduction (PDF), Algorithm analysis (PDF), Graphs (PDF), Greedy algorithms (PDF), Syllabus (PDF). Problem sets and practice: Problem sets and notes, Depth-first search in C++, C++ input practice.",
+      "url": "courses/cs577/index.html",
+      "source": "Courses",
+      "aliases": [
+        "cs577",
+        "cs 577",
+        "cs577 coursework",
+        "cs 577 materials"
+      ],
+      "authoritative": true
+    },
+    {
+      "id": "course-ece252",
+      "title": "ECE 252: Introduction to Computer Engineering",
+      "text": "LC-3 assembly exercises, string routines, graphics work, and PennSim reference materials. Available materials: Assembly coursework: Homework 7, Homework 8, Homework 9, Homework 11 · Drawing and multiplication, Homework 12, String-end routine, String copy and concatenation. Reference and exercises: PennSim tutorial (PDF), Exercise 02B (PDF), Exercise 04A (PDF).",
+      "url": "courses/ece252/index.html",
+      "source": "Courses",
+      "aliases": [
+        "ece252",
+        "ece 252",
+        "ece252 coursework",
+        "ece 252 materials"
+      ],
+      "authoritative": true
+    },
+    {
+      "id": "course-esl118",
+      "title": "ESL 118: Academic Writing",
+      "text": "Academic reading and concise research summaries. Available materials: Writing: Mini-summary: children’s independent active free play (DOCX).",
+      "url": "courses/esl118/index.html",
+      "source": "Courses",
+      "aliases": [
+        "esl118",
+        "esl 118",
+        "esl118 coursework",
+        "esl 118 materials"
       ],
       "authoritative": true
     }

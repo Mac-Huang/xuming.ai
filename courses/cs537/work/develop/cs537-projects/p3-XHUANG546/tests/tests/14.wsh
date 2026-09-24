@@ -1,0 +1,2 @@
+env ENV_VAR=exported
+echo $ENV_VAR

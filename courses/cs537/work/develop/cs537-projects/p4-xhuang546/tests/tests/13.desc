@@ -1,0 +1,5 @@
+Test 13
+Summary: Validates mmaps exists in the mmap list in both parent and child for anonymous private and shared mappings with fork
+Checks whether the child process has the same mmaps (addr and length) as the parent
+Does not check if they share the same physical pages or not
+Does not check for deallocation of pages

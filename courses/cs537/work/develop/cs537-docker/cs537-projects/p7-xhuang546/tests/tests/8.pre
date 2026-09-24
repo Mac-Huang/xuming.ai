@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -e
+
+TEST_DIR="$(pwd)"
+SOLN_DIR="$TEST_DIR/../solution"
+ROOTFS_DIR="$TEST_DIR/tmp/test_8/rootfs"
+BUILD_DIR="$TEST_DIR/tmp/test_8/build"
+
+rm -rf "$TEST_DIR/tmp/test_8"
+mkdir -p "$BUILD_DIR"
+
+make -C "$SOLN_DIR" clean
+make -C "$SOLN_DIR"
+
+gcc -Wall -Wextra -O2 -g \
+    -o "$BUILD_DIR/read_marker" \
+    "$TEST_DIR/tests/read_marker.c"
+
+"$TEST_DIR/rootfs/make-rootfs.sh" \
+    "$ROOTFS_DIR" \
+    /bin/ls /bin/sh /bin/mkdir \
+    "tmp/test_8/build/read_marker"
+
+printf 'rootfs-only\n' > "$ROOTFS_DIR/etc/container_only_marker.txt"

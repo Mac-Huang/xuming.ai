@@ -1,0 +1,11 @@
+services:
+  conda:
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    privileged: true
+    image: cs537-v1
+    command: /bin/bash
+    container_name: cs537-projects
+    platform: linux/amd64 # this just disables the warning, the image we use is only for amd64 anyway.
+    volumes:
+      - ./cs537-projects:/cs537-projects

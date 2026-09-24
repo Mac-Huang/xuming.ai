@@ -1,0 +1,5 @@
+requests
+psutil
+pandas
+numpy
+matplotlib

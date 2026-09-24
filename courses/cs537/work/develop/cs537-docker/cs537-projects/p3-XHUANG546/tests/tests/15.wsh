@@ -1,0 +1,2 @@
+env EXP_VAR=456
+sh -c 'echo $EXP_VAR'

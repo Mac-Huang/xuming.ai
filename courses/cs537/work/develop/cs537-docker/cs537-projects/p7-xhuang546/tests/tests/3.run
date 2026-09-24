@@ -1,0 +1,1 @@
+./check_trap_rootfs.sh "$(pwd)/tmp/test_3/trap_fs"

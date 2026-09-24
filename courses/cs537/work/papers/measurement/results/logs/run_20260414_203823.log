@@ -1,0 +1,159 @@
+2026-04-14 20:38:23 | INFO | __main__ | Logging to D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\results\logs\run_20260414_203823.log
+2026-04-14 20:38:23 | INFO | runner | Detected total RAM: 95.69 GiB
+2026-04-14 20:38:23 | INFO | runner | Using config file: D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\config\default.yaml
+2026-04-14 20:38:23 | INFO | runner | File-backed pressure cap is 346.69 GiB based on existing file=143.53 GiB and allowed disk growth=203.16 GiB
+2026-04-14 20:38:23 | INFO | runner | Planned 48 conditions
+2026-04-14 20:38:23 | INFO | runner | Reusing pressure data file D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\data\pressure_data.bin (143.53 GiB)
+2026-04-14 20:38:23 | INFO | inference_client | Running Ollama warmup request against model qwen3:4b
+2026-04-14 20:38:23 | INFO | runner | Warmup completed in 527.47 ms
+2026-04-14 20:38:23 | INFO | runner | Running condition=none trial=1 requested=0.00 B planned=0.00 B
+2026-04-14 20:38:42 | INFO | runner | Completed run_id=pilot=0|mode=none|requested=0.0000|actual_bytes=0|trial=1 status=completed successes=20 errors=0 actual=0.00 B
+2026-04-14 20:38:42 | INFO | runner | Running condition=none trial=2 requested=0.00 B planned=0.00 B
+2026-04-14 20:39:01 | INFO | runner | Completed run_id=pilot=0|mode=none|requested=0.0000|actual_bytes=0|trial=2 status=completed successes=20 errors=0 actual=0.00 B
+2026-04-14 20:39:01 | INFO | runner | Running condition=none trial=3 requested=0.00 B planned=0.00 B
+2026-04-14 20:39:21 | INFO | runner | Completed run_id=pilot=0|mode=none|requested=0.0000|actual_bytes=0|trial=3 status=completed successes=20 errors=0 actual=0.00 B
+2026-04-14 20:39:21 | INFO | runner | Running condition=file_seq trial=1 requested=23.92 GiB planned=23.92 GiB
+2026-04-14 20:39:23 | INFO | pressure_manager | Started pressure worker mode=file_seq pid=14904 requested=25686052864 actual=25686052864
+2026-04-14 20:39:47 | INFO | runner | Completed run_id=pilot=0|mode=file_seq|requested=0.2500|actual_bytes=25686052864|trial=1 status=completed successes=20 errors=0 actual=23.92 GiB
+2026-04-14 20:39:47 | INFO | runner | Running condition=file_seq trial=2 requested=23.92 GiB planned=23.92 GiB
+2026-04-14 20:39:49 | INFO | pressure_manager | Started pressure worker mode=file_seq pid=12692 requested=25686052864 actual=25686052864
+2026-04-14 20:40:12 | INFO | runner | Completed run_id=pilot=0|mode=file_seq|requested=0.2500|actual_bytes=25686052864|trial=2 status=completed successes=20 errors=0 actual=23.92 GiB
+2026-04-14 20:40:12 | INFO | runner | Running condition=file_seq trial=3 requested=23.92 GiB planned=23.92 GiB
+2026-04-14 20:40:14 | INFO | pressure_manager | Started pressure worker mode=file_seq pid=66496 requested=25686052864 actual=25686052864
+2026-04-14 20:40:37 | INFO | runner | Completed run_id=pilot=0|mode=file_seq|requested=0.2500|actual_bytes=25686052864|trial=3 status=completed successes=20 errors=0 actual=23.92 GiB
+2026-04-14 20:40:37 | INFO | runner | Running condition=file_seq trial=1 requested=47.84 GiB planned=47.84 GiB
+2026-04-14 20:40:40 | INFO | pressure_manager | Started pressure worker mode=file_seq pid=49184 requested=51372109824 actual=51372109824
+2026-04-14 20:41:03 | INFO | runner | Completed run_id=pilot=0|mode=file_seq|requested=0.5000|actual_bytes=51372109824|trial=1 status=completed successes=20 errors=0 actual=47.84 GiB
+2026-04-14 20:41:03 | INFO | runner | Running condition=file_seq trial=2 requested=47.84 GiB planned=47.84 GiB
+2026-04-14 20:41:06 | INFO | pressure_manager | Started pressure worker mode=file_seq pid=47356 requested=51372109824 actual=51372109824
+2026-04-14 20:41:30 | INFO | runner | Completed run_id=pilot=0|mode=file_seq|requested=0.5000|actual_bytes=51372109824|trial=2 status=completed successes=20 errors=0 actual=47.84 GiB
+2026-04-14 20:41:30 | INFO | runner | Running condition=file_seq trial=3 requested=47.84 GiB planned=47.84 GiB
+2026-04-14 20:41:32 | INFO | pressure_manager | Started pressure worker mode=file_seq pid=72860 requested=51372109824 actual=51372109824
+2026-04-14 20:41:56 | INFO | runner | Completed run_id=pilot=0|mode=file_seq|requested=0.5000|actual_bytes=51372109824|trial=3 status=completed successes=20 errors=0 actual=47.84 GiB
+2026-04-14 20:41:56 | INFO | runner | Running condition=file_seq trial=1 requested=86.12 GiB planned=86.12 GiB
+2026-04-14 20:41:59 | INFO | pressure_manager | Started pressure worker mode=file_seq pid=19260 requested=92469800960 actual=92469800960
+2026-04-14 20:42:24 | INFO | runner | Completed run_id=pilot=0|mode=file_seq|requested=0.9000|actual_bytes=92469800960|trial=1 status=completed successes=20 errors=0 actual=86.12 GiB
+2026-04-14 20:42:24 | INFO | runner | Running condition=file_seq trial=2 requested=86.12 GiB planned=86.12 GiB
+2026-04-14 20:42:26 | INFO | pressure_manager | Started pressure worker mode=file_seq pid=41092 requested=92469800960 actual=92469800960
+2026-04-14 20:42:52 | INFO | runner | Completed run_id=pilot=0|mode=file_seq|requested=0.9000|actual_bytes=92469800960|trial=2 status=completed successes=20 errors=0 actual=86.12 GiB
+2026-04-14 20:42:52 | INFO | runner | Running condition=file_seq trial=3 requested=86.12 GiB planned=86.12 GiB
+2026-04-14 20:42:55 | INFO | pressure_manager | Started pressure worker mode=file_seq pid=77584 requested=92469800960 actual=92469800960
+2026-04-14 20:43:19 | INFO | runner | Completed run_id=pilot=0|mode=file_seq|requested=0.9000|actual_bytes=92469800960|trial=3 status=completed successes=20 errors=0 actual=86.12 GiB
+2026-04-14 20:43:19 | INFO | runner | Running condition=file_seq trial=1 requested=105.26 GiB planned=105.26 GiB
+2026-04-14 20:43:22 | INFO | pressure_manager | Started pressure worker mode=file_seq pid=48584 requested=113018642432 actual=113018642432
+2026-04-14 20:43:47 | INFO | runner | Completed run_id=pilot=0|mode=file_seq|requested=1.1000|actual_bytes=113018642432|trial=1 status=completed successes=20 errors=0 actual=105.26 GiB
+2026-04-14 20:43:47 | INFO | runner | Running condition=file_seq trial=2 requested=105.26 GiB planned=105.26 GiB
+2026-04-14 20:43:50 | INFO | pressure_manager | Started pressure worker mode=file_seq pid=32196 requested=113018642432 actual=113018642432
+2026-04-14 20:44:14 | INFO | runner | Completed run_id=pilot=0|mode=file_seq|requested=1.1000|actual_bytes=113018642432|trial=2 status=completed successes=20 errors=0 actual=105.26 GiB
+2026-04-14 20:44:14 | INFO | runner | Running condition=file_seq trial=3 requested=105.26 GiB planned=105.26 GiB
+2026-04-14 20:44:17 | INFO | pressure_manager | Started pressure worker mode=file_seq pid=41324 requested=113018642432 actual=113018642432
+2026-04-14 20:44:42 | INFO | runner | Completed run_id=pilot=0|mode=file_seq|requested=1.1000|actual_bytes=113018642432|trial=3 status=completed successes=20 errors=0 actual=105.26 GiB
+2026-04-14 20:44:42 | INFO | runner | Running condition=file_seq trial=1 requested=143.53 GiB planned=143.53 GiB
+2026-04-14 20:44:45 | INFO | pressure_manager | Started pressure worker mode=file_seq pid=24644 requested=154116333568 actual=154116333568
+2026-04-14 20:45:10 | INFO | runner | Completed run_id=pilot=0|mode=file_seq|requested=1.5000|actual_bytes=154116333568|trial=1 status=completed successes=20 errors=0 actual=143.53 GiB
+2026-04-14 20:45:10 | INFO | runner | Running condition=file_seq trial=2 requested=143.53 GiB planned=143.53 GiB
+2026-04-14 20:45:13 | INFO | pressure_manager | Started pressure worker mode=file_seq pid=29968 requested=154116333568 actual=154116333568
+2026-04-14 20:45:38 | INFO | runner | Completed run_id=pilot=0|mode=file_seq|requested=1.5000|actual_bytes=154116333568|trial=2 status=completed successes=20 errors=0 actual=143.53 GiB
+2026-04-14 20:45:38 | INFO | runner | Running condition=file_seq trial=3 requested=143.53 GiB planned=143.53 GiB
+2026-04-14 20:45:41 | INFO | pressure_manager | Started pressure worker mode=file_seq pid=50604 requested=154116333568 actual=154116333568
+2026-04-14 20:46:05 | INFO | runner | Completed run_id=pilot=0|mode=file_seq|requested=1.5000|actual_bytes=154116333568|trial=3 status=completed successes=20 errors=0 actual=143.53 GiB
+2026-04-14 20:46:05 | INFO | runner | Running condition=mmap_random trial=1 requested=23.92 GiB planned=23.92 GiB
+2026-04-14 20:46:08 | INFO | pressure_manager | Started pressure worker mode=mmap_random pid=66176 requested=25686052864 actual=25686052864
+2026-04-14 20:46:31 | INFO | runner | Completed run_id=pilot=0|mode=mmap_random|requested=0.2500|actual_bytes=25686052864|trial=1 status=completed successes=20 errors=0 actual=23.92 GiB
+2026-04-14 20:46:31 | INFO | runner | Running condition=mmap_random trial=2 requested=23.92 GiB planned=23.92 GiB
+2026-04-14 20:46:34 | INFO | pressure_manager | Started pressure worker mode=mmap_random pid=58980 requested=25686052864 actual=25686052864
+2026-04-14 20:46:58 | INFO | runner | Completed run_id=pilot=0|mode=mmap_random|requested=0.2500|actual_bytes=25686052864|trial=2 status=completed successes=20 errors=0 actual=23.92 GiB
+2026-04-14 20:46:58 | INFO | runner | Running condition=mmap_random trial=3 requested=23.92 GiB planned=23.92 GiB
+2026-04-14 20:47:01 | INFO | pressure_manager | Started pressure worker mode=mmap_random pid=63664 requested=25686052864 actual=25686052864
+2026-04-14 20:47:25 | INFO | runner | Completed run_id=pilot=0|mode=mmap_random|requested=0.2500|actual_bytes=25686052864|trial=3 status=completed successes=20 errors=0 actual=23.92 GiB
+2026-04-14 20:47:25 | INFO | runner | Running condition=mmap_random trial=1 requested=47.84 GiB planned=47.84 GiB
+2026-04-14 20:47:27 | INFO | pressure_manager | Started pressure worker mode=mmap_random pid=65116 requested=51372109824 actual=51372109824
+2026-04-14 20:47:51 | INFO | runner | Completed run_id=pilot=0|mode=mmap_random|requested=0.5000|actual_bytes=51372109824|trial=1 status=completed successes=20 errors=0 actual=47.84 GiB
+2026-04-14 20:47:51 | INFO | runner | Running condition=mmap_random trial=2 requested=47.84 GiB planned=47.84 GiB
+2026-04-14 20:47:54 | INFO | pressure_manager | Started pressure worker mode=mmap_random pid=29792 requested=51372109824 actual=51372109824
+2026-04-14 20:48:17 | INFO | runner | Completed run_id=pilot=0|mode=mmap_random|requested=0.5000|actual_bytes=51372109824|trial=2 status=completed successes=20 errors=0 actual=47.84 GiB
+2026-04-14 20:48:17 | INFO | runner | Running condition=mmap_random trial=3 requested=47.84 GiB planned=47.84 GiB
+2026-04-14 20:48:20 | INFO | pressure_manager | Started pressure worker mode=mmap_random pid=35300 requested=51372109824 actual=51372109824
+2026-04-14 20:48:44 | INFO | runner | Completed run_id=pilot=0|mode=mmap_random|requested=0.5000|actual_bytes=51372109824|trial=3 status=completed successes=20 errors=0 actual=47.84 GiB
+2026-04-14 20:48:44 | INFO | runner | Running condition=mmap_random trial=1 requested=86.12 GiB planned=86.12 GiB
+2026-04-14 20:48:47 | INFO | pressure_manager | Started pressure worker mode=mmap_random pid=48912 requested=92469800960 actual=92469800960
+2026-04-14 20:49:12 | INFO | runner | Completed run_id=pilot=0|mode=mmap_random|requested=0.9000|actual_bytes=92469800960|trial=1 status=completed successes=20 errors=0 actual=86.12 GiB
+2026-04-14 20:49:12 | INFO | runner | Running condition=mmap_random trial=2 requested=86.12 GiB planned=86.12 GiB
+2026-04-14 20:49:15 | INFO | pressure_manager | Started pressure worker mode=mmap_random pid=38832 requested=92469800960 actual=92469800960
+2026-04-14 20:49:41 | INFO | runner | Completed run_id=pilot=0|mode=mmap_random|requested=0.9000|actual_bytes=92469800960|trial=2 status=completed successes=20 errors=0 actual=86.12 GiB
+2026-04-14 20:49:41 | INFO | runner | Running condition=mmap_random trial=3 requested=86.12 GiB planned=86.12 GiB
+2026-04-14 20:49:43 | INFO | pressure_manager | Started pressure worker mode=mmap_random pid=62672 requested=92469800960 actual=92469800960
+2026-04-14 20:50:10 | INFO | runner | Completed run_id=pilot=0|mode=mmap_random|requested=0.9000|actual_bytes=92469800960|trial=3 status=completed successes=20 errors=0 actual=86.12 GiB
+2026-04-14 20:50:10 | INFO | runner | Running condition=mmap_random trial=1 requested=105.26 GiB planned=105.26 GiB
+2026-04-14 20:50:13 | INFO | pressure_manager | Started pressure worker mode=mmap_random pid=72304 requested=113018642432 actual=113018642432
+2026-04-14 20:50:38 | INFO | runner | Completed run_id=pilot=0|mode=mmap_random|requested=1.1000|actual_bytes=113018642432|trial=1 status=completed successes=20 errors=0 actual=105.26 GiB
+2026-04-14 20:50:38 | INFO | runner | Running condition=mmap_random trial=2 requested=105.26 GiB planned=105.26 GiB
+2026-04-14 20:50:41 | INFO | pressure_manager | Started pressure worker mode=mmap_random pid=6396 requested=113018642432 actual=113018642432
+2026-04-14 20:51:06 | INFO | runner | Completed run_id=pilot=0|mode=mmap_random|requested=1.1000|actual_bytes=113018642432|trial=2 status=completed successes=20 errors=0 actual=105.26 GiB
+2026-04-14 20:51:06 | INFO | runner | Running condition=mmap_random trial=3 requested=105.26 GiB planned=105.26 GiB
+2026-04-14 20:51:09 | INFO | pressure_manager | Started pressure worker mode=mmap_random pid=61608 requested=113018642432 actual=113018642432
+2026-04-14 20:51:34 | INFO | runner | Completed run_id=pilot=0|mode=mmap_random|requested=1.1000|actual_bytes=113018642432|trial=3 status=completed successes=20 errors=0 actual=105.26 GiB
+2026-04-14 20:51:34 | INFO | runner | Running condition=mmap_random trial=1 requested=143.53 GiB planned=143.53 GiB
+2026-04-14 20:51:36 | INFO | pressure_manager | Started pressure worker mode=mmap_random pid=49080 requested=154116333568 actual=154116333568
+2026-04-14 20:52:01 | INFO | runner | Completed run_id=pilot=0|mode=mmap_random|requested=1.5000|actual_bytes=154116333568|trial=1 status=completed successes=20 errors=0 actual=143.53 GiB
+2026-04-14 20:52:01 | INFO | runner | Running condition=mmap_random trial=2 requested=143.53 GiB planned=143.53 GiB
+2026-04-14 20:52:04 | INFO | pressure_manager | Started pressure worker mode=mmap_random pid=27216 requested=154116333568 actual=154116333568
+2026-04-14 20:52:29 | INFO | runner | Completed run_id=pilot=0|mode=mmap_random|requested=1.5000|actual_bytes=154116333568|trial=2 status=completed successes=20 errors=0 actual=143.53 GiB
+2026-04-14 20:52:29 | INFO | runner | Running condition=mmap_random trial=3 requested=143.53 GiB planned=143.53 GiB
+2026-04-14 20:52:32 | INFO | pressure_manager | Started pressure worker mode=mmap_random pid=20408 requested=154116333568 actual=154116333568
+2026-04-14 20:52:58 | INFO | runner | Completed run_id=pilot=0|mode=mmap_random|requested=1.5000|actual_bytes=154116333568|trial=3 status=completed successes=20 errors=0 actual=143.53 GiB
+2026-04-14 20:52:58 | INFO | runner | Running condition=anon trial=1 requested=23.92 GiB planned=23.92 GiB
+2026-04-14 20:53:30 | INFO | pressure_manager | Started pressure worker mode=anon pid=63204 requested=25686052864 actual=25686052864
+2026-04-14 20:53:57 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=0.2500|actual_bytes=25686052864|trial=1 status=completed successes=20 errors=0 actual=23.92 GiB
+2026-04-14 20:53:57 | INFO | runner | Running condition=anon trial=2 requested=23.92 GiB planned=23.92 GiB
+2026-04-14 20:54:27 | INFO | pressure_manager | Started pressure worker mode=anon pid=11312 requested=25686052864 actual=25686052864
+2026-04-14 20:54:54 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=0.2500|actual_bytes=25686052864|trial=2 status=completed successes=20 errors=0 actual=23.92 GiB
+2026-04-14 20:54:54 | INFO | runner | Running condition=anon trial=3 requested=23.92 GiB planned=23.92 GiB
+2026-04-14 20:55:20 | INFO | pressure_manager | Started pressure worker mode=anon pid=4292 requested=25686052864 actual=25686052864
+2026-04-14 20:55:47 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=0.2500|actual_bytes=25686052864|trial=3 status=completed successes=20 errors=0 actual=23.92 GiB
+2026-04-14 20:55:47 | INFO | runner | Running condition=anon trial=1 requested=47.84 GiB planned=47.84 GiB
+2026-04-14 20:56:30 | INFO | pressure_manager | Started pressure worker mode=anon pid=34348 requested=51372109824 actual=43666292736
+2026-04-14 20:57:00 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=0.5000|actual_bytes=51372109824|trial=1 status=completed successes=20 errors=0 actual=40.67 GiB
+2026-04-14 20:57:00 | INFO | runner | Running condition=anon trial=2 requested=47.84 GiB planned=47.84 GiB
+2026-04-14 20:57:45 | INFO | pressure_manager | Started pressure worker mode=anon pid=77964 requested=51372109824 actual=43666292736
+2026-04-14 20:58:14 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=0.5000|actual_bytes=51372109824|trial=2 status=completed successes=20 errors=0 actual=40.67 GiB
+2026-04-14 20:58:14 | INFO | runner | Running condition=anon trial=3 requested=47.84 GiB planned=47.84 GiB
+2026-04-14 20:58:55 | INFO | pressure_manager | Started pressure worker mode=anon pid=45284 requested=51372109824 actual=43666292736
+2026-04-14 20:59:26 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=0.5000|actual_bytes=51372109824|trial=3 status=completed successes=20 errors=0 actual=40.67 GiB
+2026-04-14 20:59:26 | INFO | runner | Running condition=anon trial=1 requested=86.12 GiB planned=86.12 GiB
+2026-04-14 21:00:55 | INFO | pressure_manager | Started pressure worker mode=anon pid=76292 requested=92469800960 actual=78599327744
+2026-04-14 21:01:27 | WARNING | pressure_manager | Pressure worker pid=76292 did not stop cleanly; terminating
+2026-04-14 21:01:30 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=0.9000|actual_bytes=92469800960|trial=1 status=completed successes=20 errors=0 actual=73.20 GiB
+2026-04-14 21:01:30 | INFO | runner | Running condition=anon trial=2 requested=86.12 GiB planned=86.12 GiB
+2026-04-14 21:02:40 | INFO | pressure_manager | Started pressure worker mode=anon pid=63960 requested=92469800960 actual=78599327744
+2026-04-14 21:03:11 | WARNING | pressure_manager | Pressure worker pid=63960 did not stop cleanly; terminating
+2026-04-14 21:03:14 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=0.9000|actual_bytes=92469800960|trial=2 status=completed successes=20 errors=0 actual=73.20 GiB
+2026-04-14 21:03:14 | INFO | runner | Running condition=anon trial=3 requested=86.12 GiB planned=86.12 GiB
+2026-04-14 21:04:22 | INFO | pressure_manager | Started pressure worker mode=anon pid=72252 requested=92469800960 actual=78599327744
+2026-04-14 21:04:54 | WARNING | pressure_manager | Pressure worker pid=72252 did not stop cleanly; terminating
+2026-04-14 21:04:57 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=0.9000|actual_bytes=92469800960|trial=3 status=completed successes=20 errors=0 actual=73.20 GiB
+2026-04-14 21:04:57 | INFO | runner | Running condition=anon trial=1 requested=105.26 GiB planned=86.12 GiB
+2026-04-14 21:06:06 | INFO | pressure_manager | Started pressure worker mode=anon pid=80880 requested=92469800960 actual=78599327744
+2026-04-14 21:06:37 | WARNING | pressure_manager | Pressure worker pid=80880 did not stop cleanly; terminating
+2026-04-14 21:06:42 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=1.1000|actual_bytes=92469800960|trial=1 status=completed successes=20 errors=0 actual=73.20 GiB
+2026-04-14 21:06:42 | INFO | runner | Running condition=anon trial=2 requested=105.26 GiB planned=86.12 GiB
+2026-04-14 21:07:55 | INFO | pressure_manager | Started pressure worker mode=anon pid=34528 requested=92469800960 actual=78599327744
+2026-04-14 21:08:26 | WARNING | pressure_manager | Pressure worker pid=34528 did not stop cleanly; terminating
+2026-04-14 21:08:29 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=1.1000|actual_bytes=92469800960|trial=2 status=completed successes=20 errors=0 actual=73.20 GiB
+2026-04-14 21:08:29 | INFO | runner | Running condition=anon trial=3 requested=105.26 GiB planned=86.12 GiB
+2026-04-14 21:09:39 | INFO | pressure_manager | Started pressure worker mode=anon pid=78408 requested=92469800960 actual=78599327744
+2026-04-14 21:10:10 | WARNING | pressure_manager | Pressure worker pid=78408 did not stop cleanly; terminating
+2026-04-14 21:10:14 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=1.1000|actual_bytes=92469800960|trial=3 status=completed successes=20 errors=0 actual=73.20 GiB
+2026-04-14 21:10:14 | INFO | runner | Running condition=anon trial=1 requested=143.53 GiB planned=86.12 GiB
+2026-04-14 21:11:27 | INFO | pressure_manager | Started pressure worker mode=anon pid=58544 requested=92469800960 actual=78599327744
+2026-04-14 21:11:58 | WARNING | pressure_manager | Pressure worker pid=58544 did not stop cleanly; terminating
+2026-04-14 21:12:01 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=1.5000|actual_bytes=92469800960|trial=1 status=completed successes=20 errors=0 actual=73.20 GiB
+2026-04-14 21:12:01 | INFO | runner | Running condition=anon trial=2 requested=143.53 GiB planned=86.12 GiB
+2026-04-14 21:13:09 | INFO | pressure_manager | Started pressure worker mode=anon pid=70888 requested=92469800960 actual=78599327744
+2026-04-14 21:13:41 | WARNING | pressure_manager | Pressure worker pid=70888 did not stop cleanly; terminating
+2026-04-14 21:13:43 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=1.5000|actual_bytes=92469800960|trial=2 status=completed successes=20 errors=0 actual=73.20 GiB
+2026-04-14 21:13:43 | INFO | runner | Running condition=anon trial=3 requested=143.53 GiB planned=86.12 GiB
+2026-04-14 21:14:52 | INFO | pressure_manager | Started pressure worker mode=anon pid=74412 requested=92469800960 actual=78599327744
+2026-04-14 21:15:23 | WARNING | pressure_manager | Pressure worker pid=74412 did not stop cleanly; terminating
+2026-04-14 21:15:26 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=1.5000|actual_bytes=92469800960|trial=3 status=completed successes=20 errors=0 actual=73.20 GiB
+2026-04-14 21:15:28 | INFO | __main__ | Benchmark finished. See D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\results\summary.md for the summary report.

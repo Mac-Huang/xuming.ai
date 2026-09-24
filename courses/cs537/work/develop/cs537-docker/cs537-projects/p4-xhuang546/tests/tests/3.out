@@ -1,0 +1,8 @@
+XV6: TEST_3
+XV6: Initial State: 
+XV6: ------ Total mmaps: 0
+XV6: Place one map. 
+XV6: Final State: 
+XV6: ------ Total mmaps: 1
+XV6: ------ mmap[0]: va [0x60000000] sz [4104] vend [0x60001008] flags [0x6] fd [-1] rc[0] ld_pg [0] 
+XV6: Test finished.

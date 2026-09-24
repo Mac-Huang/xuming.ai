@@ -1,0 +1,4 @@
+Test 7
+Summary: access anonymous map (checks for memory allocation)
+Checks for memory allocation
+Does not unmap any mapping

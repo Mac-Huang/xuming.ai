@@ -1,0 +1,15 @@
+# IDE/Editor specific
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+.idea
+
+# env
+.env
+
+# folder containing assignment repos
+cs537-projects/

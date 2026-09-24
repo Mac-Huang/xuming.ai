@@ -1,0 +1,1 @@
+seccomp allows a syscall after it is explicitly added to the allowlist

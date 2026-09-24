@@ -1,0 +1,5 @@
+COPIED bin2_input.txt -> file_copy_output.txt : sample payload for bin2
+
+container prep done
+ALLOW_COUNT OK
+PASS runtime_2

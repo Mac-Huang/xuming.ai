@@ -1,0 +1,13 @@
+XV6: TEST_6
+XV6: Initial State: 
+XV6: ------ Total mmaps: 0
+XV6: Current State: 
+XV6: ------ Total mmaps: 1
+XV6: ------ mmap[0]: va [0x60021000] sz [1638408] vend [0x601B1008] flags [0xD] fd [-1] rc[0] ld_pg [0] 
+XV6: Final State: 
+XV6: ------ Total mmaps: 4
+XV6: ------ mmap[0]: va [0x60000000] sz [4096] vend [0x60001000] flags [0x5] fd [-1] rc[0] ld_pg [0] 
+XV6: ------ mmap[1]: va [0x60021000] sz [1638408] vend [0x601B1008] flags [0xD] fd [-1] rc[0] ld_pg [0] 
+XV6: ------ mmap[2]: va [0x601B2000] sz [8196104] vend [0x60983008] flags [0x5] fd [-1] rc[0] ld_pg [0] 
+XV6: ------ mmap[3]: va [0x60984000] sz [16388112] vend [0x61925010] flags [0x5] fd [-1] rc[0] ld_pg [0] 
+XV6: Test finished.

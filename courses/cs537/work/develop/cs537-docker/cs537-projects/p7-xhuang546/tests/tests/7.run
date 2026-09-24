@@ -1,0 +1,1 @@
+bash ./normal_rootfs_missing_program.sh "$(pwd)/tmp/test_7/rootfs"

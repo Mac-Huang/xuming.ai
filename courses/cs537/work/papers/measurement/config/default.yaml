@@ -1,0 +1,30 @@
+experiment:
+  prompt: "Explain in 3 short paragraphs why locality matters in operating systems."
+  prompt_id: "locality_prompt_v1"
+  pressure_fractions: [0.25, 0.5, 0.9, 1.1, 1.5]
+  pilot_pressure_fractions: [0.01, 0.02, 0.05]
+  num_requests_per_run: 20
+  pilot_num_requests_per_run: 5
+  trials: 3
+  pilot_trials: 1
+  stabilization_seconds: 2.0
+
+ollama:
+  host: "127.0.0.1"
+  port: 11434
+  model: "qwen3:4b"
+  request_timeout_s: 120
+  max_tokens: 64
+  temperature: 0.0
+
+pressure:
+  file_chunk_size_mb: 4
+  file_fill_chunk_mb: 8
+  startup_timeout_s: 60.0
+  shutdown_timeout_s: 10.0
+  anon_safe_max_fraction_of_ram: 0.90
+  disk_free_utilization_limit: 0.70
+
+analysis:
+  generate_faults_plot: true
+  generate_io_plot: true

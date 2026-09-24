@@ -1,0 +1,1 @@
+seccomp denies a syscall that was not explicitly allowed

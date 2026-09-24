@@ -1,0 +1,1 @@
+(cd tests/tmp_ls; ../../../solution/wsh < ../3.wsh)

@@ -1,0 +1,4 @@
+env A=1
+echo $A
+env A=2
+echo $A

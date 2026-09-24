@@ -1,0 +1,8 @@
+solution/normal_rootfs/
+solution/binary/build/
+solution/container.o
+solution/libcontainer.a
+solution/main.o
+solution/mini-container
+tests/tests-out/
+tests/binary/build/

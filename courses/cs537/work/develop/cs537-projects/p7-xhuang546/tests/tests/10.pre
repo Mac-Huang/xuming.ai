@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -e
+
+TEST_DIR="$(pwd)"
+SOLN_DIR="$TEST_DIR/../solution"
+ROOTFS_DIR="$TEST_DIR/tmp/test_10/rootfs"
+BUILD_DIR="$TEST_DIR/tmp/test_10/build"
+
+rm -rf "$TEST_DIR/tmp/test_10"
+mkdir -p "$BUILD_DIR"
+
+make -C "$SOLN_DIR" clean
+make -C "$SOLN_DIR"
+
+gcc -Wall -Wextra -O2 -g \
+    -o "$BUILD_DIR/exit_7" \
+    "$TEST_DIR/tests/exit_7.c"
+
+"$TEST_DIR/rootfs/make-rootfs.sh" \
+    "$ROOTFS_DIR" \
+    /bin/ls /bin/sh /bin/mkdir \
+    "tmp/test_10/build/exit_7"
+
+gcc -Wall -Wextra -O2 -g \
+    -I"$SOLN_DIR" \
+    -o "$BUILD_DIR/test_ct_run_exit_status" \
+    "$TEST_DIR/tests/test_ct_run_exit_status.c" \
+    "$SOLN_DIR/container.o"

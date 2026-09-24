@@ -1,0 +1,4 @@
+PARENT 1 CHILD_EXIT 7
+container prep done
+ALLOW_COUNT OK
+PASS runtime_4

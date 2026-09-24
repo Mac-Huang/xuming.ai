@@ -1,0 +1,24 @@
+== Checking local build artifacts ==
+== Checking trap rootfs structure ==
+== Running ls inside trap shell (should succeed) ==
+bin
+dev
+etc
+lib
+lib64
+proc
+root
+tmp
+usr
+container prep done
+== Running mkdir inside trap shell (should succeed) ==
+y
+container prep done
+== Checking that cat is unavailable ==
+/bin/sh: 1: cat: not found
+container prep done
+== Checking that external echo is unavailable ==
+/bin/sh: 1: /bin/echo: not found
+container prep done
+
+trap rootfs check passed.

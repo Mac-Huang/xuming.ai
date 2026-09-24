@@ -1,0 +1,2 @@
+env A=foo
+echo "A is $A"

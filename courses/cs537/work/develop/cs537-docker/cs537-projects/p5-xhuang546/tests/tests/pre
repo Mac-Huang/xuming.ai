@@ -1,0 +1,39 @@
+#!/bin/bash
+# One-time build step: compile solution code with each test driver
+
+set -e
+
+SOLN_DIR=../solution
+TP_OBJ=$SOLN_DIR/threadpool.o
+BST_OBJ=$SOLN_DIR/bst.o
+FLAGS="-Wall -Wextra -O2 -pthread"
+# Build the student's libraries via the provided Makefile.
+make -C $SOLN_DIR || exit 1
+
+
+# --- Thread pool tests (1-11) ---
+gcc $FLAGS -o test_1  tests/test_1.c  $TP_OBJ -I$SOLN_DIR && \
+gcc $FLAGS -o test_2  tests/test_2.c  $TP_OBJ -I$SOLN_DIR && \
+gcc $FLAGS -o test_3  tests/test_3.c  $TP_OBJ -I$SOLN_DIR && \
+gcc $FLAGS -o test_4  tests/test_4.c  $TP_OBJ -I$SOLN_DIR && \
+gcc $FLAGS -o test_5  tests/test_5.c  $TP_OBJ -I$SOLN_DIR && \
+gcc $FLAGS -o test_6  tests/test_6.c  $TP_OBJ -I$SOLN_DIR && \
+gcc $FLAGS -o test_7  tests/test_7.c  $TP_OBJ -I$SOLN_DIR && \
+gcc $FLAGS -o test_8  tests/test_8.c  $TP_OBJ -I$SOLN_DIR && \
+gcc $FLAGS -o test_9  tests/test_9.c  $TP_OBJ -I$SOLN_DIR && \
+gcc $FLAGS -o test_10_student  tests/test_10.c $TP_OBJ -I$SOLN_DIR && \
+gcc $FLAGS -o test_10_busywait tests/test_10.c ../threadpool_busywait.o -I$SOLN_DIR && \
+gcc $FLAGS -o test_10_compare  tests/test_10_compare.c && \
+gcc $FLAGS -o test_11 tests/test_11.c $TP_OBJ  -I$SOLN_DIR && \
+
+# --- BST tests (12-15) ---
+gcc $FLAGS -o test_12 tests/test_12.c $BST_OBJ           -I$SOLN_DIR && \
+gcc $FLAGS -o test_13 tests/test_13.c $BST_OBJ           -I$SOLN_DIR && \
+gcc $FLAGS -o test_14 tests/test_14.c $BST_OBJ           -I$SOLN_DIR && \
+gcc $FLAGS -o test_15 tests/test_15.c $BST_OBJ           -I$SOLN_DIR && \
+
+# --- Integration test (16) ---
+gcc $FLAGS -o test_16 tests/test_16.c $BST_OBJ $TP_OBJ   -I$SOLN_DIR && \
+
+# --- BST API compliance (17) ---
+gcc $FLAGS -o test_17 tests/test_17.c $BST_OBJ -I$SOLN_DIR

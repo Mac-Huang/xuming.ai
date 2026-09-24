@@ -1,0 +1,4 @@
+DIR /tmp/walk_root COUNT 2
+container prep done
+ALLOW_COUNT OK
+PASS runtime_3

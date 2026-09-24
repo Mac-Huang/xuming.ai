@@ -1,0 +1,1 @@
+Basic functionality test: creates an extended attribute using fsetxattr with flags set to 0 and successfully retrieves its exact value using fgetxattr.

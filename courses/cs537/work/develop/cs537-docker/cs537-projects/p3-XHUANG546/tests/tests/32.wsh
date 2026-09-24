@@ -1,0 +1,5 @@
+cd /
+pwd
+env A=1
+exit
+

@@ -1,0 +1,4 @@
+env ISO_TEST_FAIL=1
+env | grep ISO_TEST_FAIL
+env ISO_TEST_FAIL=2 | cat
+env | grep ISO_TEST_FAIL

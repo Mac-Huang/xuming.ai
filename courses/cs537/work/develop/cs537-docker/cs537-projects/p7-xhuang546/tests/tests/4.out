@@ -1,0 +1,12 @@
+== Checking local build artifacts ==
+== Checking that cd works for internal trap rootfs paths ==
+/tmp
+container prep done
+== Checking nested cd inside trap rootfs ==
+/tmp/a/b
+container prep done
+== Checking that cd .. cannot escape the trap rootfs ==
+/
+container prep done
+
+trap cd check passed.

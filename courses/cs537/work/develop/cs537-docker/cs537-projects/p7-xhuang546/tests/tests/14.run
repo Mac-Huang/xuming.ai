@@ -1,0 +1,1 @@
+./run_with_allow_cap.sh 20 ./tmp/test_14/runtime_2 "$(pwd)/tmp_rootfs" /bin/bin2

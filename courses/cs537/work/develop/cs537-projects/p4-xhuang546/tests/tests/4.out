@@ -1,0 +1,9 @@
+XV6: TEST_4
+XV6: Initial State: 
+XV6: ------ Total mmaps: 0
+XV6: create and open a file. 
+XV6: Place one map. 
+XV6: Final State: 
+XV6: ------ Total mmaps: 1
+XV6: ------ mmap[0]: va [0x60021000] sz [514] vend [0x60021202] flags [0x9] fd [3] rc[0] ld_pg [0] 
+XV6: Test finished.

@@ -1,0 +1,1 @@
+mount_proc makes /proc/self/status available inside the container

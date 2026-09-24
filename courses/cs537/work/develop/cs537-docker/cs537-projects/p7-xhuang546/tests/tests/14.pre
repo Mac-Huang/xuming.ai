@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -e
+TEST_DIR="$(pwd)"
+SOLN_DIR="$TEST_DIR/../solution"
+ROOTFS_DIR="$TEST_DIR/tmp_rootfs"
+STUDENT_BUILD_DIR="$TEST_DIR/tmp/test_14"
+CHECK_DISALLOW_ALL="$TEST_DIR/check_ct_disallow_all.sh"
+
+rm -rf "$ROOTFS_DIR" "$STUDENT_BUILD_DIR"
+mkdir -p "$STUDENT_BUILD_DIR"
+
+make -C "$SOLN_DIR" clean
+make -C "$SOLN_DIR"
+"$TEST_DIR/rootfs/make-rootfs.sh" "$ROOTFS_DIR" /bin/ls /bin/sh /bin/mkdir
+"$TEST_DIR/binary/install-prebuilt-binaries-rootfs.sh" "$ROOTFS_DIR"
+"$CHECK_DISALLOW_ALL" "$SOLN_DIR/runtime_2.c"
+gcc -Wall -Wextra -O2 -g \
+    -I"$SOLN_DIR" \
+    -o "$STUDENT_BUILD_DIR/runtime_2" \
+    "$SOLN_DIR/runtime_2.c" \
+    "$SOLN_DIR/container.o"

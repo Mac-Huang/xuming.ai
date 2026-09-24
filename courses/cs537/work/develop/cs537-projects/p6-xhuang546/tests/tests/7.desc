@@ -1,0 +1,1 @@
+Invalid file descriptor test: verifies that fsetxattr, fgetxattr, flistxattr, and fremovexattr properly return -1 when provided with negative or unopened file descriptors.

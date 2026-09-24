@@ -1,0 +1,6 @@
+**/.DS_Store
+# Ignore build files
+solution/wsh
+solution/wsh-dbg
+# Ignore the test output
+tests/tests-out/

@@ -1,0 +1,213 @@
+2026-04-05 16:15:04 | INFO | __main__ | Logging to D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\results\logs\run_20260405_161504.log
+2026-04-05 16:15:04 | INFO | runner | Detected total RAM: 95.69 GiB
+2026-04-05 16:15:04 | INFO | runner | Using config file: D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\config\default.yaml
+2026-04-05 16:15:04 | INFO | runner | File-backed pressure cap is 305.41 GiB based on existing file=4.78 GiB and allowed disk growth=300.63 GiB
+2026-04-05 16:15:04 | INFO | runner | Planned 48 conditions
+2026-04-05 16:15:04 | INFO | runner | Extending pressure data file D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\data\pressure_data.bin from 4.78 GiB to 143.53 GiB
+2026-04-05 16:16:18 | INFO | inference_client | Running Ollama warmup request against model qwen3:4b
+2026-04-05 16:16:19 | INFO | runner | Warmup completed in 747.79 ms
+2026-04-05 16:16:19 | INFO | runner | Running condition=none trial=1 requested=0.00 B planned=0.00 B
+2026-04-05 16:16:39 | INFO | runner | Completed run_id=pilot=0|mode=none|requested=0.0000|actual_bytes=0|trial=1 status=completed successes=20 errors=0 actual=0.00 B
+2026-04-05 16:16:39 | INFO | runner | Running condition=none trial=2 requested=0.00 B planned=0.00 B
+2026-04-05 16:17:00 | INFO | runner | Completed run_id=pilot=0|mode=none|requested=0.0000|actual_bytes=0|trial=2 status=completed successes=20 errors=0 actual=0.00 B
+2026-04-05 16:17:00 | INFO | runner | Running condition=none trial=3 requested=0.00 B planned=0.00 B
+2026-04-05 16:17:21 | INFO | runner | Completed run_id=pilot=0|mode=none|requested=0.0000|actual_bytes=0|trial=3 status=completed successes=20 errors=0 actual=0.00 B
+2026-04-05 16:17:21 | INFO | runner | Running condition=file_seq trial=1 requested=23.92 GiB planned=23.92 GiB
+2026-04-05 16:17:23 | INFO | pressure_manager | Started pressure worker mode=file_seq pid=46540 requested=25686052864 actual=25686052864
+2026-04-05 16:17:48 | INFO | runner | Completed run_id=pilot=0|mode=file_seq|requested=0.2500|actual_bytes=25686052864|trial=1 status=completed successes=20 errors=0 actual=23.92 GiB
+2026-04-05 16:17:48 | INFO | runner | Running condition=file_seq trial=2 requested=23.92 GiB planned=23.92 GiB
+2026-04-05 16:17:50 | INFO | pressure_manager | Started pressure worker mode=file_seq pid=44676 requested=25686052864 actual=25686052864
+2026-04-05 16:18:15 | INFO | runner | Completed run_id=pilot=0|mode=file_seq|requested=0.2500|actual_bytes=25686052864|trial=2 status=completed successes=20 errors=0 actual=23.92 GiB
+2026-04-05 16:18:15 | INFO | runner | Running condition=file_seq trial=3 requested=23.92 GiB planned=23.92 GiB
+2026-04-05 16:18:17 | INFO | pressure_manager | Started pressure worker mode=file_seq pid=49472 requested=25686052864 actual=25686052864
+2026-04-05 16:18:42 | INFO | runner | Completed run_id=pilot=0|mode=file_seq|requested=0.2500|actual_bytes=25686052864|trial=3 status=completed successes=20 errors=0 actual=23.92 GiB
+2026-04-05 16:18:42 | INFO | runner | Running condition=file_seq trial=1 requested=47.84 GiB planned=47.84 GiB
+2026-04-05 16:18:44 | INFO | pressure_manager | Started pressure worker mode=file_seq pid=51864 requested=51372109824 actual=51372109824
+2026-04-05 16:19:09 | INFO | runner | Completed run_id=pilot=0|mode=file_seq|requested=0.5000|actual_bytes=51372109824|trial=1 status=completed successes=20 errors=0 actual=47.84 GiB
+2026-04-05 16:19:09 | INFO | runner | Running condition=file_seq trial=2 requested=47.84 GiB planned=47.84 GiB
+2026-04-05 16:19:12 | INFO | pressure_manager | Started pressure worker mode=file_seq pid=9576 requested=51372109824 actual=51372109824
+2026-04-05 16:19:37 | INFO | runner | Completed run_id=pilot=0|mode=file_seq|requested=0.5000|actual_bytes=51372109824|trial=2 status=completed successes=20 errors=0 actual=47.84 GiB
+2026-04-05 16:19:37 | INFO | runner | Running condition=file_seq trial=3 requested=47.84 GiB planned=47.84 GiB
+2026-04-05 16:19:39 | INFO | pressure_manager | Started pressure worker mode=file_seq pid=54740 requested=51372109824 actual=51372109824
+2026-04-05 16:20:04 | INFO | runner | Completed run_id=pilot=0|mode=file_seq|requested=0.5000|actual_bytes=51372109824|trial=3 status=completed successes=20 errors=0 actual=47.84 GiB
+2026-04-05 16:20:04 | INFO | runner | Running condition=file_seq trial=1 requested=86.12 GiB planned=86.12 GiB
+2026-04-05 16:20:06 | INFO | pressure_manager | Started pressure worker mode=file_seq pid=53828 requested=92469800960 actual=92469800960
+2026-04-05 16:20:32 | INFO | runner | Completed run_id=pilot=0|mode=file_seq|requested=0.9000|actual_bytes=92469800960|trial=1 status=completed successes=20 errors=0 actual=86.12 GiB
+2026-04-05 16:20:32 | INFO | runner | Running condition=file_seq trial=2 requested=86.12 GiB planned=86.12 GiB
+2026-04-05 16:20:34 | INFO | pressure_manager | Started pressure worker mode=file_seq pid=9784 requested=92469800960 actual=92469800960
+2026-04-05 16:21:00 | INFO | runner | Completed run_id=pilot=0|mode=file_seq|requested=0.9000|actual_bytes=92469800960|trial=2 status=completed successes=20 errors=0 actual=86.12 GiB
+2026-04-05 16:21:00 | INFO | runner | Running condition=file_seq trial=3 requested=86.12 GiB planned=86.12 GiB
+2026-04-05 16:21:02 | INFO | pressure_manager | Started pressure worker mode=file_seq pid=17896 requested=92469800960 actual=92469800960
+2026-04-05 16:21:28 | INFO | runner | Completed run_id=pilot=0|mode=file_seq|requested=0.9000|actual_bytes=92469800960|trial=3 status=completed successes=20 errors=0 actual=86.12 GiB
+2026-04-05 16:21:28 | INFO | runner | Running condition=file_seq trial=1 requested=105.26 GiB planned=105.26 GiB
+2026-04-05 16:21:31 | INFO | pressure_manager | Started pressure worker mode=file_seq pid=53272 requested=113018642432 actual=113018642432
+2026-04-05 16:21:57 | INFO | runner | Completed run_id=pilot=0|mode=file_seq|requested=1.1000|actual_bytes=113018642432|trial=1 status=completed successes=20 errors=0 actual=105.26 GiB
+2026-04-05 16:21:57 | INFO | runner | Running condition=file_seq trial=2 requested=105.26 GiB planned=105.26 GiB
+2026-04-05 16:21:59 | INFO | pressure_manager | Started pressure worker mode=file_seq pid=40164 requested=113018642432 actual=113018642432
+2026-04-05 16:22:25 | INFO | runner | Completed run_id=pilot=0|mode=file_seq|requested=1.1000|actual_bytes=113018642432|trial=2 status=completed successes=20 errors=0 actual=105.26 GiB
+2026-04-05 16:22:25 | INFO | runner | Running condition=file_seq trial=3 requested=105.26 GiB planned=105.26 GiB
+2026-04-05 16:22:27 | INFO | pressure_manager | Started pressure worker mode=file_seq pid=53148 requested=113018642432 actual=113018642432
+2026-04-05 16:22:54 | INFO | runner | Completed run_id=pilot=0|mode=file_seq|requested=1.1000|actual_bytes=113018642432|trial=3 status=completed successes=20 errors=0 actual=105.26 GiB
+2026-04-05 16:22:54 | INFO | runner | Running condition=file_seq trial=1 requested=143.53 GiB planned=143.53 GiB
+2026-04-05 16:22:56 | INFO | pressure_manager | Started pressure worker mode=file_seq pid=35904 requested=154116333568 actual=154116333568
+2026-04-05 16:23:23 | INFO | runner | Completed run_id=pilot=0|mode=file_seq|requested=1.5000|actual_bytes=154116333568|trial=1 status=completed successes=20 errors=0 actual=143.53 GiB
+2026-04-05 16:23:23 | INFO | runner | Running condition=file_seq trial=2 requested=143.53 GiB planned=143.53 GiB
+2026-04-05 16:23:25 | INFO | pressure_manager | Started pressure worker mode=file_seq pid=28800 requested=154116333568 actual=154116333568
+2026-04-05 16:23:51 | INFO | runner | Completed run_id=pilot=0|mode=file_seq|requested=1.5000|actual_bytes=154116333568|trial=2 status=completed successes=20 errors=0 actual=143.53 GiB
+2026-04-05 16:23:51 | INFO | runner | Running condition=file_seq trial=3 requested=143.53 GiB planned=143.53 GiB
+2026-04-05 16:23:54 | INFO | pressure_manager | Started pressure worker mode=file_seq pid=11528 requested=154116333568 actual=154116333568
+2026-04-05 16:24:20 | INFO | runner | Completed run_id=pilot=0|mode=file_seq|requested=1.5000|actual_bytes=154116333568|trial=3 status=completed successes=20 errors=0 actual=143.53 GiB
+2026-04-05 16:24:20 | INFO | runner | Running condition=mmap_random trial=1 requested=23.92 GiB planned=23.92 GiB
+2026-04-05 16:24:23 | INFO | pressure_manager | Started pressure worker mode=mmap_random pid=20636 requested=25686052864 actual=25686052864
+2026-04-05 16:24:49 | INFO | runner | Completed run_id=pilot=0|mode=mmap_random|requested=0.2500|actual_bytes=25686052864|trial=1 status=completed successes=20 errors=0 actual=23.92 GiB
+2026-04-05 16:24:49 | INFO | runner | Running condition=mmap_random trial=2 requested=23.92 GiB planned=23.92 GiB
+2026-04-05 16:24:52 | INFO | pressure_manager | Started pressure worker mode=mmap_random pid=47632 requested=25686052864 actual=25686052864
+2026-04-05 16:25:18 | INFO | runner | Completed run_id=pilot=0|mode=mmap_random|requested=0.2500|actual_bytes=25686052864|trial=2 status=completed successes=20 errors=0 actual=23.92 GiB
+2026-04-05 16:25:18 | INFO | runner | Running condition=mmap_random trial=3 requested=23.92 GiB planned=23.92 GiB
+2026-04-05 16:25:20 | INFO | pressure_manager | Started pressure worker mode=mmap_random pid=51476 requested=25686052864 actual=25686052864
+2026-04-05 16:25:46 | INFO | runner | Completed run_id=pilot=0|mode=mmap_random|requested=0.2500|actual_bytes=25686052864|trial=3 status=completed successes=20 errors=0 actual=23.92 GiB
+2026-04-05 16:25:46 | INFO | runner | Running condition=mmap_random trial=1 requested=47.84 GiB planned=47.84 GiB
+2026-04-05 16:25:49 | INFO | pressure_manager | Started pressure worker mode=mmap_random pid=15816 requested=51372109824 actual=51372109824
+2026-04-05 16:26:15 | INFO | runner | Completed run_id=pilot=0|mode=mmap_random|requested=0.5000|actual_bytes=51372109824|trial=1 status=completed successes=20 errors=0 actual=47.84 GiB
+2026-04-05 16:26:15 | INFO | runner | Running condition=mmap_random trial=2 requested=47.84 GiB planned=47.84 GiB
+2026-04-05 16:26:18 | INFO | pressure_manager | Started pressure worker mode=mmap_random pid=12100 requested=51372109824 actual=51372109824
+2026-04-05 16:26:44 | INFO | runner | Completed run_id=pilot=0|mode=mmap_random|requested=0.5000|actual_bytes=51372109824|trial=2 status=completed successes=20 errors=0 actual=47.84 GiB
+2026-04-05 16:26:44 | INFO | runner | Running condition=mmap_random trial=3 requested=47.84 GiB planned=47.84 GiB
+2026-04-05 16:26:47 | INFO | pressure_manager | Started pressure worker mode=mmap_random pid=36700 requested=51372109824 actual=51372109824
+2026-04-05 16:27:13 | INFO | runner | Completed run_id=pilot=0|mode=mmap_random|requested=0.5000|actual_bytes=51372109824|trial=3 status=completed successes=20 errors=0 actual=47.84 GiB
+2026-04-05 16:27:13 | INFO | runner | Running condition=mmap_random trial=1 requested=86.12 GiB planned=86.12 GiB
+2026-04-05 16:27:16 | INFO | pressure_manager | Started pressure worker mode=mmap_random pid=35904 requested=92469800960 actual=92469800960
+2026-04-05 16:27:43 | INFO | runner | Completed run_id=pilot=0|mode=mmap_random|requested=0.9000|actual_bytes=92469800960|trial=1 status=completed successes=20 errors=0 actual=86.12 GiB
+2026-04-05 16:27:43 | INFO | runner | Running condition=mmap_random trial=2 requested=86.12 GiB planned=86.12 GiB
+2026-04-05 16:27:45 | INFO | pressure_manager | Started pressure worker mode=mmap_random pid=39356 requested=92469800960 actual=92469800960
+2026-04-05 16:28:13 | INFO | runner | Completed run_id=pilot=0|mode=mmap_random|requested=0.9000|actual_bytes=92469800960|trial=2 status=completed successes=20 errors=0 actual=86.12 GiB
+2026-04-05 16:28:13 | INFO | runner | Running condition=mmap_random trial=3 requested=86.12 GiB planned=86.12 GiB
+2026-04-05 16:28:15 | INFO | pressure_manager | Started pressure worker mode=mmap_random pid=40700 requested=92469800960 actual=92469800960
+2026-04-05 16:28:43 | INFO | runner | Completed run_id=pilot=0|mode=mmap_random|requested=0.9000|actual_bytes=92469800960|trial=3 status=completed successes=20 errors=0 actual=86.12 GiB
+2026-04-05 16:28:43 | INFO | runner | Running condition=mmap_random trial=1 requested=105.26 GiB planned=105.26 GiB
+2026-04-05 16:28:45 | INFO | pressure_manager | Started pressure worker mode=mmap_random pid=40320 requested=113018642432 actual=113018642432
+2026-04-05 16:29:12 | INFO | runner | Completed run_id=pilot=0|mode=mmap_random|requested=1.1000|actual_bytes=113018642432|trial=1 status=completed successes=20 errors=0 actual=105.26 GiB
+2026-04-05 16:29:12 | INFO | runner | Running condition=mmap_random trial=2 requested=105.26 GiB planned=105.26 GiB
+2026-04-05 16:29:14 | INFO | pressure_manager | Started pressure worker mode=mmap_random pid=38816 requested=113018642432 actual=113018642432
+2026-04-05 16:29:42 | INFO | runner | Completed run_id=pilot=0|mode=mmap_random|requested=1.1000|actual_bytes=113018642432|trial=2 status=completed successes=20 errors=0 actual=105.26 GiB
+2026-04-05 16:29:42 | INFO | runner | Running condition=mmap_random trial=3 requested=105.26 GiB planned=105.26 GiB
+2026-04-05 16:29:45 | INFO | pressure_manager | Started pressure worker mode=mmap_random pid=31700 requested=113018642432 actual=113018642432
+2026-04-05 16:30:13 | INFO | runner | Completed run_id=pilot=0|mode=mmap_random|requested=1.1000|actual_bytes=113018642432|trial=3 status=completed successes=20 errors=0 actual=105.26 GiB
+2026-04-05 16:30:13 | INFO | runner | Running condition=mmap_random trial=1 requested=143.53 GiB planned=143.53 GiB
+2026-04-05 16:30:16 | INFO | pressure_manager | Started pressure worker mode=mmap_random pid=50640 requested=154116333568 actual=154116333568
+2026-04-05 16:30:43 | INFO | runner | Completed run_id=pilot=0|mode=mmap_random|requested=1.5000|actual_bytes=154116333568|trial=1 status=completed successes=20 errors=0 actual=143.53 GiB
+2026-04-05 16:30:43 | INFO | runner | Running condition=mmap_random trial=2 requested=143.53 GiB planned=143.53 GiB
+2026-04-05 16:30:46 | INFO | pressure_manager | Started pressure worker mode=mmap_random pid=14308 requested=154116333568 actual=154116333568
+2026-04-05 16:31:13 | INFO | runner | Completed run_id=pilot=0|mode=mmap_random|requested=1.5000|actual_bytes=154116333568|trial=2 status=completed successes=20 errors=0 actual=143.53 GiB
+2026-04-05 16:31:13 | INFO | runner | Running condition=mmap_random trial=3 requested=143.53 GiB planned=143.53 GiB
+2026-04-05 16:31:16 | INFO | pressure_manager | Started pressure worker mode=mmap_random pid=28756 requested=154116333568 actual=154116333568
+2026-04-05 16:31:43 | INFO | runner | Completed run_id=pilot=0|mode=mmap_random|requested=1.5000|actual_bytes=154116333568|trial=3 status=completed successes=20 errors=0 actual=143.53 GiB
+2026-04-05 16:31:43 | INFO | runner | Running condition=anon trial=1 requested=23.92 GiB planned=23.92 GiB
+2026-04-05 16:32:13 | INFO | pressure_manager | Started pressure worker mode=anon pid=53328 requested=25686052864 actual=25686052864
+2026-04-05 16:32:42 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=0.2500|actual_bytes=25686052864|trial=1 status=completed successes=20 errors=0 actual=23.92 GiB
+2026-04-05 16:32:42 | INFO | runner | Running condition=anon trial=2 requested=23.92 GiB planned=23.92 GiB
+2026-04-05 16:33:07 | INFO | pressure_manager | Started pressure worker mode=anon pid=48252 requested=25686052864 actual=25686052864
+2026-04-05 16:33:36 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=0.2500|actual_bytes=25686052864|trial=2 status=completed successes=20 errors=0 actual=23.92 GiB
+2026-04-05 16:33:36 | INFO | runner | Running condition=anon trial=3 requested=23.92 GiB planned=23.92 GiB
+2026-04-05 16:34:01 | INFO | pressure_manager | Started pressure worker mode=anon pid=51288 requested=25686052864 actual=25686052864
+2026-04-05 16:34:30 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=0.2500|actual_bytes=25686052864|trial=3 status=completed successes=20 errors=0 actual=23.92 GiB
+2026-04-05 16:34:30 | INFO | runner | Running condition=anon trial=1 requested=47.84 GiB planned=47.84 GiB
+2026-04-05 16:35:17 | INFO | pressure_manager | Started pressure worker mode=anon pid=50272 requested=51372109824 actual=51372109824
+2026-04-05 16:35:49 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=0.5000|actual_bytes=51372109824|trial=1 status=completed successes=20 errors=0 actual=47.84 GiB
+2026-04-05 16:35:49 | INFO | runner | Running condition=anon trial=2 requested=47.84 GiB planned=47.84 GiB
+2026-04-05 16:36:34 | INFO | pressure_manager | Started pressure worker mode=anon pid=54568 requested=51372109824 actual=51372109824
+2026-04-05 16:37:06 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=0.5000|actual_bytes=51372109824|trial=2 status=completed successes=20 errors=0 actual=47.84 GiB
+2026-04-05 16:37:06 | INFO | runner | Running condition=anon trial=3 requested=47.84 GiB planned=47.84 GiB
+2026-04-05 16:37:51 | INFO | pressure_manager | Started pressure worker mode=anon pid=53576 requested=51372109824 actual=51372109824
+2026-04-05 16:38:24 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=0.5000|actual_bytes=51372109824|trial=3 status=completed successes=20 errors=0 actual=47.84 GiB
+2026-04-05 16:38:24 | INFO | runner | Running condition=anon trial=1 requested=86.12 GiB planned=86.12 GiB
+2026-04-05 16:38:26 | ERROR | runner | Condition failed: Pressure worker failed for mode=anon: [WinError 1450] Insufficient system resources exist to complete the requested service
+Traceback (most recent call last):
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\runner.py", line 335, in _run_condition
+    pressure_handle = self.pressure_manager.start(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\pressure_manager.py", line 71, in start
+    raise RuntimeError(f"Pressure worker failed for mode={mode}: {error}")
+RuntimeError: Pressure worker failed for mode=anon: [WinError 1450] Insufficient system resources exist to complete the requested service
+2026-04-05 16:38:26 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=0.9000|actual_bytes=92469800960|trial=1 status=failed successes=0 errors=0 actual=86.12 GiB
+2026-04-05 16:38:26 | INFO | runner | Running condition=anon trial=2 requested=86.12 GiB planned=86.12 GiB
+2026-04-05 16:38:28 | ERROR | runner | Condition failed: Pressure worker failed for mode=anon: [WinError 1450] Insufficient system resources exist to complete the requested service
+Traceback (most recent call last):
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\runner.py", line 335, in _run_condition
+    pressure_handle = self.pressure_manager.start(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\pressure_manager.py", line 71, in start
+    raise RuntimeError(f"Pressure worker failed for mode={mode}: {error}")
+RuntimeError: Pressure worker failed for mode=anon: [WinError 1450] Insufficient system resources exist to complete the requested service
+2026-04-05 16:38:28 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=0.9000|actual_bytes=92469800960|trial=2 status=failed successes=0 errors=0 actual=86.12 GiB
+2026-04-05 16:38:28 | INFO | runner | Running condition=anon trial=3 requested=86.12 GiB planned=86.12 GiB
+2026-04-05 16:38:31 | ERROR | runner | Condition failed: Pressure worker failed for mode=anon: [WinError 1450] Insufficient system resources exist to complete the requested service
+Traceback (most recent call last):
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\runner.py", line 335, in _run_condition
+    pressure_handle = self.pressure_manager.start(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\pressure_manager.py", line 71, in start
+    raise RuntimeError(f"Pressure worker failed for mode={mode}: {error}")
+RuntimeError: Pressure worker failed for mode=anon: [WinError 1450] Insufficient system resources exist to complete the requested service
+2026-04-05 16:38:31 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=0.9000|actual_bytes=92469800960|trial=3 status=failed successes=0 errors=0 actual=86.12 GiB
+2026-04-05 16:38:31 | INFO | runner | Running condition=anon trial=1 requested=105.26 GiB planned=86.12 GiB
+2026-04-05 16:38:33 | ERROR | runner | Condition failed: Pressure worker failed for mode=anon: [WinError 1450] Insufficient system resources exist to complete the requested service
+Traceback (most recent call last):
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\runner.py", line 335, in _run_condition
+    pressure_handle = self.pressure_manager.start(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\pressure_manager.py", line 71, in start
+    raise RuntimeError(f"Pressure worker failed for mode={mode}: {error}")
+RuntimeError: Pressure worker failed for mode=anon: [WinError 1450] Insufficient system resources exist to complete the requested service
+2026-04-05 16:38:33 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=1.1000|actual_bytes=92469800960|trial=1 status=failed successes=0 errors=0 actual=86.12 GiB
+2026-04-05 16:38:33 | INFO | runner | Running condition=anon trial=2 requested=105.26 GiB planned=86.12 GiB
+2026-04-05 16:38:35 | ERROR | runner | Condition failed: Pressure worker failed for mode=anon: [WinError 1450] Insufficient system resources exist to complete the requested service
+Traceback (most recent call last):
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\runner.py", line 335, in _run_condition
+    pressure_handle = self.pressure_manager.start(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\pressure_manager.py", line 71, in start
+    raise RuntimeError(f"Pressure worker failed for mode={mode}: {error}")
+RuntimeError: Pressure worker failed for mode=anon: [WinError 1450] Insufficient system resources exist to complete the requested service
+2026-04-05 16:38:35 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=1.1000|actual_bytes=92469800960|trial=2 status=failed successes=0 errors=0 actual=86.12 GiB
+2026-04-05 16:38:35 | INFO | runner | Running condition=anon trial=3 requested=105.26 GiB planned=86.12 GiB
+2026-04-05 16:38:37 | ERROR | runner | Condition failed: Pressure worker failed for mode=anon: [WinError 1450] Insufficient system resources exist to complete the requested service
+Traceback (most recent call last):
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\runner.py", line 335, in _run_condition
+    pressure_handle = self.pressure_manager.start(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\pressure_manager.py", line 71, in start
+    raise RuntimeError(f"Pressure worker failed for mode={mode}: {error}")
+RuntimeError: Pressure worker failed for mode=anon: [WinError 1450] Insufficient system resources exist to complete the requested service
+2026-04-05 16:38:37 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=1.1000|actual_bytes=92469800960|trial=3 status=failed successes=0 errors=0 actual=86.12 GiB
+2026-04-05 16:38:37 | INFO | runner | Running condition=anon trial=1 requested=143.53 GiB planned=86.12 GiB
+2026-04-05 16:38:39 | ERROR | runner | Condition failed: Pressure worker failed for mode=anon: [WinError 1450] Insufficient system resources exist to complete the requested service
+Traceback (most recent call last):
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\runner.py", line 335, in _run_condition
+    pressure_handle = self.pressure_manager.start(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\pressure_manager.py", line 71, in start
+    raise RuntimeError(f"Pressure worker failed for mode={mode}: {error}")
+RuntimeError: Pressure worker failed for mode=anon: [WinError 1450] Insufficient system resources exist to complete the requested service
+2026-04-05 16:38:39 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=1.5000|actual_bytes=92469800960|trial=1 status=failed successes=0 errors=0 actual=86.12 GiB
+2026-04-05 16:38:39 | INFO | runner | Running condition=anon trial=2 requested=143.53 GiB planned=86.12 GiB
+2026-04-05 16:38:41 | ERROR | runner | Condition failed: Pressure worker failed for mode=anon: [WinError 1450] Insufficient system resources exist to complete the requested service
+Traceback (most recent call last):
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\runner.py", line 335, in _run_condition
+    pressure_handle = self.pressure_manager.start(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\pressure_manager.py", line 71, in start
+    raise RuntimeError(f"Pressure worker failed for mode={mode}: {error}")
+RuntimeError: Pressure worker failed for mode=anon: [WinError 1450] Insufficient system resources exist to complete the requested service
+2026-04-05 16:38:41 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=1.5000|actual_bytes=92469800960|trial=2 status=failed successes=0 errors=0 actual=86.12 GiB
+2026-04-05 16:38:41 | INFO | runner | Running condition=anon trial=3 requested=143.53 GiB planned=86.12 GiB
+2026-04-05 16:38:43 | ERROR | runner | Condition failed: Pressure worker failed for mode=anon: [WinError 1450] Insufficient system resources exist to complete the requested service
+Traceback (most recent call last):
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\runner.py", line 335, in _run_condition
+    pressure_handle = self.pressure_manager.start(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\pressure_manager.py", line 71, in start
+    raise RuntimeError(f"Pressure worker failed for mode={mode}: {error}")
+RuntimeError: Pressure worker failed for mode=anon: [WinError 1450] Insufficient system resources exist to complete the requested service
+2026-04-05 16:38:43 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=1.5000|actual_bytes=92469800960|trial=3 status=failed successes=0 errors=0 actual=86.12 GiB
+2026-04-05 16:38:44 | INFO | __main__ | Benchmark finished. See D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\results\summary.md for the summary report.

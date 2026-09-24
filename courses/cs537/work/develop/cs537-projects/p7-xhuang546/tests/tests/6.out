@@ -1,0 +1,12 @@
+== Checking local build artifacts ==
+== Checking that cd works for internal normal rootfs paths ==
+/tmp
+container prep done
+== Checking nested cd inside normal rootfs ==
+/tmp/a/b
+container prep done
+== Checking that cd .. cannot escape the normal rootfs ==
+/
+container prep done
+
+normal cd check passed.

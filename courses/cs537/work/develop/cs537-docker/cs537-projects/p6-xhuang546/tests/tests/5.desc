@@ -1,0 +1,1 @@
+Size query mode test: calls fgetxattr and flistxattr with a capacity of 0 and a null buffer pointer to verify they return the exact byte size required without copying data.

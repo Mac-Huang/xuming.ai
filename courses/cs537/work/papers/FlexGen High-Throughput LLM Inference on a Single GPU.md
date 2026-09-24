@@ -1,0 +1,13 @@
+# FlexGen: High-Throughput LLM Inference on a Single GPU
+
+After reading *Efficient Virtual Memory for Big Memory Servers*, I was inspired by the idea of directly mapping large data into physical memory. This made me think about whether a similar idea could apply to workloads like large language model (LLM) inference.
+
+However, I found that LLM inference is quite different from traditional “big memory” workloads such as databases. The main reason is the different hardware and execution model. In LLM inference, most of the heavy computation comes from matrix operations, so model weights and KV caches are mainly placed in GPU VRAM to maximize parallelism. Like CPUs, GPUs also use virtual memory and paging to map virtual addresses to physical memory, and data can move between VRAM and CPU RAM through PCIe.
+
+At first, I wondered whether we could directly map model weights and KV caches to VRAM, and leave other tensors (such as intermediate results) to be handled by paging. But after further investigation, I realized that the main bottleneck is not address translation. Instead, it is **data movement and bandwidth**, especially the slow transfer between GPU, CPU, and disk over PCIe.
+
+The FlexGen paper clearly explains this issue. It considers a setting where GPU VRAM is too small to hold all model weights and KV cache, especially since the KV cache grows during decoding. This is similar to an operating system where main memory is not large enough to hold all data from disk. A common solution is offloading, which loads only the needed data into GPU memory and stores the rest in CPU memory or disk. However, naive offloading leads to high I/O cost and poor performance.
+
+FlexGen addresses this by focusing on throughput instead of latency. It uses large batch sizes so that the cost of data movement can be shared across many tokens. It also introduces a zig-zag block scheduling strategy that balances weight reuse and memory usage, achieving near-optimal I/O efficiency. In addition, FlexGen builds an analytical cost model and uses linear programming to decide the best block size, batch size, and tensor placement across GPU, CPU, and disk. In some cases, it even performs certain memory-bound computations on the CPU to reduce data transfer.
+
+Overall, FlexGen shows that LLM inference is not just a compute problem, but a data movement problem. By carefully coordinating computation, memory placement, and data transfer, it is possible to run very large models efficiently even on limited hardware.

@@ -1,0 +1,1 @@
+cd ../solution/; make -s -f Makefile.test clean; rm -f test_10.c Makefile.test; cd ../tests

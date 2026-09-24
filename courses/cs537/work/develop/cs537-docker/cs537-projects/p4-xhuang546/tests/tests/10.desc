@@ -1,0 +1,3 @@
+Test 10
+Summary: access anonymous map and unmap it
+Checks for memory allocation and deallocation

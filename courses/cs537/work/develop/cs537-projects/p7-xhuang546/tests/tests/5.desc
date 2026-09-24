@@ -1,0 +1,1 @@
+Trap rootfs rejects a program that does not exist inside the trap filesystem

@@ -1,0 +1,1 @@
+Value size limit test: verifies that fsetxattr allows setting a value of exactly 512 bytes (the block limit) but correctly rejects a 513-byte value by returning -1.

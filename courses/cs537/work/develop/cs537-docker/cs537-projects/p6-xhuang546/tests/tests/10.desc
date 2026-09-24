@@ -1,0 +1,1 @@
+Strict capacity check test: verifies that fgetxattr properly returns -1 when the provided buffer capacity is strictly smaller than the actual stored size of the attribute.

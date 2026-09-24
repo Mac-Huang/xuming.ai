@@ -1,0 +1,19 @@
+XV6: TEST_13
+XV6: Initial State: 
+XV6: ------ Total mmaps: 0
+XV6: Place one map. 
+XV6: Place one map. 
+XV6: Current State: 
+XV6: ------ Total mmaps: 2
+XV6: ------ mmap[0]: va [0x60000000] sz [40960] vend [0x6000A000] flags [0xD] fd [-1] rc[0] ld_pg [0] 
+XV6: ------ mmap[1]: va [0x6000B000] sz [40970] vend [0x6001500A] flags [0xE] fd [-1] rc[0] ld_pg [0] 
+XV6: Child process starts
+XV6: Child State: 
+XV6: ------ Total mmaps: 2
+XV6: ------ mmap[0]: va [0x60000000] sz [40960] vend [0x6000A000] flags [0xD] fd [-1] rc[0] ld_pg [0] 
+XV6: ------ mmap[1]: va [0x6000B000] sz [40970] vend [0x6001500A] flags [0xE] fd [-1] rc[1] ld_pg [0] 
+XV6: Parent State: 
+XV6: ------ Total mmaps: 2
+XV6: ------ mmap[0]: va [0x60000000] sz [40960] vend [0x6000A000] flags [0xD] fd [-1] rc[0] ld_pg [0] 
+XV6: ------ mmap[1]: va [0x6000B000] sz [40970] vend [0x6001500A] flags [0xE] fd [-1] rc[0] ld_pg [0] 
+XV6: Test finished.

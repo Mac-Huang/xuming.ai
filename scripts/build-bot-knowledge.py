@@ -76,6 +76,11 @@ course_text=[]
 for group in re.findall(r'<section>(.*?)</section>',(ROOT/'courses.html').read_text(),re.S):
  title=plain(re.search('<h2[^>]*>(.*?)</h2>',group,re.S)[1]);names=[plain(x) for x in re.findall('<h3>(.*?)</h3>',group,re.S)];course_text.append(title+': '+', '.join(names)+'.')
 add('courses','Coursework',' '.join(course_text)+' The site lists no confirmed future course plan beyond these courses.','courses.html','Courses',['courses','coursework','classes','course plans'],True)
+# Curated material catalogs describe archived work without indexing every source file.
+for slug, course in json.loads((ROOT/'data/course-materials.json').read_text()).items():
+ topics=' '.join(section['title']+': '+', '.join(item['label'] for item in section['items'])+'.' for section in course['sections'])
+ spaced=re.sub(r'(\D+)(\d+)',r'\1 \2',slug)
+ add('course-'+slug,course['title'],course['description']+' Available materials: '+topics,'courses/'+slug+'/index.html','Courses',[slug,spaced,slug+' coursework',spaced+' materials'],True)
 # Content-addressed version prevents stale knowledge after same-length edits.
 version=hashlib.sha256(json.dumps(chunks,sort_keys=True).encode()).hexdigest()[:16]
 (ROOT/'data/bot-knowledge.json').write_text(json.dumps({'version':version,'updated':'2026-09-23','chunks':chunks},ensure_ascii=False,indent=2)+'\n')

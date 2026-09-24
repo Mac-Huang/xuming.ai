@@ -1,0 +1,7 @@
+ java : Stephanie
+Mathematics :Marc
+Data Structures and Algorithms:Michael
+
+Object Oriented Programming: Ryan
+
+Python : Sarah

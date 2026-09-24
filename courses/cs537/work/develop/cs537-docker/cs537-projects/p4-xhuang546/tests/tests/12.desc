@@ -1,0 +1,4 @@
+Test 12
+Summary: wpunmap() split one mmap into two mmaps
+Does not access its memory
+Does not unmap any mapping

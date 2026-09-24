@@ -1,0 +1,1 @@
+Basic removal test: creates an extended attribute, removes it using fremovexattr, and verifies that a subsequent fgetxattr and fremovexattr fails by returning -1.

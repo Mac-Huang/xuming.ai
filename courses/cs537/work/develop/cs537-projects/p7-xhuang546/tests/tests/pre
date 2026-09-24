@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+set -e
+
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+TEST_DIR="$(cd -- "$SCRIPT_DIR/.." && pwd)"
+SOLN_DIR="$TEST_DIR/../solution"
+
+# Require the solution to build cleanly under -Werror before running any tests.
+make -C "$SOLN_DIR" clean
+make -C "$SOLN_DIR"
+
+# Rootfs tests now perform setup in each individual test's .pre file so that
+# every test runs in its own isolated temporary directory.
+true

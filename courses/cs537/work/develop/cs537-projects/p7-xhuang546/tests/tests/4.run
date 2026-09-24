@@ -1,0 +1,1 @@
+bash ./check_trap_cd.sh "$(pwd)/tmp/test_4/trap_fs"

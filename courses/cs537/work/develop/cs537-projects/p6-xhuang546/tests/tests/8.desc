@@ -1,0 +1,1 @@
+Key length limit test: verifies that fsetxattr allows keys of exactly 8 characters but correctly rejects keys of 9 characters by returning -1.

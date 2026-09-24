@@ -1,0 +1,9 @@
+== Building solution ==
+make: Nothing to be done for 'all'.
+
+== Running bin1 inside prepared rootfs ==
+HELLO world
+PID 1
+container prep done
+
+rootfs_basic_boot passed.

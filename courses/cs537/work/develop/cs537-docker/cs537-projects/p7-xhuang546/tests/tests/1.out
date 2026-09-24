@@ -1,0 +1,17 @@
+== Checking local build artifacts ==
+== Checking rootfs structure ==
+== Checking common programs ==
+== Checking dynamic loader / libc ==
+== Running ls inside the container ==
+bin
+bin2_input.txt
+dev
+etc
+lib
+lib64
+proc
+tmp
+usr
+container prep done
+
+rootfs sanity check passed.

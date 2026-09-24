@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -e
+
+TEST_DIR="$(pwd)"
+ROOTFS_DIR="$TEST_DIR/tmp/test_4/trap_fs"
+BUILD_TRAP_ROOTFS="$TEST_DIR/rootfs/build-trap-rootfs.sh"
+
+rm -rf "$TEST_DIR/tmp/test_4"
+"$BUILD_TRAP_ROOTFS" "$ROOTFS_DIR"

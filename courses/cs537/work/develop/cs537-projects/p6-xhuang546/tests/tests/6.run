@@ -1,0 +1,1 @@
+cd ../solution; ../tests/run-xv6-command.exp CPUS=1 SCHEDULER=STCF Makefile test_6 | grep -E 'PASS|FAIL'; cd ../tests

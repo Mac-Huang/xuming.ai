@@ -1,0 +1,2 @@
+env EMPTY_VAR
+env | grep EMPTY_VAR

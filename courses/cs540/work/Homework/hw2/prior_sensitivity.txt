@@ -1,0 +1,7 @@
+English prior: 0.50, Spanish prior: 0.50, Posterior: 0.9842
+English prior: 0.90, Spanish prior: 0.10, Posterior: 0.9982
+English prior: 0.10, Spanish prior: 0.90, Posterior: 0.8740
+
+A. The A's probability in either English or Spanish remain unchanged while total Log-probability and Posterior probability changes
+B. NO If changing the prior, non will change because posterior is about the pattern matching instead of the frequency of this language
+C. NO because spanish_score += counts[letter] * math.log(s[i]) makes letter counts be with more weights

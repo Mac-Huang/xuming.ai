@@ -1,0 +1,220 @@
+2026-04-05 16:41:58 | INFO | __main__ | Logging to D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\results\logs\run_20260405_164158.log
+2026-04-05 16:41:58 | INFO | runner | Detected total RAM: 95.69 GiB
+2026-04-05 16:41:58 | INFO | runner | Using config file: D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\config\default.yaml
+2026-04-05 16:41:58 | INFO | runner | File-backed pressure cap is 347.03 GiB based on existing file=143.53 GiB and allowed disk growth=203.50 GiB
+2026-04-05 16:41:58 | INFO | runner | Planned 48 conditions
+2026-04-05 16:41:58 | INFO | runner | Reusing pressure data file D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\data\pressure_data.bin (143.53 GiB)
+2026-04-05 16:41:58 | INFO | inference_client | Running Ollama warmup request against model qwen3:4b
+2026-04-05 16:41:59 | INFO | runner | Warmup completed in 603.50 ms
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=none|requested=0.0000|actual_bytes=0|trial=1
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=none|requested=0.0000|actual_bytes=0|trial=2
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=none|requested=0.0000|actual_bytes=0|trial=3
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=file_seq|requested=0.2500|actual_bytes=25686052864|trial=1
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=file_seq|requested=0.2500|actual_bytes=25686052864|trial=2
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=file_seq|requested=0.2500|actual_bytes=25686052864|trial=3
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=file_seq|requested=0.5000|actual_bytes=51372109824|trial=1
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=file_seq|requested=0.5000|actual_bytes=51372109824|trial=2
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=file_seq|requested=0.5000|actual_bytes=51372109824|trial=3
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=file_seq|requested=0.9000|actual_bytes=92469800960|trial=1
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=file_seq|requested=0.9000|actual_bytes=92469800960|trial=2
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=file_seq|requested=0.9000|actual_bytes=92469800960|trial=3
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=file_seq|requested=1.1000|actual_bytes=113018642432|trial=1
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=file_seq|requested=1.1000|actual_bytes=113018642432|trial=2
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=file_seq|requested=1.1000|actual_bytes=113018642432|trial=3
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=file_seq|requested=1.5000|actual_bytes=154116333568|trial=1
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=file_seq|requested=1.5000|actual_bytes=154116333568|trial=2
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=file_seq|requested=1.5000|actual_bytes=154116333568|trial=3
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=mmap_random|requested=0.2500|actual_bytes=25686052864|trial=1
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=mmap_random|requested=0.2500|actual_bytes=25686052864|trial=2
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=mmap_random|requested=0.2500|actual_bytes=25686052864|trial=3
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=mmap_random|requested=0.5000|actual_bytes=51372109824|trial=1
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=mmap_random|requested=0.5000|actual_bytes=51372109824|trial=2
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=mmap_random|requested=0.5000|actual_bytes=51372109824|trial=3
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=mmap_random|requested=0.9000|actual_bytes=92469800960|trial=1
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=mmap_random|requested=0.9000|actual_bytes=92469800960|trial=2
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=mmap_random|requested=0.9000|actual_bytes=92469800960|trial=3
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=mmap_random|requested=1.1000|actual_bytes=113018642432|trial=1
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=mmap_random|requested=1.1000|actual_bytes=113018642432|trial=2
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=mmap_random|requested=1.1000|actual_bytes=113018642432|trial=3
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=mmap_random|requested=1.5000|actual_bytes=154116333568|trial=1
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=mmap_random|requested=1.5000|actual_bytes=154116333568|trial=2
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=mmap_random|requested=1.5000|actual_bytes=154116333568|trial=3
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=anon|requested=0.2500|actual_bytes=25686052864|trial=1
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=anon|requested=0.2500|actual_bytes=25686052864|trial=2
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=anon|requested=0.2500|actual_bytes=25686052864|trial=3
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=anon|requested=0.5000|actual_bytes=51372109824|trial=1
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=anon|requested=0.5000|actual_bytes=51372109824|trial=2
+2026-04-05 16:41:59 | INFO | runner | Skipping completed run pilot=0|mode=anon|requested=0.5000|actual_bytes=51372109824|trial=3
+2026-04-05 16:41:59 | INFO | runner | Running condition=anon trial=1 requested=86.12 GiB planned=86.12 GiB
+2026-04-05 16:43:09 | WARNING | pressure_manager | Pressure worker pid=48848 did not stop cleanly; terminating
+2026-04-05 16:43:13 | ERROR | runner | Condition failed: Pressure worker startup timed out for mode=anon
+Traceback (most recent call last):
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\pressure_manager.py", line 63, in start
+    status = status_queue.get(timeout=self.startup_timeout_s)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\multiprocessing\queues.py", line 114, in get
+    raise Empty
+_queue.Empty
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\runner.py", line 341, in _run_condition
+    pressure_handle = self.pressure_manager.start(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\pressure_manager.py", line 66, in start
+    raise RuntimeError(f"Pressure worker startup timed out for mode={mode}") from exc
+RuntimeError: Pressure worker startup timed out for mode=anon
+2026-04-05 16:43:13 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=0.9000|actual_bytes=92469800960|trial=1 status=failed successes=0 errors=0 actual=86.12 GiB
+2026-04-05 16:43:13 | INFO | runner | Running condition=anon trial=2 requested=86.12 GiB planned=86.12 GiB
+2026-04-05 16:44:23 | WARNING | pressure_manager | Pressure worker pid=53628 did not stop cleanly; terminating
+2026-04-05 16:44:25 | ERROR | runner | Condition failed: Pressure worker startup timed out for mode=anon
+Traceback (most recent call last):
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\pressure_manager.py", line 63, in start
+    status = status_queue.get(timeout=self.startup_timeout_s)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\multiprocessing\queues.py", line 114, in get
+    raise Empty
+_queue.Empty
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\runner.py", line 341, in _run_condition
+    pressure_handle = self.pressure_manager.start(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\pressure_manager.py", line 66, in start
+    raise RuntimeError(f"Pressure worker startup timed out for mode={mode}") from exc
+RuntimeError: Pressure worker startup timed out for mode=anon
+2026-04-05 16:44:25 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=0.9000|actual_bytes=92469800960|trial=2 status=failed successes=0 errors=0 actual=86.12 GiB
+2026-04-05 16:44:25 | INFO | runner | Running condition=anon trial=3 requested=86.12 GiB planned=86.12 GiB
+2026-04-05 16:45:35 | WARNING | pressure_manager | Pressure worker pid=46300 did not stop cleanly; terminating
+2026-04-05 16:45:37 | ERROR | runner | Condition failed: Pressure worker startup timed out for mode=anon
+Traceback (most recent call last):
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\pressure_manager.py", line 63, in start
+    status = status_queue.get(timeout=self.startup_timeout_s)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\multiprocessing\queues.py", line 114, in get
+    raise Empty
+_queue.Empty
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\runner.py", line 341, in _run_condition
+    pressure_handle = self.pressure_manager.start(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\pressure_manager.py", line 66, in start
+    raise RuntimeError(f"Pressure worker startup timed out for mode={mode}") from exc
+RuntimeError: Pressure worker startup timed out for mode=anon
+2026-04-05 16:45:37 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=0.9000|actual_bytes=92469800960|trial=3 status=failed successes=0 errors=0 actual=86.12 GiB
+2026-04-05 16:45:37 | INFO | runner | Running condition=anon trial=1 requested=105.26 GiB planned=86.12 GiB
+2026-04-05 16:46:47 | WARNING | pressure_manager | Pressure worker pid=33208 did not stop cleanly; terminating
+2026-04-05 16:46:51 | ERROR | runner | Condition failed: Pressure worker startup timed out for mode=anon
+Traceback (most recent call last):
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\pressure_manager.py", line 63, in start
+    status = status_queue.get(timeout=self.startup_timeout_s)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\multiprocessing\queues.py", line 114, in get
+    raise Empty
+_queue.Empty
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\runner.py", line 341, in _run_condition
+    pressure_handle = self.pressure_manager.start(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\pressure_manager.py", line 66, in start
+    raise RuntimeError(f"Pressure worker startup timed out for mode={mode}") from exc
+RuntimeError: Pressure worker startup timed out for mode=anon
+2026-04-05 16:46:51 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=1.1000|actual_bytes=92469800960|trial=1 status=failed successes=0 errors=0 actual=86.12 GiB
+2026-04-05 16:46:51 | INFO | runner | Running condition=anon trial=2 requested=105.26 GiB planned=86.12 GiB
+2026-04-05 16:48:01 | WARNING | pressure_manager | Pressure worker pid=38104 did not stop cleanly; terminating
+2026-04-05 16:48:02 | ERROR | runner | Condition failed: Pressure worker startup timed out for mode=anon
+Traceback (most recent call last):
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\pressure_manager.py", line 63, in start
+    status = status_queue.get(timeout=self.startup_timeout_s)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\multiprocessing\queues.py", line 114, in get
+    raise Empty
+_queue.Empty
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\runner.py", line 341, in _run_condition
+    pressure_handle = self.pressure_manager.start(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\pressure_manager.py", line 66, in start
+    raise RuntimeError(f"Pressure worker startup timed out for mode={mode}") from exc
+RuntimeError: Pressure worker startup timed out for mode=anon
+2026-04-05 16:48:02 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=1.1000|actual_bytes=92469800960|trial=2 status=failed successes=0 errors=0 actual=86.12 GiB
+2026-04-05 16:48:02 | INFO | runner | Running condition=anon trial=3 requested=105.26 GiB planned=86.12 GiB
+2026-04-05 16:49:12 | WARNING | pressure_manager | Pressure worker pid=49264 did not stop cleanly; terminating
+2026-04-05 16:49:15 | ERROR | runner | Condition failed: Pressure worker startup timed out for mode=anon
+Traceback (most recent call last):
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\pressure_manager.py", line 63, in start
+    status = status_queue.get(timeout=self.startup_timeout_s)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\multiprocessing\queues.py", line 114, in get
+    raise Empty
+_queue.Empty
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\runner.py", line 341, in _run_condition
+    pressure_handle = self.pressure_manager.start(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\pressure_manager.py", line 66, in start
+    raise RuntimeError(f"Pressure worker startup timed out for mode={mode}") from exc
+RuntimeError: Pressure worker startup timed out for mode=anon
+2026-04-05 16:49:15 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=1.1000|actual_bytes=92469800960|trial=3 status=failed successes=0 errors=0 actual=86.12 GiB
+2026-04-05 16:49:15 | INFO | runner | Running condition=anon trial=1 requested=143.53 GiB planned=86.12 GiB
+2026-04-05 16:50:25 | WARNING | pressure_manager | Pressure worker pid=50712 did not stop cleanly; terminating
+2026-04-05 16:50:26 | ERROR | runner | Condition failed: Pressure worker startup timed out for mode=anon
+Traceback (most recent call last):
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\pressure_manager.py", line 63, in start
+    status = status_queue.get(timeout=self.startup_timeout_s)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\multiprocessing\queues.py", line 114, in get
+    raise Empty
+_queue.Empty
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\runner.py", line 341, in _run_condition
+    pressure_handle = self.pressure_manager.start(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\pressure_manager.py", line 66, in start
+    raise RuntimeError(f"Pressure worker startup timed out for mode={mode}") from exc
+RuntimeError: Pressure worker startup timed out for mode=anon
+2026-04-05 16:50:26 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=1.5000|actual_bytes=92469800960|trial=1 status=failed successes=0 errors=0 actual=86.12 GiB
+2026-04-05 16:50:26 | INFO | runner | Running condition=anon trial=2 requested=143.53 GiB planned=86.12 GiB
+2026-04-05 16:51:36 | WARNING | pressure_manager | Pressure worker pid=50916 did not stop cleanly; terminating
+2026-04-05 16:51:40 | ERROR | runner | Condition failed: Pressure worker startup timed out for mode=anon
+Traceback (most recent call last):
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\pressure_manager.py", line 63, in start
+    status = status_queue.get(timeout=self.startup_timeout_s)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\multiprocessing\queues.py", line 114, in get
+    raise Empty
+_queue.Empty
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\runner.py", line 341, in _run_condition
+    pressure_handle = self.pressure_manager.start(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\pressure_manager.py", line 66, in start
+    raise RuntimeError(f"Pressure worker startup timed out for mode={mode}") from exc
+RuntimeError: Pressure worker startup timed out for mode=anon
+2026-04-05 16:51:40 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=1.5000|actual_bytes=92469800960|trial=2 status=failed successes=0 errors=0 actual=86.12 GiB
+2026-04-05 16:51:40 | INFO | runner | Running condition=anon trial=3 requested=143.53 GiB planned=86.12 GiB
+2026-04-05 16:52:39 | INFO | pressure_manager | Started pressure worker mode=anon pid=36420 requested=92469800960 actual=78599327744
+2026-04-05 16:53:12 | WARNING | pressure_manager | Pressure worker pid=36420 did not stop cleanly; terminating
+2026-04-05 16:53:16 | INFO | runner | Completed run_id=pilot=0|mode=anon|requested=1.5000|actual_bytes=92469800960|trial=3 status=completed successes=20 errors=0 actual=73.20 GiB
+2026-04-05 16:53:16 | INFO | __main__ | Benchmark finished. See D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\results\summary.md for the summary report.

@@ -1,0 +1,1 @@
+./trap_rootfs_missing_program.sh "$(pwd)/tmp/test_5/trap_fs"

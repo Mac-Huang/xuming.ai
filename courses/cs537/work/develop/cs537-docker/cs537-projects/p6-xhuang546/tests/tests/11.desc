@@ -1,0 +1,1 @@
+Flag semantics test: verifies that fsetxattr strictly enforces XATTR_CREATE (failing if the attribute already exists) and XATTR_REPLACE (failing if the attribute does not exist).

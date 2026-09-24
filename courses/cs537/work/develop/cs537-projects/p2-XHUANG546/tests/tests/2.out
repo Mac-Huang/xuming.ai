@@ -1,0 +1,1 @@
+TEST_2 PASS: getrusage(NULL) correctly returned -1

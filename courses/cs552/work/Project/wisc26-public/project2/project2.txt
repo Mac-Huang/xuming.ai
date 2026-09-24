@@ -1,0 +1,10 @@
+Author: Xuming Huang
+[Q0]: Then the output will be wrong; I don't think there exist immediate in R type and thus it's don’t-care.
+[Q1]: Branch/jump targets are instruction-aligned, so imm[0] would always be 0 anyway. RISC-V omits imm[0] and hardwires it to 0 to save encoding space and effectively gain one more bit of range. If you encoded imm[0], you’d waste a bit (or shrink range) without benefit.
+[Q2]: Maybe it's good for Hardware design to simplify/accelerate decode and register read wiring. Once those fields are fixed, the remaining immediate bits are fragmented; J/B encodings rearrange them to maximize immediate range while preserving those fixed field positions.
+[Q3]: Nothing will happen because it will be ignored.
+[Q4]: Because PC is not a general reg so that it doesn't live in the register file. It is updated every cycle by dedicated fetch/branch/jump logic and isn’t addressed like a normal architectural register so keeping it separate simplifies the datapath and timing.
+[Q5]: Changing the number of registers requires changing the ISA encoding (rs1/rs2/rd field widths), which impacts instruction format/width.
+[Q6]: To decode the instructions to select rs1/rs2/rd and immediate type; read operands from the register file. Specific regs like PC, stack pointer reg, cache, memory and etc.
+[Q7]: Basically, this project, extracting the instruction, is about the control while last proj, implementing the multiplier is the data path. I will look into the data path first and figure out what register/imm it takes, and then find a unused opcode and func to set the instruction.
+[Q8]: Yes, it will take more steps: hardware cannot remain the same: fetch/decode must handle different length instructions and PC increments by 2 or 4, plus expanded decode/control paths.

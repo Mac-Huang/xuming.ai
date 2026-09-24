@@ -1,0 +1,13 @@
+=== Perfmon Diagnosis ===
+  Requests completed:  30/30
+  Latency range:       926 – 946 ms
+  Median latency:      932 ms
+  Trend slope:         +0.191 ms / second
+  Total drift:         +5 ms over 27 s
+  RAM available:       60185 MB → 59415 MB  (Δ -770 MB)
+  Pages/sec peak:      21945
+  Page faults/sec avg: 60370.8
+  Disk read peak:      85.5 MB/s
+
+VERDICT: Latency is STABLE. No significant growth detected during this run.
+The benchmark dataset shows pressure-induced slowdowns, not a temporal drift.

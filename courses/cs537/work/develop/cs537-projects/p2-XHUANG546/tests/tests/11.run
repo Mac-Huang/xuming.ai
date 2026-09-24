@@ -1,0 +1,1 @@
+cd ../solution; ../tests/run-xv6-command.exp CPUS=4 Makefile.test test11 | grep -E 'PASS|FAIL'; cd ../tests

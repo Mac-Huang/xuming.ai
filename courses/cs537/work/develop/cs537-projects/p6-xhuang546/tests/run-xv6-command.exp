@@ -1,0 +1,67 @@
+#! /usr/bin/env expect
+
+proc shutdown {} {
+    # send command to halt qemu (ctrl-a x)
+    # https://stackoverflow.com/questions/27050473/how-to-send-ctrl-a-then-d-in-expect
+    send "\x01"; send "x"
+    # make sure to wait for it all to stop
+    # (without this, script was terminating before qemu quit -> bad)
+    expect eof
+}
+
+# turn off timeout (perhaps make this flexible later)
+# set timeout -1
+
+# 90s should be long enough
+set timeout 90
+
+# clean the solution?
+#spawn make -f [lindex $argv 2] clean
+
+# build and launch xv6 on qemu
+spawn make [lindex $argv 0] [lindex $argv 1] -f [lindex $argv 2] qemu-nox
+
+trap {
+    shutdown
+    exit 0
+} SIGINT
+
+# wait for initial prompt
+# wait for initial prompt OR a boot-time panic
+expect {
+    "init: starting sh\r" {
+        # Boot succeeded, now wait for the shell prompt
+        expect "$ "
+    }
+    -re "lapicid \[0-9\]+: panic:" {
+        # Kernel crashed during boot!
+        send_user "\nFAIL: Kernel Panic Detected during boot!\n"
+        shutdown
+    }
+    timeout {
+        send_user "\nFAIL: Timed out waiting for xv6 to boot!\n"
+        shutdown
+    }
+}
+
+# send command as per command line
+send "[lindex $argv 3]\r"
+
+# wait for it to be done
+expect {
+    "$ " {
+        # Normal, successful completion
+        shutdown
+    }
+    -re "lapicid \[0-9\]+: panic:" {
+        # The kernel crashed! 
+        # Print a custom message so the test script knows it failed
+        send_user "\nFAIL: Kernel Panic Detected!\n"
+        shutdown
+    }
+    timeout {
+        # The test took too long (e.g., infinite loop in user space)
+        send_user "\nFAIL: Test Timed Out!\n"
+        shutdown
+    }
+}

@@ -1,0 +1,8 @@
+== Building solution ==
+make: Nothing to be done for 'all'.
+
+== Running a missing program inside trap rootfs ==
+execvp: No such file or directory
+container prep done
+
+trap_rootfs_missing_program passed.

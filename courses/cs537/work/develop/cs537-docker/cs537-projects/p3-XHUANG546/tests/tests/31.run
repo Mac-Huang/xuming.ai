@@ -1,0 +1,1 @@
+(valgrind --quiet --leak-check=full --error-exitcode=42 --trace-children=no ../solution/wsh < tests/31.wsh)

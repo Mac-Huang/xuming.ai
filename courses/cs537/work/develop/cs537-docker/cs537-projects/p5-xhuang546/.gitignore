@@ -1,0 +1,11 @@
+# Build artifacts
+solution/*.o
+
+# Compiled test binaries
+tests/test_*
+tests/tests-out/
+
+# Editor/OS files
+*.swp
+*.swo
+.DS_Store

@@ -1,0 +1,57 @@
+2026-04-14 16:15:22 | INFO | __main__ | Logging to D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\results\logs\run_20260414_161522.log
+2026-04-14 16:15:22 | INFO | runner | Detected total RAM: 95.69 GiB
+2026-04-14 16:15:22 | INFO | runner | Using config file: D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\config\default.yaml
+2026-04-14 16:15:22 | INFO | runner | File-backed pressure cap is 346.69 GiB based on existing file=143.53 GiB and allowed disk growth=203.16 GiB
+2026-04-14 16:15:22 | INFO | runner | Planned 48 conditions
+2026-04-14 16:15:22 | INFO | runner | Reusing pressure data file D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\data\pressure_data.bin (143.53 GiB)
+2026-04-14 16:15:22 | INFO | inference_client | Running Ollama warmup request against model qwen3:4b
+2026-04-14 16:15:25 | INFO | runner | Warmup completed in 2121.87 ms
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=none|requested=0.0000|actual_bytes=0|trial=1
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=none|requested=0.0000|actual_bytes=0|trial=2
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=none|requested=0.0000|actual_bytes=0|trial=3
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=file_seq|requested=0.2500|actual_bytes=25686052864|trial=1
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=file_seq|requested=0.2500|actual_bytes=25686052864|trial=2
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=file_seq|requested=0.2500|actual_bytes=25686052864|trial=3
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=file_seq|requested=0.5000|actual_bytes=51372109824|trial=1
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=file_seq|requested=0.5000|actual_bytes=51372109824|trial=2
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=file_seq|requested=0.5000|actual_bytes=51372109824|trial=3
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=file_seq|requested=0.9000|actual_bytes=92469800960|trial=1
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=file_seq|requested=0.9000|actual_bytes=92469800960|trial=2
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=file_seq|requested=0.9000|actual_bytes=92469800960|trial=3
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=file_seq|requested=1.1000|actual_bytes=113018642432|trial=1
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=file_seq|requested=1.1000|actual_bytes=113018642432|trial=2
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=file_seq|requested=1.1000|actual_bytes=113018642432|trial=3
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=file_seq|requested=1.5000|actual_bytes=154116333568|trial=1
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=file_seq|requested=1.5000|actual_bytes=154116333568|trial=2
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=file_seq|requested=1.5000|actual_bytes=154116333568|trial=3
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=mmap_random|requested=0.2500|actual_bytes=25686052864|trial=1
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=mmap_random|requested=0.2500|actual_bytes=25686052864|trial=2
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=mmap_random|requested=0.2500|actual_bytes=25686052864|trial=3
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=mmap_random|requested=0.5000|actual_bytes=51372109824|trial=1
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=mmap_random|requested=0.5000|actual_bytes=51372109824|trial=2
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=mmap_random|requested=0.5000|actual_bytes=51372109824|trial=3
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=mmap_random|requested=0.9000|actual_bytes=92469800960|trial=1
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=mmap_random|requested=0.9000|actual_bytes=92469800960|trial=2
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=mmap_random|requested=0.9000|actual_bytes=92469800960|trial=3
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=mmap_random|requested=1.1000|actual_bytes=113018642432|trial=1
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=mmap_random|requested=1.1000|actual_bytes=113018642432|trial=2
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=mmap_random|requested=1.1000|actual_bytes=113018642432|trial=3
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=mmap_random|requested=1.5000|actual_bytes=154116333568|trial=1
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=mmap_random|requested=1.5000|actual_bytes=154116333568|trial=2
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=mmap_random|requested=1.5000|actual_bytes=154116333568|trial=3
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=anon|requested=0.2500|actual_bytes=25686052864|trial=1
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=anon|requested=0.2500|actual_bytes=25686052864|trial=2
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=anon|requested=0.2500|actual_bytes=25686052864|trial=3
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=anon|requested=0.5000|actual_bytes=51372109824|trial=1
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=anon|requested=0.5000|actual_bytes=51372109824|trial=2
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=anon|requested=0.5000|actual_bytes=51372109824|trial=3
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=anon|requested=0.9000|actual_bytes=92469800960|trial=1
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=anon|requested=0.9000|actual_bytes=92469800960|trial=2
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=anon|requested=0.9000|actual_bytes=92469800960|trial=3
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=anon|requested=1.1000|actual_bytes=92469800960|trial=1
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=anon|requested=1.1000|actual_bytes=92469800960|trial=2
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=anon|requested=1.1000|actual_bytes=92469800960|trial=3
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=anon|requested=1.5000|actual_bytes=92469800960|trial=1
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=anon|requested=1.5000|actual_bytes=92469800960|trial=2
+2026-04-14 16:15:25 | INFO | runner | Skipping completed run pilot=0|mode=anon|requested=1.5000|actual_bytes=92469800960|trial=3
+2026-04-14 16:15:27 | INFO | __main__ | Benchmark finished. See D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\results\summary.md for the summary report.

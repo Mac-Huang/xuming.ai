@@ -1,0 +1,127 @@
+NOTE: we have stopped maintaining the x86 version of xv6, and switched
+our efforts to the RISC-V version
+(https://github.com/mit-pdos/xv6-riscv.git)
+
+xv6 is a re-implementation of Dennis Ritchie's and Ken Thompson's Unix
+Version 6 (v6).  xv6 loosely follows the structure and style of v6,
+but is implemented for a modern x86-based multiprocessor using ANSI C.
+
+ACKNOWLEDGMENTS
+
+xv6 is inspired by John Lions's Commentary on UNIX 6th Edition (Peer
+to Peer Communications; ISBN: 1-57398-013-7; 1st edition (June 14,
+2000)). See also https://pdos.csail.mit.edu/6.828/, which
+provides pointers to on-line resources for v6.
+
+xv6 borrows code from the following sources:
+    JOS (asm.h, elf.h, mmu.h, bootasm.S, ide.c, console.c, and others)
+    Plan 9 (entryother.S, mp.h, mp.c, lapic.c)
+    FreeBSD (ioapic.c)
+    NetBSD (console.c)
+
+The following people have made contributions: Russ Cox (context switching,
+locking), Cliff Frey (MP), Xiao Yu (MP), Nickolai Zeldovich, and Austin
+Clements.
+
+We are also grateful for the bug reports and patches contributed by Silas
+Boyd-Wickizer, Anton Burtsev, Cody Cutler, Mike CAT, Tej Chajed, eyalz800,
+Nelson Elhage, Saar Ettinger, Alice Ferrazzi, Nathaniel Filardo, Peter
+Froehlich, Yakir Goaron,Shivam Handa, Bryan Henry, Jim Huang, Alexander
+Kapshuk, Anders Kaseorg, kehao95, Wolfgang Keller, Eddie Kohler, Austin
+Liew, Imbar Marinescu, Yandong Mao, Matan Shabtay, Hitoshi Mitake, Carmi
+Merimovich, Mark Morrissey, mtasm, Joel Nider, Greg Price, Ayan Shafqat,
+Eldar Sehayek, Yongming Shen, Cam Tenny, tyfkda, Rafael Ubal, Warren
+Toomey, Stephen Tu, Pablo Ventura, Xi Wang, Keiichi Watanabe, Nicolas
+Wolovick, wxdao, Grant Wu, Jindong Zhang, Icenowy Zheng, and Zou Chang Wei.
+
+The code in the files that constitute xv6 is
+Copyright 2006-2018 Frans Kaashoek, Robert Morris, and Russ Cox.
+
+ERROR REPORTS
+
+We don't process error reports (see note on top of this file).
+
+BUILDING AND RUNNING XV6
+
+To build xv6 on an x86 ELF machine (like Linux or FreeBSD), run
+"make". On non-x86 or non-ELF machines (like OS X, even on x86), you
+will need to install a cross-compiler gcc suite capable of producing
+x86 ELF binaries (see https://pdos.csail.mit.edu/6.828/).
+Then run "make TOOLPREFIX=i386-jos-elf-". Now install the QEMU PC
+simulator and run "make qemu".
+
+/////////////////////////////////////////////////////////////////////////
+
+name:        Xuming Huang
+cs login:    xuming
+wisc ID:     xhuang546
+email:       xhuang546@wisc.edu
+
+Kernel changes:
+
+* `stat.h` — added `struct rusage` definition.
+* `proc.h` — added per-process resource-usage fields (`rusage`) to `struct proc`.
+* `proc.c` — initialized `p->rusage` in `allocproc()`; updated voluntary context-switch accounting (e.g., in `sleep()`).
+* `trap.c` — updated timer-interrupt handling to increment `utime` or `stime` based on user vs. kernel mode.
+* `sysproc.c` — implemented the `sys_getrusage()` system call handler.
+* `syscall.h` — added the syscall number for `getrusage`.
+* `syscall.c` — registered `sys_getrusage` in the syscall dispatch table.
+
+User-space / interface changes:
+
+* `user.h` — added the `getrusage()` user-space prototype.
+* `usys.S` — added the syscall stub for `getrusage`.
+
+Build / tests:
+
+* `Makefile` — added the test program(s) to `UPROGS`.
+* `mytest.c` (or your chosen test filename) — user-level tests for `getrusage`.
+
+
+In this project, I added a new xv6 system call, `getrusage` (kernel entry point: `sys_getrusage`), with the following signature:
+
+```c
+int getrusage(struct rusage *usage)
+```
+
+On success, the kernel copies the current process’s `utime`, `stime`, `nvcsw`, and `write_count` into the user-provided `struct rusage` and returns `0`. If `usage` is invalid (NULL or not a valid user-space address range), the call returns `-1`.
+
+I first defined `struct rusage` in `stat.h`. Then, in `proc.h`, I added an anonymous struct named `rusage` inside `struct proc` to store these four counters. The fields are initialized to zero when a new process is created in `allocproc()` via:
+
+```c
+memset(&p->rusage, 0, sizeof(p->rusage));
+```
+
+For voluntary context switches, I increment `nvcsw` when a process calls `sleep()`, since the process explicitly blocks and yields the CPU. For CPU-time accounting, I updated `trap.c` to handle timer interrupts: on each clock tick, the kernel checks the currently running process and increments either `utime` or `stime` depending on whether the trap occurred in user mode or kernel mode, determined by the privilege level in `tf->cs`.
+
+To implement `sys_getrusage()`, I exposed the syscall to user space by adding entries in `user.h` and `usys.S`. In `sysproc.c`, I implemented the handler to fetch the user pointer argument, validate it, and then populate the user struct with the calling process’s current counters. Since the per-process data is stored as an anonymous struct in `proc`, I copy the fields explicitly and use `sizeof(*usage)` carefully to avoid layout/typing mistakes.
+
+Testing is done with a user-level program (`mytest`) that verifies:
+
+1. `getrusage(NULL)` fails with `-1`
+2. counters are monotonic across consecutive calls
+3. `write_count` increases on successful writes
+4. failed writes (bad file descriptor) are also counted
+5. invalid pointers that straddle the end of the heap are rejected
+6. `utime` increases under a user-space busy loop
+7. `stime` increases under heavy syscall activity
+8. `nvcsw` increases under repeated `sleep(1)` and also increases when blocking in `wait()`
+
+A sample run shows all checks passing:
+
+```
+$ mytest
+=== getrusage() basic tests ===
+PASS: getrusage(NULL) returns -1
+PASS: monotonic counters
+PASS: write_count delta (success writes) (20)
+PASS: write_count delta (bad-fd failed writes) (10)
+PASS: getrusage(straddle end-of-heap) returns -1
+PASS: utime delta after busy loop (got=93 >= 1)
+PASS: stime delta after syscall loop (got=88 >= 1)
+PASS: nvcsw delta after N sleep(1) (10)
+PASS: nvcsw delta after wait() (got=1 >= 1)
+=== summary ===
+ALL PASS
+```
+

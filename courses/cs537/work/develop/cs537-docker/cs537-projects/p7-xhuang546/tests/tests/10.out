@@ -1,0 +1,2 @@
+container prep done
+PASS ct_run_returns_child_exit_status

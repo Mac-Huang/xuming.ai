@@ -1,0 +1,2 @@
+container prep done
+PASS seccomp_allows_explicitly_allowed_syscall

@@ -1,0 +1,18 @@
+./edit-makefile.sh ../solution/Makefile test1,test2,test3,test4,test5,test6,test7,test8,test9,test10,test11 > ../solution/Makefile.test
+cp -f tests/test1.c ../solution/test1.c
+cp -f tests/test2.c ../solution/test2.c
+cp -f tests/test3.c ../solution/test3.c
+cp -f tests/test4.c ../solution/test4.c
+cp -f tests/test5.c ../solution/test5.c
+cp -f tests/test6.c ../solution/test6.c
+cp -f tests/test7.c ../solution/test7.c
+cp -f tests/test8.c ../solution/test8.c
+cp -f tests/test9.c ../solution/test9.c
+cp -f tests/test10.c ../solution/test10.c
+cp -f tests/test11.c ../solution/test11.c
+
+cd ../solution/
+make -f Makefile.test clean
+make -f Makefile.test xv6.img
+make -f Makefile.test fs.img
+cd ../tests

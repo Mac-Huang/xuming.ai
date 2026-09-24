@@ -1,0 +1,1 @@
+Truncation mode test: calls fsetxattr with size 0 and a null pointer to verify the attribute key remains but its value is correctly truncated to 0 bytes.

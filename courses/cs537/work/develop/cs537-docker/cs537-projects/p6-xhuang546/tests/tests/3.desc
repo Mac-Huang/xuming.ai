@@ -1,0 +1,1 @@
+Basic list functionality test: sets multiple extended attributes on a file and uses flistxattr to verify that the keys are properly returned as a continuous sequence of null-terminated strings.

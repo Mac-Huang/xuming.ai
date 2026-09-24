@@ -1,0 +1,423 @@
+{
+  "cs300": {
+    "title": "CS 300: Programming II",
+    "description": "Java coursework covering object-oriented design, recursion, linked structures, trees, queues, and priority-based scheduling.",
+    "sections": [
+      {
+        "title": "Java projects",
+        "items": [
+          {
+            "label": "P01 · Event Manager",
+            "folder": "P01 Event Manager"
+          },
+          {
+            "label": "P02 · Party Hopper",
+            "folder": "P02 Party Hopper"
+          },
+          {
+            "label": "P03 · Exceptional Library",
+            "folder": "P03 Library"
+          },
+          {
+            "label": "P04 · Monthly Calendar",
+            "folder": "P04CalendarManager"
+          },
+          {
+            "label": "P05 · Team Manager",
+            "folder": "P05 Team Manager"
+          },
+          {
+            "label": "P06 · Playlist Generator",
+            "folder": "p06 Playlist Generator"
+          },
+          {
+            "label": "P07 · Freeze Tracker",
+            "folder": "P07 Freeze Tracker"
+          },
+          {
+            "label": "P08 · Print Manager: stacks and queues",
+            "folder": "P08 Data Structures"
+          },
+          {
+            "label": "P09 · Hobbemoun tree and iterator",
+            "folder": "p09"
+          },
+          {
+            "label": "P10 · Priority Events",
+            "folder": "P10 Priority Events"
+          }
+        ]
+      },
+      {
+        "title": "Assignment material",
+        "items": [
+          {
+            "label": "Monthly Calendar assignment (PDF)",
+            "file": "P04CalendarManager/P04 Monthy Calendar/Spring_2025_P04_Monthly_Calendar.pdf"
+          }
+        ]
+      }
+    ]
+  },
+  "cs354": {
+    "title": "CS 354: Machine Organization and Programming",
+    "description": "C programming exercises in decoding, two-dimensional arrays, Sudoku validation, and magic squares.",
+    "sections": [
+      {
+        "title": "C projects",
+        "items": [
+          {
+            "label": "P1 · Decoder",
+            "folder": "p1"
+          },
+          {
+            "label": "P2A · Sudoku board checker",
+            "folder": "p2/p2A"
+          },
+          {
+            "label": "P2B · Magic square",
+            "folder": "p2/p2B"
+          }
+        ]
+      },
+      {
+        "title": "Notes and diagrams",
+        "items": [
+          {
+            "label": "Exam 1 study sheet (PDF)",
+            "file": "e1_cheatsheet.pdf"
+          },
+          {
+            "label": "Memory diagram exercise (PDF)",
+            "file": "A04/diagram04.pdf"
+          }
+        ]
+      }
+    ]
+  },
+  "cs537": {
+    "title": "CS 537: Introduction to Operating Systems",
+    "description": "Operating-systems projects in C and xv6, reading notes, and an honors study of filesystem interference with AI inference.",
+    "sections": [
+      {
+        "title": "Systems projects",
+        "items": [
+          {
+            "label": "P1 · C programming practice",
+            "folder": "develop/cs537-projects/p1-XHUANG546"
+          },
+          {
+            "label": "P2 · An xv6 system call",
+            "folder": "develop/cs537-projects/p2-XHUANG546"
+          },
+          {
+            "label": "P3 · wsh shell and pipelines",
+            "folder": "develop/cs537-projects/p3-XHUANG546"
+          },
+          {
+            "label": "P4 · xv6 memory mapping",
+            "folder": "develop/cs537-projects/p4-xhuang546"
+          },
+          {
+            "label": "P5 · Thread pool and concurrent BST",
+            "folder": "develop/cs537-projects/p5-xhuang546"
+          },
+          {
+            "label": "P6 · xv6 extended file attributes",
+            "folder": "develop/cs537-projects/p6-xhuang546"
+          },
+          {
+            "label": "P7 · Mini container library",
+            "folder": "develop/cs537-projects/p7-xhuang546"
+          },
+          {
+            "label": "Docker environment and alternate working copies",
+            "folder": "develop/cs537-docker"
+          }
+        ]
+      },
+      {
+        "title": "Honors research",
+        "items": [
+          {
+            "label": "From Working Sets to AI Inference — final report (DOCX)",
+            "file": "green_sheet_final_report.docx"
+          },
+          {
+            "label": "Measurement code, results, and plots",
+            "folder": "papers/measurement"
+          },
+          {
+            "label": "Measurement writeup",
+            "file": "papers/measurement/results/writeup.md"
+          },
+          {
+            "label": "Filesystem-interference observations",
+            "file": "papers/measurement/results/file_seq_observations.md"
+          }
+        ]
+      },
+      {
+        "title": "Paper reading notes",
+        "items": [
+          {
+            "label": "The Working Set Model for Program Behavior",
+            "file": "papers/The Working Set Model for Program Behavior.md"
+          },
+          {
+            "label": "Virtual Memory Management in VAX/VMS",
+            "file": "papers/Virtual Memory Management in the VAXVMS Operating System.md"
+          },
+          {
+            "label": "Tidying Up the Address Space",
+            "file": "papers/Tidying Up the Address Space.md"
+          },
+          {
+            "label": "Efficient Virtual Memory for Big Memory Servers",
+            "file": "papers/Efficient Virtual Memory for Big Memory Servers.md"
+          },
+          {
+            "label": "FlexGen",
+            "file": "papers/FlexGen High-Throughput LLM Inference on a Single GPU.md"
+          },
+          {
+            "label": "μAgent: System-Level Orchestration of LLM Inference",
+            "file": "papers/μAgent System-Level Orchestration of LLM Inference on Heterogeneous SoCs.md"
+          }
+        ]
+      },
+      {
+        "title": "Reference materials",
+        "items": [
+          {
+            "label": "Research papers",
+            "folder": "papers"
+          },
+          {
+            "label": "Practice exams",
+            "folder": "practice"
+          }
+        ]
+      }
+    ]
+  },
+  "cs540": {
+    "title": "CS 540: Introduction to Artificial Intelligence",
+    "description": "Lecture notes and a probabilistic English–Spanish language classifier, with sample inputs and comparison checks.",
+    "sections": [
+      {
+        "title": "Lecture materials",
+        "items": [
+          {
+            "label": "Linear algebra and PCA (PDF)",
+            "file": "lec04_linalg_pca.pdf"
+          },
+          {
+            "label": "Introduction to NLP (PDF)",
+            "file": "lec05_nlp_intro.pdf"
+          },
+          {
+            "label": "Machine learning overview (PDF)",
+            "file": "lec06_ml_overview.pdf"
+          }
+        ]
+      },
+      {
+        "title": "Homework and code",
+        "items": [
+          {
+            "label": "Homework 2 · Language identification",
+            "folder": "Homework/hw2"
+          },
+          {
+            "label": "Homework 2 assignment (PDF)",
+            "file": "Homework/Hw2.pdf"
+          },
+          {
+            "label": "Prior sensitivity analysis",
+            "file": "Homework/hw2/prior_sensitivity.txt"
+          }
+        ]
+      }
+    ]
+  },
+  "cs552": {
+    "title": "CS/ECE 552: Introduction to Computer Architecture",
+    "description": "RISC-V instruction-set work, Verilog components, and an RV32I processor with testbenches and cache experiments.",
+    "sections": [
+      {
+        "title": "Architecture projects",
+        "items": [
+          {
+            "label": "Project 1 · Arithmetic and instruction exercises",
+            "folder": "Project/wisc26-public/project1"
+          },
+          {
+            "label": "Project 2 · ALU, register file, and immediates",
+            "folder": "Project/wisc26-public/project2"
+          },
+          {
+            "label": "Project 3 · Processor implementation",
+            "folder": "Project/wisc26-public/project3"
+          },
+          {
+            "label": "RV32I processor · RTL and testbenches",
+            "folder": "Project/wisc26-public/RV32I-PROCESSOR"
+          },
+          {
+            "label": "Alternate processor and cache working copy",
+            "folder": "Project/wisc26-public/RV32I-PROCESSOR - Copy"
+          }
+        ]
+      },
+      {
+        "title": "Datapath and references",
+        "items": [
+          {
+            "label": "Single-cycle processor datapath (PNG)",
+            "file": "RV321 single cycle processor datapath.png"
+          },
+          {
+            "label": "Editable datapath diagram (draw.io)",
+            "file": "RV32I.drawio"
+          },
+          {
+            "label": "RV32I reference card (PDF)",
+            "file": "RV32I-ref_card_rev1.pdf"
+          },
+          {
+            "label": "RV32I specification (PDF)",
+            "file": "RV32I-specification_rev0.pdf"
+          },
+          {
+            "label": "Architecture quick-reference card (PDF)",
+            "file": "COD_5e_Greencard.pdf"
+          },
+          {
+            "label": "Spring 2026 weekly outline (PDF)",
+            "file": "Weekly Outline_ ECE552_ Introduction to Computer Architecture (001) SP26.pdf"
+          }
+        ]
+      }
+    ]
+  },
+  "cs577": {
+    "title": "CS 577: Introduction to Algorithms",
+    "description": "Lecture notes, problem sets, and C++ practice covering algorithm analysis, graphs, and greedy methods.",
+    "sections": [
+      {
+        "title": "Lecture notes",
+        "items": [
+          {
+            "label": "Introduction (PDF)",
+            "file": "CS577-Intro.pdf"
+          },
+          {
+            "label": "Algorithm analysis (PDF)",
+            "file": "CS577-BasicAlgoAnalysis-Condensed.pdf"
+          },
+          {
+            "label": "Graphs (PDF)",
+            "file": "CS577-Graphs-Condensed.pdf"
+          },
+          {
+            "label": "Greedy algorithms (PDF)",
+            "file": "CS577-Greedy-Condensed.pdf"
+          },
+          {
+            "label": "Syllabus (PDF)",
+            "file": "CS577_Syllabus.pdf"
+          }
+        ]
+      },
+      {
+        "title": "Problem sets and practice",
+        "items": [
+          {
+            "label": "Problem sets and notes",
+            "folder": "homework"
+          },
+          {
+            "label": "Depth-first search in C++",
+            "folder": "code/dfs"
+          },
+          {
+            "label": "C++ input practice",
+            "folder": "code/helloWorld"
+          }
+        ]
+      }
+    ]
+  },
+  "ece252": {
+    "title": "ECE 252: Introduction to Computer Engineering",
+    "description": "LC-3 assembly exercises, string routines, graphics work, and PennSim reference materials.",
+    "sections": [
+      {
+        "title": "Assembly coursework",
+        "items": [
+          {
+            "label": "Homework 7",
+            "folder": "HW07"
+          },
+          {
+            "label": "Homework 8",
+            "folder": "HW08"
+          },
+          {
+            "label": "Homework 9",
+            "folder": "HW09"
+          },
+          {
+            "label": "Homework 11 · Drawing and multiplication",
+            "folder": "HW11"
+          },
+          {
+            "label": "Homework 12",
+            "folder": "HW12"
+          },
+          {
+            "label": "String-end routine",
+            "folder": "QUIZ11"
+          },
+          {
+            "label": "String copy and concatenation",
+            "folder": "QUIZ12"
+          }
+        ]
+      },
+      {
+        "title": "Reference and exercises",
+        "items": [
+          {
+            "label": "PennSim tutorial (PDF)",
+            "file": "ECE252_PennSim_Tutorial.pdf"
+          },
+          {
+            "label": "Exercise 02B (PDF)",
+            "file": "Ex02B.pdf"
+          },
+          {
+            "label": "Exercise 04A (PDF)",
+            "file": "Ex04A.pdf"
+          }
+        ]
+      }
+    ]
+  },
+  "esl118": {
+    "title": "ESL 118: Academic Writing",
+    "description": "Academic reading and concise research summaries.",
+    "sections": [
+      {
+        "title": "Writing",
+        "items": [
+          {
+            "label": "Mini-summary: children’s independent active free play (DOCX)",
+            "file": "XumingHuang.MinisumArticle.docx"
+          }
+        ]
+      }
+    ]
+  }
+}

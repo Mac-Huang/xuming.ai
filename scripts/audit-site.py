@@ -29,7 +29,8 @@ for p,kind,raw in refs:
  if u.netloc and u.netloc not in ('xuming.ai','www.xuming.ai'):
   external.setdefault(urllib.parse.urlunsplit((u.scheme or 'https',u.netloc,u.path,u.query,'')),set()).add((kind if kind.endswith('.js') else str(p.relative_to(ROOT))));continue
  if u.scheme not in ('','http','https'):continue
- target=(ROOT/u.path.lstrip('/') if u.netloc or u.path.startswith('/') else p.parent/u.path).resolve() if u.path else p.resolve()
+ decoded_path=urllib.parse.unquote(u.path)
+ target=(ROOT/decoded_path.lstrip('/') if u.netloc or decoded_path.startswith('/') else p.parent/decoded_path).resolve() if decoded_path else p.resolve()
  if target.is_dir():target/='index.html'
  local_count+=1
  if not target.is_file():missing.append([str(p.relative_to(ROOT)),kind,raw]);continue

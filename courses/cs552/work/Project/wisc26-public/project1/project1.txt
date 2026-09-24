@@ -1,0 +1,11 @@
+Author: Xuming Huang
+[Q0]: No, a0 always represents the lower 32 bits of the multipilcation while the product of the two 32-bit ranges from 0 to 64 bits
+[Q1]: Maybe NOT, INC or DEC (increment and decrement)
+[Q2]: Benefit apperantly is that processor doesn't have to execute so many instructions like in `umul.s`; the downside I can think of is that it's gonna take 4 registers which takes up 5 * 5 bits
+[Q3]: The biggest difference is the amount of registers in one instruction: in IA-32, one register is operand as well as result
+[Q4]: I need to think about the movement of data among memory in low-level code. I may never use ASM for developing.
+[Q5]: Compiler. I know there are some optimazations to improve the high-level code into concise low-level instructions. 
+[Q6]: It takes up one instruction for specific purpose instead of one probably more general instruction, which might be slower to execution some instruction.
+[Q7]: It returns the quotient of (n - 32) * 5 / 9 where n is the argument
+[Q8]: If opposite effect means returning remainder, I will return t3 instead of t2
+[Q9]: I would say addition because there are lots of addi in this program.

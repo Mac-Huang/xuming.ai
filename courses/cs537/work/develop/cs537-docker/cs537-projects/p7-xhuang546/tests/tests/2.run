@@ -1,0 +1,1 @@
+./rootfs_basic_boot.sh "$(pwd)/tmp/test_2/rootfs"

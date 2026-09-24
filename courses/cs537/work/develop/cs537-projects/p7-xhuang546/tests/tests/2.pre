@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -e
+
+TEST_DIR="$(pwd)"
+SOLN_DIR="$TEST_DIR/../solution"
+ROOTFS_DIR="$TEST_DIR/tmp/test_2/rootfs"
+
+rm -rf "$TEST_DIR/tmp/test_2"
+mkdir -p "$TEST_DIR/tmp/test_2"
+
+make -C "$SOLN_DIR" clean
+make -C "$SOLN_DIR"
+make -C "$TEST_DIR/binary"
+"$TEST_DIR/rootfs/make-rootfs.sh" "$ROOTFS_DIR" /bin/ls /bin/sh /bin/mkdir
+"$TEST_DIR/binary/install-binaries-rootfs.sh" "$ROOTFS_DIR"

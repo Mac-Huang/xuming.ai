@@ -1,0 +1,1 @@
+bash ./check_normal_cd.sh "$(pwd)/tmp/test_6/rootfs"

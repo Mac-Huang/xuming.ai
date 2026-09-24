@@ -1,0 +1,1 @@
+rm -rf ./tmp/test_16 ./tmp_rootfs

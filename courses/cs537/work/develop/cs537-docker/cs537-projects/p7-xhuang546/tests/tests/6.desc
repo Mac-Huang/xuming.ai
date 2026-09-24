@@ -1,0 +1,1 @@
+Normal rootfs allows internal cd but prevents cd traversal from escaping

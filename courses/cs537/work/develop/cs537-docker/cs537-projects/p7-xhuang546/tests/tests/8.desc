@@ -1,0 +1,1 @@
+enter_rootfs makes the container see files that exist only inside the rootfs

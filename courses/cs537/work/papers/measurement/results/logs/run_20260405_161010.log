@@ -1,0 +1,191 @@
+2026-04-05 16:10:10 | INFO | __main__ | Logging to D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\results\logs\run_20260405_161010.log
+2026-04-05 16:10:10 | INFO | runner | Detected total RAM: 95.69 GiB
+2026-04-05 16:10:10 | INFO | runner | Using config file: D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\config\default.yaml
+2026-04-05 16:10:10 | INFO | runner | File-backed pressure cap is 303.97 GiB based on existing file=0.00 B and allowed disk growth=303.97 GiB
+2026-04-05 16:10:10 | INFO | runner | Planned 10 conditions
+2026-04-05 16:10:10 | INFO | runner | Extending pressure data file D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\data\pressure_data.bin from 0.00 B to 4.78 GiB
+2026-04-05 16:10:12 | INFO | inference_client | Running Ollama warmup request against model qwen3:4b
+2026-04-05 16:10:15 | INFO | runner | Warmup completed in 2457.61 ms
+2026-04-05 16:10:15 | INFO | runner | Running condition=none trial=1 requested=0.00 B planned=0.00 B
+2026-04-05 16:10:21 | INFO | runner | Completed run_id=pilot=1|mode=none|requested=0.0000|actual_bytes=0|trial=1 status=completed successes=5 errors=0 actual=0.00 B
+2026-04-05 16:10:21 | INFO | runner | Running condition=file_seq trial=1 requested=979.84 MiB planned=979.84 MiB
+2026-04-05 16:10:21 | ERROR | runner | Condition failed: [WinError 5] 拒绝访问。
+Traceback (most recent call last):
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\runner.py", line 335, in _run_condition
+    pressure_handle = self.pressure_manager.start(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\pressure_manager.py", line 45, in start
+    status_queue = self.context.Queue()
+                   ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\multiprocessing\context.py", line 103, in Queue
+    return Queue(maxsize, ctx=self.get_context())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\multiprocessing\queues.py", line 42, in __init__
+    self._reader, self._writer = connection.Pipe(duplex=False)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\multiprocessing\connection.py", line 575, in Pipe
+    h2 = _winapi.CreateFile(
+         ^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 5] 拒绝访问。
+2026-04-05 16:10:21 | INFO | runner | Completed run_id=pilot=1|mode=file_seq|requested=0.0100|actual_bytes=1027440640|trial=1 status=failed successes=0 errors=0 actual=979.84 MiB
+2026-04-05 16:10:21 | INFO | runner | Running condition=file_seq trial=1 requested=1.91 GiB planned=1.91 GiB
+2026-04-05 16:10:21 | ERROR | runner | Condition failed: [WinError 5] 拒绝访问。
+Traceback (most recent call last):
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\runner.py", line 335, in _run_condition
+    pressure_handle = self.pressure_manager.start(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\pressure_manager.py", line 45, in start
+    status_queue = self.context.Queue()
+                   ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\multiprocessing\context.py", line 103, in Queue
+    return Queue(maxsize, ctx=self.get_context())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\multiprocessing\queues.py", line 42, in __init__
+    self._reader, self._writer = connection.Pipe(duplex=False)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\multiprocessing\connection.py", line 575, in Pipe
+    h2 = _winapi.CreateFile(
+         ^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 5] 拒绝访问。
+2026-04-05 16:10:21 | INFO | runner | Completed run_id=pilot=1|mode=file_seq|requested=0.0200|actual_bytes=2054881280|trial=1 status=failed successes=0 errors=0 actual=1.91 GiB
+2026-04-05 16:10:21 | INFO | runner | Running condition=file_seq trial=1 requested=4.78 GiB planned=4.78 GiB
+2026-04-05 16:10:21 | ERROR | runner | Condition failed: [WinError 5] 拒绝访问。
+Traceback (most recent call last):
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\runner.py", line 335, in _run_condition
+    pressure_handle = self.pressure_manager.start(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\pressure_manager.py", line 45, in start
+    status_queue = self.context.Queue()
+                   ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\multiprocessing\context.py", line 103, in Queue
+    return Queue(maxsize, ctx=self.get_context())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\multiprocessing\queues.py", line 42, in __init__
+    self._reader, self._writer = connection.Pipe(duplex=False)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\multiprocessing\connection.py", line 575, in Pipe
+    h2 = _winapi.CreateFile(
+         ^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 5] 拒绝访问。
+2026-04-05 16:10:21 | INFO | runner | Completed run_id=pilot=1|mode=file_seq|requested=0.0500|actual_bytes=5137207296|trial=1 status=failed successes=0 errors=0 actual=4.78 GiB
+2026-04-05 16:10:21 | INFO | runner | Running condition=mmap_random trial=1 requested=979.84 MiB planned=979.84 MiB
+2026-04-05 16:10:21 | ERROR | runner | Condition failed: [WinError 5] 拒绝访问。
+Traceback (most recent call last):
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\runner.py", line 335, in _run_condition
+    pressure_handle = self.pressure_manager.start(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\pressure_manager.py", line 45, in start
+    status_queue = self.context.Queue()
+                   ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\multiprocessing\context.py", line 103, in Queue
+    return Queue(maxsize, ctx=self.get_context())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\multiprocessing\queues.py", line 42, in __init__
+    self._reader, self._writer = connection.Pipe(duplex=False)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\multiprocessing\connection.py", line 575, in Pipe
+    h2 = _winapi.CreateFile(
+         ^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 5] 拒绝访问。
+2026-04-05 16:10:21 | INFO | runner | Completed run_id=pilot=1|mode=mmap_random|requested=0.0100|actual_bytes=1027440640|trial=1 status=failed successes=0 errors=0 actual=979.84 MiB
+2026-04-05 16:10:21 | INFO | runner | Running condition=mmap_random trial=1 requested=1.91 GiB planned=1.91 GiB
+2026-04-05 16:10:21 | ERROR | runner | Condition failed: [WinError 5] 拒绝访问。
+Traceback (most recent call last):
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\runner.py", line 335, in _run_condition
+    pressure_handle = self.pressure_manager.start(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\pressure_manager.py", line 45, in start
+    status_queue = self.context.Queue()
+                   ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\multiprocessing\context.py", line 103, in Queue
+    return Queue(maxsize, ctx=self.get_context())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\multiprocessing\queues.py", line 42, in __init__
+    self._reader, self._writer = connection.Pipe(duplex=False)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\multiprocessing\connection.py", line 575, in Pipe
+    h2 = _winapi.CreateFile(
+         ^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 5] 拒绝访问。
+2026-04-05 16:10:21 | INFO | runner | Completed run_id=pilot=1|mode=mmap_random|requested=0.0200|actual_bytes=2054881280|trial=1 status=failed successes=0 errors=0 actual=1.91 GiB
+2026-04-05 16:10:21 | INFO | runner | Running condition=mmap_random trial=1 requested=4.78 GiB planned=4.78 GiB
+2026-04-05 16:10:21 | ERROR | runner | Condition failed: [WinError 5] 拒绝访问。
+Traceback (most recent call last):
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\runner.py", line 335, in _run_condition
+    pressure_handle = self.pressure_manager.start(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\pressure_manager.py", line 45, in start
+    status_queue = self.context.Queue()
+                   ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\multiprocessing\context.py", line 103, in Queue
+    return Queue(maxsize, ctx=self.get_context())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\multiprocessing\queues.py", line 42, in __init__
+    self._reader, self._writer = connection.Pipe(duplex=False)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\multiprocessing\connection.py", line 575, in Pipe
+    h2 = _winapi.CreateFile(
+         ^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 5] 拒绝访问。
+2026-04-05 16:10:21 | INFO | runner | Completed run_id=pilot=1|mode=mmap_random|requested=0.0500|actual_bytes=5137207296|trial=1 status=failed successes=0 errors=0 actual=4.78 GiB
+2026-04-05 16:10:21 | INFO | runner | Running condition=anon trial=1 requested=979.84 MiB planned=979.84 MiB
+2026-04-05 16:10:21 | ERROR | runner | Condition failed: [WinError 5] 拒绝访问。
+Traceback (most recent call last):
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\runner.py", line 335, in _run_condition
+    pressure_handle = self.pressure_manager.start(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\pressure_manager.py", line 45, in start
+    status_queue = self.context.Queue()
+                   ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\multiprocessing\context.py", line 103, in Queue
+    return Queue(maxsize, ctx=self.get_context())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\multiprocessing\queues.py", line 42, in __init__
+    self._reader, self._writer = connection.Pipe(duplex=False)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\multiprocessing\connection.py", line 575, in Pipe
+    h2 = _winapi.CreateFile(
+         ^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 5] 拒绝访问。
+2026-04-05 16:10:21 | INFO | runner | Completed run_id=pilot=1|mode=anon|requested=0.0100|actual_bytes=1027440640|trial=1 status=failed successes=0 errors=0 actual=979.84 MiB
+2026-04-05 16:10:21 | INFO | runner | Running condition=anon trial=1 requested=1.91 GiB planned=1.91 GiB
+2026-04-05 16:10:21 | ERROR | runner | Condition failed: [WinError 5] 拒绝访问。
+Traceback (most recent call last):
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\runner.py", line 335, in _run_condition
+    pressure_handle = self.pressure_manager.start(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\pressure_manager.py", line 45, in start
+    status_queue = self.context.Queue()
+                   ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\multiprocessing\context.py", line 103, in Queue
+    return Queue(maxsize, ctx=self.get_context())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\multiprocessing\queues.py", line 42, in __init__
+    self._reader, self._writer = connection.Pipe(duplex=False)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\multiprocessing\connection.py", line 575, in Pipe
+    h2 = _winapi.CreateFile(
+         ^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 5] 拒绝访问。
+2026-04-05 16:10:21 | INFO | runner | Completed run_id=pilot=1|mode=anon|requested=0.0200|actual_bytes=2054881280|trial=1 status=failed successes=0 errors=0 actual=1.91 GiB
+2026-04-05 16:10:21 | INFO | runner | Running condition=anon trial=1 requested=4.78 GiB planned=4.78 GiB
+2026-04-05 16:10:21 | ERROR | runner | Condition failed: [WinError 5] 拒绝访问。
+Traceback (most recent call last):
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\runner.py", line 335, in _run_condition
+    pressure_handle = self.pressure_manager.start(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\src\pressure_manager.py", line 45, in start
+    status_queue = self.context.Queue()
+                   ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\multiprocessing\context.py", line 103, in Queue
+    return Queue(maxsize, ctx=self.get_context())
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\multiprocessing\queues.py", line 42, in __init__
+    self._reader, self._writer = connection.Pipe(duplex=False)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\multiprocessing\connection.py", line 575, in Pipe
+    h2 = _winapi.CreateFile(
+         ^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 5] 拒绝访问。
+2026-04-05 16:10:21 | INFO | runner | Completed run_id=pilot=1|mode=anon|requested=0.0500|actual_bytes=5137207296|trial=1 status=failed successes=0 errors=0 actual=4.78 GiB
+2026-04-05 16:10:21 | INFO | __main__ | Benchmark finished. See D:\Develop\Transfer\UW-Madison\Courses\CS537\papers\measurement\results\summary.md for the summary report.
