@@ -50,7 +50,7 @@ export class GitHub {
     const file = await this.request(`/contents/${entryPath(date)}?ref=${BRANCH}`, { allowMissing: true });
     if (!file) return { sha: null, entry: null };
     const entry = JSON.parse(decode(file.content));
-    if (entry.date !== date || typeof entry.html !== 'string' || typeof entry.title !== 'string') throw new Error('The saved entry has an invalid format. It has not been overwritten.');
+    if (entry.date !== date || (typeof entry.markdown !== 'string' && typeof entry.html !== 'string') || typeof entry.title !== 'string') throw new Error('The saved entry has an invalid format. It has not been overwritten.');
     return { sha: file.sha, entry };
   }
   async month(month) {
@@ -73,18 +73,28 @@ export class GitHub {
 export function cleanHTML(html, doc = document) {
   const template = doc.createElement('template');
   template.innerHTML = html;
-  const allowed = new Set(['P','DIV','BR','B','STRONG','I','EM','U','S','H2','H3','UL','OL','LI','BLOCKQUOTE','PRE','CODE','IMG']);
-  const remove = new Set(['SCRIPT','STYLE','IFRAME','OBJECT','SVG','MATH','FORM','INPUT','BUTTON','TEMPLATE','LINK','META']);
+  const allowed = new Set(['P','DIV','BR','HR','B','STRONG','I','EM','U','S','DEL','H1','H2','H3','H4','H5','H6','UL','OL','LI','BLOCKQUOTE','PRE','CODE','IMG','A','TABLE','THEAD','TBODY','TR','TH','TD','INPUT']);
+  const remove = new Set(['SCRIPT','STYLE','IFRAME','OBJECT','SVG','MATH','FORM','BUTTON','TEMPLATE','LINK','META']);
   for (const node of [...template.content.querySelectorAll('*')]) {
     if (remove.has(node.tagName)) { node.remove(); continue; }
     if (!allowed.has(node.tagName)) { node.replaceWith(...node.childNodes); continue; }
     const src = node.getAttribute('src') || '';
     const alt = node.getAttribute('alt') || '';
+    const href = node.getAttribute('href') || '';
+    const checkbox = node.getAttribute('type') === 'checkbox';
+    const checked = node.hasAttribute('checked');
+    const start = node.getAttribute('start');
     for (const attr of [...node.attributes]) node.removeAttribute(attr.name);
     if (node.tagName === 'IMG') {
       if (!/^data:image\/(png|jpeg|webp|gif);base64,[a-zA-Z0-9+/=]+$/.test(src) && !src.startsWith(`${RAW}journal/media/`)) { node.remove(); continue; }
       node.setAttribute('src', src); node.setAttribute('alt', alt); node.setAttribute('loading','lazy');
     }
+    if(node.tagName === 'A' && /^(https?:\/\/|mailto:)/i.test(href)) { node.setAttribute('href',href); node.setAttribute('target','_blank'); node.setAttribute('rel','noopener noreferrer'); }
+    if(node.tagName === 'INPUT') {
+      if(!checkbox) { node.remove(); continue; }
+      node.setAttribute('type','checkbox');node.setAttribute('disabled','');if(checked)node.setAttribute('checked','');
+    }
+    if(node.tagName === 'OL' && /^\d+$/.test(start||''))node.setAttribute('start',start);
   }
   return template.innerHTML;
 }

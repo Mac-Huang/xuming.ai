@@ -43,3 +43,12 @@ test('month listing accepts only entry files and a valid month path',async()=>{
   assert.deepEqual(await github.month('2026-09'),['2026-09-24']);
   await assert.rejects(github.month('../bad'),/Invalid/);
 });
+
+test('reads both Markdown entries and existing HTML entries without rewriting',async()=>{
+  for(const body of [{markdown:'## Today\n\n**Hello**',version:2},{html:'<p>Hello</p>',version:1}]) {
+    let calls=0;
+    const entry={date:'2026-09-24',title:'Journal',...body};
+    const github=new GitHub(async(url,options)=>{calls++;assert.equal(options.method,undefined);return Response.json({sha:'existing',content:encode(JSON.stringify(entry))});});
+    assert.deepEqual(await github.get(entry.date),{sha:'existing',entry});assert.equal(calls,1);
+  }
+});

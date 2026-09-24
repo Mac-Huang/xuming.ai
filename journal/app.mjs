@@ -1,4 +1,5 @@
-import { GitHub, RAW, REPO, BRANCH, cleanHTML, validDate, entryPath } from './core.mjs';
+import { GitHub, RAW, REPO, BRANCH, validDate, entryPath } from './core.mjs?v=20260924-markdown';
+import { toMarkdownEntry, renderMarkdown, mediaPath, markdownImage } from './markdown.mjs?v=20260924-markdown';
 
 const $ = id => document.getElementById(id);
 const github = new GitHub();
@@ -13,10 +14,21 @@ const drafts = new Map();
 let database, date = today(), month = date.slice(0,7), sha = null, remote = null;
 let known = false, dirty = false, busy = false, mediaBusy = false, loading = false, conflict = false, revision = 0, timer, monthRequest = 0;
 let savedDays = new Set();
+let pendingImages = {}, view = 'write';
 let draftFailure = false;
 function status(text, error = false) { $('status').textContent = text; $('status').classList.toggle('error', error); }
-function snapshot() { return { date, title: $('title').value.trim(), html: cleanHTML($('editor').innerHTML), updated: new Date().toISOString(), version: 1 }; }
-function hasContent(entry) { return Boolean(entry.title || entry.html.replace(/<[^>]*>/g,'').trim() || entry.html.includes('<img')); }
+function snapshot() { return { date, title: $('title').value.trim(), markdown: $('editor').value, pendingImages: {...pendingImages}, updated: new Date().toISOString(), version: 2 }; }
+function hasContent(entry) { return Boolean(entry.title || entry.markdown.trim()); }
+function updatePreview() { $('preview').innerHTML=renderMarkdown($('editor').value,pendingImages); }
+function setView(next) {
+  view=next;$('editor').hidden=view!=='write';$('preview').hidden=view!=='preview';$('toolbar').hidden=view!=='write';
+  $('write-view').setAttribute('aria-pressed',String(view==='write'));$('preview-view').setAttribute('aria-pressed',String(view==='preview'));
+  if(view==='preview')updatePreview();else $('editor').focus();
+}
+function insertText(text) {
+  const editor=$('editor');editor.focus();editor.setRangeText(text,editor.selectionStart,editor.selectionEnd,'end');changed();
+}
+$('write-view').onclick=()=>setView('write');$('preview-view').onclick=()=>setView('preview');
 function controls() {
   $('save').disabled = !known || !dirty || busy || mediaBusy || conflict || !github.token;
   $('date').disabled = busy || mediaBusy || loading;
@@ -24,7 +36,7 @@ function controls() {
   $('title').disabled = loading;
   $('export').disabled = loading;
   $('history').hidden = !sha;
-  $('editor').contentEditable = String(!loading);
+  $('editor').disabled = loading;
   for (const button of $('toolbar').querySelectorAll('button')) button.disabled = loading || mediaBusy;
   $('image').disabled = loading || mediaBusy || busy;
 }
@@ -42,9 +54,9 @@ async function storeDraft(value, key = date) {
   } catch { draftFailure = true; status('Local draft storage unavailable. Keep this tab open and export or sync your entry.', true); }
 }
 function remember() { return storeDraft({ entry: snapshot(), baseSha: sha, known }); }
-function wordCount() { const text = $('editor').textContent.trim(); $('word-count').textContent = `${text ? text.split(/\s+/u).length : 0} words`; }
+function wordCount() { const text = $('editor').value.replace(/!\[[^\]]*\]\([^)]*\)/g,'').trim(); $('word-count').textContent = `${text ? text.split(/\s+/u).length : 0} words`; }
 function changed() {
-  dirty = true; revision++; wordCount();
+  dirty = true; revision++; wordCount(); updatePreview();
   remember().then(() => { if (!draftFailure && !busy && !conflict) status(github.token ? 'Draft saved on this device · waiting to sync…' : 'Draft saved on this device · connect GitHub to sync'); });
   renderCalendar(); schedule(); controls();
 }
@@ -78,7 +90,7 @@ async function loadMonth() {
 function showConflict() {
   conflict = true; $('conflict').hidden = false;
   const heading = document.createElement('strong'); heading.textContent = remote.entry?.title || '(No title)';
-  const body = document.createElement('div'); body.innerHTML = cleanHTML(remote.entry?.html || '<p>No saved entry.</p>');
+  const body = document.createElement('div'); body.innerHTML = renderMarkdown(toMarkdownEntry(remote.entry,date).markdown);
   $('remote-version').replaceChildren(heading, body);
   status('Your local draft differs from GitHub. Choose which version to keep.', true); controls();
 }
@@ -90,15 +102,15 @@ async function openDate(nextDate, force = false) {
   if (dirty && known && github.token && !conflict && hasContent(snapshot()) && !force) await save();
   if (dirty) await remember();
   date = nextDate; loading = true; known = false; dirty = false; conflict = false; sha = null; revision = 0;
-  $('date').value = date; $('conflict').hidden = true; $('title').value = ''; $('editor').replaceChildren();
+  $('date').value = date; $('conflict').hidden = true; $('title').value = ''; $('editor').value = ''; pendingImages = {}; updatePreview();
   $('history').href = `https://github.com/${REPO}/commits/${BRANCH}/${entryPath(date)}`;
   if(month!==date.slice(0,7)) { month=date.slice(0,7); loadMonth(); }
   renderCalendar(); controls(); status('Loading entry…');
   const local = drafts.get(date);
   try {
     remote = await github.get(date); sha = remote.sha; known = true;
-    const entry = local?.entry || remote.entry;
-    $('title').value = entry?.title || ''; $('editor').innerHTML = cleanHTML(entry?.html || '');
+    const entry = toMarkdownEntry(local?.entry || remote.entry,date); pendingImages=entry.pendingImages;
+    $('title').value = entry?.title || ''; $('editor').value = entry.markdown;
     if(local) {
       dirty = true;
       if(local.baseSha!==sha) { sha=local.baseSha; showConflict(); }
@@ -106,10 +118,11 @@ async function openDate(nextDate, force = false) {
     } else status(remote.entry ? 'Saved on GitHub' : 'A fresh page for this day');
   } catch(error) {
     remote = null;
-    $('title').value = local?.entry.title || ''; $('editor').innerHTML = cleanHTML(local?.entry.html || '');
+    const entry=toMarkdownEntry(local?.entry,date);pendingImages=entry.pendingImages;
+    $('title').value = entry.title || ''; $('editor').value = entry.markdown;
     dirty = Boolean(local); sha = local?.baseSha || null; status(`${error.message} Refresh before syncing.`, true);
   }
-  loading = false; controls(); wordCount(); schedule();
+  loading = false; controls(); wordCount(); updatePreview(); schedule();
 }
 async function save() {
   clearTimeout(timer);
@@ -118,23 +131,18 @@ async function save() {
   if (!hasContent(entry) && !sha) { status('Write something before saving.'); return; }
   const version = revision; busy = true; controls(); status('Saving to GitHub…');
   try {
-    const fragment = document.createElement('template'); fragment.innerHTML = entry.html;
-    for(const image of fragment.content.querySelectorAll('img')) {
-      const source = image.getAttribute('src');
-      if(!source.startsWith('data:')) continue;
-      const extension = /data:image\/(\w+);/.exec(source)[1];
-      const path = `journal/media/${date.slice(0,7).replace('-','/')}/${crypto.randomUUID()}.${extension}`;
+    for(const [path,source] of Object.entries(entry.pendingImages)) {
+      if(!entry.markdown.includes(RAW+path))continue;
+      if(!/^data:image\/(png|jpeg|webp|gif);base64,[a-zA-Z0-9+/=]+$/.test(source))throw new Error('An image draft could not be read. Remove it and insert it again.');
       const result = await github.put(path, source.split(',')[1], null, `Journal image: ${date}`);
       if(!result.content?.sha) throw new Error('GitHub did not confirm the image save.');
-      const url = RAW+path; image.setAttribute('src',url);
-      for(const live of $('editor').querySelectorAll('img')) if(live.getAttribute('src')===source) live.setAttribute('src',url);
-      // Remember completed uploads even if the later entry save fails.
+      delete pendingImages[path];
       await remember();
     }
-    entry.html = fragment.innerHTML;
-    const result = await github.save(entry, sha);
+    const {pendingImages: localImages, ...savedEntry}=entry;
+    const result = await github.save(savedEntry, sha);
     if(!result.content?.sha) throw new Error('GitHub did not confirm the entry save.');
-    sha = result.content.sha; remote = {sha,entry}; savedDays.add(date);
+    sha = result.content.sha; remote = {sha,entry:savedEntry}; savedDays.add(date);
     dirty = revision !== version;
     if(dirty) await remember(); else await storeDraft(null);
     if(!draftFailure) status(dirty?'Saved · newer changes waiting to sync…':'Saved on GitHub');
@@ -150,8 +158,7 @@ async function save() {
 async function addImages(files) {
   if(loading || busy || mediaBusy) { status('Wait for the current operation to finish, then insert the image again.'); return; }
   mediaBusy = true; clearTimeout(timer); controls();
-  const selection = window.getSelection();
-  const range = selection.rangeCount && $('editor').contains(selection.anchorNode) ? selection.getRangeAt(0).cloneRange() : null;
+  setView('write');
   try {
     for(const file of files) {
       if(!['image/png','image/jpeg','image/webp','image/gif'].includes(file.type)) throw new Error('Choose a PNG, JPG, WebP, or GIF image.');
@@ -161,20 +168,28 @@ async function addImages(files) {
       const canvas = document.createElement('canvas'); canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));
       canvas.getContext('2d').drawImage(bitmap,0,0,canvas.width,canvas.height);bitmap.close();
       const data = canvas.toDataURL('image/webp',.85);
-      $('editor').focus();
-      if(range && files.length===1) { selection.removeAllRanges(); selection.addRange(range); }
-      else if(!selection.rangeCount || !$('editor').contains(selection.anchorNode)) { const end=document.createRange();end.selectNodeContents($('editor'));end.collapse(false);selection.removeAllRanges();selection.addRange(end); }
-      const img=document.createElement('img');img.src=data;img.alt=file.name;
-      document.execCommand('insertHTML',false,`${img.outerHTML}<p><br></p>`);
-      changed();
+      const path=mediaPath(date);pendingImages[path]=data;
+      insertText(`\n\n${markdownImage(file.name,RAW+path)}\n\n`);
+
     }
   } catch(error) { status(error.message,true); }
   finally { mediaBusy=false; controls(); schedule(); }
 }
 $('title').addEventListener('input',changed); $('editor').addEventListener('input',changed);
 $('toolbar').addEventListener('mousedown', event => { if(event.target.closest('button'))event.preventDefault(); });
-$('toolbar').addEventListener('click',event=> {const button=event.target.closest('[data-command]');if(!button)return;$('editor').focus();document.execCommand(button.dataset.command,false,button.dataset.value);changed();});
-$('editor').addEventListener('paste',event=>{event.preventDefault();const files=[...event.clipboardData.files];if(files.length){addImages(files);return;}document.execCommand('insertText',false,event.clipboardData.getData('text/plain'));changed();});
+$('toolbar').addEventListener('click',event=>{
+  const button=event.target.closest('[data-markdown]');if(!button)return;
+  const editor=$('editor'),selected=editor.value.slice(editor.selectionStart,editor.selectionEnd);
+  const kind=button.dataset.markdown;
+  const snippets={bold:`**${selected||'bold text'}**`,italic:`*${selected||'italic text'}*`,heading:`## ${selected||'Heading'}`,list:(selected||'List item').split('\n').map(line=>'- '+line).join('\n'),task:(selected||'Task').split('\n').map(line=>'- [ ] '+line).join('\n'),quote:(selected||'Quote').split('\n').map(line=>'> '+line).join('\n'),code:'```\n'+(selected||'code')+'\n```',link:`[${selected||'link text'}](https://)`};
+  let text=snippets[kind];if(!text)return;
+  if(['heading','list','task','quote','code'].includes(kind)) {
+    if(editor.selectionStart && editor.value[editor.selectionStart-1]!=='\n')text='\n'+text;
+    text+='\n';
+  }
+  insertText(text);
+});
+$('editor').addEventListener('paste',event=>{const files=[...event.clipboardData.files];if(files.length){event.preventDefault();addImages(files);}});
 $('editor').addEventListener('dragover',event=>event.preventDefault());
 $('editor').addEventListener('drop',event=>{event.preventDefault();if(event.dataTransfer.files.length)addImages([...event.dataTransfer.files]);});
 $('image').onclick=()=>$('image-file').click(); $('image-file').onchange=event=>{addImages([...event.target.files]);event.target.value='';};
@@ -203,9 +218,10 @@ $('connection-form').onsubmit=async event=>{
   finally{submit.disabled=false;controls();}
 };
 $('export').onclick=()=>{
-  const entry=snapshot(), heading=document.createElement('h1');heading.textContent=entry.title||entry.date;
-  const html=`<!doctype html><meta charset="utf-8"><meta name="robots" content="noindex"><title>Journal ${entry.date}</title>${heading.outerHTML}<p>${entry.date}</p>${entry.html}`;
-  const url=URL.createObjectURL(new Blob([html],{type:'text/html'})),link=document.createElement('a');link.href=url;link.download=`journal-${date}.html`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  const entry=snapshot();
+  let markdown=(entry.title?'# '+entry.title+'\n\n':'')+entry.markdown+'\n';
+  for(const [path,data] of Object.entries(pendingImages))markdown=markdown.replaceAll(RAW+path,data);
+  const url=URL.createObjectURL(new Blob([markdown],{type:'text/markdown;charset=utf-8'})),link=document.createElement('a');link.href=url;link.download=`journal-${date}.md`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
 };
 window.addEventListener('beforeunload',event=>{if(dirty||busy||mediaBusy){event.preventDefault();event.returnValue='';}});
 document.addEventListener('keydown',event=>{if((event.metaKey||event.ctrlKey)&&event.key==='s'){event.preventDefault();save();}});
