@@ -11,7 +11,7 @@
 (function () {
   if (window.BotPreload) return;
 
-  const DEFAULT_MODEL = "Llama-3.2-3B-Instruct-q4f16_1-MLC";
+  const DEFAULT_MODEL = "Qwen2.5-3B-Instruct-q4f16_1-MLC";
   const PILL_DISMISS_KEY = "botPreloadPillDismissed";
 
   if (!("gpu" in navigator)) {
@@ -50,7 +50,7 @@
     state.text = "Pre-warming AI…";
     emit();
     try {
-      const { CreateMLCEngine } = await import("https://esm.run/@mlc-ai/web-llm");
+      const { CreateMLCEngine } = await import("https://esm.run/@mlc-ai/web-llm@0.2.85");
       state.engine = await CreateMLCEngine(state.modelId, {
         initProgressCallback: (rep) => {
           state.pct = Math.max(state.pct, Math.round((rep.progress || 0) * 100));

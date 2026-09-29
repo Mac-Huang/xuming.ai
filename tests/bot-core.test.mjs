@@ -1,8 +1,33 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {retrieve,directMatch,answerIssues,citedSources} from '../js/bot-core.mjs';
+import {retrieve,directMatch,answerIssues,citedSources,requestKind,resolveQuery} from '../js/bot-core.mjs';
 const {chunks}=JSON.parse(fs.readFileSync(new URL('../data/bot-knowledge.json',import.meta.url)));
+test('screenshot greetings and bot questions never retrieve unrelated research',()=>{
+ for(const [q,kind] of [['hi','social'],["what's ur name",'identity'],['what is ur name','identity'],['what model is this','model'],['which model are you using','model'],['what can you do','capabilities']]) {
+  assert.equal(requestKind(q),kind,q);assert.deepEqual(retrieve(q,chunks),[],q);
+ }
+ assert.equal(requestKind('What model does Xuming use for NPU inference?'),'profile');
+ assert.equal(requestKind('Who is Xuming Huang?'),'profile');
+ assert.equal(requestKind('What is your favorite project name?'),'profile');
+});
+test('best-project paraphrases supply candidates for an evidence-based assessment',()=>{
+ for(const q of ['tell me the best project xuming has done?',"what's your most impressive project?",'What are your projects?']) {
+  const ids=retrieve(q,chunks).map(c=>c.id);
+  assert.ok(ids.includes('wuklab'),q);assert.ok(ids.includes('linuxguard-2025'),q);
+ }
+});
+test('named biography and results questions retain the actual subject',()=>{
+ assert.equal(retrieve('Who is Xuming Huang?',chunks)[0]?.id,'bio');
+ assert.equal(retrieve('What are the results of LinuxGuard?',chunks)[0]?.id,'linuxguard-2025');
+});
+test('short follow-ups retain the user topic, including successive follow-ups',()=>{
+ const first=resolveQuery('tell me more','WukLab');
+ const next=resolveQuery('how does it work?',first);
+ assert.match(next,/WukLab/);assert.ok(retrieve(next,chunks).some(c=>c.id==='wuklab'));
+ assert.equal(resolveQuery('hi',first),'hi');
+ assert.deepEqual(retrieve('what model is this',chunks,{previousQuery:first}),[]);
+});
 for(const [q,id,words] of [['Wuklab','wuklab',['currently','Yiying Zhang','January 2026']],['remzi','linuxguard-2025',['advised by Professor Remzi','Vinay Banakar']],['Vinay Banakar','linuxguard-2025',['ADSL']],['Michael Swift','os-inference',['honors','January to May 2026']],['Tell me about your publications','publication-list',['CASH','BEIT','Near-infrared']],['What is your GPA?','education',['3.96','3.82']]]){
  test('verified profile answer: '+q,()=>{const results=retrieve(q,chunks);assert.equal(results.length,1);assert.equal(results[0].id,id);for(const w of words)assert.ok(results[0].text.includes(w));});
 }

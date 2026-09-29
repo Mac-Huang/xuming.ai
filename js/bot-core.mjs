@@ -1,5 +1,6 @@
 // Pure retrieval and citation functions, shared by the browser and regression tests.
 const STOP = new Set('a an the and or of on in at to for from with by as is are was were be been am do does did has have had i me my mine you your yours he his him she her they their them it its this that these those xuming huang tell about what which who how when where can could would please know more some any all only also me during explain describe taking taken tell little bit briefly share give professor prof doctor dr'.split(' '));
+for(const word of 'done doing result results outcome outcomes achievement achievements'.split(' '))STOP.add(word);
 export const normalize = text => text.toLowerCase().normalize('NFKD')
  .replace(/[’‘]/g,"'")
  // Expand conversational contractions before punctuation removal. Otherwise
@@ -19,11 +20,34 @@ const sameTopic = (query, alias) => {
 export function directMatch(query,chunks) {
  return chunks.find(c=>c.authoritative && c.aliases.some(a=>sameTopic(query,a)));
 }
+// Bot identity is runtime metadata, not a fact to look up in Xuming's biography.
+export function requestKind(query) {
+ const q=normalize(query).replace(/\bur\b/g,'your').replace(/\bu\b/g,'you');
+ if(/^(hi|hello|hey|hiya|good morning|good evening|thanks|thank you)( there| bot| xuming bot)?$/.test(q))return 'social';
+ if(/^(what is|whats|tell me|tell me about) your name$|^who are you$|^introduce yourself$/.test(q))return 'identity';
+ if(/^(what|which) (?:is |are )?(?:the |your |this )?(?:ai |language |llm )?model(?: is this| are you| are you using| do you use| powers you)?$|^what are you running on$/.test(q))return 'model';
+ if(/^(what can you do|how do you work|what can i ask you)$/.test(q))return 'capabilities';
+ return 'profile';
+}
+export function resolveQuery(query,previousQuery='') {
+ if(previousQuery && requestKind(query)==='profile' &&
+  (/^(and |what about |how about |tell me more|more details|why\??$|how\??$)/i.test(query) && tokens(query).length<=3 ||
+   /\b(it|that|this project|that project|which one)\b/i.test(query) && tokens(query).length<=7))return previousQuery+' '+query;
+ return query;
+}
 export function retrieve(query,chunks,{previousQuery='',limit=4}={}) {
+ if(requestKind(query)!=='profile')return [];
+ query=resolveQuery(query,previousQuery);
+ if(/^(?:who is|tell me about|about) xuming(?: huang)?$/.test(normalize(query)))return chunks.filter(c=>c.id==='bio');
+ // "Best" is a request for a reasoned recommendation, not a keyword that
+ // every project description must contain. Supply contrasting candidates.
+ if(/\b(project|projects)\b/i.test(query) &&
+  (/\b(best|strongest|impressive|recommend|favorite|favourite)\b/i.test(query) ||
+   /^(?:tell me (?:about )?|what are |list |show me )?(?:all |your |his |xuming s |xuming )?(?:projects|project portfolio)(?: xuming has done)?$/i.test(normalize(query)))) {
+  return ['research-overview','wuklab','linuxguard-2025','learning-resources'].map(id=>chunks.find(c=>c.id===id)).filter(Boolean).slice(0,limit);
+ }
  const direct=directMatch(query,chunks);
  if(direct)return [{...direct,score:100}];
- // A short follow-up reuses the last user topic, never an assistant's generated claims.
- if(previousQuery && /^(and |what about |how about |tell me more|more details|why\??$|how\??$)/i.test(query) && tokens(query).length<=3)query=previousQuery+' '+query;
  const terms=tokens(query);if(!terms.length)return [];
  const docs=chunks.map(c=>new Set(tokens(c.title+' '+c.text+' '+c.aliases.join(' '))));
  const idf=new Map(terms.map(t=>[t,Math.log(1+chunks.length/(1+docs.filter(d=>d.has(t)).length))]));
@@ -47,10 +71,10 @@ export function citedSources(answer,retrieved) {
  if(!ids.length || ids.some(i=>i<1||i>retrieved.length))return [];
  return [...new Set(ids)].map(i=>({...retrieved[i-1],citation:i}));
 }
-export function answerIssues(answer,retrieved) {
+export function answerIssues(answer,retrieved,{kind='profile'}={}) {
  const issues=[];
  if(!answer.trim())issues.push('The answer is empty.');
- if(/\b(?:I (?:am|have been|worked|work|studied|developed|built|spent|captained|played|led)|my|mine|as Xuming)\b/i.test(answer))issues.push('Speak about Xuming in the third person.');
+ if(kind==='profile' && /\b(?:I (?:am|have been|worked|work|studied|developed|built|spent|captained|played|led)|my|mine|as Xuming)\b/i.test(answer))issues.push('Speak about Xuming in the third person.');
  const ids=[...answer.matchAll(/\[(\d+)\]/g)].map(m=>Number(m[1]));
  if(ids.some(i=>i<1||i>retrieved.length))issues.push('Use only the supplied source numbers.');
  if(retrieved.length&&!ids.length)issues.push('Answer from the relevant evidence and cite it with [1] or the matching source number.');
@@ -61,6 +85,6 @@ export function answerIssues(answer,retrieved) {
  // This catches unsupported statistics, not every possible semantic error.
  const numbers=text=>(text.match(/\d+(?:[,.]\d+)*/g)||[]).map(n=>Number(n.replaceAll(',','')));
  const facts=new Set(numbers(sources.map(c=>c.text).join(' ')));
- if(numbers(answer.replace(/\[\d+\]/g,'')).some(n=>!facts.has(n)))issues.push('Remove numerical claims that are absent from the cited evidence.');
+ if(kind==='profile' && numbers(answer.replace(/\[\d+\]/g,'')).some(n=>!facts.has(n)))issues.push('Remove numerical claims that are absent from the cited evidence.');
  return issues;
 }

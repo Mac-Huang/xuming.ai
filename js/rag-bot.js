@@ -1,9 +1,10 @@
-import {generateReply} from './bot-generation.mjs?v=20260923-4';
+import {generateReply} from './bot-generation.mjs?v=20260929-1';
 const MODEL_OPTIONS=[
  {id:'Qwen2.5-1.5B-Instruct-q4f16_1-MLC',name:'Qwen 2.5 1.5B',label:'Fast · Qwen 2.5 1.5B (~1.6 GB GPU memory)'},
- {id:'Llama-3.2-3B-Instruct-q4f16_1-MLC',name:'Llama 3.2 3B',label:'Better · Llama 3.2 3B (~2.3 GB GPU memory)'}
+ {id:'Qwen2.5-3B-Instruct-q4f16_1-MLC',name:'Qwen 2.5 3B',label:'Balanced · Qwen 2.5 3B (~2.5 GB GPU memory)'},
+ {id:'Qwen2.5-7B-Instruct-q4f16_1-MLC',name:'Qwen 2.5 7B',label:'Larger · Qwen 2.5 7B (~5.1 GB GPU memory)'}
 ];
-let knowledge=null,engine=null,currentModel=null,busy=false,loading=false,previousQuery='';
+let knowledge=null,engine=null,currentModel=null,busy=false,loading=false,previousQuery='',previousAnswer='';
 async function loadKnowledge(){
  if(knowledge)return knowledge;
  const response=await fetch(new URL('../data/bot-knowledge.json',import.meta.url),{cache:'no-cache'});
@@ -33,10 +34,10 @@ export async function ask(message,{onToken,onSources,onPhase}={}){
  busy=true;
  const started=performance.now();
  try{
-  const result=await generateReply({engine,message,chunks:knowledge.chunks,previousQuery,onToken,onPhase});
-  previousQuery=message;
+  const result=await generateReply({engine,message,chunks:knowledge.chunks,previousQuery,previousAnswer,modelName:modelName(),onToken,onPhase});
+  if(result.kind==='profile'){previousQuery=result.resolvedQuery.slice(-1200);previousAnswer=result.text;}
   onSources?.(result.sources);
   return {...result,model:modelName(),elapsedMs:performance.now()-started};
  }finally{busy=false;}
 }
-window.RagBot={init:initBot,ask,isReady:()=>Boolean(engine)&&!loading,listModels:()=>MODEL_OPTIONS,defaultModel:MODEL_OPTIONS[1].id,reset:()=>{previousQuery='';},isBusy:()=>busy,modelName};
+window.RagBot={init:initBot,ask,isReady:()=>Boolean(engine)&&!loading,listModels:()=>MODEL_OPTIONS,defaultModel:MODEL_OPTIONS[1].id,reset:()=>{previousQuery='';previousAnswer='';},isBusy:()=>busy,modelName};

@@ -14,6 +14,38 @@ function mockModel(answers){
   })();
  }}}}};
 }
+test('bot identity and model replies use inference and actual runtime metadata',async()=>{
+ for(const [message,answer] of [['hi','Hello! Ask me about Xuming’s work.'],["what's ur name",'My name is Xuming Bot.'],['what model is this','I am running Qwen 2.5 3B locally in your browser.']]) {
+  const {engine,requests}=mockModel([answer]);
+  const result=await generateReply({engine,message,chunks,modelName:'Qwen 2.5 3B'});
+  assert.equal(result.text,answer);assert.equal(requests.length,1);
+  assert.deepEqual(result.sources,[]);
+  assert.match(requests[0].messages[0].content,/Active language model: Qwen 2.5 3B/);
+  assert.ok(!requests[0].messages.at(-1).content.includes('NPU'));
+ }
+});
+test('greeting refusal is revised using runtime context',async()=>{
+ const {engine,requests}=mockModel(["I don't know.",'Hello! I’m Xuming Bot.']);
+ assert.equal((await generateReply({engine,message:'hi',chunks})).text,'Hello! I’m Xuming Bot.');
+ assert.equal(requests.length,2);
+});
+test('recommendations and follow-ups receive evidence and a judgment criterion',async()=>{
+ const {engine,requests}=mockModel(['For compiler systems, I would choose the WukLab NPU runtime work. It overlaps compilation and inference. [2]']);
+ const result=await generateReply({engine,message:'why that one?',previousQuery:'best project',chunks});
+ assert.match(requests[0].messages[0].content,/state a criterion/);
+ assert.match(requests[0].messages[1].content,/best project why that one/);
+ assert.ok(result.sources.some(c=>c.id==='wuklab'));
+});
+test('only follow-ups receive the previous reply as a reference, never as evidence',async()=>{
+ const previousAnswer='I would pick LinuxGuard. [3]';
+ const {engine,requests}=mockModel(['LinuxGuard generates bug detectors using compiler feedback. [3]']);
+ await generateReply({engine,message:'why that one?',chunks,previousQuery:'best project',previousAnswer});
+ assert.match(requests[0].messages[1].content,/reference only \(not evidence/);
+ assert.match(requests[0].messages[1].content,/I would pick LinuxGuard\./);
+ const other=mockModel(['His hobby is flag football. [1]']);
+ await generateReply({engine:other.engine,message:'hobbies',chunks,previousQuery:'best project',previousAnswer});
+ assert.ok(!JSON.stringify(other.requests[0].messages).includes('I would pick LinuxGuard'));
+});
 for(const [message,answer,source] of [
  ['WukLab','Xuming studies NPU compilers and inference runtimes at WukLab. [1]','wuklab'],
  ["what's your interest",'His research interests include AI systems, edge inference, and compilers. [1]','bio'],
