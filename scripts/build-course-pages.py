@@ -10,7 +10,7 @@ manifest=json.loads((ROOT/'courses/coursework-manifest.json').read_text())
 GITHUB='https://github.com/Mac-Huang/xuming.ai/'
 css='.material-group{margin:30px 0}.material-group h2{font-size:22px}.material-group li{margin:10px 0}.course-note{color:#666;font-size:14px}'
 def nav(prefix):
- return '<nav class="site-tabs" aria-label="Main navigation">'+' <span aria-hidden="true">|</span> '.join(f'<a href="{prefix}{url}"'+(' aria-current="page"' if label=='Courses' else '')+f'>{label}</a>' for label,url in [('Home','index.html'),('Research','research.html'),('Projects','projects.html'),('Blog','blog.html'),('Courses','courses.html'),('Ask Me','bot.html')])+'</nav>'
+ return '<nav class="site-tabs" aria-label="Main navigation">'+' <span aria-hidden="true">|</span> '.join(f'<a href="{prefix}{url}"'+(' aria-current="page"' if label=='Courses' else '')+f'>{label}</a>' for label,url in [('Home','index.html'),('Research','research.html'),('Projects','projects.html'),('Blog','blog.html'),('Courses','courses.html'),('Xuming Bot','bot.html')])+'</nav>'
 for slug,course in data.items():
  base=ROOT/'courses'/slug
  sections=[];readme=[f'# {course["title"]}',course['description'],'## Materials']

@@ -1,8 +1,8 @@
-// Background preloader for the Ask Me bot.
+// Background preloader for the Xuming Bot bot.
 //
 // Loaded on every page. As soon as the page is idle, this starts downloading
-// and initializing the WebLLM model (the slow part of the Ask Me page) so
-// that by the time the user clicks "Ask Me", the model is hot. Same-tab
+// and initializing the WebLLM model (the slow part of the Xuming Bot page) so
+// that by the time the user clicks "Xuming Bot", the model is hot. Same-tab
 // navigation also reuses the in-memory engine via window.BotPreload.
 //
 // On non-bot pages, a small pill in the bottom-right shows progress and
@@ -186,7 +186,7 @@
     pill.href = "bot.html";
     pill.setAttribute("aria-live", "polite");
     pill.innerHTML =
-      '<span class="bpp-label"><em>Ask Me</em> <span id="bpp-text">pre-warming</span></span>' +
+      '<span class="bpp-label"><em>Xuming Bot</em> <span id="bpp-text">pre-warming</span></span>' +
       '<span class="bpp-pct" id="bpp-pct">0%</span>' +
       '<span class="bpp-close" id="bpp-close" title="Dismiss">×</span>' +
       '<span class="bpp-bar"></span>';
