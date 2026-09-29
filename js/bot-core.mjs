@@ -85,6 +85,12 @@ export function answerIssues(answer,retrieved,{kind='profile'}={}) {
  // This catches unsupported statistics, not every possible semantic error.
  const numbers=text=>(text.match(/\d+(?:[,.]\d+)*/g)||[]).map(n=>Number(n.replaceAll(',','')));
  const facts=new Set(numbers(sources.map(c=>c.text).join(' ')));
- if(kind==='profile' && numbers(answer.replace(/\[\d+\]/g,'')).some(n=>!facts.has(n)))issues.push('Remove numerical claims that are absent from the cited evidence.');
+ if(kind==='profile') {
+  const unsupported=[...new Set(numbers(answer.replace(/\[\d+\]/g,'')).filter(n=>!facts.has(n)))];
+  const misplaced=unsupported.map(n=>({n,ids:retrieved.flatMap((c,i)=>numbers(c.text).includes(n)?[i+1]:[])}));
+  if(misplaced.some(c=>!c.ids.length))issues.push('Remove numerical claims that are absent from all supplied evidence.');
+  const supportedElsewhere=misplaced.filter(c=>c.ids.length);
+  if(supportedElsewhere.length)issues.push('Correct the source citations for these numerical claims: '+supportedElsewhere.map(c=>`${c.n} is supported by ${c.ids.map(i=>`[${i}]`).join(' or ')}`).join('; ')+'. Cite the detailed source containing the numbers, not the overview.');
+ }
  return issues;
 }

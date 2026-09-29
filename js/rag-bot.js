@@ -1,4 +1,4 @@
-import {generateReply} from './bot-generation.mjs?v=20260929-1';
+import {generateReply} from './bot-generation.mjs?v=20260929-2';
 const MODEL_OPTIONS=[
  {id:'Qwen2.5-1.5B-Instruct-q4f16_1-MLC',name:'Qwen 2.5 1.5B',label:'Fast · Qwen 2.5 1.5B (~1.6 GB GPU memory)'},
  {id:'Qwen2.5-3B-Instruct-q4f16_1-MLC',name:'Qwen 2.5 3B',label:'Balanced · Qwen 2.5 3B (~2.5 GB GPU memory)'},

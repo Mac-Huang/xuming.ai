@@ -46,6 +46,12 @@ test('only follow-ups receive the previous reply as a reference, never as eviden
  await generateReply({engine:other.engine,message:'hobbies',chunks,previousQuery:'best project',previousAnswer});
  assert.ok(!JSON.stringify(other.requests[0].messages).includes('I would pick LinuxGuard'));
 });
+test('a correct statistic with the wrong source gets a specific citation repair',async()=>{
+ const {engine,requests}=mockModel(['It reduced foreground compilation time by 91.98%. [1]','It reduced foreground compilation time by 91.98%. [2]']);
+ const result=await generateReply({engine,message:'why that one?',chunks,previousQuery:'best project',previousAnswer:'I would pick the WukLab runtime.'});
+ assert.match(requests[1].messages.at(-1).content,/91\.98 is supported by \[2\]/);
+ assert.equal(result.sources[0].id,'wuklab');
+});
 for(const [message,answer,source] of [
  ['WukLab','Xuming studies NPU compilers and inference runtimes at WukLab. [1]','wuklab'],
  ["what's your interest",'His research interests include AI systems, edge inference, and compilers. [1]','bio'],
